@@ -17,6 +17,7 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('nodes.views',
+    url(r'^$', 'home', name='home'),
     
     url(r'^go/bibid/(?P<bibid>\.?b?\w{6,8})$', 'landing_page'),
     url(r'^go/isbn/(?P<isbn>\d{10,13})$', 'landing_page'),
