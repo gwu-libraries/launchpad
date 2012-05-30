@@ -1,0 +1,8 @@
+@charset "utf-8";
+
+/* overide for older IE to remove responsive */
+
+#libheader {	min-width: 700px; }
+
+#libfooter {	min-width: 700px; }
+

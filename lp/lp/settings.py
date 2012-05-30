@@ -1,4 +1,4 @@
-# Django settings for switchboard project.
+# Django settings for lp project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -11,7 +11,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.oracle', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': '',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
@@ -81,7 +81,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '4k+%(8e2k9j5&amp;lqt_&amp;=s8^2amq__hy2##)84phq)w+k094t_5='
+SECRET_KEY = 'a$)egwq6zbl=5(unaj$d0xj_1(^c9crsc7$#r7*&amp;6msodik00i'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -100,10 +100,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'switchboard.urls'
+ROOT_URLCONF = 'lp.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'switchboard.wsgi.application'
+WSGI_APPLICATION = 'lp.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -122,7 +122,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'nodes',
+    'ui',
 )
 
 # A sample logging configuration. The only tangible logging
