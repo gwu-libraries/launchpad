@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
 )
 
-urlpatterns += patterns('nodes.views',
+urlpatterns += patterns('ui.views',
     url(r'^$', 'home', name='home'),
 )
 
