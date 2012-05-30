@@ -86,27 +86,27 @@ This software should be runnable on any kind of operating system. However, these
 14. Edit wsgi file
 
         mv /home/<user/Projects/launchpad/lp/lp/wsgi.py.template /home/<user/Projects/launchpad/lp/lp/wsgi.py
-        vim /home/<user/Projects/idservice/lids/lids/wsgi.py
+        vim /home/<user/Projects/launchpad/lp/lp/wsgi.py
 
     Change parameter for site.addsitedir() to your local path. You will need to change the user name and possibly the Python version number.
 
 15. Edit Apache config file
 
-        vim /home/<user>/Projects/launchpad/apache/ld
+        vim /home/<user>/Projects/launchpad/apache/lp
 
     Change the values of the server, user, and python version in the document
 
 16. Add apache config file to sites-enabled and enable it
 
-        sudo mv /home/<user>/Projects/launchpad/apache/ld /etc/apache2/sites-enabled/ld
+        sudo mv /home/<user>/Projects/launchpad/apache/lp /etc/apache2/sites-enabled/lp
 
-        sudo a2ensite ld
+        sudo a2ensite lp
 
         sudo /etc/init.d/apache2 restart
 
 17. Configure database and other settings in a local_settings file
 
-        cd ld/ld
+        cd lp/lp
 
         mv local_settings.py.template local_settings.py
 
