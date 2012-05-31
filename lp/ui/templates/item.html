@@ -6,10 +6,15 @@
     <tr>
         <td colspan='4'>
             <span class="title">{{bib_data.TITLE}}</span><br/>
-            <span class="author">Author: {{ bib_data.AUTHOR }}</span><br/>
-            <span class="imprint">Imprint: {{ bib_data.PUBLISHER }}</span><br/>
-            <span class="edition">Edition: {{ bib_data.EDITION }}</span><br/>
-            <span class="isbn">ISBN: {{ bib_data.ISBN }}</span><br/>
+            <span class="author-label">Author: </span><span class="author">{{ bib_data.AUTHOR }}</span><br/>
+            <span class="imprint-label">Imprint: </span><span class="imprint">{{ bib_data.IMPRINT }}</span><br/>
+            <span class="edition-label">Edition: </span><span class="edition">{{ bib_data.EDITION }}</span><br/>
+            {% if bib_data.ISBN %}
+            <span class="isbn-label">ISBN: </span><span class="isbn">{{ bib_data.ISBN }}</span><br/>
+            {% endif %}
+            {% if bib_data.ISSN %}
+            <span class="isbn-label">ISSN: </span><span class="issn">{{ bib_data.ISSN }}</span><br/>
+            {% endif %}
         </td>
     </tr>
     <tr>
