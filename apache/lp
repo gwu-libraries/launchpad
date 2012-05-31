@@ -3,13 +3,8 @@
     ServerName <you.server.name>
     DocumentRoot /home/<user>/Projects/launchpad/lp/lp
 
-    AliasMatch ^/static/admin/css/([^/]*\.css) /home/<user>/Projects/launchpad/ENV/lib/python2.X/site-packages/django/contrib/admin/static/admin/css/$1
-
-    Alias /static/admin/ /home/<user>/Projects/launchpad/ENV/lib/python2.X/site-packages/django/contrib/admin/static/admin/
-    <Directory /home/<user>/Projects/ENV/lib/python2.X/site-packages/django/contrib/admin/static/admin/>
-        Order deny,allow
-        Allow from all
-    </Directory>
+    AliasMatch ^/static/css/([^/]*\.css) /home/<user>/Projects/launchpad/lp/ui/static/css/$1
+    AliasMatch ^/static/img/([^/]*\.png) /homez/<user>/Projects/launchpad/lp/ui/static/img/$1
 
     WSGIDaemonProcess <your.server.name> processes=2 threads=15 python-path=/home/<user>/Projects/launchpad/ENV/lib/python/2.X/site-packages:/home/<user>/Projects/launchpad/lp
 
