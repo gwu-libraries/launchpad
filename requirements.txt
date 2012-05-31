@@ -1,3 +1,4 @@
 django
 mysql-python
 pytz
+cx_Oracle
