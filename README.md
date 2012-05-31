@@ -43,6 +43,19 @@ This software should be runnable on any kind of operating system. However, these
 		
 		export LD_LIBRARY_PATH=/usr/lib/oracle/11.2/client64/lib
 
+7. Set environement variables in oracle.conf file
+
+        vim /etc/ld.so.conf.d/oracle-instantclient11.2-basic.conf
+
+    Add the following lines
+
+        /lib
+        /usr/lib/oracle/11.2/client64/lib
+
+    Now run
+
+        sudo ldconfig        
+
 
 - - -
 
