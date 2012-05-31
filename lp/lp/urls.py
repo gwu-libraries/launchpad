@@ -18,5 +18,9 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('ui.views',
     url(r'^$', 'home', name='home'),
+    url(r'^item/(?P<bibid>\.?b?\d{6,8})$', 'item', name='item'),
+    url(r'^issn/(?P<issn>\d{4}-\d{3}[xX0-9])$', 'issn', name='issn'),
+    url(r'^isbn/(?P<isbn>\.?b?\d{6,8})$', 'isbn', name='isbn'),
+    url(r'^oclc/(?P<oclc>ocn\d{9})$', 'oclc', name='oclc'),
 )
 
