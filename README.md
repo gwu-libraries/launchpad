@@ -62,11 +62,11 @@ This software should be runnable on any kind of operating system. However, these
 
 3. Pull down the project from github
 
-        git clone git@github.com:gwu-libraries/idservice.git
+        git clone git@github.com:gwu-libraries/launchpad.git
 
 4. Create virtual Python environment for the project
 
-        cd /home/<user>/Projects/idservice
+        cd /home/<user>/Projects/launchpad
 
         virtualenv --no-site-packages ENV
 
