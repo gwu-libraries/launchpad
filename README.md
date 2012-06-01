@@ -116,6 +116,8 @@ the path according to your installation of oracle.
 	Change database login and password and any other parameters you
 	wish to change.
 
+        NOTE: If you are deploying to production, set DEBUG = False.
+
 2. Edit wsgi file
 
         cp lp/wsgi.py.template lp/wsgi.py
