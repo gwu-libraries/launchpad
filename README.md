@@ -25,13 +25,17 @@ only been tested on ubuntu 10.04 LTS.
 
 3. Download Oracle
 
-    Download Instant Client for Linux x86-64 or
+    Download Instant Client 11.2.0.3 for Linux x86-64 or
     the platform that matches your system from
     http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html
 
     * instant-client-basic
     * instant-client-devel
     * instant-client-sqlplus
+
+    Or find a copy of the 11.2.0.3.0-1.x86_64 rpms in:
+
+        /vol/backup/dependencies
 
 4. Install alien in order to install the RPM packages on Debian or ubuntu
 Linux Distributions. This is not required if you are using RedHat or
