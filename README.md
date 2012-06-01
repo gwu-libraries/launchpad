@@ -107,36 +107,33 @@ the path according to your installation of oracle.
 
 **Part III - Configuring your installation**
 
-1. Edit wsgi file
-
-        cp /home/<user/Projects/launchpad/lp/lp/wsgi.py.template /home/<user/Projects/launchpad/lp/lp/wsgi.py
-        vim /home/<user/Projects/launchpad/lp/lp/wsgi.py
-
-	Change parameter for site.addsitedir() to your local path. You
-	will need to change the user name and possibly the Python
-	version number.
-
-2. Edit Apache config file
-
-        vim /home/<user>/Projects/launchpad/apache/lp
-
-	Change the values of the server, user, and python version in
-	the document
-
-3. Add apache config file to sites-enabled and enable it
-
-        sudo cp /home/<user>/Projects/launchpad/apache/lp /etc/apache2/sites-enabled/lp
-        sudo a2ensite lp
-        sudo /etc/init.d/apache2 restart
-
-4. Configure database and other settings in a local_settings file
+1. Configure database and other settings in a local_settings file
 
         cd lp/lp
-        mv local_settings.py.template local_settings.py
+        cp local_settings.py.template local_settings.py
         vim local_settings.py
 
 	Change database login and password and any other parameters you
 	wish to change.
 
+2. Edit wsgi file
 
+        cp lp/wsgi.py.template lp/wsgi.py
+        vim lp/wsgi.py
 
+	Change parameter for site.addsitedir() to your local path. You
+	will need to change the user name and possibly the Python
+	version number.
+
+3. Add apache config file to sites-enabled and edit it
+
+        sudo cp ../apache/lp /etc/apache2/sites-available/lp
+        vim /etc/apache2/sites-available/lp
+
+	Change the values of the server, user, and python version in
+	the document
+
+4. Enable the app in apache and bounch apache2 to start it up
+
+        sudo a2ensite lp
+        sudo /etc/init.d/apache2 restart
