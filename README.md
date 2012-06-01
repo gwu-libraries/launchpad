@@ -109,7 +109,7 @@ the path according to your installation of oracle.
 
 1. Edit wsgi file
 
-        mv /home/<user/Projects/launchpad/lp/lp/wsgi.py.template /home/<user/Projects/launchpad/lp/lp/wsgi.py
+        cp /home/<user/Projects/launchpad/lp/lp/wsgi.py.template /home/<user/Projects/launchpad/lp/lp/wsgi.py
         vim /home/<user/Projects/launchpad/lp/lp/wsgi.py
 
 	Change parameter for site.addsitedir() to your local path. You
@@ -125,7 +125,7 @@ the path according to your installation of oracle.
 
 3. Add apache config file to sites-enabled and enable it
 
-        sudo mv /home/<user>/Projects/launchpad/apache/lp /etc/apache2/sites-enabled/lp
+        sudo cp /home/<user>/Projects/launchpad/apache/lp /etc/apache2/sites-enabled/lp
         sudo a2ensite lp
         sudo /etc/init.d/apache2 restart
 
