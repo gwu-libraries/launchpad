@@ -17,7 +17,7 @@ only been tested on ubuntu 10.04 LTS.
 
 1. Install Apache and other dependencies:
 
-        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev
+        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev
 
 2. Install git 
 
