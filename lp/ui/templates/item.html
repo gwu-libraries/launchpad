@@ -27,9 +27,30 @@
             <span class="availability">Availability</span>
         </td>
     </tr>
-    <tr>
-        <td>Begin holdings info here...</td>
+    {% for holding in holdings_data %}
+    <tr valign='midle'>
+        <td colspan='4'><hr/>
+            <table>
+                <tr valign='middle'>
+                    <td><img src='/static/img/logos/{{ holding.LIBRARY_NAME }}.png' alt='' height='44' /></td>
+                    <td>{{ holding.LIBRARY_NAME }}</td>
+                </tr>
+            </table>
+        </td>
     </tr>
+    <tr>
+        <td bgcolor='#EAEAEA'><b>Location</b></td>
+	<td bgcolor='#EAEAEA'><b>Call Number</b></td>
+	<td bgcolor='#EAEAEA'><b>Circulation Status</b></td>
+	<td bgcolor='#EAEAEA'><b>Consortium Loan</b></td>
+    </tr>
+    <tr>
+        <td>{{holding.LOCATION_DISPLAY_NAME}}</td>
+        <td>{{holding.DISPLAY_CALL_NO}}</td>
+        <td> ?? </td>
+        <td><a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{holding.BIB_ID}}' target='clswindow'>Request</a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg' /></td>
+    </tr>
+    {% endfor %}
 </table> 
 
 {% endblock content %}

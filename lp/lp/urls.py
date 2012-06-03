@@ -24,5 +24,6 @@ urlpatterns += patterns('ui.views',
     url(r'^oclc/\(OCoLC\)(?P<oclc>\d{8,9})$', 'oclc', name='oclc'),
     url(r'^oclc/ocn(?P<oclc>\d{8,9})$', 'oclc', name='oclc'),
     url(r'^oclc/(?P<oclc>\d{8,9})$', 'oclc', name='oclc'),
+    url(r'^dump/(?P<bibid>\.?b?\d{6,8})$', 'dump', name='dump'),
 )
 

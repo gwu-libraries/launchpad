@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.http import Http404
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from ui import get_bib_data, get_bibid_from_isbn, get_bibid_from_issn, get_bibid_from_oclc
-
+from ui import voyager
 
 def home(request):
     return render(request, 'home.html', {
@@ -11,17 +10,24 @@ def home(request):
         })
 
 def item(request, bibid):
-    bib_data = get_bib_data(bibid=bibid)
-    return render(request, 'item.html', {'bib_data':bib_data})
+    bib_data = voyager.get_bib_data(bibid)
+    holdings_data = voyager.get_holdings_data(bib_data)
+    return render(request, 'item.html', {'bib_data':bib_data, 'holdings_data':holdings_data})
 
 def isbn(request, isbn):
-    bibid = get_bibid_from_isbn(isbn)
+    bibid = voyager.get_bibid_from_isbn(isbn)
     return redirect('item', bibid=bibid)
 
 def issn(request, issn):
-    bibid = get_bibid_from_issn(issn)
+    bibid = voyager.get_bibid_from_issn(issn)
     return redirect('item', bibid=bibid)
 
-def oclc(request, oclc='', ocn='', digit=''):
-    bibid = get_bibid_from_oclc(oclc)
+def oclc(request, oclc):
+    bibid = voyager.get_bibid_from_oclc(oclc)
     return redirect('item', bibid=bibid)
+
+def dump(request, bibid):
+    bib_data = voyager.get_bib_data(bibid)
+    holdings_data = voyager.get_holdings_data(bib_data)
+    output = 'BIBLIOGRAPHIC DATA\n\n%s\n\n\nHOLDINGS DATA\n\n%s' % (bib_data, holdings_data)
+    return HttpResponse(output, content_type='application/json')
