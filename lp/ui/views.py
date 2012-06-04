@@ -31,3 +31,8 @@ def dump(request, bibid):
     holdings_data = voyager.get_holdings_data(bib_data)
     output = 'BIBLIOGRAPHIC DATA\n\n%s\n\n\nHOLDINGS DATA\n\n%s' % (bib_data, holdings_data)
     return HttpResponse(output, content_type='application/json')
+
+def error500(request):
+    return render(request, '500.html', {
+        'title': 'error',
+        }, status=500)

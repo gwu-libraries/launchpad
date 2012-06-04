@@ -16,6 +16,8 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
 )
 
+handler500 = 'ui.views.error500'
+
 urlpatterns += patterns('ui.views',
     url(r'^$', 'home', name='home'),
     url(r'^item/(?P<bibid>\.?b?\d{6,8})$', 'item', name='item'),
