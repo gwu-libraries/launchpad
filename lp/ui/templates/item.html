@@ -5,6 +5,7 @@
 <table WIDTH='100%' CELLPADDING='2' CELLSPACING='0' BORDER='0'>
     <tr>
         <td colspan='4'>
+	    
             <span class="title">{{bib_data.TITLE}}</span><br/>
             <span class="author-label">Author: </span><span class="author">{{ bib_data.AUTHOR }}</span><br/>
             <span class="imprint-label">Imprint: </span><span class="imprint">{{ bib_data.IMPRINT }}</span><br/>
@@ -15,12 +16,20 @@
             {% if bib_data.ISSN %}
             <span class="isbn-label">ISSN: </span><span class="issn">{{ bib_data.ISSN }}</span><br/>
             {% endif %}
+           
         </td>
     </tr>
     <tr>
         <td colspan="4">
+	     
+	    {%if bib_data.LIBRARY_NAME in nongw%}
+	    
+	    <span class="catlink">View detailed description of this title in the <a href={{link}} target='newwin'> {{bib_data.LIBRARY_NAME}} Catalog </a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg'></span>
+	   
+	    {%else%}
             <span class="catlink">View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib_data.BIB_ID }}' target='newwin'>Aladin Catalog</a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg'></span>
-        </td>
+       	    {%endif%}
+	</td>
     </tr>
     <tr>
         <td colspan="4">

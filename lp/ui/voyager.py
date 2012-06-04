@@ -163,3 +163,32 @@ ORDER BY PermLocation, TempLocation"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id])
     return _make_dict(cursor)[0]
+
+def get_nongw_holdings_data(bib_data):
+    bibids = [bib_data['BIB_ID']]
+    if bib_data['ISBN']:
+        bibids.append(get_related_bibids(isbn=bib_data['ISBN']))
+    elif bib_data['ISSN']:
+        bibids.append(get_related_bibids(issn=bib_data['ISSN']))
+    elif bib_data['NETWORK_NUMBER']:
+        bibids.append(get_related_bibids(oclc=bib_data['NETWORK_NUMBER']))
+    holdings_list = []
+    for bibid in bibids:
+        query = """
+SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
+       mfhd_master.display_call_no, location.location_display_name,
+       library.library_name
+FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
+     location, library
+WHERE mfhd_master.location_id=location.location_id
+AND bib_mfhd.bib_id=%s
+AND mfhd_master.suppress_in_opac !='Y'
+AND location.library_id=library.library_id
+ORDER BY library.library_name"""
+        cursor = connection.cursor()
+        cursor.execute(query, [bib_data['BIB_ID']])
+    holdings_list += _make_dict(cursor)
+    for holding in holdings_list:
+        holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID'])})
+    return holdings_list
+

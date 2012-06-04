@@ -10,9 +10,13 @@ def home(request):
         })
 
 def item(request, bibid):
+    nonGwSchools = ['GT' , 'DA', 'GM', 'HU', 'HS', 'HL', 'AL', 'JB', 'HI']
     bib_data = voyager.get_bib_data(bibid)
-    holdings_data = voyager.get_holdings_data(bib_data)
-    return render(request, 'item.html', {'bib_data':bib_data, 'holdings_data':holdings_data})
+    if bib_data['LIBRARY_NAME'] in nonGwSchools:
+    	holdings_data = voyager.get_nongw_holdings_data(bib_data)
+    else:
+	holdings_data = voyager.get_holdings_data(bib_data)
+    return render(request, 'item.html', {'bib_data':bib_data, 'holdings_data':holdings_data,'nongw':nonGwSchools,'link':bib_data['LINK'][9:]})
 
 def isbn(request, isbn):
     bibid = voyager.get_bibid_from_isbn(isbn)
