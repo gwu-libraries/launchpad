@@ -73,7 +73,7 @@ AND bib_master.library_id=library.library_id"""
         return [item['BIB_ID'] for item in data]
 
 
-def get_bibid_from_oclc(oclc):
+def get_bibids_from_oclc(oclc, subset='gw'):
     query = """
 SELECT bib_index.bib_id, bib_index.index_code, bib_index.normal_heading, 
        bib_index.display_heading, bib_master.library_id, library.library_name

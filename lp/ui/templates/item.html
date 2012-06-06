@@ -1,65 +1,66 @@
 {% extends "base.html" %}
 
+{% block title %}{{ bib_data.TITLE }}{% endblock title %}
+
+{% block link_extra %}
+<link rel='alternate' type='application/json' href='{% url item_json bibid %}' />
+{% endblock link_extra %}
+
 {% block content %}
 
+<h1 class="title">{{ bib_data.TITLE }}</h1>
+<h2 class="author">{{ bib_data.AUTHOR }}</h2>
+{% if bib_data.EDITION %}
+<span class="edition">{{ bib_data.EDITION }}.</span>
+{% endif %}
+<span class="imprint">{{ bib_data.IMPRINT }}</span><br />
+{% if bib_data.ISBN %}
+<span class="isbn-label">ISBN </span><span class="isbn">{{ bib_data.ISBN }}</span><br/>
+{% endif %}
+{% if bib_data.ISSN %}
+<span class="isbn-label">ISSN </span><span class="issn">{{ bib_data.ISSN }}</span><br/>
+{% endif %}
+
+{% if bib_data.LIBRARY_NAME in nongw %}
+<p>
+<span class="catlink">View detailed description of this title in the <a href="{{ link }}" target='newwin'> {{ bib_data.LIBRARY_NAME }} catalog</a></span>
+</p>
+{% else %}
+<p>
+<span class="catlink">View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib_data.BIB_ID }}' target='newwin'>Aladin Catalog</a></span>
+</p>
+{% endif %}
+
 <table WIDTH='100%' CELLPADDING='2' CELLSPACING='0' BORDER='0'>
-    <tr>
-        <td colspan='4'>
-	    
-            <span class="title">{{bib_data.TITLE}}</span><br/>
-            <span class="author-label">Author: </span><span class="author">{{ bib_data.AUTHOR }}</span><br/>
-            <span class="imprint-label">Imprint: </span><span class="imprint">{{ bib_data.IMPRINT }}</span><br/>
-            <span class="edition-label">Edition: </span><span class="edition">{{ bib_data.EDITION }}</span><br/>
-            {% if bib_data.ISBN %}
-            <span class="isbn-label">ISBN: </span><span class="isbn">{{ bib_data.ISBN }}</span><br/>
-            {% endif %}
-            {% if bib_data.ISSN %}
-            <span class="isbn-label">ISSN: </span><span class="issn">{{ bib_data.ISSN }}</span><br/>
-            {% endif %}
-           
-        </td>
-    </tr>
-    <tr>
-        <td colspan="4">
-	     
-	    {%if bib_data.LIBRARY_NAME in nongw%}
-	    
-	    <span class="catlink">View detailed description of this title in the <a href={{link}} target='newwin'> {{bib_data.LIBRARY_NAME}} Catalog </a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg'></span>
-	   
-	    {%else%}
-            <span class="catlink">View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib_data.BIB_ID }}' target='newwin'>Aladin Catalog</a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg'></span>
-       	    {%endif%}
-	</td>
-    </tr>
-    <tr>
-        <td colspan="4">
-            <span class="availability">Availability</span>
-        </td>
-    </tr>
-    {% for holding in holdings_data %}
-    <tr valign='midle'>
-        <td colspan='4'><hr/>
-            <table>
-                <tr valign='middle'>
-                    <td><img src='/static/img/logos/{{ holding.LIBRARY_NAME }}.png' alt='' height='44' /></td>
-                    <td>{{ holding.LIBRARY_NAME }}</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td bgcolor='#EAEAEA'><b>Location</b></td>
-	<td bgcolor='#EAEAEA'><b>Call Number</b></td>
-	<td bgcolor='#EAEAEA'><b>Circulation Status</b></td>
-	<td bgcolor='#EAEAEA'><b>Consortium Loan</b></td>
-    </tr>
-    <tr>
-        <td>{{holding.LOCATION_DISPLAY_NAME}}</td>
-        <td>{{holding.DISPLAY_CALL_NO}}</td>
-        <td> ?? </td>
-        <td><a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{holding.BIB_ID}}' target='clswindow'>Request</a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg' /></td>
-    </tr>
-    {% endfor %}
+    <thead>
+        <tr>
+            <th bgcolor='#EAEAEA'>Location</th>
+            <th bgcolor='#EAEAEA'>Call Number</th>
+            <th bgcolor='#EAEAEA'>Circulation Status</th>
+            <th bgcolor='#EAEAEA'>Consortium Loan</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for holding in holdings_data %}
+        <tr>
+            <td>{{ holding.LOCATION_DISPLAY_NAME }}</td>
+            <td>{{ holding.DISPLAY_CALL_NO }}</td>
+            <td>{{ holding.AVAILABILITY.ITEM_STATUS_DESC }}</td>
+            <td><a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg' /></td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table> 
+
+{% if debug %}
+<p />
+<p />
+<h3>Debugging info</h3>
+
+<p>
+View this item in <a href='{% url item_json bibid %}'>JSON</a>.
+</p>
+
+{% endif %}
 
 {% endblock content %}
