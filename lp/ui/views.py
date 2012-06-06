@@ -13,18 +13,18 @@ def home(request):
 
 def item(request, bibid):
     nonGwSchools = ['GT' , 'DA', 'GM', 'HU', 'HS', 'HL', 'AL', 'JB', 'HI']
-    bib_data = voyager.get_bib_data(bibid)
-    if bib_data['LIBRARY_NAME'] in nonGwSchools:
-    	holdings_data = voyager.get_nongw_holdings_data(bib_data)
+    bib = voyager.get_bib_data(bibid)
+    if bib['LIBRARY_NAME'] in nonGwSchools:
+    	holdings = voyager.get_nongw_holdings_data(bib)
     else:
-	holdings_data = voyager.get_holdings_data(bib_data)
+	holdings = voyager.get_holdings_data(bib)
     return render(request, 'item.html', {
         'bibid': bibid,
-        'bib_data': bib_data, 
+        'bib': bib, 
         'debug': settings.DEBUG,
-        'holdings_data': holdings_data,
+        'holdings': holdings,
         'nongw': nonGwSchools,
-        'link':bib_data['LINK'][9:]
+        'link': bib['LINK'][9:]
         })
 
 def _date_handler(obj):

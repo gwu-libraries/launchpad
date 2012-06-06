@@ -21,15 +21,10 @@
 <span class="isbn-label">ISSN </span><span class="issn">{{ bib.ISSN }}</span><br/>
 {% endif %}
 
-{% if bib.LIBRARY_NAME in nongw %}
 <p>
 <span class="catlink">View detailed description of this title in the <a href="{{ link }}" target='newwin'> {{ bib.LIBRARY_NAME }} catalog</a></span>
 </p>
-{% else %}
-<p>
-<span class="catlink">View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>Aladin Catalog</a></span>
-</p>
-{% endif %}
+
 
 <table WIDTH='100%' CELLPADDING='2' CELLSPACING='0' BORDER='0'>
     <thead>
@@ -45,7 +40,17 @@
         <tr>
             <td>{{ holding.LOCATION_DISPLAY_NAME }}</td>
             <td>{{ holding.DISPLAY_CALL_NO }}</td>
+	    {% if holding.LIBRARY_NAME in nongw %}
+<td>
+<span class="catlink">View detailed description of this title in the <a href="{{ link }}" target='newwin'> {{ holding.LIBRARY_NAME }} catalog</a></span>
+</td>
+{%else%}
+	{%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
+		<td> <FONT COLOR="green">Available </FONT></td>
+	{%else%}
             <td>{{ holding.AVAILABILITY.ITEM_STATUS_DESC }}</td>
+	{%endif%}
+{%endif%}
             <td><a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg' /></td>
         </tr>
         {% endfor %}
@@ -63,7 +68,7 @@ Try its <a href='{% url isbn bib.ISBN|slice:":10" %}'>ISBN link</a>.
 <br />
 {% endif %}
 {% if bib.NETWORK_NUMBER %}
-Try its <a href='{% url oclc bib.NETWORK_NUMBER|cut:" " %}'>OCLC link</a>.
+Try its oclc (add link!) {{ bib.NETWORK_NUMBER }} link.
 <br />
 {% endif %}
 </p>
