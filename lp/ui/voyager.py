@@ -30,16 +30,14 @@ AND bib_master.suppress_in_opac='N'"""
     return _make_dict(cursor, first=True)
 
 
-def get_related_bibids(isbn='', issn='', oclc=''):
-    if isbn:
-        return get_bibids_from_isbn(isbn=isbn, subset='other')
-    elif issn:
-        return get_bibids_from_issn(issn=issn, subset='other')
-    elif oclc:
-        return get_bibids_from_oclc(oclc=oclc, subset='other')
-
+def clean_isbn(isbn):
+    val, sep, remainder = isbn.partition(' ')
+    isbn = val.replace('-', '')
+    isbn = isbn.replace(':', '')
+    return isbn 
 
 def get_bibids_from_isbn(isbn, subset='gw'):
+    isbn = clean_isbn(isbn)
     query = """
 SELECT bib_index.bib_id, bib_master.library_id, 
        library_name, normal_heading, display_heading 
@@ -59,8 +57,11 @@ AND bib_master.library_id=library.library_id"""
     elif subset == 'all':
         return [item['BIB_ID'] for item in data]
 
+def clean_issn(issn):
+    return issn.replace(' ', '-')
 
 def get_bibids_from_issn(issn, subset='gw'):
+    issn = clean_issn(issn)
     query = """
 SELECT bib_index.bib_id, bib_master.library_id, library.library_name
 FROM bib_index,bib_master,library
@@ -79,7 +80,11 @@ AND bib_master.library_id=library.library_id"""
         return [item['BIB_ID'] for item in data]
 
 
+def clean_oclc(oclc):
+    return oclc[-10:]
+
 def get_bibids_from_oclc(oclc, subset='gw'):
+    oclc = clean_oclc(oclc)
     query = """
 SELECT bib_index.bib_id, bib_index.index_code, bib_index.normal_heading, 
        bib_index.display_heading, bib_master.library_id, library.library_name
@@ -102,12 +107,15 @@ AND bib_master.library_id=library.library_id"""
 def get_holdings_data(bib_data):
     bibids = [bib_data['BIB_ID']]
     if bib_data['ISBN']:
-        bibids.append(get_related_bibids(isbn=bib_data['ISBN']))
+        bibids.extend(get_bibids_from_isbn(isbn=bib_data['ISBN'], subset='other'))
     elif bib_data['ISSN']:
-        bibids.append(get_related_bibids(issn=bib_data['ISSN']))
+        bibids.extend(get_bibids_from_issn(issn=bib_data['ISSN'], subset='other'))
     elif bib_data['NETWORK_NUMBER']:
-        bibids.append(get_related_bibids(oclc=bib_data['NETWORK_NUMBER']))
+        bibids.extend(get_bibids_from_oclc(oclc=bib_data['NETWORK_NUMBER'], 
+            subset='other'))
+    print 'bibids:', bibids
     holdings_list = []
+    cursor = connection.cursor()
     for bibid in bibids:
         query = """
 SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
@@ -120,9 +128,8 @@ AND bib_mfhd.bib_id=%s
 AND mfhd_master.suppress_in_opac !='Y'
 AND location.library_id=library.library_id
 ORDER BY library.library_name"""
-        cursor = connection.cursor()
-        cursor.execute(query, [bib_data['BIB_ID']])
-    holdings_list += _make_dict(cursor)
+        cursor.execute(query, [bibid])
+        holdings_list += _make_dict(cursor)
     for holding in holdings_list:
         holding.update({
             'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
@@ -174,12 +181,14 @@ ORDER BY PermLocation, TempLocation"""
 def get_nongw_holdings_data(bib_data):
     bibids = [bib_data['BIB_ID']]
     if bib_data['ISBN']:
-        bibids.append(get_related_bibids(isbn=bib_data['ISBN']))
+        bibids.extend(get_bibids_from_isbn(isbn=bib_data['ISBN'], subset='other'))
     elif bib_data['ISSN']:
-        bibids.append(get_related_bibids(issn=bib_data['ISSN']))
+        bibids.extend(get_bibids_from_issn(issn=bib_data['ISSN'], subset='other'))
     elif bib_data['NETWORK_NUMBER']:
-        bibids.append(get_related_bibids(oclc=bib_data['NETWORK_NUMBER']))
+        bibids.extend(get_bibids_from_oclc(oclc=bib_data['NETWORK_NUMBER'], 
+            subset='other'))
     holdings_list = []
+    cursor = connection.cursor()
     for bibid in bibids:
         query = """
 SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
@@ -192,9 +201,8 @@ AND bib_mfhd.bib_id=%s
 AND mfhd_master.suppress_in_opac !='Y'
 AND location.library_id=library.library_id
 ORDER BY library.library_name"""
-        cursor = connection.cursor()
-        cursor.execute(query, [bib_data['BIB_ID']])
-    holdings_list += _make_dict(cursor)
+        cursor.execute(query, [bibid])
+        holdings_list += _make_dict(cursor)
     for holding in holdings_list:
         holding.update({
             'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID'])})

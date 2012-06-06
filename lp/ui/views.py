@@ -5,7 +5,7 @@ from django.utils import simplejson as json
 
 from ui import voyager
 
-NON_GW_SCHOOLS = ['GT' , 'DA', 'GM', 'HU', 'HS', 'HL', 'AL', 'JB', 'HI']
+NON_GW_SCHOOLS = ['GT', 'DA', 'GM', 'HU', 'HS', 'HL', 'AL', 'JB', 'HI']
 
 def home(request):
     return render(request, 'home.html', {

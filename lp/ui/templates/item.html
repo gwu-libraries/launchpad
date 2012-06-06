@@ -61,14 +61,14 @@
 <h3>Debugging info</h3>
 
 <p>
-View this item in <a href='{% url item_json bibid %}'>JSON</a>.
+View JSON: <a href='{% url item_json bibid %}'>{% url item_json bibid %}</a>.
 <br />
 {% if bib.ISBN %}
-Try its <a href='{% url isbn bib.ISBN|slice:":10" %}'>ISBN link</a>.
+Try ISBN link: <a href='{% url isbn bib.ISBN|slice:":10" %}'>{% url isbn bib.ISBN|slice:":10" %}</a>.
 <br />
 {% endif %}
 {% if bib.NETWORK_NUMBER %}
-Try its oclc (add link!) {{ bib.NETWORK_NUMBER }} link.
+Try OCLC link: <a href='/oclc/{{ bib.NETWORK_NUMBER }}'>/oclc/{{ bib.NETWORK_NUMBER }}</a>.
 <br />
 {% endif %}
 </p>
