@@ -1,12 +1,18 @@
 from django.db import connection, transaction
 
+GW_LIBRARY_IDS = [7, 11, 18, 21]
 
-def _make_dict(cursor):
+def _make_dict(cursor, first=False):
     desc = cursor.description
-    return [
+    mapped = [
         dict(zip([col[0] for col in desc], row))
         for row in cursor.fetchall()
     ]
+    if first:
+        if len(mapped) > 0:
+            return mapped[0]
+        return []
+    return mapped
 
 
 def get_bib_data(bibid):
@@ -21,16 +27,16 @@ AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
     cursor.execute(query, [bibid, bibid])
-    return  _make_dict(cursor)[0]
+    return _make_dict(cursor, first=True)
 
 
 def get_related_bibids(isbn='', issn='', oclc=''):
-     if isbn:
-         return get_bibids_from_isbn(isbn=isbn, subset='other')
-     elif issn:
-         return get_bibids_from_issn(issn=issn, subset='other')
-     elif oclc:
-         return get_bibids_from_oclc(oclc=oclc, subset='other')
+    if isbn:
+        return get_bibids_from_isbn(isbn=isbn, subset='other')
+    elif issn:
+        return get_bibids_from_issn(issn=issn, subset='other')
+    elif oclc:
+        return get_bibids_from_oclc(oclc=oclc, subset='other')
 
 
 def get_bibids_from_isbn(isbn, subset='gw'):
@@ -44,12 +50,12 @@ AND bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id""" 
     code = 'ISB3' if len(isbn) == 13 else '020A' 
     cursor = connection.cursor()
-    cursor.execute(query, [code,isbn])
+    cursor.execute(query, [code, isbn])
     data = _make_dict(cursor)
     if subset == 'gw':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] in [7,11,18,21]]
+        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] in GW_LIBRARY_IDS]
     elif subset == 'other':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] not in [7,11,18,21]]
+        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] not in GW_LIBRARY_IDS]
     elif subset == 'all':
         return [item['BIB_ID'] for item in data]
 
@@ -66,9 +72,9 @@ AND bib_master.library_id=library.library_id"""
     cursor.execute(query, [issn])
     data = _make_dict(cursor)
     if subset == 'gw':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] in [7,11,18,21]]
+        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] in GW_LIBRARY_IDS]
     elif subset == 'other':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] not in [7,11,18,21]]
+        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] not in GW_LIBRARY_IDS]
     elif subset == 'all':
         return [item['BIB_ID'] for item in data]
 
@@ -86,9 +92,9 @@ AND bib_master.library_id=library.library_id"""
     cursor.execute(query, [oclc])
     data = _make_dict(cursor)
     if subset == 'gw':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] in [7,11,18,21]]
+        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] in GW_LIBRARY_IDS]
     elif subset == 'other':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] not in [7,11,18,21]]
+        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] not in GW_LIBRARY_IDS]
     elif subset == 'all':
         return [item['BIB_ID'] for item in data]
 
@@ -118,8 +124,9 @@ ORDER BY library.library_name"""
         cursor.execute(query, [bib_data['BIB_ID']])
     holdings_list += _make_dict(cursor)
     for holding in holdings_list:
-        holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']),
-                        'AVAILABILITY': get_availability(holding['MFHD_ID'])})
+        holding.update({
+            'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
+            'AVAILABILITY': get_availability(holding['MFHD_ID'])})
     return holdings_list
 
 
@@ -136,7 +143,7 @@ FROM mfhd_master
 WHERE mfhd_master.mfhd_id=%s"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id]*7)
-    return _make_dict(cursor)[0]
+    return _make_dict(cursor, first=True)
        
 
 
@@ -162,7 +169,7 @@ WHERE bib_mfhd.mfhd_id = %s
 ORDER BY PermLocation, TempLocation"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id])
-    return _make_dict(cursor)[0]
+    return _make_dict(cursor, first=True)
 
 def get_nongw_holdings_data(bib_data):
     bibids = [bib_data['BIB_ID']]
@@ -189,6 +196,7 @@ ORDER BY library.library_name"""
         cursor.execute(query, [bib_data['BIB_ID']])
     holdings_list += _make_dict(cursor)
     for holding in holdings_list:
-        holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID'])})
+        holding.update({
+            'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID'])})
     return holdings_list
 
