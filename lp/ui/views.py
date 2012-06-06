@@ -1,9 +1,11 @@
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 
 from ui import voyager
+
+NON_GW_SCHOOLS = ['GT' , 'DA', 'GM', 'HU', 'HS', 'HL', 'AL', 'JB', 'HI']
 
 def home(request):
     return render(request, 'home.html', {
@@ -12,9 +14,8 @@ def home(request):
         })
 
 def item(request, bibid):
-    nonGwSchools = ['GT' , 'DA', 'GM', 'HU', 'HS', 'HL', 'AL', 'JB', 'HI']
     bib = voyager.get_bib_data(bibid)
-    if bib['LIBRARY_NAME'] in nonGwSchools:
+    if bib['LIBRARY_NAME'] in NON_GW_SCHOOLS:
     	holdings = voyager.get_nongw_holdings_data(bib)
     else:
 	holdings = voyager.get_holdings_data(bib)
@@ -23,7 +24,7 @@ def item(request, bibid):
         'bib': bib, 
         'debug': settings.DEBUG,
         'holdings': holdings,
-        'nongw': nonGwSchools,
+        'nongw': NON_GW_SCHOOLS,
         'link': bib['LINK'][9:]
         })
 
@@ -37,16 +38,22 @@ def item_json(request, bibid):
         content_type='application/json')
 
 def isbn(request, isbn):
-    bibid = voyager.get_bibid_from_isbn(isbn)
-    return redirect('item', bibid=bibid)
+    bibids = voyager.get_bibids_from_isbn(isbn)
+    if bibids:
+        return redirect('item', bibid=bibids[0])
+    raise Http404
 
 def issn(request, issn):
-    bibid = voyager.get_bibid_from_issn(issn)
-    return redirect('item', bibid=bibid)
+    bibids = voyager.get_bibids_from_issn(issn)
+    if bibids:
+        return redirect('item', bibid=bibids[0])
+    raise Http404
 
 def oclc(request, oclc):
-    bibid = voyager.get_bibid_from_oclc(oclc)
-    return redirect('item', bibid=bibid)
+    bibids = voyager.get_bibids_from_oclc(oclc)
+    if bibids:
+        return redirect('item', bibid=bibids[0])
+    raise Http404
 
 def error500(request):
     return render(request, '500.html', {
