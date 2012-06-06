@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+<title>{% block title %}{% endblock title %} - GWU Libraries</title>
 <link rel="icon" href="{{ STATIC_URL}}img/favicon.ico" type="image/x-icon" />
 
 {% block styles %}
@@ -25,6 +25,8 @@
 {% block javascript_extra %}
 {% endblock javascript_extra %}
 
+{% block link_extra %}
+{% endblock link_extra %}
 </head>
 <body>
 
@@ -32,7 +34,7 @@
 {% include "header.html" %}
 {% endblock header %}
 
-<div id="content-container" style="max-width:940px; margin:0 auto 0; height:400px;">
+<div id="content-container" style="max-width:940px; margin:0 auto 0;">
     <div id="content" style="margin: 0 .5em;">
 {% block content %}
         <h2>Example Page</h2>
