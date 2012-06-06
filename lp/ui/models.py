@@ -75,6 +75,56 @@ class BibText(models.Model):
         db_table = 'bib_text'
         managed = False
 
+class Item(models.Model):
+    item_id = models.IntegerField(primary_key=True, db_column='item_id')
+    perm_location = models.IntegerField()
+    temp_location = models.IntegerField()
+    item_type_id = models.IntegerField()
+    temp_item_type_id = models.IntegerField()
+    copy_number = models.IntegerField()
+    on_reserve = models.CharField(max_length=1)
+    reserve_charges = models.IntegerField()
+    pieces = models.IntegerField()
+    price = models.IntegerField()
+    spine_label = models.TextField(max_length=25)
+    historical_charges = models.IntegerField()
+    historical_browses = models.IntegerField()
+    recalls_placed = models.IntegerField()
+    holds_placed = models.IntegerField()
+    create_date = models.DateTimeField()
+    modify_date = models.DateTimeField()
+    create_operator_id = models.TextField(max_length=10)
+    modify_operator_id = models.TextField(max_length=10)
+    create_location_id = models.IntegerField()
+    modify_location_id = models.IntegerField()
+    item_sequence_number = models.IntegerField()
+    historical_bookings = models.IntegerField()
+    media_type_id = models.IntegerField()
+    short_loan_charges = models.IntegerField()
+    magnetic_media = models.CharField(max_length=1)
+    sensitize = models.CharField(max_length=1)
+
+    class Meta:
+        db_table = 'item'
+        managed = False
+
+class ItemStatus(models.Model):
+    item_id = models.IntegerField(primary_key=True, db_column='item_id')
+    item_status = models.IntegerField()
+    item_status_date = models.DateTimeField()
+
+    class Meta:
+        db_table = 'item_status'
+        managed = False
+
+class ItemStatusType(models.Model):
+    item_status_type = models.IntegerField(primary_key=True)
+    item_status_desc = models.TextField(max_length=25, null=False)
+
+    class Meta:
+        db_table = 'item_status_type'
+        managed = False
+
 class Library(models.Model):
     library_id = models.IntegerField(primary_key=True)
     library_name = models.TextField(max_length=50)
@@ -85,10 +135,43 @@ class Library(models.Model):
         db_table = 'library'
         managed = False
 
-notes = """
-item
-item_status
-item_status_type
-location
-mfhd_master
-"""
+class Location(models.Model):
+    location_id = models.IntegerField(primary_key=True, db_column='location_id')
+    location_code = models.TextField(max_length=10)
+    location_name = models.TextField(max_length=25)
+    location_display_name = models.TextField(max_length=60)
+    location_spine_label = models.TextField(max_length=25)
+    location_opac = models.CharField(max_length=1)
+    suppress_in_opac = models.CharField(max_length=1)
+    library_id = models.IntegerField()
+    mfhd_count = models.IntegerField()
+
+    class Meta:
+        db_table = 'location'
+        managed = False
+
+class MfhdMaster(models.Model):
+    mfhd_id = models.IntegerField(primary_key=True, db_column='mfhd_id')
+    location_id = models.IntegerField()
+    call_no_type = models.CharField(max_length=1)
+    normalized_call_no = models.TextField(max_length=300)
+    display_call_no = models.TextField(max_length=300)
+    suppress_in_opac = models.CharField(max_length=1)
+    source_module = models.CharField(max_length=1)
+    record_status = models.CharField(max_length=1)
+    record_type = models.CharField(max_length=1)
+    encoding_level = models.CharField(max_length=1)
+    field_007 = models.TextField(max_length=23)
+    field_008 = models.TextField(max_length=32)
+    create_date = models.DateTimeField()
+    update_date = models.DateTimeField()
+    export_ok = models.CharField(max_length=1)
+    export_ok_date = models.DateTimeField()
+    export_ok_opid = models.TextField(max_length=10)
+    export_ok_location_id = models.IntegerField()
+    export_date = models.DateTimeField()
+
+    class Meta:
+        db_table = 'mfhd_master'
+        managed = False
+
