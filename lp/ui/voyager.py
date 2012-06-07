@@ -1,6 +1,9 @@
 from django.db import connection, transaction
 
+from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc, clean_issn
+
 GW_LIBRARY_IDS = [7, 11, 18, 21]
+
 
 def _make_dict(cursor, first=False):
     desc = cursor.description
@@ -30,37 +33,25 @@ AND bib_master.suppress_in_opac='N'"""
     return _make_dict(cursor, first=True)
 
 
-def clean_isbn(isbn):
-    val, sep, remainder = isbn.partition(' ')
-    isbn = val.replace('-', '')
-    isbn = isbn.replace(':', '')
-    return isbn 
-
-def get_bibids_from_isbn(isbn, subset='gw'):
+def get_bibids_from_isbn(isbn):
     isbn = clean_isbn(isbn)
+    isbn_query = isbn + '%'
+    code = 'ISB3' if len(isbn) == 13 else '020A' 
     query = """
 SELECT bib_index.bib_id, bib_master.library_id, 
        library_name, normal_heading, display_heading 
 FROM bib_index, bib_master, library 
-WHERE bib_index.index_code=%s 
-AND bib_index.normal_heading like %s 
+WHERE bib_index.index_code = %s
+AND bib_index.normal_heading like %s
 AND bib_index.bib_id=bib_master.bib_id 
-AND bib_master.library_id=library.library_id""" 
-    code = 'ISB3' if len(isbn) == 13 else '020A' 
+AND bib_master.library_id=library.library_id"""
     cursor = connection.cursor()
-    cursor.execute(query, [code, isbn])
-    data = _make_dict(cursor)
-    if subset == 'gw':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] in GW_LIBRARY_IDS]
-    elif subset == 'other':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] not in GW_LIBRARY_IDS]
-    elif subset == 'all':
-        return [item['BIB_ID'] for item in data]
+    cursor.execute(query, (code, isbn_query))
+    results = _make_dict(cursor)
+    return [row['BIB_ID'] for row in results]
 
-def clean_issn(issn):
-    return issn.strip().replace(' ', '-')
 
-def get_bibids_from_issn(issn, subset='gw'):
+def get_bibids_from_issn(issn):
     issn = clean_issn(issn)
     query = """
 SELECT bib_index.bib_id, bib_master.library_id, library.library_name
@@ -71,49 +62,34 @@ AND bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id"""
     cursor = connection.cursor()
     cursor.execute(query, [issn])
-    data = _make_dict(cursor)
-    if subset == 'gw':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] in GW_LIBRARY_IDS]
-    elif subset == 'other':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] not in GW_LIBRARY_IDS]
-    elif subset == 'all':
-        return [item['BIB_ID'] for item in data]
+    results = _make_dict(cursor)
+    return [row['BIB_ID'] for row in results]
 
 
-def clean_oclc(oclc):
-    return ''.join([c for c in oclc if c.isdigit()])
-
-
-def get_bibids_from_oclc(oclc, subset='gw'):
+def get_bibids_from_oclc(oclc):
     oclc = clean_oclc(oclc)
     query = """
 SELECT bib_index.bib_id, bib_index.index_code, bib_index.normal_heading, 
        bib_index.display_heading, bib_master.library_id, library.library_name
 FROM bib_index, bib_master, library
 WHERE bib_index.index_code='035A'
-AND bib_index.normal_heading=%s
+AND bib_index.normal_heading = %s
 AND bib_master.bib_id=bib_index.bib_id
 AND bib_master.library_id=library.library_id"""
     cursor = connection.cursor()
     cursor.execute(query, [oclc])
-    data = _make_dict(cursor)
-    if subset == 'gw':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] in GW_LIBRARY_IDS]
-    elif subset == 'other':
-        return [item['BIB_ID'] for item in data if item['LIBRARY_ID'] not in GW_LIBRARY_IDS]
-    elif subset == 'all':
-        return [item['BIB_ID'] for item in data]
+    results = _make_dict(cursor)
+    return [row['BIB_ID'] for row in results]
 
 
 def get_holdings_data(bib_data):
-    bibids = [bib_data['BIB_ID']]
+    bibids = set()
     if bib_data['ISBN']:
-        bibids.extend(get_bibids_from_isbn(isbn=bib_data['ISBN'], subset='other'))
-    elif bib_data['ISSN']:
-        bibids.extend(get_bibids_from_issn(issn=bib_data['ISSN'], subset='other'))
-    elif bib_data['NETWORK_NUMBER']:
-        bibids.extend(get_bibids_from_oclc(oclc=bib_data['NETWORK_NUMBER'], 
-            subset='other'))
+        bibids.update(get_bibids_from_isbn(isbn=bib_data['ISBN']))
+    if bib_data['ISSN']:
+        bibids.update(get_bibids_from_issn(issn=bib_data['ISSN']))
+    if bib_data['NETWORK_NUMBER']:
+        bibids.update(get_bibids_from_oclc(oclc=bib_data['NETWORK_NUMBER']))
     holdings_list = []
     cursor = connection.cursor()
     for bibid in bibids:
@@ -177,34 +153,4 @@ ORDER BY PermLocation, TempLocation"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id])
     return _make_dict(cursor, first=True)
-
-def get_nongw_holdings_data(bib_data):
-    bibids = [bib_data['BIB_ID']]
-    if bib_data['ISBN']:
-        bibids.extend(get_bibids_from_isbn(isbn=bib_data['ISBN'], subset='other'))
-    elif bib_data['ISSN']:
-        bibids.extend(get_bibids_from_issn(issn=bib_data['ISSN'], subset='other'))
-    elif bib_data['NETWORK_NUMBER']:
-        bibids.extend(get_bibids_from_oclc(oclc=bib_data['NETWORK_NUMBER'], 
-            subset='other'))
-    holdings_list = []
-    cursor = connection.cursor()
-    for bibid in bibids:
-        query = """
-SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
-       mfhd_master.display_call_no, location.location_display_name,
-       library.library_name
-FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
-     location, library
-WHERE mfhd_master.location_id=location.location_id
-AND bib_mfhd.bib_id=%s
-AND mfhd_master.suppress_in_opac !='Y'
-AND location.library_id=library.library_id
-ORDER BY library.library_name"""
-        cursor.execute(query, [bibid])
-        holdings_list += _make_dict(cursor)
-    for holding in holdings_list:
-        holding.update({
-            'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID'])})
-    return holdings_list
 

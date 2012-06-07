@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load launchpad_extras %}
 
 {% block title %}{{ bib.TITLE }}{% endblock title %}
 
@@ -9,7 +10,9 @@
 {% block content %}
 
 <h1 class="title">{{ bib.TITLE }}</h1>
+{% if bib.AUTHOR %}
 <h2 class="author">{{ bib.AUTHOR }}</h2>
+{% endif %}
 {% if bib.EDITION %}
 <span class="edition">{{ bib.EDITION }}.</span>
 {% endif %}
@@ -61,14 +64,17 @@
 <h3>Debugging info</h3>
 
 <p>
-View JSON: <a href='{% url item_json bibid %}'>{% url item_json bibid %}</a>.
-<br />
-{% if bib.ISBN %}
-Try ISBN link: <a href='{% url isbn bib.ISBN|slice:":10" %}'>{% url isbn bib.ISBN|slice:":10" %}</a>.
+View JSON: <a href='{% url item_json bibid %}'>{% url item_json bibid %}</a>
+
+{% if bib.ISBN|clean_isbn %}
+ISBN: <a href='{% url isbn bib.ISBN|clean_isbn %}'>{% url isbn bib.ISBN|clean_isbn %}</a>
+{% endif %}
+{% if bib.ISSN|clean_issn %}
+ISSN: <a href='{% url issn bib.ISSN|clean_issn %}'>{% url issn bib.ISSN|clean_issn %}</a>.
 <br />
 {% endif %}
-{% if bib.NETWORK_NUMBER %}
-Try OCLC link: <a href='/oclc/{{ bib.NETWORK_NUMBER }}'>/oclc/{{ bib.NETWORK_NUMBER }}</a>.
+{% if bib.NETWORK_NUMBER|clean_oclc %}
+OCLC: <a href='{% url oclc bib.NETWORK_NUMBER|clean_oclc %}'>{% url oclc bib.NETWORK_NUMBER|clean_oclc %}</a>.
 <br />
 {% endif %}
 </p>
