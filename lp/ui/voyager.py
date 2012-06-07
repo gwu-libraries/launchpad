@@ -104,7 +104,7 @@ AND bib_master.library_id=library.library_id"""
         return [item['BIB_ID'] for item in data]
 
 
-def get_holdings_data(bib_data):
+def get_holdings_data(bib_data, gw=True):
     bibids = [bib_data['BIB_ID']]
     if bib_data['ISBN']:
         bibids.extend(get_bibids_from_isbn(isbn=bib_data['ISBN'], subset='other'))
@@ -130,9 +130,14 @@ ORDER BY library.library_name"""
         cursor.execute(query, [bibid])
         holdings_list += _make_dict(cursor)
     for holding in holdings_list:
-        holding.update({
-            'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
-            'AVAILABILITY': get_availability(holding['MFHD_ID'])})
+	if gw:
+        	holding.update({
+            		'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
+            		'AVAILABILITY': get_availability(holding['MFHD_ID'])})
+	else:
+		holding.update({
+                        'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID'])})
+
     return holdings_list
 
 
@@ -176,34 +181,4 @@ ORDER BY PermLocation, TempLocation"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id])
     return _make_dict(cursor, first=True)
-
-def get_nongw_holdings_data(bib_data):
-    bibids = [bib_data['BIB_ID']]
-    if bib_data['ISBN']:
-        bibids.extend(get_bibids_from_isbn(isbn=bib_data['ISBN'], subset='other'))
-    elif bib_data['ISSN']:
-        bibids.extend(get_bibids_from_issn(issn=bib_data['ISSN'], subset='other'))
-    elif bib_data['NETWORK_NUMBER']:
-        bibids.extend(get_bibids_from_oclc(oclc=bib_data['NETWORK_NUMBER'], 
-            subset='other'))
-    holdings_list = []
-    cursor = connection.cursor()
-    for bibid in bibids:
-        query = """
-SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
-       mfhd_master.display_call_no, location.location_display_name,
-       library.library_name
-FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
-     location, library
-WHERE mfhd_master.location_id=location.location_id
-AND bib_mfhd.bib_id=%s
-AND mfhd_master.suppress_in_opac !='Y'
-AND location.library_id=library.library_id
-ORDER BY library.library_name"""
-        cursor.execute(query, [bibid])
-        holdings_list += _make_dict(cursor)
-    for holding in holdings_list:
-        holding.update({
-            'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID'])})
-    return holdings_list
 

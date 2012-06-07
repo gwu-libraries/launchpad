@@ -16,7 +16,7 @@ def home(request):
 def item(request, bibid):
     bib = voyager.get_bib_data(bibid)
     if bib['LIBRARY_NAME'] in NON_GW_SCHOOLS:
-    	holdings = voyager.get_nongw_holdings_data(bib)
+    	holdings = voyager.get_holdings_data(bib,gw=False)
     else:
 	holdings = voyager.get_holdings_data(bib)
     return render(request, 'item.html', {
