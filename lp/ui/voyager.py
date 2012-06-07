@@ -35,8 +35,7 @@ AND bib_master.suppress_in_opac='N'"""
 
 def get_bibids_from_isbn(isbn):
     isbn = clean_isbn(isbn)
-    isbn_query = isbn + '%'
-    code = 'ISB3' if len(isbn) == 13 else '020A' 
+    code = 'ISB3' if len(isbn) == 13 else '020N' 
     query = """
 SELECT bib_index.bib_id, bib_master.library_id, 
        library_name, normal_heading, display_heading 
@@ -46,7 +45,7 @@ AND bib_index.normal_heading like %s
 AND bib_index.bib_id=bib_master.bib_id 
 AND bib_master.library_id=library.library_id"""
     cursor = connection.cursor()
-    cursor.execute(query, (code, isbn_query))
+    cursor.execute(query, (code, isbn))
     results = _make_dict(cursor)
     return [row['BIB_ID'] for row in results]
 
