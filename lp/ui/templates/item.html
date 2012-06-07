@@ -22,7 +22,8 @@
 {% endif %}
 
 <p>
-<span class="catlink">View detailed description of this title in the <a href="{{ link }}" target='newwin'> {{ bib.LIBRARY_NAME }} catalog</a></span>
+
+<span class="catlink">View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>Aladin Catalog</a></span>
 </p>
 
 
@@ -42,7 +43,8 @@
             <td>{{ holding.DISPLAY_CALL_NO }}</td>
 	    {% if holding.LIBRARY_NAME in nongw %}
 <td>
-<span class="catlink">View detailed description of this title in the <a href="{{ link }}" target='newwin'> {{ holding.LIBRARY_NAME }} catalog</a></span>
+<span class="catlink">View detailed description of this title in the <a href="{{ link }}" target='newwin'> {{ bib.LIBRARY_NAME }} catalog</a></span>
+
 </td>
 {%else%}
 	{%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}

@@ -113,7 +113,6 @@ def get_holdings_data(bib_data):
     elif bib_data['NETWORK_NUMBER']:
         bibids.extend(get_bibids_from_oclc(oclc=bib_data['NETWORK_NUMBER'], 
             subset='other'))
-    print 'bibids:', bibids
     holdings_list = []
     cursor = connection.cursor()
     for bibid in bibids:
