@@ -58,7 +58,7 @@ AND bib_master.library_id=library.library_id"""
         return [item['BIB_ID'] for item in data]
 
 def clean_issn(issn):
-    return issn.replace(' ', '-')
+    return issn.strip().replace(' ', '-')
 
 def get_bibids_from_issn(issn, subset='gw'):
     issn = clean_issn(issn)
@@ -81,7 +81,8 @@ AND bib_master.library_id=library.library_id"""
 
 
 def clean_oclc(oclc):
-    return oclc[-10:]
+    return ''.join([c for c in oclc if c.isdigit()])
+
 
 def get_bibids_from_oclc(oclc, subset='gw'):
     oclc = clean_oclc(oclc)
@@ -113,7 +114,6 @@ def get_holdings_data(bib_data):
     elif bib_data['NETWORK_NUMBER']:
         bibids.extend(get_bibids_from_oclc(oclc=bib_data['NETWORK_NUMBER'], 
             subset='other'))
-    print 'bibids:', bibids
     holdings_list = []
     cursor = connection.cursor()
     for bibid in bibids:
