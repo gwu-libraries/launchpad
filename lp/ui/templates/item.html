@@ -13,6 +13,10 @@
 {% if bib.AUTHOR %}
 <h2 class="author">{{ bib.AUTHOR }}</h2>
 {% endif %}
+
+{% if bib.LANGUAGE_DISPLAY %}
+<span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
+{% endif %}
 {% if bib.EDITION %}
 <span class="edition">{{ bib.EDITION }}.</span>
 {% endif %}

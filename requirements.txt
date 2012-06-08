@@ -1,4 +1,6 @@
 django
-mysql-python
+ply
+pycountry
 pytz
+git+https://github.com/asl2/PyZ3950.git
 cx_Oracle

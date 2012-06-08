@@ -1,7 +1,9 @@
+import pycountry 
+from PyZ3950 import zoom
+
 from django.db import connection, transaction
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc, clean_issn
-from PyZ3950 import zoom
 
 
 GW_LIBRARY_IDS = [7, 11, 18, 21]
@@ -16,7 +18,7 @@ def _make_dict(cursor, first=False):
     if first:
         if len(mapped) > 0:
             return mapped[0]
-        return []
+        return {}
     return mapped
 
 
@@ -32,7 +34,13 @@ AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
     cursor.execute(query, [bibid, bibid])
-    return _make_dict(cursor, first=True)
+    bib = _make_dict(cursor, first=True)
+    try:
+        language = pycountry.languages.get(bibliographic=bib['LANGUAGE'])
+        bib['LANGUAGE_DISPLAY'] = language.name
+    except:
+        bib['LANGUAGE_DISPLAY'] = ''
+    return bib
 
 
 def get_bibids_from_isbn(isbn):
