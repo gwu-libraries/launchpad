@@ -154,6 +154,15 @@ LOGGING = {
     }
 }
 
+Z3950_SERVERS = {
+    'LIBRARY_ID': {
+        'SERVER_ADDRESS': '',
+        'SERVER_PORT': '',
+        'DATABASE_NAME': '',
+        'PREFERRED_RECORD_SYNTAX': '',
+    }
+}
+
 # Be sure to create your own 'local_settings.py' file as described in README
 try:
     from local_settings import *

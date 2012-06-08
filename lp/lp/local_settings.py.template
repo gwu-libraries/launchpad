@@ -22,3 +22,13 @@ DATABASES = {
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
 )
+
+Z3950_SERVERS = {
+    'LIBRARY_ID': {
+        'SERVER_ADDRESS': '',
+        'SERVER_PORT': '',
+        'DATABASE_NAME': '',
+        'PREFERRED_RECORD_SYNTAX': '',
+    }
+}
+

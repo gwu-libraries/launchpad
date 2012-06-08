@@ -1,6 +1,7 @@
 import pycountry 
 from PyZ3950 import zoom
 
+from django.conf import settings
 from django.db import connection, transaction
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc, clean_issn
@@ -163,14 +164,17 @@ ORDER BY PermLocation, TempLocation"""
     cursor.execute(query, [mfhd_id])
     return _make_dict(cursor, first=True)
 
+def _get_z3950_connection(server):
+    conn = zoom.Connection(server['SERVER_ADDRESS'], server['SERVER_PORT'])
+    conn.databaseName = server['DATABASE_NAME']
+    conn.preferredRecordSyntax = server['PREFERRED_RECORD_SYNTAX']
+    return conn
 
 def _get_gt_holdings(query):
     results = []
     values = status = location = callno = ''
     arow= {}
-    conn = zoom.Connection('141.161.93.5', 210)
-    conn.databaseName = 'INNOPAC'
-    conn.preferredRecordSyntax = 'OPAC'
+    conn = _get_z3950_connection(settings.Z3950_SERVERS['GT'])
     results = []
     res = conn.search(query)
     for r in res:
@@ -200,13 +204,10 @@ def get_z3950_holdings(id, school, id_type):
         results = []
         values = status = location = callno = ''
         arow= {}
-        conn = zoom.Connection('infosparc.gmu.edu', 7090)
-        conn.databaseName = 'VOYAGER'
-        conn.preferredRecordSyntax = 'OPAC'
+        conn = _get_z3950_connection(settings.Z3950_SERVERS['GM'])
         query = zoom.Query('PQF', '@attr 1=12 %s' % id)
         res = conn.search(query)
         for r in res:
-            print 'rec:', r
             values = str(r)
             lines = values.split('\n')
             for line in lines:

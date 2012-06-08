@@ -116,6 +116,8 @@ the path according to your installation of oracle.
 	Change database login and password and any other parameters you
 	wish to change.
 
+        Define one or more Z39.50 servers if needed under Z3950_SERVERS.
+
         NOTE: If you are deploying to production, set DEBUG = False.
 
 2. Edit wsgi file
