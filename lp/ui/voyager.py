@@ -1,6 +1,8 @@
 from django.db import connection, transaction
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc, clean_issn
+from PyZ3950 import zoom
+
 
 GW_LIBRARY_IDS = [7, 11, 18, 21]
 
@@ -152,4 +154,139 @@ ORDER BY PermLocation, TempLocation"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id])
     return _make_dict(cursor, first=True)
+
+
+def get_z3950_holdings(id, school, id_type):
+    if school=='GM':
+        results = []
+        conn = zoom.Connection ('infosparc.gmu.edu', 7090)
+        conn.databaseName = 'VOYAGER'
+        conn.preferredRecordSyntax = 'OPAC'
+        query = zoom.Query ('PQF', '@attr 1=12 ' + id)
+        res = conn.search (query)
+        values = ''
+        status=''
+        location=''
+        callno=''
+        results = []
+        arow={}
+        for r in res:
+            values = str(r)
+            lines = values.split('\n')
+            for line in lines:
+                ind = line.find('availableNow')
+                if ind!=-1:
+                    ind = line.find(':')
+                    status=line[ind+2:]
+                ind = line.find('callNumber')
+                if ind !=-1:
+                    ind = line.find(':')
+                    callno=line[ind+2:]
+                ind = line.find('localLocation')
+                if ind!= -1:
+                    ind = line.find(':')
+                    location=line[ind+2:]
+            arow = {'status':status, 'location':location, 'callno':callno}
+            results.append(arow)
+        conn.close ()
+        return results
+    elif school=='GT' and id_type=='isbn':
+        results = []
+        conn = zoom.Connection ('141.161.93.5', 210)
+        conn.databaseName = 'INNOPAC'
+        conn.preferredRecordSyntax = 'OPAC'
+        query = zoom.Query ('PQF', '@attr 1=7 ' + id)
+        res = conn.search (query)
+        values = ''
+        status=''
+        location=''
+        callno=''
+        results = []
+        arow={}
+        for r in res:
+            values = str(r)
+            lines = values.split('\n')
+	    for line in lines:
+                ind = line.find('publicNote')
+                if ind!=-1:
+                    ind = line.find(':')
+                    status=line[ind+2:]
+                ind = line.find('callNumber')
+                if ind !=-1:
+                    ind = line.find(':')
+                    callno=line[ind+2:]
+                ind = line.find('localLocation')
+                if ind!= -1:
+                    ind = line.find(':')
+                    location=line[ind+2:]
+            arow = {'status':status, 'location':location, 'callno':callno}
+            results.append(arow)
+        conn.close ()
+        return results
+    elif school=='GT' and id_type=='issn':
+        results = []
+        conn = zoom.Connection ('141.161.93.5', 210)
+        conn.databaseName = 'INNOPAC'
+        conn.preferredRecordSyntax = 'OPAC'
+        query = zoom.Query ('PQF', '@attr 1=8 ' + id)
+        res = conn.search (query)
+        values = ''
+        status=''
+        location=''
+        callno=''
+        results = []
+        arow={}
+        for r in res:
+            values = str(r)
+            lines = values.split('\n')
+            for line in lines:
+                ind = line.find('publicNote')
+                if ind!=-1:
+                    ind = line.find(':')
+                    status=line[ind+2:]
+                ind = line.find('callNumber')
+                if ind !=-1:
+                    ind = line.find(':')
+                    callno=line[ind+2:]
+                ind = line.find('localLocation')
+                if ind!= -1:
+                    ind = line.find(':')
+                    location=line[ind+2:]
+            arow = {'status':status, 'location':location, 'callno':callno}
+            results.append(arow)
+        conn.close ()
+    elif school=='GT' and id_type=='oclc':
+        results = []
+        conn = zoom.Connection ('141.161.93.5', 210)
+        conn.databaseName = 'INNOPAC'
+        conn.preferredRecordSyntax = 'OPAC'
+        query = zoom.Query ('PQF', '@attr 1=1007 ' + id)
+        res = conn.search (query)
+        values = ''
+        status=''
+	location=''
+        callno=''
+        results = []
+        arow={}
+        for r in res:
+            values = str(r)
+            lines = values.split('\n')
+            for line in lines:
+                ind = line.find('publicNote')
+                if ind!=-1:
+                    ind = line.find(':')
+                    status=line[ind+2:]
+                ind = line.find('callNumber')
+                if ind !=-1:
+                    ind = line.find(':')
+                    callno=line[ind+2:]
+                ind = line.find('localLocation')
+                if ind!= -1:
+                    ind = line.find(':')
+                    location=line[ind+2:]
+            arow = {'status':status, 'location':location, 'callno':callno}
+            results.append(arow)
+        conn.close ()
+        return results
+
 
