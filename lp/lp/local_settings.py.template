@@ -32,3 +32,26 @@ Z3950_SERVERS = {
     }
 }
 
+# Sorting Options
+
+# Sorting by library
+# Use the following codes
+# AU -- American University
+# AL -- AU Washington College of Law
+# CU -- Catholic University
+# DC -- University of District of Columbia
+# GA -- Gallaudet University
+# GM -- George Mason University
+# GT -- Georgetown University
+# DA -- Georgetown Dahlgren Health Sciences
+# GW -- George Washington University
+# HI -- George Washington Himmelfarb Health Sciences
+# JB -- George Washington Jacob Burns Law
+# HU -- Howard University
+
+# Preferred library for bib record and top of the holdings list
+PREF_LIB = ''  # ex.: 'GW'
+
+# Libraries that should be put at the bottom of the holdings list
+BOTTOM_LIBS = [] # Optional, can be empty or used for libraries with restricted access, etc.
+

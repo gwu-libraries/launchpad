@@ -3,7 +3,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 
-from ui import voyager
+from ui import voyager, sort
 
 NON_GW_SCHOOLS = ['GT', 'DA', 'GM', 'HU', 'HS', 'HL', 'AL', 'JB', 'HI']
 
@@ -18,6 +18,7 @@ def item(request, bibid):
     if not bib:
         raise Http404
     holdings = voyager.get_holdings_data(bib)
+    holdings = sort.libsort(holdings)
     return render(request, 'item.html', {
         'bibid': bibid,
         'bib': bib, 
