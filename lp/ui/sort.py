@@ -31,3 +31,13 @@ def libsort_top_only(holdings_list):
         else:
             remainder.append(holding)
     return top + remainder
+
+
+def availsort(holdings_list):
+    top, remainder = [],[]
+    for holding in holdings_list:
+        if holding['AVAILABILITY'] and holding['AVAILABILITY']['ITEM_STATUS'] == 1:
+            top.append(holding)
+        else:
+            remainder.append(holding)
+    return top + remainder
