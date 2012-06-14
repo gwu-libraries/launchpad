@@ -48,6 +48,12 @@ Z3950_SERVERS = {
 # HI -- George Washington Himmelfarb Health Sciences
 # JB -- George Washington Jacob Burns Law
 # HU -- Howard University
+# HL -- Howard Law
+# HS -- Howard Health Sciences
+# MU -- Marymount University
+# TR -- Trinity College
+# E-Resources -- Electronic Resources
+# E-GovDoc -- Electronic Government Documents
 
 # Preferred library for bib record and top of the holdings list
 PREF_LIB = ''  # ex.: 'GW'
