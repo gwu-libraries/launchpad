@@ -200,6 +200,7 @@ def _get_gt_holdings(query):
 
 
 def get_z3950_holdings(id, school, id_type):
+    holding_found = False
     if school == 'GM':
         results = []
         values = status = location = callno = ''
@@ -218,13 +219,18 @@ def get_z3950_holdings(id, school, id_type):
                 ind = line.find('callNumber')
                 if ind != -1:
                     ind = line.find(':')
-                    callno = line[ind+2:]
+		    ind1 = line.find('\\')
+                    callno = line[ind+2:ind1]
                 ind = line.find('localLocation')
                 if ind!= -1:
                     ind = line.find(':')
-                    location = line[ind+2:]
-            arow = {'status':status, 'location':location, 'callno':callno}
-            results.append(arow)
+		    ind1 = line.find('\\')
+                    location = line[ind+2:ind1]
+		    holding_found = True
+            	arow = {'status':status, 'location':location, 'callno':callno}
+		if holding_found == True:
+            	    results.append(arow)
+		holding_found = False
         conn.close()
         return results
     elif school=='GT':
@@ -235,4 +241,16 @@ def get_z3950_holdings(id, school, id_type):
         elif id_type == 'oclc':
             query = zoom.Query('PQF', '@attr 1=1007 %s' % id)
         return _get_gt_holdings(query)
+
+def get_gmbib_from_gwbib(bibid):
+    query = """
+SELECT bib_index.normal_heading
+FROM bib_index 
+WHERE bib_index.bib_id = %s
+AND bib_index.index_code ='035A'
+AND bib_index.normal_heading=bib_index.display_heading"""
+    cursor = connection.cursor()
+    cursor.execute(query, [bibid])
+    results = _make_dict(cursor)
+    return [row['NORMAL_HEADING'] for row in results]
 
