@@ -34,7 +34,7 @@ def _date_handler(obj):
 def item_json(request, bibid):
     bib_data = voyager.get_bib_data(bibid)
     bib_data['holdings'] = voyager.get_holdings_data(bib_data)
-    return HttpResponse(json.dumps(bib_data, default=_date_handler), 
+    return HttpResponse(json.dumps(bib_data, default=_date_handler, indent=2), 
         content_type='application/json')
 
 def isbn(request, isbn):
