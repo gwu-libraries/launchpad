@@ -227,8 +227,8 @@ def get_z3950_holdings(id, school, id_type):
 		    ind1 = line.find('\\')
                     location = line[ind+2:ind1]
 		    holding_found = True
-            	arow = {'status':status, 'location':location, 'callno':callno}
 		if holding_found == True:
+		    arow = {'status':status, 'location':location, 'callno':callno}
             	    results.append(arow)
 		holding_found = False
         conn.close()
