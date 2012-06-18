@@ -36,3 +36,4 @@ ENV
 # Django settings
 *local_settings.py
 *wsgi.py
+PyZ3950_parsetab.py[c]
