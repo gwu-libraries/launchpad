@@ -5,6 +5,7 @@
 html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
 body { margin: 0; font-size: 100%; font-family: Arial, sans-serif; line-height: 1.231; }
+/* optionally set page background color inside body tag: "background-color: #ccc" etc  */
 
 p, li {
 	line-height: 1.125em; /* 18px; */
@@ -12,7 +13,7 @@ p, li {
 	color: #555;
 }
 
-h2 {
+h1, h2 {
 	font-size: 1.25em; /* 20px; */
 	font-family: Georgia, serif;
 	color: #555;
@@ -50,11 +51,36 @@ img, object, embed {
   object-fit: contain;
 }
 
+/* Correct font-size not inheriting in all browsers, Remove margins in FF3/4 S5 Chrome, Define consistent vertical alignment display in all browsers */
+button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
+
+/* This is the new Libraires "blue" submit button */
+input[type=submit], button {
+    border-color: #4081AF #4081AF #20559A;
+    border-style: solid;
+    border-width: 1px;
+    color: white;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 0 2px rgba(255, 255, 255, 0.3) inset, 0 1px 2px rgba(0, 0, 0, 0.29);
+    text-decoration: none;
+	font-size: 1em;
+	padding: .3em .4em;
+	background: -moz-linear-gradient(center top , #1F65A0 20%, #4282B1 100%); /* mozilla */
+	/*background-color: #4282B1;*/
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(20%, #1F65A0), color-stop(100%, #4282B1)); /* Safari 4+, Chrome 2+ */  	
+    background: -o-linear-gradient(#1F65A0, #4282B1); /* Opera 11.10 */  
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1F65A0', endColorstr='#4282B1'); /* IE6 & IE7 */  
+    ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#1F65A0', endColorstr='#4282B1')"; /* IE8+ */  
+    background: linear-gradient(#1F65A0, #4282B1); /* the standard */ 
+	-moz-border-radius: .4em;
+	-webkit-border-radius: .4em;
+	border-radius: .4em;	
+}
+
 #libheader-container {
-	width:100%; 
+	width: 100%; 
 	margin-bottom: 1em; 
 	height: 2em; 
-	padding: 0 0 .3em; 
+	padding: 0 0 .3em;
 	background-color: #03314b;
 	background-image: url(/static/img/bg-local-nav-bottom.png);
 	background-position: bottom;
@@ -63,8 +89,9 @@ img, object, embed {
 }
 
 #libheader {
+	width: 100%;
 	max-width: 940px; 
-	min-width: 320px; /* change to 700px if removing responsive or the IE stylesheet */
+	min-width: 320px; /* change to 720px if removing responsive or the IE stylesheet */
 	margin: 0 auto 0; 
 	height: 2em; 
 	color: #fff; 
@@ -89,26 +116,27 @@ img, object, embed {
 }
 
 #libfooter {
-	max-width:940px;
-	min-width: 320px; /* change to 700px if removing responsive or the IE stylesheet */
-	margin:1em auto 0; 
-	color:#fff; 
-	padding:0; 
+	width: 100%;
+	max-width: 940px;
+	min-width: 320px; /* change to 720px if removing responsive or the IE stylesheet */
+	margin: 1em auto 0; 
+	color: #fff; 
+	padding: 0; 
 	white-space: nowrap; 
-	overflow:hidden;
+	overflow: hidden;
 }
 
 #libfooter a {color:#fff; text-decoration:none;}
 #libfooter a:visited {color:#fff;}
 #libfooter a:hover {color:#fff; text-decoration:underline;} 
 
-/* responsive class to drop the gw logo when window is under 700px  */
-.hide-lo {
-  display: block;
-  visibility: visible;  
-}
-
-/* this is set at 720 to leave room for links, adjust as needed if your links are shorter/longer */
-@media screen and (max-width: 720px) {
+/* responsive class to drop the gw logo when window is 720px or below (mobile-first)  */
   .hide-lo {display:none; visibility:hidden;}
+
+/* this is set at 721 to leave room for links, adjust as needed if your links are shorter/longer */
+@media screen and (min-width: 721px) {
+	.hide-lo {
+		display: block;
+		visibility: visible;  
+	}
 }
