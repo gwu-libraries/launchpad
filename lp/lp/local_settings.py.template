@@ -56,8 +56,10 @@ Z3950_SERVERS = {
 # E-GovDoc -- Electronic Government Documents
 
 # Preferred library for bib record and top of the holdings list
-PREF_LIB = ''  # ex.: 'GW'
+# ex.: 'GW'
+PREF_LIB = ''  
 
 # Libraries that should be put at the bottom of the holdings list
-BOTTOM_LIBS = [] # Optional, can be empty or used for libraries with restricted access, etc.
+# Optional, can be empty or used for libraries with restricted access, etc.
+BOTTOM_LIBS = [] 
 
