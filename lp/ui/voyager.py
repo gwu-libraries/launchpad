@@ -94,11 +94,11 @@ AND bib_master.library_id=library.library_id"""
 
 def get_holdings_data(bib_data):
     bibids = set()
-    if bib_data['ISBN']:
+    if bib_data.get('ISBN', ''):
         bibids.update(get_bibids_from_isbn(isbn=bib_data['ISBN']))
-    if bib_data['ISSN']:
+    if bib_data.get('ISSN', '':
         bibids.update(get_bibids_from_issn(issn=bib_data['ISSN']))
-    if bib_data['NETWORK_NUMBER']:
+    if bib_data.get('NETWORK_NUMBER', ''):
         bibids.update(get_bibids_from_oclc(oclc=bib_data['NETWORK_NUMBER']))
     holdings_list = []
     cursor = connection.cursor()
