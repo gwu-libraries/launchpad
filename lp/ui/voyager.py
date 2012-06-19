@@ -27,7 +27,7 @@ def get_bib_data(bibid):
     query = """
 SELECT bib_text.bib_id, title, author, edition, isbn, issn, network_number, 
        publisher, pub_place, imprint, bib_format, language, library_name, 
-       RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) as LINK 
+       RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) as LINK
 FROM bib_text, bib_master, library
 WHERE bib_text.bib_id=%s
 AND bib_text.bib_id=bib_master.bib_id

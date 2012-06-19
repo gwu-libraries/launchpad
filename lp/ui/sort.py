@@ -41,3 +41,19 @@ def availsort(holdings_list):
         else:
             remainder.append(holding)
     return top + remainder
+
+
+def _is_electronic(holding):
+    if holding['ELECTRONIC_DATA']['LINK856U']:
+        return True
+    return False
+
+
+def elecsort(holdings_list):
+    top, remainder = [],[]
+    for holding in holdings_list:
+        if _is_electronic(holding):
+            top.append(holding)
+        else:
+            remainder.append(holding)
+    return top + remainder
