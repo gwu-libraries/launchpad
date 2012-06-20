@@ -38,6 +38,9 @@ AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
     cursor.execute(query, [bibid, bibid, bibid])
     bib = _make_dict(cursor, first=True)
+    # if bib is empty, there's no match -- return immediately
+    if not bib:
+        return None
     # split up the 880 (CJK) fields/values if available
     if bib.get('CJK_INFO', ''):
         bib['CJK_INFO'] = cjk_info(bib['CJK_INFO'])

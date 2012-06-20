@@ -26,7 +26,7 @@ def item(request, bibid):
         'debug': settings.DEBUG,
         'holdings': holdings,
         'nongw': NON_GW_SCHOOLS,
-        'link': bib['LINK'][9:]
+        'link': bib.get('LINK', '')[9:]
         })
 
 def _date_handler(obj):
