@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load launchpad_extras %}
 
-{% block title %}{{ bib.TITLE }}{% endblock title %}
+{% block title %}{% if bib.CJK_INFO.TITLE %}{{ bib.CJK_INFO.TITLE }}{% else %}{{ bib.TITLE }}{% endif %}{% endblock title %}
 
 {% block link_extra %}
 <link rel='alternate' type='application/json' href='{% url item_json bibid %}' />
@@ -9,9 +9,22 @@
 
 {% block content %}
 
-<h1 class="title">{{ bib.TITLE }}</h1>
+<h1 class="title">
+{% if bib.CJK_INFO.TITLE %}
+    {{ bib.CJK_INFO.TITLE }} <br />
+{% endif %}
+{{ bib.TITLE }}
+</h1>
+
+{% if bib.AUTHOR or bib.CJK_INFO.AUTHOR %}
+<h2 class="author">
+{% if bib.CJK_INFO.AUTHOR %}
+    {{ bib.CJK_INFO.AUTHOR }} <br />
+{% endif %}
 {% if bib.AUTHOR %}
-<h2 class="author">{{ bib.AUTHOR }}</h2>
+    {{ bib.AUTHOR }}
+{% endif %}
+</h2>
 {% endif %}
 
 {% if bib.LANGUAGE_DISPLAY %}
@@ -20,7 +33,13 @@
 {% if bib.EDITION %}
 <span class="edition">{{ bib.EDITION }}.</span>
 {% endif %}
-<span class="imprint">{{ bib.IMPRINT }}</span><br />
+<span class="imprint">
+{% if bib.CJK_INFO.IMPRINT %}
+    {{ bib.CJK_INFO.IMPRINT }} <br />
+{% endif %}
+    {{ bib.IMPRINT }}
+</span><br />
+
 {% if bib.ISBN %}
 <span class="isbn-label">ISBN </span><span class="isbn">{{ bib.ISBN }}</span><br/>
 {% endif %}

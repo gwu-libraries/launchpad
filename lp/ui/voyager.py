@@ -4,6 +4,7 @@ from PyZ3950 import zoom
 from django.conf import settings
 from django.db import connection, transaction
 
+from ui.templatetags.launchpad_extras import cjk_info
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc, clean_issn
 
 
@@ -27,15 +28,19 @@ def get_bib_data(bibid):
     query = """
 SELECT bib_text.bib_id, title, author, edition, isbn, issn, network_number, 
        publisher, pub_place, imprint, bib_format, language, library_name, 
-       RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) as LINK 
+       RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) as LINK,
+       wrlcdb.GetAllBibTag(%s, '880', 1) as CJK_INFO
 FROM bib_text, bib_master, library
 WHERE bib_text.bib_id=%s
 AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
-    cursor.execute(query, [bibid, bibid])
+    cursor.execute(query, [bibid, bibid, bibid])
     bib = _make_dict(cursor, first=True)
+    # split up the 880 (CJK) fields/values if available
+    if bib.get('CJK_INFO', ''):
+        bib['CJK_INFO'] = cjk_info(bib['CJK_INFO'])
     try:
         language = pycountry.languages.get(bibliographic=bib['LANGUAGE'])
         bib['LANGUAGE_DISPLAY'] = language.name

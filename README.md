@@ -98,9 +98,19 @@ the path according to your installation of oracle.
 
         source ENV/bin/activate
 
-10. Install django, cx_Oracle, and other python dependencies
+6. Install django, cx_Oracle, and other python dependencies
 
         pip install -r requirements.txt
+
+7. Modify django to allow us to connect to Oracle with the required encoding.  In ```ENV/lib/python2.6/site-packages/django/db/backends/oracle/base.py```,
+modify line 35 from this:
+
+        ('NLS_LANG', '.UTF8')
+
+    to this:
+
+        ('NLS_LANG', '.US7ASCII')
+        
 
 
 - - -
