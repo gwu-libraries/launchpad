@@ -67,19 +67,12 @@
         <tr>
             <td>{{ holding.LOCATION_DISPLAY_NAME }}</td>
             <td>{{ holding.DISPLAY_CALL_NO }}</td>
-	        {% if holding.LIBRARY_NAME in nongw %}
-            <td>
-                <span class="catlink">View detailed description of this title in the <a href="{{ link }}" target='newwin'> {{ bib.LIBRARY_NAME }} catalog</a></span>
-            </td>
-            {%else%}
-	            {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
+	        {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
 		    <td>
                 <FONT COLOR="green">Available </FONT></td>
 	            {%else%}
             <td>{{ holding.AVAILABILITY.ITEM_STATUS_DESC }}</td>
 	            {%endif%}
-            {%endif%}
-            <td>
             {% if holding.ELIGIBLE %}
                 <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg' />
             {% endif %}
