@@ -223,11 +223,13 @@ def _get_gt_holdings(query,query_type,bib):
             ind = line.find('callNumber')
             if ind != -1:
                 ind = line.find(':')
-                callno = line[ind+2:]
+		chars = len(line)
+                callno = line[ind+3:chars-1]
             ind = line.find('localLocation')
             if ind != -1:
                 ind = line.find(':')
-                location = 'GT '+ line[ind+2:]
+		chars = len(line)
+                location = 'GT '+ line[ind+3:chars-1]
         arow = {'status':status, 'location':location, 'callno':callno,'LINK':url,'MESSAGE':msg}
         results.append(arow)
     conn.close()
@@ -283,12 +285,12 @@ def get_z3950_holdings(id, school, id_type, query_type):
                     if ind != -1:
                     	ind = line.find(':')
 		    	ind1 = line.find('\\')
-                    	callno = line[ind+2:ind1]
+                    	callno = line[ind+3:ind1]
                     ind = line.find('localLocation')
                     if ind!= -1:
                     	ind = line.find(':')
 		     	ind1 = line.find('\\')
-                    	location = 'GM ' + line[ind+2:ind1]
+                    	location = 'GM ' + line[ind+3:ind1]
 		    	holding_found = True
 		    if holding_found == True:
 		    	arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
