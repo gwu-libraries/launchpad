@@ -29,14 +29,15 @@ def get_bib_data(bibid):
 SELECT bib_text.bib_id, title, author, edition, isbn, issn, network_number, 
        publisher, pub_place, imprint, bib_format, language, library_name, 
        RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) as LINK,
-       wrlcdb.GetAllBibTag(%s, '880', 1) as CJK_INFO
+       wrlcdb.GetAllBibTag(%s, '880', 1) as CJK_INFO,
+       RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','z',1)) as MESSAGE 
 FROM bib_text, bib_master, library
 WHERE bib_text.bib_id=%s
 AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
-    cursor.execute(query, [bibid, bibid, bibid])
+    cursor.execute(query, [bibid, bibid, bibid, bibid])
     bib = _make_dict(cursor, first=True)
     # if bib is empty, there's no match -- return immediately
     if not bib:
@@ -180,16 +181,27 @@ def _get_z3950_connection(server):
 
 def _get_gt_holdings(query):
     results = []
-    values = status = location = callno = ''
+    values = status = location = callno = url = msg = ''
     arow= {}
     conn = _get_z3950_connection(settings.Z3950_SERVERS['GT'])
-    results = []
     res = conn.search(query)
     for r in res:
         values = str(r)
+	print values
         lines = values.split('\n')
         for line in lines:
-            ind = line.find('publicNote')
+	    ind = line.find('856 4')
+            if ind !=-1:
+                ind = line.find('$u')
+                ind1 = line.find(' ',ind)
+                url = line[ind+2:ind1]
+                print url
+		ind = line.find('$z')
+                ind1 = line.find('$u',ind)
+                msg = line[ind+2:ind1]
+                print msg
+
+	    ind = line.find('publicNote')
             if ind != -1:
                 ind = line.find(':')
                 status = line[ind+2:]
@@ -201,7 +213,7 @@ def _get_gt_holdings(query):
             if ind != -1:
                 ind = line.find(':')
                 location = line[ind+2:]
-        arow = {'status':status, 'location':location, 'callno':callno}
+        arow = {'status':status, 'location':location, 'callno':callno,'LINK':url,'MESSAGE':msg}
         results.append(arow)
     conn.close()
     return results
@@ -211,37 +223,63 @@ def get_z3950_holdings(id, school, id_type):
     holding_found = False
     if school == 'GM':
         results = []
-        values = status = location = callno = ''
+        values = status = location = callno = url = msg = ''
         arow= {}
-        conn = _get_z3950_connection(settings.Z3950_SERVERS['GM'])
-        query = zoom.Query('PQF', '@attr 1=12 %s' % id)
-        res = conn.search(query)
-        for r in res:
-            values = str(r)
-            lines = values.split('\n')
-            for line in lines:
-                ind = line.find('availableNow')
-                if ind != -1:
-                    ind = line.find(':')
-                    status = line[ind+2:]
-                ind = line.find('callNumber')
-                if ind != -1:
-                    ind = line.find(':')
-		    ind1 = line.find('\\')
-                    callno = line[ind+2:ind1]
-                ind = line.find('localLocation')
-                if ind!= -1:
-                    ind = line.find(':')
-		    ind1 = line.find('\\')
-                    location = line[ind+2:ind1]
-		    holding_found = True
-		if holding_found == True:
-		    arow = {'status':status, 'location':location, 'callno':callno}
+	bib = get_gmbib_from_gwbib(id)
+	conn = _get_z3950_connection(settings.Z3950_SERVERS['GM'])
+	if len(bib) > 0:
+            query = zoom.Query('PQF', '@attr 1=12 %s' % bib[0].encode('utf-8'))
+            res = conn.search(query)
+            for r in res:
+            	values = str(r)
+	    	print values
+            	lines = values.split('\n')
+            	for line in lines:
+		    ind = line.find('856 4')
+		    if ind !=-1:
+		    	ind = line.find('$h')
+		    	ind1 = line.find(' ',ind)
+		      	url = line[ind:ind1]
+		    	print url
+                        ind = line.find('$z')
+                        ind1 = line.find('$u',ind)
+                        msg = line[ind+2:ind1]
+                        print msg
+
+                    ind = line.find('availableNow')
+                    if ind != -1:
+                    	ind = line.find(':')
+                    	status = line[ind+2:]
+                    ind = line.find('callNumber')
+                    if ind != -1:
+                    	ind = line.find(':')
+		    	ind1 = line.find('\\')
+                    	callno = line[ind+2:ind1]
+                    ind = line.find('localLocation')
+                    if ind!= -1:
+                    	ind = line.find(':')
+		     	ind1 = line.find('\\')
+                    	location = line[ind+2:ind1]
+		    	holding_found = True
+		    if holding_found == True:
+		    	arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
             	    results.append(arow)
-		holding_found = False
-        conn.close()
-        return results
+		    holding_found = False
+            conn.close()
+            return results
+	else:
+	    res = get_bib_data(id)
+	    if len(res)>0:
+		ind= res['LINK'].find('$u')
+		url = res['LINK'][ind+2:]
+		ind = res['MESSAGE'].find('$z')
+		msg = res['MESSAGE'][ind+2:]
+		results.append({'STATUS':'', 'LOCATION':'', 'CALLNO':'','LINK':url,'MESSAGE':msg})
+	    return results
     elif school=='GT':
+	if id_type =='bib':
+	    bib = get_gtbib_from_gwbib(id)
+	    query = zoom.Query('PQF', '@attr 1=12 %s' % bib)
         if id_type == 'isbn':
             query = zoom.Query('PQF', '@attr 1=7 %s' % id)
         elif id_type == 'issn':
@@ -249,6 +287,7 @@ def get_z3950_holdings(id, school, id_type):
         elif id_type == 'oclc':
             query = zoom.Query('PQF', '@attr 1=1007 %s' % id)
         return _get_gt_holdings(query)
+
 
 def get_gmbib_from_gwbib(bibid):
     query = """
@@ -261,4 +300,17 @@ AND bib_index.normal_heading=bib_index.display_heading"""
     cursor.execute(query, [bibid])
     results = _make_dict(cursor)
     return [row['NORMAL_HEADING'] for row in results]
+
+def get_gtbib_from_gwbib(bibid):
+    query = """
+SELECT LOWER(SUBSTR(bib_index.normal_heading,0,LENGTH(bib_index.normal_heading)-1))  \"NORMAL_HEADING\"
+FROM bib_index 
+WHERE bib_index.bib_id = %s
+AND bib_index.index_code ='907A'"""
+    cursor = connection.cursor()
+    cursor.execute(query, [bibid])
+    results = _make_dict(cursor)
+    return [row['NORMAL_HEADING'] for row in results]
+
+
 
