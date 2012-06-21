@@ -130,7 +130,7 @@ ORDER BY library.library_name"""
 	    holding.update({
             'ELECTRONIC_DATA': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','electronic'),
             'AVAILABILITY': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','availability')})
-        holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
+        holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION']
     else:
         holding.update({
             	'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
@@ -196,6 +196,7 @@ def _get_gt_holdings(query,query_type,bib):
     res = conn.search(query)
     for r in res:
         values = str(r)
+	print values
         lines = values.split('\n')
         for line in lines:
 	    ind = line.find('856 4')
@@ -226,7 +227,7 @@ def _get_gt_holdings(query,query_type,bib):
             ind = line.find('localLocation')
             if ind != -1:
                 ind = line.find(':')
-                location = line[ind+2:]
+                location = 'GT '+ line[ind+2:]
         arow = {'status':status, 'location':location, 'callno':callno,'LINK':url,'MESSAGE':msg}
         results.append(arow)
     conn.close()
@@ -255,6 +256,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
             res = conn.search(query)
             for r in res:
             	values = str(r)
+		print values
             	lines = values.split('\n')
             	for line in lines:
 		    ind = line.find('856 4')
@@ -287,7 +289,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                     if ind!= -1:
                     	ind = line.find(':')
 		     	ind1 = line.find('\\')
-                    	location = line[ind+2:ind1]
+                    	location = 'GM ' + line[ind+2:ind1]
 		    	holding_found = True
 		    if holding_found == True:
 		    	arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
