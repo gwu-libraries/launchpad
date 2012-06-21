@@ -194,7 +194,6 @@ def _get_gt_holdings(query,query_type,bib):
     res = conn.search(query)
     for r in res:
         values = str(r)
-	print values
         lines = values.split('\n')
         for line in lines:
 	    ind = line.find('856 4')
@@ -204,11 +203,9 @@ def _get_gt_holdings(query,query_type,bib):
                 url = line[ind+2:ind1]
 		item_status = 1
 		status = 'Not Charged'
-                print url
 		ind = line.find('$z')
                 ind1 = line.find('$u',ind)
                 msg = line[ind+2:ind1]
-                print msg
 
 	    ind = line.find('publicNote')
             if ind != -1:
@@ -256,7 +253,6 @@ def get_z3950_holdings(id, school, id_type, query_type):
             res = conn.search(query)
             for r in res:
             	values = str(r)
-	    	print values
             	lines = values.split('\n')
             	for line in lines:
 		    ind = line.find('856 4')
@@ -267,11 +263,9 @@ def get_z3950_holdings(id, school, id_type, query_type):
 			location = 'GM: online'
 			item_status = 1
 			status = 'Not Charged'
-		    	print url
                         ind = line.find('$z')
                         ind1 = line.find('$u',ind)
                         msg = line[ind+2:ind1]
-                        print msg
                     ind = line.find('availableNow')
                     if ind != -1:
                     	ind = line.find(':')
