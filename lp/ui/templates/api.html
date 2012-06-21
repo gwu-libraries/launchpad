@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}The findit API{% endblock title %}
+
+{% block content %}
+
+<h1>The findit API</h1>
+
+<p>
+
+This site provides information about items available to you through GW
+Libraries and our consortial peer libraries.  It's available to everyone
+to use, without restriction.
+
+</p>
+
+<p>
+
+If you want to use this service to create bookmarks, or use the data
+in some way other than what we're providing, we can help you do that,
+with link patterns, and with raw data.
+
+</p>
+
+
+<h2>Link patterns in findit</h2>
+
+<p>
+The standard URL for any item in findit is its WRLC bibliographic
+identifier, or "bib id".  Every request to findit should result in a
+URL like this:
+</p>
+
+<dd><a href="http://findit.library.gwu.edu/item/3992408">http://findit.library.gwu.edu/item/3992408</a></dd>
+
+<p>
+In this example, 3992408 is the bib id.
+</p>
+
+<p>
+This bookmark is stable, which is to say: if you want to bookmark it,
+please do.  As long as this item is in our consortium catalog, this 
+link will resolve to all the information we can provide you about the
+item and its availability.
+</p>
+
+<p>
+There's an additional way you can create links to findit: using standard
+identifiers like ISBN and ISSN.  The example above is a book, with ISBN
+0439136350.  ISBN and ISSN are very common, and it can be useful to 
+create a link using these values.  findit supports this kind of link:
+</p>
+
+<dd><a href="http://findit.library.gwu.edu/isbn/0439136350">http://findit.library.gwu.edu/isbn/0439136350</a></dd>
+
+<dd><a href="http://findit.library.gwu.edu/issn/0000-0019">http://findit.library.gwu.edu/issn/0000-0019</a></dd>
+
+<p>
+There's one more identifier that redirects like this, and though it 
+might be most useful to us librarians, you can use it too.  It's for
+the OCLC number of an item:
+</p>
+
+<dd><a href="http://findit.library.gwu.edu/oclc/00162792">http://findit.library.gwu.edu/oclc/00162792</a></dd>
+
+<p>
+It should work with a redirect to an /item/[bib id] link, just like ISBN 
+and ISSN links.
+</p>
+
+
+<h2>Raw data from findit in JSON</h2>
+
+<p>
+We do our best to lay out the information on findit pages as clearly
+as we can, but maybe you just want the raw data under the hood.  You
+can have it!  Just add ".json" to the end of any /item/[bib id] URL:
+</p>
+
+<dd><a href="http://findit.library.gwu.edu/item/3992408.json">http://findit.library.gwu.edu/item/3992408.json</a></dd>
+
+<p>
+We're using JSON because it's useful in most every programming language.
+You should be able to use your language of choice to process this data.
+</p>
+
+<p>
+In each of these records, basic bibliographic data is at the top level,
+and separate holdings data is listed one by one.  The data 
+itself reflects several aspects of how we've managed data in libraries
+over many decades, so it might seemed odd if you've never seen anything
+like it before.  It should mostly be self-explanatory,
+but if not, please don't hesitate to ask us about it.
+</p>
+
+
+<h2>Limits on use</h2>
+
+<p>
+This system pulls data from several different sources.  We and our
+colleagues in our consortium depend on these sources to keep our 
+libraries running.  If we find automated, heavy use of this service
+that negatively impacts the performance or availability of it or any
+of the related systems it uses, many people in our communities may be
+affected.
+</p>
+
+<p>
+We reserve the right to block or limit access to this system by any
+users or automated agents that are impacting its performance or 
+availability.
+</p>
+
+<p>
+If you are interested in bulk access to this data, or data like it,
+let us know directly.  We'd be happy to discuss your interest and see
+if we can help.
+</p>
+
+
+{% endblock content %}
