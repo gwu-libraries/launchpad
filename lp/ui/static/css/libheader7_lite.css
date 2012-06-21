@@ -140,3 +140,7 @@ input[type=submit], button {
 		visibility: visible;  
 	}
 }
+
+.library-has {
+    color:rgb(96,96,96);
+    font-size: 8pt;

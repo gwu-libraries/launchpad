@@ -126,15 +126,16 @@ ORDER BY library.library_name"""
         cursor.execute(query, [bibid])
         holdings_list += _make_dict(cursor)
     for holding in holdings_list:
-	if holding['LIBRARY_NAME'] == 'GM' or holding['LIBRARY_NAME'] == 'GT':
-	    holding.update({
-		'ELECTRONIC_DATA': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','electronic'),
-		'AVAILABILITY': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','availability')})
-	else:
+	    if holding['LIBRARY_NAME'] == 'GM' or holding['LIBRARY_NAME'] == 'GT':
+	        holding.update({
+		        'ELECTRONIC_DATA': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','electronic'),
+		        'AVAILABILITY': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','availability')})
+	    else:
             holding.update({
             	'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
             	'AVAILABILITY': get_availability(holding['MFHD_ID'])})
-	holding.update({'ELIGIBLE': is_eligible(holding)})
+	    holding.update({'ELIGIBLE': is_eligible(holding)})
+        holding.update({'LIBRARY_HAS': get_library_has(holding)})
     return holdings_list
 
 
@@ -400,3 +401,16 @@ def get_z3950_electronic_data(school,link,message):
 		  'LINK866' : None,
 		  'MFHD_ID' : None}
     return electronic
+
+
+def get_library_has(holding):
+    if holding['ELECTRONIC_DATA'] and holding['ELECTRONIC_DATA']['LINK866']:
+        lib_has =  holding['ELECTRONIC_DATA']['LINK866'].split('//')
+        for i in range(len(lib_has)):
+            line = lib_has[i]
+            while line.find('$') > -1:
+                line = line[line.index('$')+2:]
+            lib_has[i] = line
+        return lib_has
+    else:
+        return []
