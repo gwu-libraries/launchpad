@@ -128,6 +128,7 @@ ORDER BY library.library_name"""
         holding.update({
             'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
             'AVAILABILITY': get_availability(holding['MFHD_ID'])})
+        holding.update({'ELIGIBLE': is_eligible(holding)})
     return holdings_list
 
 
@@ -262,3 +263,27 @@ AND bib_index.normal_heading=bib_index.display_heading"""
     results = _make_dict(cursor)
     return [row['NORMAL_HEADING'] for row in results]
 
+
+def is_eligible(holding):
+    perm_loc = ''
+    temp_loc = ''
+    status = ''
+    if holding['AVAILABILITY']:
+        if holding['AVAILABILITY']['PERMLOCATION']:
+            perm_loc = holding['AVAILABILITY']['PERMLOCATION'].upper()
+        if holding['AVAILABILITY']['TEMPLOCATION']:
+            temp_loc = holding['AVAILABILITY']['TEMPLOCATION'].upper()
+        if holding['AVAILABILITY']['ITEM_STATUS_DESC']:
+            status = holding['AVAILABILITY']['ITEM_STATUS_DESC'].upper()
+    if 'WRLC' in temp_loc or 'WRLC' in perm_loc:
+        return True
+    for loc in settings.INELIGIBLE_PERM_LOCS:
+        if loc in perm_loc:
+            return False
+    for loc in settings.INELIGIBLE_TEMP_LOCS:
+        if loc in temp_loc:
+            return False
+    for stat in settings.INELIGIBLE_STATUS:
+        if stat == status:
+            return False
+    return True

@@ -63,3 +63,18 @@ PREF_LIB = ''
 # Optional, can be empty or used for libraries with restricted access, etc.
 BOTTOM_LIBS = [] 
 
+# Eligibility Options
+
+INELIGIBLE_PERM_LOCS = ['REFERENCE','REF','RESERVE','NON-CIRC','RESTRICTED',
+                        'ONLY','IN LIBRARY','MICRO','ARCHIVES','KIEV','SPEC',
+                        'IBT','AUDIOTAPES','CD-ROM','DISCS','RECORDS','RUSH',
+                        'VIDEOTAPES','VIDEODISCS','MEDIA VIDEOS','DEAF DVD',
+                        'DEAF VHS','IN PROCESS','AU: LAW']
+
+# Add electronic locations
+INELIGIBLE_PERM_LOCS += ['SHARED','ONLINE','ELECTRONIC','INTERNET','STREAMING']
+
+INELIGIBLE_TEMP_LOCS = ['RESERVE']
+
+INELIGIBLE_STATUS = ['RENEWED','MISSING','LOST','OVERDUE','TRANSIT','HOLD',
+                     'CHARGED','UNAVAILABLE','WITHDRAWN','DAMAGED']
