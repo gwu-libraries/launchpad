@@ -74,7 +74,9 @@
             <td>{{ holding.AVAILABILITY.ITEM_STATUS_DESC }}</td>
 	            {%endif%}
             {% if holding.ELIGIBLE %}
+            <td>
                 <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg' />
+            </td>
             {% endif %}
             </td>
         </tr>
