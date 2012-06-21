@@ -80,10 +80,10 @@ the path according to your installation of oracle.
         sudo apt-get install python-setuptools
         sudo easy_install virtualenv
 
-2. Create directory for your projects (replace <user> with your user name)
+2. Create directory for your projects (replace LPHOME with your root dir)
 
-        mkdir /home/<user>/Projects/
-        cd /home/<user>/Projects/
+        mkdir /LPHOME
+        cd /LPHOME
 
 3. Pull down the project from github
 
@@ -91,7 +91,7 @@ the path according to your installation of oracle.
 
 4. Create virtual Python environment for the project
 
-        cd /home/<user>/Projects/launchpad
+        cd /LPHOME/launchpad
         virtualenv --no-site-packages ENV
 
 5. Activate your virtual environment
@@ -111,6 +111,7 @@ modify line 35 from this:
 
         ('NLS_LANG', '.US7ASCII')
         
+    Note: this is suboptimal.  For an explanation see https://github.com/gwu-libraries/launchpad/issues/22.  Sorry.
 
 
 - - -
@@ -147,7 +148,12 @@ modify line 35 from this:
 	Change the values of the server, user, and python version in
 	the document
 
-4. Enable the app in apache and bounch apache2 to start it up
+4. Enable these apache modules:
+
+        sudo a2enmod expires
+        sudo a2enmod headers
+
+5. Enable the app in apache and bounch apache2 to start it up
 
         sudo a2ensite lp
         sudo /etc/init.d/apache2 restart

@@ -154,6 +154,8 @@ LOGGING = {
     }
 }
 
+USE_ETAGS = True
+
 Z3950_SERVERS = {
     'LIBRARY_ID': {
         'SERVER_ADDRESS': '',
