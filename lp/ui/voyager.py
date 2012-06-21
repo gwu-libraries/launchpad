@@ -396,8 +396,8 @@ def get_z3950_electronic_data(school,link,message):
 	link852h = school+': Electronic Resource'
     electronic = {'LINK852A' : None ,
 		  'LINK852H' : link852h ,
-		  'LINK852Z' : message , 
-		  'LINK852U' : link ,
+		  'LINK856Z' : message , 
+		  'LINK856U' : link ,
 		  'LINK866' : None,
 		  'MFHD_ID' : None}
     return electronic
