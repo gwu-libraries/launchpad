@@ -92,6 +92,17 @@
             </td>
         </tr>
             {% endif %}
+            {% if holding.LIBRARY_HAS %}
+        <tr>
+            <td>
+                <span class="library-has">Library Has:<br/>
+                {% for line in holding.LIBRARY_HAS %}
+                    {{ line }}<br/>
+                {% endfor %}
+                </span>
+            </td>
+        </tr>
+            {% endif %}
         {% endfor %}
     </tbody>
 </table> 

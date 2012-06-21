@@ -130,6 +130,7 @@ ORDER BY library.library_name"""
             'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
             'AVAILABILITY': get_availability(holding['MFHD_ID'])})
         holding.update({'ELIGIBLE': is_eligible(holding)})
+        holding.update({'LIBRARY_HAS': get_library_has(holding)})
     return holdings_list
 
 
@@ -338,3 +339,16 @@ def is_eligible(holding):
         if stat == status:
             return False
     return True
+
+
+def get_library_has(holding):
+    if holding['ELECTRONIC_DATA'] and holding['ELECTRONIC_DATA']['LINK866']:
+        lib_has =  holding['ELECTRONIC_DATA']['LINK866'].split('//')
+        for i in range(len(lib_has)):
+            line = lib_has[i]
+            while line.find('$') > -1:
+                line = line[line.index('$')+2:]
+            lib_has[i] = line
+        return lib_has
+    else:
+        return []
