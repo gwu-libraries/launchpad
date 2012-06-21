@@ -67,13 +67,18 @@
         {% for holding in holdings %}
         <tr>
             <td>{{ holding.LOCATION_DISPLAY_NAME }}</td>
-            <td>{{ holding.DISPLAY_CALL_NO }}</td>
+            <td>
+                {% if holding.DISPLAY_CALL_NO %}
+                {{ holding.DISPLAY_CALL_NO }}
+                {% endif %}
+            </td>
+            <td>
 	        {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
-		    <td>
-                <FONT COLOR="green">Available </FONT></td>
-	            {%else%}
-            <td>{{ holding.AVAILABILITY.ITEM_STATUS_DESC }}</td>
-	            {%endif%}
+                    <span style='color: green'>Available</span>
+                {%else%}
+                    {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
+                {%endif%}
+            </td>
             {% if holding.ELIGIBLE %}
             <td>
                 <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' />
