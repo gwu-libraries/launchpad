@@ -131,6 +131,7 @@ ORDER BY library.library_name"""
             'ELECTRONIC_DATA': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','electronic'),
             'AVAILABILITY': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','availability')})
             holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION']
+	    holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
 	else:
 	    holding.update({
             	'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
