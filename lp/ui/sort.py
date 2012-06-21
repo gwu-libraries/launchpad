@@ -36,17 +36,23 @@ def libsort_top_only(holdings_list):
 def availsort(holdings_list):
     top, remainder = [],[]
     for holding in holdings_list:
-        if holding['AVAILABILITY'] and holding['AVAILABILITY']['ITEM_STATUS'] == 1:
-            top.append(holding)
-        else:
+        try:
+            if holding['AVAILABILITY'] and holding['AVAILABILITY']['ITEM_STATUS'] == 1:
+                top.append(holding)
+            else:
+                remainder.append(holding)
+        except KeyError:
             remainder.append(holding)
     return top + remainder
 
 
 def _is_electronic(holding):
-    if holding['ELECTRONIC_DATA']['LINK856U']:
-        return True
-    return False
+    try:
+        if holding['ELECTRONIC_DATA']['LINK856U']:
+            return True
+        return False
+    except KeyError:
+        return False
 
 
 def elecsort(holdings_list):
