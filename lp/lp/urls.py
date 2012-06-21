@@ -1,24 +1,10 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
+from django.views.generic import TemplateView
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
-
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'lp.views.home', name='home'),
-    # url(r'^lp/', include('lp.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    # url(r'^admin/', include(admin.site.urls)),
-)
 
 handler500 = 'ui.views.error500'
 
-urlpatterns += patterns('ui.views',
+urlpatterns = patterns('ui.views',
     url(r'^$', 'home', name='home'),
     url(r'^item/(?P<bibid>\.?b?\d{6,8})$', 'item', name='item'),
     url(r'^item/(?P<bibid>\.?b?\d{6,8}).json$', 'item_json', name='item_json'),
@@ -29,5 +15,9 @@ urlpatterns += patterns('ui.views',
     url(r'^oclc/\(OCoLC\)(?P<oclc>\d{8,10})$', 'oclc', name='oclc'),
     url(r'^oclc/oc[mn](?P<oclc>\d{8,10})$', 'oclc', name='oclc'),
     url(r'^oclc/\(Safari\)(?P<oclc>\d{8,10})$', 'oclc', name='oclc'),
+    url(r'^about/', TemplateView.as_view(template_name='about.html'), 
+        name='about'),
+    url(r'^api/', TemplateView.as_view(template_name='api.html'), 
+        name='api'),
 )
 

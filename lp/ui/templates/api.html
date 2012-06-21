@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}The findit API{% endblock title %}
+
+{% block content %}
+
+<h1>The findit API</h1>
+
+<p>
+
+This site provides information about items available to you through GW
+Libraries and our consortial peer libraries.  It's available to everyone
+to use, without restriction.
+
+</p>
+
+<p>
+
+If you want to use this service to create bookmarks, or use the data
+in some way other than what we're providing, we can help you do that,
+with link patterns, and with raw data.
+
+</p>
+
+
+<h2>Link patterns in findit</h2>
+
+<p>
+The standard URL for any item in findit is its WRLC bibliographic
+identifier, or "bib id".  Every request to findit should result in a
+URL like this:
+</p>
+
+<dd>http://findit.library.gwu.edu/item/3992408</dd>
+
+<p>
+In this example, 3992408 is the bib id.
+</p>
+
+<p>
+This bookmark is stable, which is to say: if you want to bookmark it,
+please do.  As long as this item is in our consortium catalog, this 
+link will resolve to all the information we can provide you about the
+item and its availability.
+</p>
+
+<p>
+There's an additional way you can create links to findit: using standard
+identifiers like ISBN and ISSN.  The example above is a book, with ISBN
+0439136350.  ISBN and ISSN are very common, and it can be useful to 
+create a link using these values.  findit supports this kind of link:
+</p>
+
+<dd>http://findit.library.gwu.edu/isbn/0439136350</dd>
+
+<dd>http://findit.library.gwu.edu/issn/0000-0019</dd>
+
+
+<h2>Raw data from findit in JSON</h2>
+
+{% endblock content %}
