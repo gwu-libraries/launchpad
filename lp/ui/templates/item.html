@@ -53,6 +53,7 @@
 </p>
 
 
+{% if holdings %}
 <table WIDTH='100%' CELLPADDING='2' CELLSPACING='0' BORDER='0'>
     <thead>
         <tr>
@@ -101,6 +102,11 @@
         {% endfor %}
     </tbody>
 </table> 
+{% else %}
+<p>
+No copies found in WRLC.  ADD ILL LINK.
+</p>
+{% endif %}
 
 {% if debug %}
 <h3>Debugging info</h3>
