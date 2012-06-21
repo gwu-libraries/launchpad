@@ -196,7 +196,6 @@ def _get_gt_holdings(query,query_type,bib):
     res = conn.search(query)
     for r in res:
         values = str(r)
-	print values
         lines = values.split('\n')
         for line in lines:
 	    ind = line.find('856 4')
@@ -256,7 +255,6 @@ def get_z3950_holdings(id, school, id_type, query_type):
             res = conn.search(query)
             for r in res:
             	values = str(r)
-		print values
             	lines = values.split('\n')
             	for line in lines:
 		    ind = line.find('856 4')
