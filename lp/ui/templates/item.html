@@ -76,7 +76,7 @@
 	            {%endif%}
             {% if holding.ELIGIBLE %}
             <td>
-                <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='http://gwdroid.wrlc.org/lp/external-link.jpg' />
+                <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' />
             </td>
             {% endif %}
             </td>
