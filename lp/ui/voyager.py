@@ -101,7 +101,7 @@ AND bib_master.library_id=library.library_id"""
     return [row['BIB_ID'] for row in results]
 
 # BEGIN NEW STUFF
-def get_bibids_from_multiple_isbn(isbn_tuple):
+def get_bibids_from_multiple_isbn(isbn_list):
     debug = open('/home/gomez/Projects/launchpad/lp/ui/debug.txt','a')
     query = """
 SELECT DISTINCT bib_index.bib_id
@@ -119,7 +119,7 @@ AND bib_index.normal_heading IN (
     )
 ORDER BY bib_index.bib_id"""
     cursor = connection.cursor()
-    cursor.execute(query, [isbn_tuple])
+    cursor.execute(query, [isbn_list])
     results = [row[0] for row in cursor.fetchall()]
     debug.write('BIBID query results:\n%s\n\n' % results)
     return results
@@ -142,7 +142,7 @@ ORDER BY bib_index.normal_heading"""
     return results
 
 
-def get_bibids_from_multiple_issn(issn_tuple):
+def get_bibids_from_multiple_issn(issn_list):
     query = """
 SELECT DISTINCT bib_index.bib_id
 FROM bib_index
@@ -159,7 +159,7 @@ AND bib_index.normal_heading IN (
     )
 ORDER BY bib_index.bib_id"""
     cursor = connection.cursor()
-    cursor.execute(query, [issn_tuple])
+    cursor.execute(query, [issn_list])
     return [row[0] for row in cursor.fetchall()]
 
 
@@ -175,7 +175,7 @@ ORDER BY bib_index.display_heading"""
     return [row[0] for row in cursor.fetchall()]
 
 
-def get_bibids_from_multiple_oclc(oclc_tuple):
+def get_bibids_from_multiple_oclc(oclc_list):
     query = """
 SELECT DISTINCT bib_index.bib_id
 FROM bib_index
@@ -183,7 +183,7 @@ WHERE bib_index.index_code = '035A'
 AND bib_index.normal_heading IN (%s)
 ORDER BY bib_index.bib_id"""
     cursor = connection.cursor()
-    cursor.execute(query, [oclc_tuple])
+    cursor.execute(query, [oclc_list])
     return [row[0] for row in cursor.fetchall()]
     
 
