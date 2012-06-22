@@ -54,56 +54,49 @@
 
 
 {% if holdings %}
-<table WIDTH='100%' CELLPADDING='2' CELLSPACING='0' BORDER='0'>
+<table WIDTH='100%'> 
     <thead>
         <tr>
-            <th bgcolor='#EAEAEA'>Location</th>
-            <th bgcolor='#EAEAEA'>Call Number</th>
-            <th bgcolor='#EAEAEA'>Circulation Status</th>
-            <th bgcolor='#EAEAEA'>Consortium Loan</th>
+            <th width='40%'>Location</th>
+            <th width='30%'>Call Number</th>
+            <th width='15%'>Status</th>
+            <th width='15%'>Consortium Loan</th>
         </tr>
     </thead>
     <tbody>
         {% for holding in holdings %}
         <tr>
-            <td>{{ holding.LOCATION_DISPLAY_NAME }}</td>
+            <td>
+                {{ holding.LOCATION_DISPLAY_NAME }}
+                {% if holding.LIBRARY_HAS %}
+                    {% for line in holding.LIBRARY_HAS %}
+                        <br />
+                        <span class="library-has">{{ line }}</span>
+                    {% endfor %}
+                {% endif %}
+            </td>
             <td>
                 {% if holding.DISPLAY_CALL_NO %}
                 {{ holding.DISPLAY_CALL_NO }}
                 {% endif %}
             </td>
             <td>
-	        {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
-                    <span style='color: green'>Available</span>
-                {%else%}
-                    {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
-                {%endif%}
+                {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U %}
+                    <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online</a>
+                {% else %}
+                    {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
+                        <span style='color: green'>Available</span>
+                    {%else%}
+                        {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
+                    {%endif%}
+                {% endif %}
             </td>
-            {% if holding.ELIGIBLE %}
             <td>
+                {% if holding.ELIGIBLE %}
                 <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' />
-            </td>
-            {% endif %}
-            </td>
-        </tr>
-            {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U %}
-        <tr>
-            <td>
-                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Click here to access available issues of this journal</a>
+                {% endif %}
             </td>
         </tr>
-            {% endif %}
-            {% if holding.LIBRARY_HAS %}
-        <tr>
-            <td>
-                <span class="library-has">Library Has:<br/>
-                {% for line in holding.LIBRARY_HAS %}
-                    {{ line }}<br/>
-                {% endfor %}
-                </span>
-            </td>
-        </tr>
-            {% endif %}
         {% endfor %}
     </tbody>
 </table> 

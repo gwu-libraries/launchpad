@@ -143,4 +143,25 @@ input[type=submit], button {
 
 .library-has {
     color:rgb(96,96,96);
-    font-size: 8pt;
+    font-size: x-small;
+}
+
+table {
+    border: None;
+}
+
+tr, td, th {
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    font-weight: normal;
+    background-color: #e0e0e0;
+}
+
+td {
+    border-bottom: 1px solid #e6e6e6;
+    padding-top: .4em;
+    padding-bottom: .4em;
+}
