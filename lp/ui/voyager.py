@@ -100,6 +100,148 @@ AND bib_master.library_id=library.library_id"""
     results = _make_dict(cursor)
     return [row['BIB_ID'] for row in results]
 
+# BEGIN NEW STUFF
+def get_bibids_from_multiple_isbn(isbn_tuple):
+    debug = open('/home/gomez/Projects/launchpad/lp/ui/debug.txt','a')
+    query = """
+SELECT DISTINCT bib_index.bib_id
+FROM bib_index
+WHERE bib_index.index_code IN ('020N','020A','ISB3')
+AND bib_index.normal_heading IN (
+    SELECT bib_index.normal_heading
+    FROM bib_index
+    WHERE bib_id IN (
+        SELECT DISTINCT bib_index.bib_id
+        FROM bib_index
+        WHERE bib_index.index_code IN ('020N','020A','ISB3')
+        AND bib_index.normal_heading IN (%s)
+        )
+    )
+ORDER BY bib_index.bib_id"""
+    cursor = connection.cursor()
+    cursor.execute(query, [isbn_tuple])
+    results = [row[0] for row in cursor.fetchall()]
+    debug.write('BIBID query results:\n%s\n\n' % results)
+    return results
+
+
+def get_all_isbn_from_bibid(bibid):
+    debug = open('/home/gomez/Projects/launchpad/lp/ui/debug.txt','a')
+    query = """
+SELECT DISTINCT normal_heading
+FROM bib_index
+WHERE bib_index.index_code IN ('020N','ISB3')
+AND bib_id = %s
+ORDER BY bib_index.normal_heading"""
+    cursor = connection.cursor()
+    cursor.execute(query, [bibid])
+    results = [row[0] for row in cursor.fetchall()]
+    import datetime
+    debug.write(str(datetime.datetime.now())+'\n')
+    debug.write('ISBN query results:\n%s\n' % results)
+    return results
+
+
+def get_bibids_from_multiple_issn(issn_tuple):
+    query = """
+SELECT DISTINCT bib_index.bib_id
+FROM bib_index
+WHERE bib_index.index_code IN ('022A','022Z')
+AND bib_index.normal_heading IN (
+    SELECT bib_index.normal_heading
+    FROM bib_index
+    WHERE bib_id IN (
+        SELECT DISTINCT bib_index.bib_id
+        FROM bib_index
+        WHERE bib_index.index_code IN ('022A','022Z')
+        AND bib_index.normal_heading IN (%s)
+        )
+    )
+ORDER BY bib_index.bib_id"""
+    cursor = connection.cursor()
+    cursor.execute(query, [issn_tuple])
+    return [row[0] for row in cursor.fetchall()]
+
+
+def get_all_issn_from_bibid(bibid):
+    query = """
+SELECT DISTINCT display_heading
+FROM bib_index
+WHERE bib_index.index_code IN ('022A','022Z')
+AND bib_id = %s
+ORDER BY bib_index.display_heading"""
+    cursor = connection.cursor()
+    cursor.execute(query, [bibid])
+    return [row[0] for row in cursor.fetchall()]
+
+
+def get_bibids_from_multiple_oclc(oclc_tuple):
+    query = """
+SELECT DISTINCT bib_index.bib_id
+FROM bib_index
+WHERE bib_index.index_code = '035A'
+AND bib_index.normal_heading IN (%s)
+ORDER BY bib_index.bib_id"""
+    cursor = connection.cursor()
+    cursor.execute(query, [oclc_tuple])
+    return [row[0] for row in cursor.fetchall()]
+    
+
+def get_all_oclc_from_bibid(bibid):
+    query = """
+SELECT normal_heading
+FROM bib_index
+WHERE bib_index.index_code='035A'
+AND bib_index.bib_id=%s"""
+    cursor = connection.cursor()
+    cursor.execute(query, [bibid])
+    return [row[0] for row in cursor.fetchall()]
+
+
+def get_expanded_holdings_data(bib_data):
+    bibids = set()
+    if bib_data.get('ISBN',''):
+        isbn_list = get_all_isbn_from_bibid(bib_data['BIB_ID'])
+        bibids.update(get_bibids_from_multiple_isbn(isbn_list))
+    if bib_data.get('ISSN',''):
+        issn_list = get_all_issn_from_bibid(bib_data['BIB_ID'])
+        bibids.update(get_bibids_from_multiple_issn(issn_list))
+    if bib_data.get('NETWORK_NUMBER',''):
+        oclc_list = get_all_oclc_from_bibid(bib_data['BIB_ID'])
+        bibids.update(get_bibids_from_multiple_oclc(oclc_list))
+    holdings_list = []
+    for bibid in bibids:
+        query = """
+SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
+       mfhd_master.display_call_no, location.location_display_name,
+       library.library_name
+FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
+     location, library
+WHERE mfhd_master.location_id=location.location_id
+AND bib_mfhd.bib_id=%s
+AND mfhd_master.suppress_in_opac !='Y'
+AND location.library_id=library.library_id
+ORDER BY library.library_name"""
+        cursor.execute(query, [bibid])
+        holdings_list += _make_dict(cursor)
+    for holding in holdings_list:
+        if holding['LIBRARY_NAME'] == 'GM' or holding['LIBRARY_NAME'] == 'GT':
+            holding.update({
+            'ELECTRONIC_DATA': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','electronic'),
+            'AVAILABILITY': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','availability')})
+            holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION']
+	    holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
+	else:
+	    holding.update({
+            	'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
+            	'AVAILABILITY': get_availability(holding['MFHD_ID'])})
+	holding.update({'ELIGIBLE': is_eligible(holding)})
+        holding.update({'LIBRARY_HAS': get_library_has(holding)})
+    return holdings_list
+
+
+# END NEW STUFF
+
 
 def get_holdings_data(bib_data):
     bibids = set()

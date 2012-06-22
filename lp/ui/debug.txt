@@ -1,0 +1,9 @@
+DEBUGGING INFO
+
+
+2012-06-22 11:32:16.093169
+ISBN query results:
+[u'0674880102', u'9780674880108']
+BIBID query results:
+[]
+
