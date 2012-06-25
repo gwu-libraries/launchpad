@@ -102,6 +102,7 @@ AND bib_master.library_id=library.library_id"""
 
 # BEGIN NEW STUFF
 def get_bibids_from_multiple_isbn(isbn_list):
+    isbn_string = ','.join(["'"+i+"'" for i in isbn_list])
     debug = open('/home/gomez/Projects/launchpad/lp/ui/debug.txt','a')
     query = """
 SELECT DISTINCT bib_index.bib_id
@@ -115,9 +116,8 @@ AND bib_index.normal_heading IN (
         FROM bib_index
         WHERE bib_index.index_code IN ('020N','020A','ISB3')
         AND bib_index.normal_heading IN """
-    query += '(' + ','.join(["'"+i+"'" for i in isbn_list]) + ')'
-    query += ')) ORDER BY bib_index.bib_id'
-    """
+    query += '(%s)' % isbn_string
+    query += """
         )
     )
 ORDER BY bib_index.bib_id"""
@@ -146,6 +146,7 @@ ORDER BY bib_index.normal_heading"""
 
 
 def get_bibids_from_multiple_issn(issn_list):
+    issn_string = ','.join(["'"+i+"'" for i in issn_list])
     query = """
 SELECT DISTINCT bib_index.bib_id
 FROM bib_index
@@ -157,12 +158,14 @@ AND bib_index.normal_heading IN (
         SELECT DISTINCT bib_index.bib_id
         FROM bib_index
         WHERE bib_index.index_code IN ('022A','022Z')
-        AND bib_index.normal_heading IN (%s)
+        AND bib_index.normal_heading IN """
+    query += '(%s)' % issn_string
+    query += """
         )
     )
 ORDER BY bib_index.bib_id"""
     cursor = connection.cursor()
-    cursor.execute(query, [issn_list])
+    cursor.execute(query, [])
     return [row[0] for row in cursor.fetchall()]
 
 
@@ -179,14 +182,17 @@ ORDER BY bib_index.display_heading"""
 
 
 def get_bibids_from_multiple_oclc(oclc_list):
+    oclc_string = ','.join(["'"+i+"'" for i in oclc_list])
     query = """
 SELECT DISTINCT bib_index.bib_id
 FROM bib_index
 WHERE bib_index.index_code = '035A'
-AND bib_index.normal_heading IN (%s)
+AND bib_index.normal_heading IN """
+    query += '(%s)' % oclc_string
+    query += """
 ORDER BY bib_index.bib_id"""
     cursor = connection.cursor()
-    cursor.execute(query, [oclc_list])
+    cursor.execute(query, [])
     return [row[0] for row in cursor.fetchall()]
     
 
