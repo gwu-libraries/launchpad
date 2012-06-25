@@ -114,12 +114,15 @@ AND bib_index.normal_heading IN (
         SELECT DISTINCT bib_index.bib_id
         FROM bib_index
         WHERE bib_index.index_code IN ('020N','020A','ISB3')
-        AND bib_index.normal_heading IN (%s)
+        AND bib_index.normal_heading IN """
+    query += '(' + ','.join(["'"+i+"'" for i in isbn_list]) + ')'
+    query += ')) ORDER BY bib_index.bib_id'
+    """
         )
     )
 ORDER BY bib_index.bib_id"""
     cursor = connection.cursor()
-    cursor.execute(query, [isbn_list])
+    cursor.execute(query, [])
     results = [row[0] for row in cursor.fetchall()]
     debug.write('BIBID query results:\n%s\n\n' % results)
     return results
@@ -222,6 +225,7 @@ AND bib_mfhd.bib_id=%s
 AND mfhd_master.suppress_in_opac !='Y'
 AND location.library_id=library.library_id
 ORDER BY library.library_name"""
+        cursor = connection.cursor()
         cursor.execute(query, [bibid])
         holdings_list += _make_dict(cursor)
     for holding in holdings_list:
