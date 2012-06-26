@@ -16,15 +16,16 @@
 {{ bib.TITLE }}
 </h1>
 
-{% if bib.AUTHOR or bib.CJK_INFO.AUTHOR %}
-<h2 class="author">
+{% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
+<span class="author">
 {% if bib.CJK_INFO.AUTHOR %}
     {{ bib.CJK_INFO.AUTHOR }} <br />
 {% endif %}
-{% if bib.AUTHOR %}
-    {{ bib.AUTHOR }}
+{% if bib.AUTHORS %}
+    {{ bib.AUTHORS|join:"; " }}
+    <br />
 {% endif %}
-</h2>
+</span>
 {% endif %}
 
 {% if bib.EDITION %}
@@ -34,7 +35,8 @@
 {% if bib.CJK_INFO.IMPRINT %}
     {{ bib.CJK_INFO.IMPRINT }} <br />
 {% endif %}
-    {{ bib.IMPRINT }}.
+    {{ bib.IMPRINT }}</span>{% if bib.IMPRINT|slice:"-1:" == '.' or bib_IMPRINT|slice:"-2:" == '. ' %}{% else %}.{% endif %}
+
 </span>
 {% if bib.LANGUAGE_DISPLAY %}
 In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>

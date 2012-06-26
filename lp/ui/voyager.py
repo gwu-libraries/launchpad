@@ -17,12 +17,50 @@ def _make_dict(cursor, first=False):
         dict(zip([col[0] for col in desc], row))
         for row in cursor.fetchall()
     ]
+    # strip string values of trailing whitespace
+    for d in mapped:
+        for k, v in d.items():
+            try:
+                d[k] = v.strip()
+            except:
+                pass
     if first:
         if len(mapped) > 0:
             return mapped[0]
         return {}
     return mapped
 
+
+def get_added_authors(bib):
+    """Starting with the main author entry, build up a list of all authors."""
+    query = """
+SELECT bib_index.display_heading AS author
+FROM bib_index
+WHERE bib_index.bib_id = %s
+AND bib_index.index_code IN ('700H', '710H', '711H')
+        """
+    cursor = connection.cursor()
+    cursor.execute(query, [bib['BIB_ID']])
+    authors = []
+    if bib['AUTHOR']:
+        authors.append(bib['AUTHOR'])
+    row = cursor.fetchone()
+    while row:
+        authors.append(row[0])
+        row = cursor.fetchone()
+    # trim whitespace
+    if not authors:
+        return []
+    for i in range(len(authors)):
+        author = authors[i].strip()
+        if author.endswith('.'):
+            author = author[:-1]
+        authors[i] = author
+    # remove duplicates
+    #for author in authors:
+    #    while authors.count(author) > 1:
+    #        authors.remove(author)
+    return authors
 
 def get_bib_data(bibid):
     query = """
@@ -42,6 +80,8 @@ AND bib_master.suppress_in_opac='N'"""
     # if bib is empty, there's no match -- return immediately
     if not bib:
         return None
+    # get additional authors; main entry is AUTHOR, all are AUTHORS
+    bib['AUTHORS'] = get_added_authors(bib)
     # split up the 880 (CJK) fields/values if available
     if bib.get('CJK_INFO', ''):
         bib['CJK_INFO'] = cjk_info(bib['CJK_INFO'])
