@@ -54,10 +54,13 @@ AND bib_master.suppress_in_opac='N'"""
     bibids = set([bib['BIB_ID']])
     for num_type in ['isbn','issn','oclc']:
         if bib.get(num_type.upper(),''):
+            norm_set, disp_set = set(), set()
             std_nums = get_related_std_nums(bib['BIB_ID'], num_type)
             norm, disp = zip(*std_nums)
-            bib['NORMAL_%s_LIST' % num_type.upper()] = norm
-            bib['DISPLAY_%s_LIST' % num_type.upper()] = [num.strip() for num in disp]
+            norm_set.update(norm)
+            disp_set.update([num.strip() for num in disp])
+            bib['NORMAL_%s_LIST' % num_type.upper()] = norm_set
+            bib['DISPLAY_%s_LIST' % num_type.upper()] = disp_set
             # use std nums to get related bibs
             bibids.update(get_related_bibids(norm, num_type))
     bib['BIB_ID_LIST'] = bibids
