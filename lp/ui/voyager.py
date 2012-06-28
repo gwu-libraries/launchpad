@@ -210,7 +210,7 @@ JOIN item_status_type on item_status.item_status = item_status_type.item_status_
 JOIN location permLocation ON permLocation.location_id = item.perm_location
 LEFT OUTER JOIN location tempLocation ON tempLocation.location_id = item.temp_location
 WHERE bib_mfhd.mfhd_id = %s
-ORDER BY PermLocation, TempLocation"""
+ORDER BY PermLocation, TempLocation, item_status_date desc"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id])
     return _make_dict(cursor, first=True)
