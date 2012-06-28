@@ -156,7 +156,7 @@ ORDER BY library.library_name"""
         if holding['LIBRARY_NAME'] == 'GM' or holding['LIBRARY_NAME'] == 'GT':
             holding.update({'ELECTRONIC_DATA': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','electronic'),
                             'AVAILABILITY': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','availability')})
-            holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION']
+            holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME']
             holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
         else:
             holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
@@ -259,8 +259,8 @@ def _get_gt_holdings(query,query_type,bib):
             ind = line.find('localLocation')
             if ind != -1:
                 ind = line.find(':')
-		chars = len(line)
-                location = 'GT: '+ line[ind+3:chars-1]
+                chars = len(line)
+                location = 'GT '+ line[ind+3:chars-1]
         arow = {'status':status, 'location':location, 'callno':callno,'LINK':url,'MESSAGE':msg}
         results.append(arow)
     conn.close()
@@ -323,11 +323,11 @@ def get_z3950_holdings(id, school, id_type, query_type):
                     ind = line.find('localLocation')
                     if ind!= -1:
                     	ind = line.find(':')
-		     	ind1 = line.find('\\')
-                    	location = 'GM: ' + line[ind+3:ind1]
-		    	holding_found = True
-		    if holding_found == True:
-		    	arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
+                        ind1 = line.find('\\')
+                    	location = 'GM ' + line[ind+3:ind1]
+                        holding_found = True
+                if holding_found == True:
+                    arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
             	    results.append(arow)
                 holding_found = False
             conn.close()
