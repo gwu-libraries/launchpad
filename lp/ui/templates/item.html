@@ -13,7 +13,11 @@
 {% if bib.CJK_INFO.TITLE %}
     {{ bib.CJK_INFO.TITLE }} <br />
 {% endif %}
-{{ bib.TITLE|truncatewords:-1 }}
+{% if bib.TITLE|length <= 254 %}
+    {{ bib.TITLE }}
+{% else %}
+    {{ bib.TITLE|truncatewords:-1 }}
+{% endif %}
 </h1>
 
 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
