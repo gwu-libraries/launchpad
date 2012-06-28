@@ -26,7 +26,7 @@ def _make_dict(cursor, first=False):
 
 def get_bib_data(bibid):
     query = """
-SELECT bib_text.bib_id, title, author, edition, isbn, issn, network_number, 
+SELECT bib_text.bib_id, title, author, edition, isbn, issn, network_number AS OCLC, 
        publisher, pub_place, imprint, bib_format, language, library_name, 
        RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) as LINK,
        wrlcdb.GetAllBibTag(%s, '880', 1) as CJK_INFO,
@@ -50,95 +50,124 @@ AND bib_master.suppress_in_opac='N'"""
         bib['LANGUAGE_DISPLAY'] = language.name
     except:
         bib['LANGUAGE_DISPLAY'] = ''
+    # get all associated standard numbers (ISBN, ISSN, OCLC)
+    bibids = set([bib['BIB_ID']])
+    for num_type in ['isbn','issn','oclc']:
+        if bib.get(num_type.upper(),''):
+            std_nums = get_related_std_nums(bib['BIB_ID'], num_type)
+            norm, disp = zip(*std_nums)
+            bib['NORMAL_%s_LIST' % num_type.upper()] = norm
+            bib['DISPLAY_%s_LIST' % num_type.upper()] = [num.strip() for num in disp]
+            # use std nums to get related bibs
+            bibids.update(get_related_bibids(norm, num_type))
+    bib['BIB_ID_LIST'] = bibids
     return bib
 
 
-def get_bibids_from_isbn(isbn):
-    isbn = clean_isbn(isbn)
-    code = 'ISB3' if len(isbn) == 13 else '020N' 
+def get_primary_bibid(num, num_type):
+    num = _normalize_num(num, num_type)
     query = """
-SELECT bib_index.bib_id, bib_master.library_id, 
-       library_name, normal_heading, display_heading 
+SELECT bib_index.bib_id, bib_master.library_id, library.library_name
 FROM bib_index, bib_master, library 
-WHERE bib_index.index_code = %s
-AND bib_index.normal_heading like %s
+WHERE bib_index.index_code IN """
+    query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
+    query += """
+AND bib_index.normal_heading = %s
 AND bib_index.bib_id=bib_master.bib_id 
 AND bib_master.library_id=library.library_id"""
     cursor = connection.cursor()
-    cursor.execute(query, (code, isbn))
-    results = _make_dict(cursor)
-    return [row['BIB_ID'] for row in results]
+    cursor.execute(query, [num])
+    bibs = _make_dict(cursor)
+    for bib in bibs:
+        if bib['LIBRARY_NAME'] == settings.PREF_LIB:
+            return bib['BIB_ID']
+    return bibs[0]['BIB_ID']
 
 
-def get_bibids_from_issn(issn):
-    issn = clean_issn(issn)
+def _normalize_num(num, num_type):
+    if num_type == 'isbn':
+        return clean_isbn(num)
+    elif num_type == 'issn':
+        return num.replace('-',' ')
+    elif num_type == 'oclc':
+        return clean_oclc(num)
+    return num
+
+
+def get_related_bibids(num_list, num_type):
     query = """
-SELECT bib_index.bib_id, bib_master.library_id, library.library_name
-FROM bib_index,bib_master,library
-WHERE bib_index.index_code='022A'
-AND bib_index.display_heading=%s
-AND bib_index.bib_id=bib_master.bib_id
-AND bib_master.library_id=library.library_id"""
+SELECT DISTINCT bib_index.bib_id
+FROM bib_index
+WHERE bib_index.index_code IN """
+    query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
+    query += """
+AND bib_index.normal_heading IN (
+    SELECT bib_index.normal_heading
+    FROM bib_index
+    WHERE bib_id IN (
+        SELECT DISTINCT bib_index.bib_id
+        FROM bib_index
+        WHERE bib_index.index_code IN """
+    query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
+    query += """
+        AND bib_index.normal_heading IN """
+    query += '(%s)' % _in_clause(num_list)
+    query += """
+        )
+    )
+ORDER BY bib_index.bib_id"""
     cursor = connection.cursor()
-    cursor.execute(query, [issn])
-    results = _make_dict(cursor)
-    return [row['BIB_ID'] for row in results]
+    cursor.execute(query, [])
+    return [row[0] for row in cursor.fetchall()]
 
 
-def get_bibids_from_oclc(oclc):
-    oclc = clean_oclc(oclc)
+def get_related_std_nums(bibid, num_type):
     query = """
-SELECT bib_index.bib_id, bib_index.index_code, bib_index.normal_heading, 
-       bib_index.display_heading, bib_master.library_id, library.library_name
-FROM bib_index, bib_master, library
-WHERE bib_index.index_code='035A'
-AND bib_index.normal_heading = %s
-AND bib_master.bib_id=bib_index.bib_id
-AND bib_master.library_id=library.library_id"""
+SELECT normal_heading, display_heading
+FROM bib_index
+WHERE bib_index.index_code IN """
+    query += "(%s)" % _in_clause(settings.INDEX_CODES[num_type])
+    query += """
+AND bib_id = %s
+ORDER BY bib_index.normal_heading"""
     cursor = connection.cursor()
-    cursor.execute(query, [oclc])
-    results = _make_dict(cursor)
-    return [row['BIB_ID'] for row in results]
+    cursor.execute(query, [bibid])
+    return cursor.fetchall()
 
 
-def get_holdings_data(bib_data):
-    bibids = set()
-    if bib_data.get('ISBN', ''):
-        bibids.update(get_bibids_from_isbn(isbn=bib_data['ISBN']))
-    if bib_data.get('ISSN', ''):
-        bibids.update(get_bibids_from_issn(issn=bib_data['ISSN']))
-    if bib_data.get('NETWORK_NUMBER', ''):
-        bibids.update(get_bibids_from_oclc(oclc=bib_data['NETWORK_NUMBER']))
-    holdings_list = []
-    cursor = connection.cursor()
-    for bibid in bibids:
-        query = """
+def get_holdings(bib_data):
+    query = """
 SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
        mfhd_master.display_call_no, location.location_display_name,
        library.library_name
 FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
      location, library
 WHERE mfhd_master.location_id=location.location_id
-AND bib_mfhd.bib_id=%s
+AND bib_mfhd.bib_id IN """
+    query += "(%s)" % _in_clause(bib_data['BIB_ID_LIST'])
+    query += """
 AND mfhd_master.suppress_in_opac !='Y'
 AND location.library_id=library.library_id
 ORDER BY library.library_name"""
-        cursor.execute(query, [bibid])
-        holdings_list += _make_dict(cursor)
-    for holding in holdings_list:
+    cursor = connection.cursor()
+    cursor.execute(query, [])
+    holdings = _make_dict(cursor)
+    for holding in holdings:
         if holding['LIBRARY_NAME'] == 'GM' or holding['LIBRARY_NAME'] == 'GT':
-            holding.update({
-            'ELECTRONIC_DATA': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','electronic'),
-            'AVAILABILITY': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','availability')})
+            holding.update({'ELECTRONIC_DATA': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','electronic'),
+                            'AVAILABILITY': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','availability')})
             holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION']
-	    holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
-	else:
-	    holding.update({
-            	'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
-            	'AVAILABILITY': get_availability(holding['MFHD_ID'])})
-	holding.update({'ELIGIBLE': is_eligible(holding)})
+            holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
+        else:
+            holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
+                            'AVAILABILITY': get_availability(holding['MFHD_ID'])})
+        holding.update({'ELIGIBLE': is_eligible(holding)})
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
-    return holdings_list
+    return holdings
+    
+    
+def _in_clause(items):
+    return ','.join(["'"+str(item)+"'" for item in items])
 
 
 def get_electronic_data(mfhd_id):
@@ -199,32 +228,34 @@ def _get_gt_holdings(query,query_type,bib):
         values = str(r)
         lines = values.split('\n')
         for line in lines:
-	    ind = line.find('856 4')
+            ind = line.find('856 4')
             if ind !=-1:
                 ind = line.find('$u')
                 ind1 = line.find(' ',ind)
                 url = line[ind+2:ind1]
-		item_status = 1
-		status = 'Not Charged'
-		ind = line.find('$z')
+                item_status = 1
+                status = 'Not Charged'
+                ind = line.find('$z')
                 ind1 = line.find('$u',ind)
                 msg = line[ind+2:ind1]
 
-	    ind = line.find('publicNote')
+            ind = line.find('publicNote')
             if ind != -1:
                 ind = line.find(':')
-                status = str(line[ind+2:])
-		if status == '\'AVAILABLE\'':
-                    status = 'Not Charged'
-		    item_status = 1
-                elif status[0:4] == '\'DUE':
-                    status = 'Charged'
-		    item_status = 0
+                status = str(line[ind+2:]).strip(" '")
+            if status == 'AVAILABLE':
+                status = 'Not Charged'
+                item_status = 1
+            elif status[0:4] == 'DUE':
+                status = 'Charged'
+                item_status = 0
+                
             ind = line.find('callNumber')
             if ind != -1:
                 ind = line.find(':')
-		chars = len(line)
+                chars = len(line)
                 callno = line[ind+3:chars-1]
+            
             ind = line.find('localLocation')
             if ind != -1:
                 ind = line.find(':')
@@ -246,46 +277,49 @@ def get_z3950_holdings(id, school, id_type, query_type):
     holding_found = False
     if school == 'GM':
         results = []
-	availability = {}
-	electronic = {}
-	item_status = 0
+        availability = {}
+        electronic = {}
+        item_status = 0
         values = status = location = callno = url = msg = ''
         arow= {}
-	bib = get_gmbib_from_gwbib(id)
-	conn = _get_z3950_connection(settings.Z3950_SERVERS['GM'])
-	if len(bib) > 0:
+        bib = get_gmbib_from_gwbib(id)
+        conn = _get_z3950_connection(settings.Z3950_SERVERS['GM'])
+        if len(bib) > 0:
             query = zoom.Query('PQF', '@attr 1=12 %s' % bib[0].encode('utf-8'))
             res = conn.search(query)
             for r in res:
             	values = str(r)
             	lines = values.split('\n')
             	for line in lines:
-		    ind = line.find('856 4')
-		    if ind !=-1:
-		    	ind = line.find('$h')
-		    	ind1 = line.find(' ',ind)
-		      	url = line[ind:ind1]
-			location = 'GM: online'
-			item_status = 1
-			status = 'Not Charged'
+                    ind = line.find('856 4')
+                    if ind !=-1:
+                        ind = line.find('$h')
+                        ind1 = line.find(' ',ind)
+                        url = line[ind:ind1]
+                        location = 'GM: online'
+                        item_status = 1
+                        status = 'Not Charged'
                         ind = line.find('$z')
                         ind1 = line.find('$u',ind)
                         msg = line[ind+2:ind1]
+                        
                     ind = line.find('availableNow')
                     if ind != -1:
                     	ind = line.find(':')
                     	status = line[ind+2:]
-			if status == 'True':
-			    status = 'Not Charged'
-			    item_status = 1
-			elif status == 'False':
-			    status = 'Charged'
-			    item_status = 0
+                        if status == 'True':
+                            status = 'Not Charged'
+                            item_status = 1
+                        elif status == 'False':
+                            status = 'Charged'
+                            item_status = 0
+                            
                     ind = line.find('callNumber')
                     if ind != -1:
                     	ind = line.find(':')
-		    	ind1 = line.find('\\')
+                        ind1 = line.find('\\')
                     	callno = line[ind+3:ind1]
+                    
                     ind = line.find('localLocation')
                     if ind!= -1:
                     	ind = line.find(':')
@@ -295,34 +329,34 @@ def get_z3950_holdings(id, school, id_type, query_type):
 		    if holding_found == True:
 		    	arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
             	    results.append(arow)
-		    holding_found = False
+                holding_found = False
             conn.close()
             if query_type == 'availability':
-		availability = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
-		return availability
-	    elif query_type == 'electronic':
-		electronic = get_z3950_electronic_data('GM',msg,url)
-		return electronic
-	else:
-	    res = get_bib_data(id)
-	    if len(res)>0:
-		ind= res['LINK'].find('$u')
-		url = res['LINK'][ind+2:]
-		ind = res['MESSAGE'].find('$z')
-		msg = res['MESSAGE'][ind+2:]
-		item_status = 1
+                availability = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
+                return availability
+            elif query_type == 'electronic':
+                electronic = get_z3950_electronic_data('GM',msg,url)
+                return electronic
+        else:
+            res = get_bib_data(id)
+            if len(res)>0:
+                ind= res['LINK'].find('$u')
+                url = res['LINK'][ind+2:]
+                ind = res['MESSAGE'].find('$z')
+                msg = res['MESSAGE'][ind+2:]
+                item_status = 1
                 status = 'Not Charged'
-		results.append({'STATUS':'', 'LOCATION':'', 'CALLNO':'','LINK':url,'MESSAGE':msg})
-	    if query_type == 'availability':
+                results.append({'STATUS':'', 'LOCATION':'', 'CALLNO':'','LINK':url,'MESSAGE':msg})
+            if query_type == 'availability':
                 availability = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
                 return availability
             elif query_type == 'electronic':
                 electronic = get_z3950_electronic_data('GM',msg,url)
                 return electronic
     elif school=='GT':
-	if id_type =='bib':
-	    bib = get_gtbib_from_gwbib(id)
-	    query = zoom.Query('PQF', '@attr 1=12 %s' % bib)
+        if id_type =='bib':
+            bib = get_gtbib_from_gwbib(id)
+            query = zoom.Query('PQF', '@attr 1=12 %s' % bib)
         if id_type == 'isbn':
             query = zoom.Query('PQF', '@attr 1=7 %s' % id)
         elif id_type == 'issn':
