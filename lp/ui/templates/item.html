@@ -13,7 +13,7 @@
 {% if bib.CJK_INFO.TITLE %}
     {{ bib.CJK_INFO.TITLE }} <br />
 {% endif %}
-{{ bib.TITLE }}
+{{ bib.TITLE|truncatewords:-1 }}
 </h1>
 
 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR %}
