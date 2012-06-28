@@ -98,9 +98,16 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
             <td>
                 {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U %}
 					{% if holding.ELECTRONIC_DATA.LINK8563 %}
-						{{ holding.ELECTRONIC_DATA.LINK8563 }}
+						
+					{{ holding.ELECTRONIC_DATA.LINK8563 }}
 					{% endif %}
-                    <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online</a>
+			{% if holding.LIBRARY_NAME != 'GW'%}
+
+                   <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img><a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online {{holding.LIBRARY_NAME}} only</a>
+			{%else%}
+				<a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online </a>
+			{%endif%}
+			
                 {% else %}
                     {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
                         <span style='color: green'>Available</span>
