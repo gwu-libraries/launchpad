@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 
 from ui import voyager
-from ui.sort import libsort, availsort, elecsort, libsort_bottom_only
+from ui.sort import libsort, availsort, elecsort, splitsort
 
 NON_GW_SCHOOLS = ['GT', 'DA', 'GM', 'HU', 'HS', 'HL', 'AL', 'JB', 'HI']
 
@@ -18,8 +18,9 @@ def item(request, bibid):
     bib = voyager.get_bib_data(bibid)
     if not bib:
         raise Http404
-    holdings = voyager.get_holdings_data(bib)
-    holdings = availsort(libsort(elecsort(holdings)))
+    holdings = voyager.get_holdings(bib)
+    ours, theirs = splitsort(holdings)
+    holdings = availsort(elecsort(ours)) + libsort(elecsort(availsort(theirs), rev=True))
     return render(request, 'item.html', {
         'bibid': bibid,
         'bib': bib, 
@@ -34,26 +35,26 @@ def _date_handler(obj):
 
 def item_json(request, bibid):
     bib_data = voyager.get_bib_data(bibid)
-    bib_data['holdings'] = voyager.get_holdings_data(bib_data)
+    bib_data['holdings'] = voyager.get_holdings(bib_data)
     return HttpResponse(json.dumps(bib_data, default=_date_handler, indent=2), 
         content_type='application/json')
 
 def isbn(request, isbn):
-    bibids = voyager.get_bibids_from_isbn(isbn)
-    if bibids:
-        return redirect('item', bibid=bibids[0])
+    bibid = voyager.get_primary_bibid(num=isbn, num_type='isbn')
+    if bibid:
+        return redirect('item', bibid=bibid)
     raise Http404
 
 def issn(request, issn):
-    bibids = voyager.get_bibids_from_issn(issn)
-    if bibids:
-        return redirect('item', bibid=bibids[0])
+    bibid = voyager.get_primary_bibid(num=issn, num_type='issn')
+    if bibid:
+        return redirect('item', bibid=bibid)
     raise Http404
 
 def oclc(request, oclc):
-    bibids = voyager.get_bibids_from_oclc(oclc)
-    if bibids:
-        return redirect('item', bibid=bibids[0])
+    bibid = voyager.get_primary_bibid(num=oclc, num_type='oclc')
+    if bibid:
+        return redirect('item', bibid=bibid)
     raise Http404
 
 def error500(request):

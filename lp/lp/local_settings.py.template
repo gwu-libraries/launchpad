@@ -32,6 +32,11 @@ Z3950_SERVERS = {
     }
 }
 
+INDEX_CODES = {'isbn':['020N','020A','ISB3'],
+               'issn':['022A','022Z'],
+               'oclc':['035A']}
+
+
 # Sorting Options
 
 # Sorting by library
