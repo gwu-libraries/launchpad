@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 
 from ui import voyager
-from ui.sort import libsort, availsort, elecsort, libsort_bottom_only
+from ui.sort import libsort, availsort, elecsort, splitsort
 
 NON_GW_SCHOOLS = ['GT', 'DA', 'GM', 'HU', 'HS', 'HL', 'AL', 'JB', 'HI']
 
@@ -19,7 +19,8 @@ def item(request, bibid):
     if not bib:
         raise Http404
     holdings = voyager.get_holdings(bib)
-    holdings = availsort(libsort(elecsort(holdings)))
+    ours, theirs = splitsort(holdings)
+    holdings = availsort(elecsort(ours)) + libsort(elecsort(availsort(theirs), rev=True))
     return render(request, 'item.html', {
         'bibid': bibid,
         'bib': bib, 
