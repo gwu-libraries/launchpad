@@ -27,6 +27,9 @@
 </h2>
 {% endif %}
 
+{% if bib.LANGUAGE_DISPLAY %}
+<span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
+{% endif %}
 {% if bib.EDITION %}
 <span class="edition">{{ bib.EDITION }}.</span>
 {% endif %}
@@ -34,12 +37,8 @@
 {% if bib.CJK_INFO.IMPRINT %}
     {{ bib.CJK_INFO.IMPRINT }} <br />
 {% endif %}
-    {{ bib.IMPRINT }}.
-</span>
-{% if bib.LANGUAGE_DISPLAY %}
-In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
-{% endif %}
-<br />
+    {{ bib.IMPRINT }}
+</span><br />
 
 {% if bib.DISPLAY_ISBN_LIST %}
 <span class="isbn-label">ISBN </span>
@@ -97,6 +96,9 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
             </td>
             <td>
                 {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U %}
+					{% if holding.ELECTRONIC_DATA.LINK8563 %}
+						{{ holding.ELECTRONIC_DATA.LINK8563 }}
+					{% endif %}
                     <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online</a>
                 {% else %}
                     {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}

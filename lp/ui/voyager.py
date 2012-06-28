@@ -178,11 +178,12 @@ SELECT mfhd_master.mfhd_id,
        RTRIM(wrlcdb.GetMfHDsubfield(%s,'852','z')) as LINK852z,
        RTRIM(wrlcdb.GetMfHDsubfield(%s,'852','a')) as LINK852a,
        RTRIM(wrlcdb.GetMfHDsubfield(%s,'852','h')) as LINK852h,
-       RTRIM(wrlcdb.GetAllTags(%s,'M','866',2)) as LINK866
+       RTRIM(wrlcdb.GetAllTags(%s,'M','866',2)) as LINK866,
+       RTRIM(wrlcdb.GetMfHDsubfield(%s,'856','3')) as LINK8563
 FROM mfhd_master
 WHERE mfhd_master.mfhd_id=%s"""
     cursor = connection.cursor()
-    cursor.execute(query, [mfhd_id]*7)
+    cursor.execute(query, [mfhd_id]*8)
     return _make_dict(cursor, first=True)
        
 
