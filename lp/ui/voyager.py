@@ -59,11 +59,11 @@ AND bib_master.suppress_in_opac='N'"""
             norm, disp = zip(*std_nums)
             norm_set.update(norm)
             disp_set.update([num.strip() for num in disp])
-            bib['NORMAL_%s_LIST' % num_type.upper()] = norm_set
-            bib['DISPLAY_%s_LIST' % num_type.upper()] = disp_set
+            bib['NORMAL_%s_LIST' % num_type.upper()] = list(norm_set)
+            bib['DISPLAY_%s_LIST' % num_type.upper()] = list(disp_set)
             # use std nums to get related bibs
             bibids.update(get_related_bibids(norm, num_type))
-    bib['BIB_ID_LIST'] = bibids
+    bib['BIB_ID_LIST'] = list(bibids)
     return bib
 
 
