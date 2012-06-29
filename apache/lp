@@ -43,4 +43,15 @@
         </Files>
     </Directory>
 
+    # Necessary if you are sharing an apache virtual host with 
+    # proxied link resolver or other functions.  Uncomment to avoid 
+    # proxying launchpad urls!
+    #ProxyPassMatch /item/.* !
+    #ProxyPassMatch /issn/.* !
+    #ProxyPassMatch /isbn/.* !
+    #ProxyPassMatch /oclc/.* !
+    #ProxyPassMatch /static/.* !
+    #ProxyPassMatch /about/.* !
+    #ProxyPassMatch /api/.* !
+
 </VirtualHost>
