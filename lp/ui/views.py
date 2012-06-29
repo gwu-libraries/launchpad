@@ -2,6 +2,7 @@ from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.utils import simplejson as json
+from django.views.decorators.cache import cache_page
 
 from ui import voyager
 from ui.sort import libsort, availsort, elecsort, splitsort
@@ -14,6 +15,7 @@ def home(request):
         'settings': settings,
         })
 
+@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid):
     bib = voyager.get_bib_data(bibid)
     if not bib:
@@ -33,6 +35,7 @@ def item(request, bibid):
 def _date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
 
+@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item_json(request, bibid):
     bib_data = voyager.get_bib_data(bibid)
     bib_data['holdings'] = voyager.get_holdings(bib_data)
