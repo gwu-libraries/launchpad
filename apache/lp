@@ -10,6 +10,8 @@
     CustomLog /var/log/apache2/access.log combined
     ErrorLog /var/log/apache2/error.log
 
+    FileETag MTime Size
+
     <IfModule mod_expires.c>
         ExpiresActive On
         ExpiresDefault "access plus 300 seconds"
