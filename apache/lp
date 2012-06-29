@@ -10,19 +10,22 @@
     CustomLog /var/log/apache2/access.log combined
     ErrorLog /var/log/apache2/error.log
 
+    FileETag MTime Size
+
     <IfModule mod_expires.c>
         ExpiresActive On
         ExpiresDefault "access plus 300 seconds"
         ExpiresByType text/html  "access plus 1 hour"
         ExpiresByType text/css   "access plus 1 week"
         ExpiresByType text/javascript "access plus 1 week"
-        ExpiresByType image/gif  "access plus 1 month"
-        ExpiresByType image/jpeg "access plus 1 month"
-        ExpiresByType image/png  "access plus 1 month"
+        ExpiresByType image/gif  "access plus 1 year"
+        ExpiresByType image/jpeg "access plus 1 year"
+        ExpiresByType image/png  "access plus 1 year"
+        ExpiresByType image/x-icon "access plus 1 year"
     </IfModule>
 
     <IfModule mod_headers.c>
-        <FilesMatch "\.(gif|jpg|jpeg|png)$">
+        <FilesMatch "\.(gif|ico|jpg|jpeg|png)$">
             Header set Cache-Control "public"
         </FilesMatch>
     </IfModule>
@@ -42,5 +45,16 @@
             Allow from all
         </Files>
     </Directory>
+
+    # Necessary if you are sharing an apache virtual host with 
+    # proxied link resolver or other functions.  Uncomment to avoid 
+    # proxying launchpad urls!
+    #ProxyPassMatch /item/.* !
+    #ProxyPassMatch /issn/.* !
+    #ProxyPassMatch /isbn/.* !
+    #ProxyPassMatch /oclc/.* !
+    #ProxyPassMatch /static/.* !
+    #ProxyPassMatch /about/.* !
+    #ProxyPassMatch /api/.* !
 
 </VirtualHost>

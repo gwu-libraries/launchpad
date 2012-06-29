@@ -17,7 +17,7 @@ only been tested on ubuntu 10.04 LTS.
 
 1. Install Apache and other dependencies:
 
-        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler
+        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev
 
 2. Install git 
 
@@ -129,6 +129,10 @@ modify line 35 from this:
 
         Define one or more Z39.50 servers if needed under Z3950_SERVERS.
 
+        If you want to use memcache, define CACHES and
+        ITEM_PAGE_CACHE_SECONDS.  For development or testing, set
+        ITEM_PAGE_CACHE_SECONDS to something low.
+
         NOTE: If you are deploying to production, set DEBUG = False.
 
 2. Edit wsgi file
@@ -145,15 +149,20 @@ modify line 35 from this:
         sudo cp ../apache/lp /etc/apache2/sites-available/lp
         vim /etc/apache2/sites-available/lp
 
-	Change the values of the server, user, and python version in
-	the document
+	Change the values of LPHOME, server, user, and python version
+	in the document as appropriate.
 
 4. Enable these apache modules:
 
         sudo a2enmod expires
         sudo a2enmod headers
 
-5. Enable the app in apache and bounch apache2 to start it up
+5. If you want to use memcached, configure and ensure it has started:
+
+        sudo vim /etc/memcached.conf
+        sudo /etc/init.d/memcached start
+
+6. Enable the app in apache and bounce apache2 to start it up
 
         sudo a2ensite lp
         sudo /etc/init.d/apache2 restart
