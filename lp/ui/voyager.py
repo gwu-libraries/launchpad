@@ -226,8 +226,11 @@ ORDER BY library.library_name"""
         if holding['LIBRARY_NAME'] == 'GM' or holding['LIBRARY_NAME'] == 'GT':
             holding.update({'ELECTRONIC_DATA': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','electronic'),
                             'AVAILABILITY': get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','availability')})
-            holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
-            holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
+	    if holding['AVAILABILITY']['PERMLOCATION'] == ''  and holding['AVAILABILITY']['DISPLAY_CALL_NO'] == '' and holding['AVAILABILITY']['ITEM_STATUS_DESC'] == '':
+		holdings.remove(holding)
+	    else:
+            	holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
+            	holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
         else:
             holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
                             'AVAILABILITY': get_availability(holding['MFHD_ID'])})
@@ -533,10 +536,10 @@ def get_z3950_availability_data(bib,school,location,status,callno,item_status,fo
     availability = {}
     catlink = ''
     if school == 'GT':
-	catlink = 'http://catalog.library.georgetown.edu/record='
+	catlink = 'Click on the following link to get the information about this item from GeorgeTown Catalog <br>'+ 'http://catalog.library.georgetown.edu/record='+'b'+bib[0]+'~S4'
     else:
-	catlink = 'http://magik.gmu.edu/cgi-bin/Pwebrecon.cgi?BBID='
-    if found == True:
+	catlink = 'Click on the following link to get the information about this item from George Mason Catalog <br>'+ 'http://magik.gmu.edu/cgi-bin/Pwebrecon.cgi?BBID='+bib[0]
+    if found :
     	availability = { 'BIB_ID' : bib,
                      'CHRON' : None,
                      'DISPLAY_CALL_NO' : callno,
@@ -556,7 +559,7 @@ def get_z3950_availability_data(bib,school,location,status,callno,item_status,fo
                      'ITEM_STATUS' : item_status,
                      'ITEM_STATUS_DATE' : '',
                      'ITEM_STATUS_DESC' : status,
-                     'PERMLOCATION' : location,
+                     'PERMLOCATION' : catlink,
                      'TEMPLOCATION' : None}
 
     return availability
