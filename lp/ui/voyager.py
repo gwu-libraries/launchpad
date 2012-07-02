@@ -81,6 +81,8 @@ AND bib_master.suppress_in_opac='N'"""
     if not bib:
         return None
     # get additional authors; main entry is AUTHOR, all are AUTHORS
+    if not _is_oclc(bib['OCLC']):
+        bib['OCLC'] = ''
     bib['AUTHORS'] = get_added_authors(bib)
     # split up the 880 (CJK) fields/values if available
     if bib.get('CJK_INFO', ''):
@@ -105,7 +107,18 @@ AND bib_master.suppress_in_opac='N'"""
             bibids.update(get_related_bibids(norm, num_type))
     bib['BIB_ID_LIST'] = list(bibids)
     return bib
+    
 
+def _is_oclc(num):
+    if num.find('OCoLC') >= 0:
+        return True
+    if num.find('ocn') >= 0:
+        return True
+    if num.find('ocm') >= 0:
+        return True
+    return False
+
+    
 
 def get_primary_bibid(num, num_type):
     num = _normalize_num(num, num_type)
@@ -139,7 +152,7 @@ def _normalize_num(num, num_type):
 
 def get_related_bibids(num_list, num_type):
     query = """
-SELECT DISTINCT bib_index.bib_id
+SELECT DISTINCT bib_index.bib_id, bib_index.display_heading
 FROM bib_index
 WHERE bib_index.index_code IN """
     query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
@@ -161,7 +174,14 @@ AND bib_index.normal_heading IN (
 ORDER BY bib_index.bib_id"""
     cursor = connection.cursor()
     cursor.execute(query, [])
-    return [row[0] for row in cursor.fetchall()]
+    results = cursor.fetchall()
+    if num_type == 'oclc':
+        tmp = []
+        for pair in results:
+            if _is_oclc(pair[1]):
+                tmp.append(pair[0])
+        return tmp
+    return [row[0] for row in results]
 
 
 def get_related_std_nums(bibid, num_type):
@@ -175,7 +195,14 @@ AND bib_id = %s
 ORDER BY bib_index.normal_heading"""
     cursor = connection.cursor()
     cursor.execute(query, [bibid])
-    return cursor.fetchall()
+    results = cursor.fetchall()
+    if num_type == 'oclc':
+        tmp = []
+        for pair in results:
+            if _is_oclc(pair[1]):
+                tmp.append(pair)
+        results = tmp
+    return results
 
 
 def get_holdings(bib_data):
