@@ -75,7 +75,9 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
 
 
 {% if holdings %}
+    {% regroup holdings by LIBRARY_FULL_NAME as library_list %}
 <table WIDTH='100%'> 
+<!--
     <thead>
         <tr>
             <th width='40%'>Location</th>
@@ -83,12 +85,26 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
             <th width='15%'>Status</th>
             <th width='15%'>Consortium Loan</th>
         </tr>
-    </thead>
-    <tbody>
-        {% for holding in holdings %}
+    </thead>-->
+    <tbody>		
+    {% for library in library_list %}
+        <tr><th colspan='4' class='library-group-header'>
+            {{ library.grouper }}
+        </th></tr>
         <tr>
-            <td>
-                {{ holding.LOCATION_DISPLAY_NAME }}
+            <th width='40%'>Location</th>
+            <th width='30%'>Call Number</th>
+            <th width='15%'>Status</th>
+            <th width='15%'>Consortium Loan</th>
+        </tr>
+        {% for holding in library.list %}
+        <tr>
+            <td>{% if holding.AVAILABILITY.TEMPLOCATION %}
+                <span class='temp-loc-label'>Temporarily held at:</span><br />
+                    {{ holding.AVAILABILITY.TEMPLOCATION }}
+                {% else %}
+                    {{ holding.TRIMMED_LOCATION_DISPLAY_NAME }}
+                {% endif %}
                 {% if holding.LIBRARY_HAS %}
                     {% for line in holding.LIBRARY_HAS %}
                         <br />
@@ -103,22 +119,23 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
             </td>
             <td>
                 {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U %}
-					{% if holding.ELECTRONIC_DATA.LINK8563 %}
-						
-					{{ holding.ELECTRONIC_DATA.LINK8563 }}
-					{% endif %}
-			{% if holding.LIBRARY_NAME != 'GW'%}
-
-                   <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img><a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online {{holding.LIBRARY_NAME}} only</a>
-			{%else%}
-				<a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online </a>
-			{%endif%}
-			
+                    {% if holding.ELECTRONIC_DATA.LINK8563 %}
+                        {{ holding.ELECTRONIC_DATA.LINK8563 }}
+                    {% endif %}
+                    {% if holding.LIBRARY_NAME != 'GW'%}
+                <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img><a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online {{holding.LIBRARY_NAME}} only</a>
+                    {%else%}
+                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online </a>
+                    {%endif%}
                 {% else %}
                     {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
                         <span style='color: green'>Available</span>
                     {%else%}
-                        {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
+                        {% if holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
+                        <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
+                        {% else %}
+                            {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
+                        {% endif %}
                     {%endif%}
                 {% endif %}
             </td>
@@ -129,6 +146,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
             </td>
         </tr>
         {% endfor %}
+    {% endfor %}
     </tbody>
 </table> 
 {% else %}

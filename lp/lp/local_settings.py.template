@@ -23,6 +23,28 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
 )
 
+
+LIB_LOOKUP = {'AU':'American',
+			  'AL':'Washington Law (American)',
+			  'CU':'Catholic',
+			  'LL':'Catholic',
+			  'DC':'University of the District of Columbia',
+			  'GA':'Gallaudet',
+			  'GM':'George Mason',
+			  'GT':'Georgetown',
+			  'DA':'Dahlgren Medical (Georgetwon)',
+			  'GW':'George Washington',
+			  'HI':'Himmelfarb Health Sciences (George Washington)',
+			  'JB':'Jacob Burns Law (George Washington)',
+			  'HU':'Howard',
+			  'HL':'Howard Law',
+			  'HS':'Howard Health Sciences',
+			  'MU':'Marymount',
+			  'TR':'Trinity',
+			  'E-Resources':'Shared Electronic (WRLC)',
+			  'E-GovDocs':'Shared Electronic (WRLC)',
+              'WR':'WRLC'}
+
 Z3950_SERVERS = {
     'LIBRARY_ID': {
         'SERVER_ADDRESS': '',

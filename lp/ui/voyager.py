@@ -80,9 +80,10 @@ AND bib_master.suppress_in_opac='N'"""
     # if bib is empty, there's no match -- return immediately
     if not bib:
         return None
-    # get additional authors; main entry is AUTHOR, all are AUTHORS
+    # ensure the NETWORK_NUMBER is OCLC
     if not _is_oclc(bib['OCLC']):
         bib['OCLC'] = ''
+    # get additional authors; main entry is AUTHOR, all are AUTHORS
     bib['AUTHORS'] = get_added_authors(bib)
     # split up the 880 (CJK) fields/values if available
     if bib.get('CJK_INFO', ''):
@@ -236,8 +237,16 @@ ORDER BY library.library_name"""
                             'AVAILABILITY': get_availability(holding['MFHD_ID'])})
         holding.update({'ELIGIBLE': is_eligible(holding)})
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
+        holding['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
+        holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)
     return holdings
-    
+
+
+def trim_display_name(holding):
+    index = holding['LOCATION_DISPLAY_NAME'].find(':')
+    if index > -1:
+        return holding['LOCATION_DISPLAY_NAME'][index+2:]
+    return holding['LOCATION_DISPLAY_NAME']
     
 def _in_clause(items):
     return ','.join(["'"+str(item)+"'" for item in items])
