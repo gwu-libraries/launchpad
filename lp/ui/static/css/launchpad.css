@@ -18,11 +18,36 @@ tr, td, th {
 
 th {
     font-weight: normal;
-    background-color: #e0e0e0;
+    background-color: #778899;
 }
 
 td {
     border-bottom: 1px solid #e6e6e6;
     padding-top: .4em;
     padding-bottom: .4em;
+}
+
+.library-group-header{
+    font-size: 1.25em; /* 20px; */
+	font-family: Georgia, serif;
+	color: #555;
+    background-color: #e0e0e0;
+	font-weight: normal;
+	line-height: 1.5em; /* 24px; */
+	letter-spacing: -1px;
+	text-shadow: 0px 1px 1px #ccc;
+}
+
+.temp-loc-label{
+    color:rgb(96,96,96);
+    font-size: small;
+}
+
+.off-site{
+    color:black;
+}
+
+.off-site-explanation{
+    color:green;
+    font-size:small;
 }
