@@ -317,6 +317,7 @@ def _get_gt_holdings(query,query_type,bib):
 	    return electronic
     for r in res:
         values = str(r)
+	print values
         lines = values.split('\n')
         for line in lines:
             ind = line.find('856 4')
