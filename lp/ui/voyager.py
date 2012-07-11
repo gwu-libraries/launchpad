@@ -554,6 +554,12 @@ def is_eligible(holding):
             temp_loc = holding['AVAILABILITY']['TEMPLOCATION'].upper()
         if holding['AVAILABILITY']['ITEM_STATUS_DESC']:
             status = holding['AVAILABILITY']['ITEM_STATUS_DESC'].upper()
+    else:
+        return False
+    if holding['LIBRARY_NAME'] == 'GM' and 'Law Library' in holding['AVAILABILITY']['PERMLOCATION']:
+        return False
+    if holding['LIBRARY_NAME'] in settings.INELIGIBLE_LIBRARIES:
+        return False
     if 'WRLC' in temp_loc or 'WRLC' in perm_loc:
         return True
     for loc in settings.INELIGIBLE_PERM_LOCS:
