@@ -518,14 +518,27 @@ AND bib_index.index_code ='907A'"""
     return [row['NORMAL_HEADING'] for row in results]
 
 
-def get_wrlcbib_from_gtbib(bibid):
+def get_wrlcbib_from_gtbib(gtbibid):
     query = """
 SELECT bib_index.bib_id
 FROM bib_index
-WHERE LOWER(SUBSTR(bib_index.normal_heading,0,LENGTH(bib_index.normal_heading)-1)) = %s
+WHERE bib_index.normal_heading = %s
 AND bib_index.index_code = '907A'"""
     cursor = connection.cursor()
-    cursor.execute(query, [bibid])
+    cursor.execute(query, [gtbibid.upper()])
+    results = _make_dict(cursor)
+    return results[0]['BIB_ID'] if results else None
+
+
+def get_wrlcbib_from_gmbib(gmbibid):
+    query = """
+SELECT bib_index.bib_id
+FROM bib_index
+WHERE bib_index.index_code = '035A'
+AND bib_index.normal_heading=bib_index.display_heading
+AND bib_index.normal_heading = %s"""
+    cursor = connection.cursor()
+    cursor.execute(query, [gmbibid])
     results = _make_dict(cursor)
     return results[0]['BIB_ID'] if results else None
 

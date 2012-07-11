@@ -57,6 +57,20 @@ def gtitem_json(request, gtbibid):
     raise Http404
 
 
+def gmitem(request, gmbibid):
+    bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
+    if bibid:
+        return redirect('item', bibid=bibid)
+    raise Http404
+
+
+def gmitem_json(request, gmbibid):
+    bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
+    if bibid:
+        return redirect('item_json', bibid=bibid)
+    raise Http404
+
+
 def isbn(request, isbn):
     bibid = voyager.get_primary_bibid(num=isbn, num_type='isbn')
     if bibid:
