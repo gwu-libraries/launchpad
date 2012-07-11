@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% load launchpad_extras %}
+{% load url from future %}
 
 {% block title %}{% if bib.CJK_INFO.TITLE %}{{ bib.CJK_INFO.TITLE }}{% else %}{{ bib.TITLE }}{% endif %}{% endblock title %}
 
 {% block link_extra %}
-<link rel='alternate' type='application/json' href='{% url item_json bibid %}' />
+{% with url_name="item_json" %}
+<link rel='alternate' type='application/json' href='{% url url_name bibid %}' />
+{% endwith %}
 {% endblock link_extra %}
 
 {% block content %}
@@ -159,24 +162,32 @@ No copies found in WRLC.  ADD ILL LINK.
 <h3>Debugging info</h3>
 
 <p>
-View JSON: <a href='{% url item_json bibid %}'>{% url item_json bibid %}</a>
+{% with json_url="item_json" %}
+View JSON: <a href='{% url json_url bibid %}'>{% url json_url bibid %}</a>
+{% endwith %}
 &nbsp;
 
 {% if bib.ISBN|clean_isbn %}
-ISBN: <a href='{% url isbn bib.ISBN|clean_isbn %}'>{% url isbn bib.ISBN|clean_isbn %}</a>
+{% with isbn_url="isbn" %}
+ISBN: <a href='{% url isbn_url bib.ISBN|clean_isbn %}'>{% url isbn_url bib.ISBN|clean_isbn %}</a>
 &nbsp;
 (<a href='http://findit.library.gwu.edu/go?isbn={{ bib.ISBN|clean_isbn }}'>findit</a>)
 &nbsp;
+{% endwith %}
 {% endif %}
 {% if bib.ISSN|clean_issn %}
-ISSN: <a href='{% url issn bib.ISSN|clean_issn %}'>{% url issn bib.ISSN|clean_issn %}</a>
+{% with issn_url="issn" %}
+ISSN: <a href='{% url issn_url bib.ISSN|clean_issn %}'>{% url issn_url bib.ISSN|clean_issn %}</a>
 &nbsp;
 (<a href='http://findit.library.gwu.edu/go?issn={{ bib.ISSN|clean_issn }}'>findit</a>)
 &nbsp;
+{% endwith %}
 {% endif %}
 {% if bib.NETWORK_NUMBER|clean_oclc %}
-OCLC: <a href='{% url oclc bib.NETWORK_NUMBER|clean_oclc %}'>{% url oclc bib.NETWORK_NUMBER|clean_oclc %}</a>
+{% with oclc_url="oclc" %}
+OCLC: <a href='{% url oclc_url bib.NETWORK_NUMBER|clean_oclc %}'>{% url oclc_url bib.NETWORK_NUMBER|clean_oclc %}</a>
 &nbsp;
+{% endwith %}
 {% endif %}
 </p>
 

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load url from future %}
 
 {% block title %}About GW findit{% endblock title %}
 
@@ -18,10 +19,8 @@ at GW or our consortium peer libraries.
 </p>
 
 <p>
-
 If you're interested in some of the technical details, have a look at
-the <a href="{% url api %}">API</a> to this system.
-
+the <a href="{% url 'api' %}">API</a> to this system.
 </p>
 
 {% endblock %}
