@@ -42,7 +42,7 @@ LIB_LOOKUP = {'AU':'American',
 			  'MU':'Marymount',
 			  'TR':'Trinity',
 			  'E-Resources':'Shared Electronic (WRLC)',
-			  'E-GovDocs':'Shared Electronic (WRLC)',
+			  'E-GovDoc':'Shared Electronic (WRLC)',
               'WR':'WRLC'}
 
 Z3950_SERVERS = {
