@@ -138,7 +138,8 @@ AND bib_master.library_id=library.library_id"""
     for bib in bibs:
         if bib['LIBRARY_NAME'] == settings.PREF_LIB:
             return bib['BIB_ID']
-    return bibs[0]['BIB_ID']
+    return bibs[0]['BIB_ID'] if bibs else None
+
 
 
 def _normalize_num(num, num_type):
