@@ -43,12 +43,18 @@ def item_json(request, bibid):
         content_type='application/json')
 
 
-def gtitem(request, bibid):
-    pass
+def gtitem(request, gtbibid):
+    bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
+    if bibid:
+        return redirect('item', bibid=bibid)
+    raise Http404
 
 
-def gtitem_json(request, bibid):
-    pass
+def gtitem_json(request, gtbibid):
+    bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
+    if bibid:
+        return redirect('item_json', bibid=bibid)
+    raise Http404
 
 
 def isbn(request, isbn):
