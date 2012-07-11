@@ -122,7 +122,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     {% if holding.ELECTRONIC_DATA.LINK8563 %}
                         <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
                     {% endif %}
-                    {% if holding.LIBRARY_NAME != 'GW'%}
+                    {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
                 <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img><a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online {{holding.LIBRARY_NAME}} only</a>
                     {%else%}
                 <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online </a>
