@@ -2,13 +2,15 @@ from lp import settings
 
 
 def splitsort(holdings_list):
-    ours, theirs = [],[]
+    ours, theirs, shared = [],[], []
     for holding in holdings_list:
         if holding['LIBRARY_NAME'] == settings.PREF_LIB:
             ours.append(holding)
+        elif holding['LIBRARY_NAME'] in ('WR','E-Resources','E-GovDoc'):
+            shared.append(holding)
         else:
             theirs.append(holding)
-    return ours, theirs    
+    return ours, theirs, shared    
     
     
 def libsort(holdings_list):

@@ -21,8 +21,8 @@ def item(request, bibid):
     if not bib:
         raise Http404
     holdings = voyager.get_holdings(bib)
-    ours, theirs = splitsort(holdings)
-    holdings = availsort(elecsort(ours)) + libsort(elecsort(availsort(theirs), rev=True))
+    ours, theirs, shared = splitsort(holdings)
+    holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) + libsort(elecsort(availsort(theirs), rev=True))
     return render(request, 'item.html', {
         'bibid': bibid,
         'bib': bib, 
@@ -41,6 +41,15 @@ def item_json(request, bibid):
     bib_data['holdings'] = voyager.get_holdings(bib_data)
     return HttpResponse(json.dumps(bib_data, default=_date_handler, indent=2), 
         content_type='application/json')
+
+
+def gtitem(request, bibid):
+    pass
+
+
+def gtitem_json(request, bibid):
+    pass
+
 
 def isbn(request, isbn):
     bibid = voyager.get_primary_bibid(num=isbn, num_type='isbn')
