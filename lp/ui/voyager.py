@@ -309,6 +309,18 @@ WHERE mfhd_master.mfhd_id=%s"""
     return {'marc852':marc852, 'marc856list':marc856, 'marc866list':marc866}
 
 
+def get_mfhd_raw(mfhd_id):
+    query = """
+SELECT RTRIM(wrlcdb.GetAllTags(%s,'M','852',2)) as MARC852,
+       RTRIM(wrlcdb.GetAllTags(%s,'M','856',2)) as MARC856,
+       RTRIM(wrlcdb.GetAllTags(%s,'M','866',2)) as MARC866
+FROM mfhd_master
+WHERE mfhd_master.mfhd_id=%s"""
+    cursor = connection.cursor()
+    cursor.execute(query,[mfhd_id]*4)
+    return _make_dict(cursor, first=True)
+
+
 def get_availability(mfhd_id):
     query = """
 SELECT DISTINCT display_call_no, item_status_desc, item_status.item_status,
@@ -332,6 +344,32 @@ ORDER BY PermLocation, TempLocation, item_status_date desc"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id])
     return _make_dict(cursor, first=True)
+
+
+def get_items(mfhd_id):
+    query = """
+SELECT DISTINCT display_call_no, item_status_desc, item_status.item_status,
+       permLocation.location_display_name as PermLocation,
+       tempLocation.location_display_name as TempLocation,
+       mfhd_item.item_enum, mfhd_item.chron, item.item_id, item_status_date,
+       bib_master.bib_id
+FROM bib_master
+JOIN library ON library.library_id = bib_master.library_id
+JOIN bib_text ON bib_text.bib_id = bib_master.bib_id
+JOIN bib_mfhd ON bib_master.bib_id = bib_mfhd.bib_id
+JOIN mfhd_master ON mfhd_master.mfhd_id = bib_mfhd.mfhd_id
+JOIN mfhd_item on mfhd_item.mfhd_id = mfhd_master.mfhd_id
+JOIN item ON item.item_id = mfhd_item.item_id
+JOIN item_status ON item_status.item_id = item.item_id
+JOIN item_status_type on item_status.item_status = item_status_type.item_status_type
+JOIN location permLocation ON permLocation.location_id = item.perm_location
+LEFT OUTER JOIN location tempLocation ON tempLocation.location_id = item.temp_location
+WHERE bib_mfhd.mfhd_id = %s
+ORDER BY PermLocation, TempLocation, item_status_date desc"""
+    cursor = connection.cursor()
+    cursor.execute(query, [mfhd_id])
+    return _make_dict(cursor)
+    
 
 def _get_z3950_connection(server):
     conn = zoom.Connection(server['SERVER_ADDRESS'], server['SERVER_PORT'])
