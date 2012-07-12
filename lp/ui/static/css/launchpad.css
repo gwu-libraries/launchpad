@@ -56,3 +56,14 @@ td {
     font-size:small;
     color: #606060;
 }
+
+.note-label{
+    font-size: x-small;
+    font-weight: bold;
+    color: black;
+}
+
+.note{
+    font-size: x-small;
+    color: gray;
+}

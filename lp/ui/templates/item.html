@@ -114,6 +114,10 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                         <span class="library-has">{{ line }}</span>
                     {% endfor %}
                 {% endif %}
+                {% if holding.MFHD_DATA.marc852 %}
+                <br /><span class="note-label">Note: </span>
+                <span class="note">{{ holding.MFHD_DATA.marc852 }}</span>
+                {% endif %}
             </td>
             <td>
                 {% if holding.DISPLAY_CALL_NO %}

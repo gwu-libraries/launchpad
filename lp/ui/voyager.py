@@ -282,13 +282,11 @@ WHERE mfhd_master.mfhd_id=%s"""
     results = _make_dict(cursor, first=True)
     # parse notes from 852
     string = results.get('MARC852','')
-    if not string:
-        marc852 = {}
-    else:
-        marc852 = {'a':'','h':'','z':''}
+    marc852 = ''
+    if string:
         for subfield in string.split('$')[1:]:
-            if subfield[0] in marc852:
-                marc852[subfield[0]] = subfield[1:]
+            if subfield[0] == 'z':
+                marc852 = subfield[1:]
     # parse link from 856
     string = results.get('MARC856','')
     marc856 = []
