@@ -268,7 +268,46 @@ WHERE mfhd_master.mfhd_id=%s"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id]*8)
     return _make_dict(cursor, first=True)
-       
+
+
+def get_mfhd_data(mfhd_id):
+    query = """
+SELECT RTRIM(wrlcdb.GetAllTags(%s,'M','852',2)) as MARC852,
+       RTRIM(wrlcdb.GetAllTags(%s,'M','856',2)) as MARC856,
+       RTRIM(wrlcdb.GetAllTags(%s,'M','866',2)) as MARC866
+FROM mfhd_master
+WHERE mfhd_master.mfhd_id=%s"""
+    cursor = connection.cursor()
+    cursor.execute(query,[mfhd_id]*4)
+    results = _make_dict(cursor, first=True)
+    # parse notes from 852
+    string = results.get('MARC852','')
+    if not string:
+        marc852 = {}
+    else:
+        marc852 = {'a':'','h':'','z':''}
+        for subfield in string.split('$')[1:]:
+            if subfield[0] in marc852:
+                marc852[subfield[0]] = subfield[1:]
+    # parse link from 856
+    string = results.get('MARC856','')
+    marc856 = []
+    if string:
+        for item in string.split(' // '):
+            temp = {'3':'','u':'','z':''}
+            for subfield in string.split('$')[1:]:
+                if subfield[0] in temp:
+                    temp[subfield[0]] = subfield[1:]
+            marc856.append(temp)
+    # parse "library has" info from 866
+    marc866 = []
+    string = results.get('MARC866','')
+    if string:
+        for line in string.split('//'):
+            while line.find('$') > -1:
+                line = line[line.index('$')+2:]
+            marc866.append(line.strip(" '"))
+    return {'852':marc852, '856list':marc856, '866list':marc866}
 
 
 def get_availability(mfhd_id):
