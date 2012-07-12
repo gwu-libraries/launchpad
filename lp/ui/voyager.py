@@ -81,7 +81,7 @@ AND bib_master.suppress_in_opac='N'"""
     if not bib:
         return None
     # ensure the NETWORK_NUMBER is OCLC
-    if not _is_oclc(bib.get('OCLC','')):
+    if not bib.get('OCLC','') or not _is_oclc(bib.get('OCLC','')):
         bib['OCLC'] = ''
     # get additional authors; main entry is AUTHOR, all are AUTHORS
     bib['AUTHORS'] = get_added_authors(bib)
