@@ -234,10 +234,10 @@ ORDER BY library.library_name"""
                 holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
                 holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
         else:
-            holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']), 
+            holding.update({'MFHD_DATA': get_mfhd_data(holding['MFHD_ID']), 
                             'AVAILABILITY': get_availability(holding['MFHD_ID'])})
         holding.update({'ELIGIBLE': is_eligible(holding)})
-        holding.update({'LIBRARY_HAS': get_library_has(holding)})
+        #holding.update({'LIBRARY_HAS': get_library_has(holding)})
         holding['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
         holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)    
     return [h for h in holdings if not h.get('REMOVE', False)]
@@ -304,10 +304,11 @@ WHERE mfhd_master.mfhd_id=%s"""
     string = results.get('MARC866','')
     if string:
         for line in string.split('//'):
-            while line.find('$') > -1:
-                line = line[line.index('$')+2:]
-            marc866.append(line.strip(" '"))
-    return {'852':marc852, '856list':marc856, '866list':marc866}
+            for subfield in line.split('$')[1:]:
+                if subfield[0] == 'a':
+                    marc866.append(subfield[1:].strip(" '"))
+                    break
+    return {'marc852':marc852, 'marc856list':marc856, 'marc866list':marc866}
 
 
 def get_availability(mfhd_id):
