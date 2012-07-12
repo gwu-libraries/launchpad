@@ -646,6 +646,10 @@ def get_library_has(holding):
                     line = line[ind+2:]
             if ind > -1:
                 lib_has[i] = line
+            elif line.find('$') > -1:
+                while line.find('$') > -1:
+                    line = line[line.find('$')+2:]
+                lib_has[i] =line
         return lib_has
     else:
         return []
