@@ -637,9 +637,15 @@ def get_library_has(holding):
         lib_has =  holding['ELECTRONIC_DATA']['LINK866'].split('//')
         for i in range(len(lib_has)):
             line = lib_has[i]
-            while line.find('$') > -1:
-                line = line[line.index('$')+2:]
-            lib_has[i] = line
+            ind = line.find('$a')
+            ind2 = line.find('$',ind+2)
+            if ind  > -1:
+                if ind2 != -1:
+                    line = line[ind+2:ind2]
+                else:
+                    line = line[ind+2:]
+            if ind > -1:
+                lib_has[i] = line
         return lib_has
     else:
         return []
