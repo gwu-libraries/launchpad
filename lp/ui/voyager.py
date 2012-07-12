@@ -305,6 +305,7 @@ def _get_gt_holdings(query,query_type,bib,lib):
     res = []
     results = []
     values = status = location = callno = url = msg = ''
+    alt_callno = None
     item_status = 0
     arow= {}
     try:
@@ -329,6 +330,8 @@ def _get_gt_holdings(query,query_type,bib,lib):
         values = str(r)
         lines = values.split('\n')
         for line in lines:
+            if alt_callno is None:
+                alt_callno = get_callno(line)
             ind = line.find('856 4')
             if ind !=-1:
                 ind = line.find('$u')
@@ -365,6 +368,9 @@ def _get_gt_holdings(query,query_type,bib,lib):
         arow = {'status':status, 'location':location, 'callno':callno,'LINK':url,'MESSAGE':msg}
         results.append(arow)
     conn.close()
+    if alt_callno is not None and location.find('Off-Campus Shelving') != -1:
+        callno = alt_callno
+        callno = get_clean_callno(callno)
     if query_type == 'availability':
         availability = get_z3950_availability_data(bib,lib,location,status,callno,item_status)
         return availability
@@ -382,6 +388,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
         electronic = {}
         item_status = 0
         values = status = location = callno = url = msg = ''
+        alt_callno = None
         arow= {}
         bib = get_gmbib_from_gwbib(id)
         try:
@@ -418,6 +425,8 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 values = str(r)
                 lines = values.split('\n')
                 for line in lines:
+                    if alt_callno is None:
+                        alt_callno = get_callno(line)
                     ind = line.find('856 4')
                     if ind !=-1:
                         ind = line.find('$h')
@@ -458,6 +467,9 @@ def get_z3950_holdings(id, school, id_type, query_type):
                     results.append(arow)
                 holding_found = False
             conn.close()
+            if alt_callno is not None and location.find('Off-Campus Shelving') != -1:
+                callno = alt_callno
+                callno = get_clean_callno(callno)
             if query_type == 'availability':
                 availability = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
                 return availability
@@ -631,3 +643,19 @@ def get_library_has(holding):
         return lib_has
     else:
         return []
+
+def get_callno(line):
+    ind = line.find('50')
+    if ind != -1:
+        ind = line.find('$a')
+        if ind != -1:
+            callno = line[ind + 2:]
+            return callno
+    return None
+
+
+def get_clean_callno(callno):
+    ind = callno.find('$b')
+    if ind != -1:
+        callno = callno[0:ind] + callno[ind+2:]
+    return callno
