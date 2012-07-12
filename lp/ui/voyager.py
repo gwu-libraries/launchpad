@@ -237,7 +237,6 @@ ORDER BY library.library_name"""
             holding.update({'MFHD_DATA': get_mfhd_data(holding['MFHD_ID']), 
                             'AVAILABILITY': get_availability(holding['MFHD_ID'])})
         holding.update({'ELIGIBLE': is_eligible(holding)})
-        #holding.update({'LIBRARY_HAS': get_library_has(holding)})
         holding['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
         holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)    
     return [h for h in holdings if not h.get('REMOVE', False)]
@@ -253,6 +252,7 @@ def _in_clause(items):
     return ','.join(["'"+str(item)+"'" for item in items])
 
 
+# deprecated
 def get_electronic_data(mfhd_id):
     query = """
 SELECT mfhd_master.mfhd_id,
@@ -295,7 +295,7 @@ WHERE mfhd_master.mfhd_id=%s"""
     if string:
         for item in string.split(' // '):
             temp = {'3':'','u':'','z':''}
-            for subfield in string.split('$')[1:]:
+            for subfield in item.split('$')[1:]:
                 if subfield[0] in temp:
                     temp[subfield[0]] = subfield[1:]
             marc856.append(temp)
@@ -651,7 +651,7 @@ def get_z3950_electronic_data(school,link,message,Found = True):
           'MFHD_ID' : None}
     return electronic
 
-
+# deprecated
 def get_library_has(holding):
     if holding['ELECTRONIC_DATA'] and holding['ELECTRONIC_DATA']['LINK866']:
         lib_has =  holding['ELECTRONIC_DATA']['LINK866'].split('//')
