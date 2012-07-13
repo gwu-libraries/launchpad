@@ -234,19 +234,36 @@ ORDER BY library.library_name"""
                 holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
                 holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
         else:
-            holding.update({'MFHD_DATA': get_mfhd_data(holding['MFHD_ID']), 
+            holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']),
                             'AVAILABILITY': get_availability(holding['MFHD_ID'])})
+            holding.update({'MFHD_DATA': get_mfhd_data(holding['MFHD_ID']), 
+                            'ITEMS': get_items(holding['MFHD_ID'])})
+        if holding.get('ITEMS'):
+            for item in holding['ITEMS']:
+                item['ELIGIBLE'] = is_item_eligible(item, holding.get('LIBRARY_NAME',''))
+                item['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
+                item['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_item_display_name(item)
+            holding['LIBRARY_FULL_NAME'] = holding['ITEMS'][0]['LIBRARY_FULL_NAME']
         holding.update({'ELIGIBLE': is_eligible(holding)})
+        holding.update({'LIBRARY_HAS': get_library_has(holding)})
         holding['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
-        holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)    
+        holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding) 
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
 def trim_display_name(holding):
     index = holding['LOCATION_DISPLAY_NAME'].find(':')
-    if index > -1:
-        return holding['LOCATION_DISPLAY_NAME'][index+2:]
+    if index == 2:
+        return holding['LOCATION_DISPLAY_NAME'][3:]
     return holding['LOCATION_DISPLAY_NAME']
+
+
+def trim_item_display_name(item):
+    index = item['PERMLOCATION'].find(':') if item['PERMLOCATION'] else -1
+    if index == 2:
+        return item['PERMLOCATION'][3:].strip()
+    return item['PERMLOCATION']
+
     
 def _in_clause(items):
     return ','.join(["'"+str(item)+"'" for item in items])
@@ -660,6 +677,29 @@ def is_eligible(holding):
         if stat == status:
             return False
     return True
+
+
+def is_item_eligible(item, library_name):
+    perm_loc = item['PERMLOCATION'].upper() if item['PERMLOCATION'] else ''
+    temp_loc = item['TEMPLOCATION'].upper() if item['TEMPLOCATION'] else ''
+    status = item['ITEM_STATUS_DESC'].upper() if item['ITEM_STATUS_DESC'] else ''
+    if library_name == 'GM' and 'Law Library' in perm_loc:
+        return False
+    if library_name in settings.INELIGIBLE_LIBRARIES:
+        return False
+    if 'WRLC' in temp_loc or 'WRLC' in perm_loc:
+        return True
+    for loc in settings.INELIGIBLE_PERM_LOCS:
+        if loc in perm_loc:
+            return False
+    for loc in settings.INELIGIBLE_TEMP_LOCS:
+        if loc in temp_loc:
+            return False
+    for stat in settings.INELIGIBLE_STATUS:
+        if stat == status:
+            return False
+    return True
+
 
 def get_z3950_availability_data(bib,school,location,status,callno,item_status,found = True):
     availability = {}
