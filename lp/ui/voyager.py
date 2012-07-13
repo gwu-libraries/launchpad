@@ -304,7 +304,7 @@ def _get_z3950_connection(server):
 def _get_gt_holdings(query,query_type,bib,lib):
     res = []
     results = []
-    values = status = location = callno = url = msg = ''
+    values = status = location = callno = url = msg = note = ''
     alt_callno = None
     item_status = 0
     arow= {}
@@ -315,7 +315,7 @@ def _get_gt_holdings(query,query_type,bib,lib):
             availability = get_z3950_availability_data(bib,lib,'','','',item_status,False)
             return availability
         elif query_type == 'electronic':
-            electronic = get_z3950_electronic_data(lib,'','',False)
+            electronic = get_z3950_electronic_data(lib,'','','',False)
             return electronic
     try:
         res = conn.search(query)
@@ -324,7 +324,7 @@ def _get_gt_holdings(query,query_type,bib,lib):
             availability = get_z3950_availability_data(bib,lib,'','','',item_status,False)
             return availability
         elif query_type == 'electronic':
-            electronic = get_z3950_electronic_data(lib,'','',False)
+            electronic = get_z3950_electronic_data(lib,'','','',False)
             return electronic
     for r in res:
         values = str(r)
@@ -360,6 +360,13 @@ def _get_gt_holdings(query,query_type,bib,lib):
                 chars = len(line)
                 callno = line[ind+3:chars-1]
             
+            ind = line.find('852')
+            if ind != -1:
+                ind = line.find('$o')
+                ind2 = line.find('$y', ind)
+                note = line[ind+2:ind2]
+
+            
             ind = line.find('localLocation')
             if ind != -1:
                 ind = line.find(':')
@@ -375,7 +382,7 @@ def _get_gt_holdings(query,query_type,bib,lib):
         availability = get_z3950_availability_data(bib,lib,location,status,callno,item_status)
         return availability
     elif query_type == 'electronic':
-        electronic = get_z3950_electronic_data(lib,url,msg)
+        electronic = get_z3950_electronic_data(lib,url,msg,note)
         return electronic
 
 
@@ -387,7 +394,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
         availability = {}
         electronic = {}
         item_status = 0
-        values = status = location = callno = url = msg = ''
+        values = status = location = callno = url = msg = note = ''
         alt_callno = None
         arow= {}
         bib = get_gmbib_from_gwbib(id)
@@ -398,7 +405,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 availability = get_z3950_availability_data(bib,'GM','','','',item_status,False)
                 return availability
             elif query_type == 'electronic':
-                electronic = get_z3950_electronic_data('GM','','', False)
+                electronic = get_z3950_electronic_data('GM','','','', False)
                 return electronic
      
         if len(bib) > 0:
@@ -417,7 +424,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                     availability = get_z3950_availability_data(correctbib,'GM','','','',item_status,False)
                     return availability
                 elif query_type == 'electronic':
-                    electronic = get_z3950_electronic_data('GM','','', False)
+                    electronic = get_z3950_electronic_data('GM','','','', False)
                     return electronic
     
             res = conn.search(query)
@@ -429,16 +436,22 @@ def get_z3950_holdings(id, school, id_type, query_type):
                         alt_callno = get_callno(line)
                     ind = line.find('856 4')
                     if ind !=-1:
-                        ind = line.find('$h')
+                        ind = line.find('$x')
                         ind1 = line.find(' ',ind)
-                        url = line[ind:ind1]
+                        url = line[ind+2:ind1]
                         location = 'GM: online'
                         item_status = 1
                         status = 'Not Charged'
                         ind = line.find('$z')
-                        ind1 = line.find('$u',ind)
-                        msg = line[ind+2:ind1]
-                        
+                        ind1 = line.find('$x',ind+2)
+                        msg = line[ind1+2:]
+                    
+                    ind = line.find('852') 
+                    if ind != -1:
+                        ind = line.find('$o')
+                        ind2 = line.find('$y', ind)
+                        note = line[ind+2:ind2]
+   
                     ind = line.find('availableNow')
                     if ind != -1:
                         ind = line.find(':')
@@ -474,7 +487,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 availability = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
                 return availability
             elif query_type == 'electronic':
-                electronic = get_z3950_electronic_data('GM',url,msg)
+                electronic = get_z3950_electronic_data('GM',url,msg,note)
                 return electronic
         else:
             res = get_bib_data(id)
@@ -490,7 +503,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 availability = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
                 return availability
             elif query_type == 'electronic':
-                electronic = get_z3950_electronic_data('GM',url,msg)
+                electronic = get_z3950_electronic_data('GM',url,msg,note)
                 return electronic
     elif school=='GT' or school =='DA':
         if id_type =='bib':
@@ -619,7 +632,7 @@ def get_z3950_availability_data(bib,school,location,status,callno,item_status,fo
 
     return availability
 
-def get_z3950_electronic_data(school,link,message,Found = True):
+def get_z3950_electronic_data(school,link,message,note,Found = True):
     link852h = ''
     if link != '': 
         link852h = school+': Electronic Resource'
