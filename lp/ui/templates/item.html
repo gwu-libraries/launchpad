@@ -2,7 +2,7 @@
 {% load launchpad_extras %}
 {% load url from future %}
 
-{% block title %}{% if bib.CJK_INFO.TITLE %}{{ bib.CJK_INFO.TITLE }}{% else %}{{ bib.TITLE }}{% endif %}{% endblock title %}
+{% block title %}{% if bib.CJK_INFO.TITLE %}{{ bib.CJK_INFO.TITLE }}{% else %}{% if bib.TITLE|length <= 254 %}{{ bib.TITLE }}{% else %}{{ bib.TITLE|truncatewords:-1 }}{% endif %}{% endif %}{% endblock title %}
 
 {% block link_extra %}
 {% with url_name="item_json" %}
