@@ -12,6 +12,9 @@
 
 {% block content %}
 
+<table border='0'>
+    <tr>
+        <td width='70%' valign='top'>
 <h1 class="title">
 {% if bib.CJK_INFO.TITLE %}
     {{ bib.CJK_INFO.TITLE }} <br />
@@ -67,6 +70,17 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
 
 <span class="catlink">View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>Aladin Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/></span>
 </p>
+
+        </td>
+        <td width='30%' style='padding-left:2em;'>
+{% if bib.ISBN|clean_isbn %}
+    <img src='http://covers.openlibrary.org/b/isbn/{{ bib.ISBN|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
+{% else %}
+    &nbsp;
+{% endif %}
+        </td>
+    </tr>
+</table>
 
 
 {% if holdings %}
