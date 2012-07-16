@@ -7,8 +7,6 @@ from django.views.decorators.cache import cache_page
 from ui import voyager
 from ui.sort import libsort, availsort, elecsort, splitsort
 
-NON_GW_SCHOOLS = ['GT', 'DA', 'GM', 'HU', 'HS', 'HL', 'AL', 'JB', 'HI']
-
 def home(request):
     return render(request, 'home.html', {
         'title': 'launchpad home',
@@ -28,7 +26,6 @@ def item(request, bibid):
         'bib': bib, 
         'debug': settings.DEBUG,
         'holdings': holdings,
-        'nongw': NON_GW_SCHOOLS,
         'link': bib.get('LINK', '')[9:]
         })
 
@@ -94,3 +91,5 @@ def error500(request):
         'title': 'error',
         }, status=500)
 
+def robots(request):
+    return render(request, 'robots.txt', {}, content_type='text/plain')

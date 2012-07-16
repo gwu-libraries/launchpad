@@ -1,0 +1,7 @@
+# Hi there.  This is a new app.  Please don't index it.
+# We're still in test mode.  In a few weeks we'll add a sitemap.
+# Then we will welcome your robot activities with open arms.
+# We promise.
+
+User-agent: *
+Disallow: /

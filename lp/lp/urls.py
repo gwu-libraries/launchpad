@@ -23,5 +23,6 @@ urlpatterns = patterns('ui.views',
         name='about'),
     url(r'^api/', TemplateView.as_view(template_name='api.html'), 
         name='api'),
+    url(r'^robots.txt$', 'robots', name='robots'),
 )
 
