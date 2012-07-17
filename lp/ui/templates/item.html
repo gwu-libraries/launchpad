@@ -143,8 +143,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     <a href="{{link.u}}" target="clswindow">Full text online {{holding.LIBRARY_NAME}} only</a>
                     <img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                             {%else%}
-                    <a href="{{link.u}}" target="clswindow">Full text online </a>
-                    <img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                    <a href="{{link.u}}" target="clswindow"><button>Full text online</button></a>
                             {%endif%}
                             {% if not forloop.last %}<hr />{% endif %}
                         {% endfor %}

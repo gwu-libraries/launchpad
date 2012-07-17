@@ -234,7 +234,7 @@ ORDER BY library.library_name"""
                             'ITEMS':res['items'],
 	    	            'ELECTRONIC_DATA': res['electronic'],
                             'AVAILABILITY': res['availability']})
-            if holding['AVAILABILITY']['PERMLOCATION'] == ''  and holding['AVAILABILITY']['DISPLAY_CALL_NO'] == '' and holding['AVAILABILITY']['ITEM_STATUS_DESC'] == '':
+            if holding['AVAILABILITY']['PERMLOCATION'] == ''  and holding['AVAILABILITY']['DISPLAY_CALL_NO'] == '' and holding['AVAILABILITY']['ITEM_STATUS_DESC'] == '' and len(holding['MFHD_DATA']['marc856list']) == 0:
                 holding['REMOVE'] = True
             else:
                 holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
@@ -477,7 +477,7 @@ def _get_gt_holdings(id,query,query_type,bib,lib):
                 results.append(arow)
         if 'Rec: USMARCnonstrict MARC:' in lines[0]:
             linkdata = get_gt_link(lines)
-            arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':linkdata['url'],'MESSAGE':linkdata['msg'],'NOTE':note}
+            arow = {'STATUS':'GT Only', 'LOCATION':location, 'CALLNO':callno,'LINK':linkdata['url'],'MESSAGE':linkdata['msg'],'NOTE':note}
             results.append(arow)
     conn.close()
     res = get_z3950_mfhd_data(id,lib,results)
@@ -510,7 +510,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
             dataset['electronic'] = get_z3950_electronic_data('GM','','', note,False)
             arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
             results.append(arow)
-            res = get_z3950_mfhd_data(id,lib,results)
+            res = get_z3950_mfhd_data(id,school,results)
             dataset['mfhd'] ={'marc866list': res[0],
                               'marc856list': res[1],
                               'marc852': '' }
@@ -533,7 +533,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
 
                 arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
                 results.append(arow)
-                res = get_z3950_mfhd_data(id,lib,results)
+                res = get_z3950_mfhd_data(id,school,results)
                 dataset['mfhd'] ={'marc866list': res[0],
                                 'marc856list': res[1],
                                 'marc852': '' }
