@@ -1,5 +1,6 @@
 import pycountry 
 from PyZ3950 import zoom
+import urllib
 
 from django.conf import settings
 from django.db import connection, transaction
@@ -63,7 +64,7 @@ AND bib_index.index_code IN ('700H', '710H', '711H')
 def get_bib_data(bibid):
     query = """
 SELECT bib_text.bib_id, title, author, edition, isbn, issn, network_number AS OCLC, 
-       publisher, pub_place, imprint, bib_format, language, library_name, 
+       publisher, pub_place, imprint, bib_format, language, library_name, publisher_date, 
        RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) as LINK,
        wrlcdb.GetAllBibTag(%s, '880', 1) as CJK_INFO,
        RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','z',1)) as MESSAGE 
@@ -876,4 +877,48 @@ def get_gt_link(lines):
     res = {'url': url,'msg': msg}
     return res
 
+def get_illiad_link(bib_data):
+    auinit = ''
+    aufirst = ''
+    aulast = ''
+    oclc = ''
+    title = ''
+    query_args ={'rft.genre':'','rft.auinit':'','rft.pub':'','rft.isbn':'','rft.place':'','rft.aufirst':'','linktype':'openurl','rft.oclcnum':'','rft.auinit1':'','rft.data':'','rft.aulast':'','rft.btitle':''}
+    url = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
+    if bib_data['BIB_FORMAT']:
+        query_args['rft.genre']=bib_data['BIB_FORMAT']
+    if bib_data['AUTHOR']:
+        ind = bib_data['AUTHOR'].find(',')
+        if ind != -1:
+            auinit = bib_data['AUTHOR'][ind+1:1]
+            aufirst = bib_data['AUTHOR'][0:ind]
+            aulast = bib_data['AUTHOR'][ind+2:]
+    query_args['rft.auinit'] = auinit
+        
+    if bib_data['PUBLISHER']:
+        query_args['rft.pub'] = bib_data['PUBLISHER']
+    if bib_data['ISBN']:
+        query_args['rft.isbn'] = bib_data['ISBN']
+    if bib_data['PUB_PLACE']:
+        query_args['rft.place'] =  bib_data['PUB_PLACE'] 
+    query_args['rft.aufirst'] = aufirst 
+    if bib_data['OCLC']:
+        ind = bib_data['OCLC'].find(')')
+        if ind != -1:
+            oclc = bib_data['OCLC'][ind+1:]
+        query_args['rft.oclcnum'] = oclc 
+    query_args['rft.auinit1'] = auinit 
+    if bib_data['PUBLISHER_DATE']:
+        query_args['rft.date'] = bib_data['PUBLISHER_DATE'] 
+    query_args['rft.aulast'] = aulast 
+    if bib_data['TITLE']:
+        ind = bib_data['TITLE'].find('/')
+        if ind != -1:
+            title = bib_data['TITLE'][0:ind]
+        query_args['rft.btitle'] = title 
+    encoded_args = urllib.urlencode(query_args)
+    url += encoded_args
+    return url
 
+
+#def get_illiad_links()
