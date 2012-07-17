@@ -10,11 +10,30 @@
 {% endwith %}
 {% endblock link_extra %}
 
+{% block javascript_extra %}
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js'></script>
+<script type='text/javascript'>
+$(document).ready(function() {
+    $('#cover-image').load(function() {
+        if ($('#cover-image').width() == 1) {
+            $('#cover').toggle(200);
+        };
+    });
+});
+</script>
+{% endblock javascript_extra %}
+
 {% block content %}
 
-<table border='0'>
+<table border='0' style='width:100%;'>
     <tr>
-        <td width='70%' valign='top'>
+        <td>
+            {% if bib.ISBN|clean_isbn %}
+            <div id='cover'>
+                <img id='cover-image' src='http://covers.openlibrary.org/b/isbn/{{ bib.ISBN|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
+            </div>
+            {% endif %}
+            <div id='description'>
 <h1 class="title">
 {% if bib.CJK_INFO.TITLE %}
     {{ bib.CJK_INFO.TITLE }} <br />
@@ -45,7 +64,9 @@
 {% if bib.CJK_INFO.IMPRINT %}
     {{ bib.CJK_INFO.IMPRINT }} <br />
 {% endif %}
+{% if bib.IMPRINT %}
     {{ bib.IMPRINT }}</span>{% if bib.IMPRINT|slice:"-1:" == '.' or bib_IMPRINT|slice:"-2:" == '. ' %}{% else %}.{% endif %}
+{% endif %}
 
 </span>
 {% if bib.LANGUAGE_DISPLAY %}
@@ -54,30 +75,18 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
 <br />
 
 {% if bib.DISPLAY_ISBN_LIST %}
-<span class="isbn-label">ISBN </span>
-<span class="isbn">
-    {{ bib.DISPLAY_ISBN_LIST|join:", " }}
-</span><br/>
+    <span class="isbn-label">ISBN </span>
+    <span class="isbn">{{ bib.DISPLAY_ISBN_LIST|join:", " }}</span><br/>
 {% endif %}
 {% if bib.DISPLAY_ISSN_LIST %}
-<span class="isbn-label">ISSN </span>
-<span class="issn">
-    {{ bib.DISPLAY_ISSN_LIST|join:", " }}
-</span><br/>
+    <span class="isbn-label">ISSN </span>
+    <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
 {% endif %}
 
 <p>
-
 <span class="catlink">View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>Aladin Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/></span>
 </p>
 
-        </td>
-        <td width='30%' style='padding-left:2em;'>
-{% if bib.ISBN|clean_isbn %}
-    <img src='http://covers.openlibrary.org/b/isbn/{{ bib.ISBN|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
-{% else %}
-    &nbsp;
-{% endif %}
         </td>
     </tr>
 </table>

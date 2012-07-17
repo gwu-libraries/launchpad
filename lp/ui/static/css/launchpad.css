@@ -56,3 +56,12 @@ td {
     font-size:small;
     color: #606060;
 }
+
+#cover {
+    float: left;
+    padding: 1.2em 1em .5em 0;
+}
+
+#description {
+    float: left;
+}
