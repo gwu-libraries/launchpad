@@ -102,58 +102,121 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
         </th></tr>
         <tr>
             <th width='40%'>Location</th>
-            <th width='30%'>Call Number</th>
+            <th width='30%'>Call Number / Volume</th>
             <th width='15%'>Status</th>
             <th width='15%'>Consortium Loan</th>
         </tr>
         {% for holding in library.list %}
-        <tr>
-            <td>{% if holding.AVAILABILITY.TEMPLOCATION %}
-                <span class='temp-loc-label'>Temporarily held at:</span><br />
-                    {{ holding.AVAILABILITY.TEMPLOCATION }}
-                {% else %}
-                    {{ holding.TRIMMED_LOCATION_DISPLAY_NAME }}
-                {% endif %}
-                {% if holding.LIBRARY_HAS %}
-                    {% for line in holding.LIBRARY_HAS %}
-                        <br />
-                        <span class="library-has">{{ line }}</span>
-                    {% endfor %}
-                {% endif %}
-            </td>
-            <td>
-                {% if holding.DISPLAY_CALL_NO %}
-                {{ holding.DISPLAY_CALL_NO }}
-                {% endif %}
-            </td>
-            <td>
-                {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U %}
-                    {% if holding.ELECTRONIC_DATA.LINK8563 %}
-                        <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
+            {% if holding.ITEMS %}
+                {% for item in holding.ITEMS %}
+            <tr>
+                <td>
+                    {% if item.TEMPLOCATION %}
+                    <span class='temp-loc-label'>Temporarily held at:</span><br />
+                        {{ item.TEMPLOCATION }}
+                    {% else %}
+                        {{ item.TRIMMED_LOCATION_DISPLAY_NAME }}
                     {% endif %}
-                    {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
-                <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img><a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online {{holding.LIBRARY_NAME}} only</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                    {%else%}
-                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                    {%endif%}
-                {% else %}
-                    {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
-                        <span style='color: green'>Available</span>
-                    {%else%}
-                        {% if holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
-                        <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
+                    {% if holding.MFHD_DATA and holding.MFHD_DATA.marc866list and forloop|length_is:"1" %}
+                        {% for line in holding.MFHD_DATA.marc866list %}
+                            <br />
+                            <span class="library-has">{{ line }}</span>
+                        {% endfor %}
+                    {% endif %}
+                    {% if holding.MFHD_DATA.marc852 and forloop.first %}
+                    <br /><span class="note-label">Note: </span>
+                    <span class="note">{{ holding.MFHD_DATA.marc852 }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
+                    {% if item.ITEM_ENUM %} {{ item.ITEM_ENUM }} {% endif %}
+                </td>
+                <td>
+                    {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
+                        {% for link in holding.MFHD_DATA.marc856list %}
+                            {% if link.3 %}
+                    <span class="link-volumes">[{{ link.3 }}]</span>
+                            {% endif %}
+                            {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
+                    <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
+                    <a href="{{link.u}}" target="clswindow">Full text online {{holding.LIBRARY_NAME}} only</a>
+                    <img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                            {%else%}
+                    <a href="{{link.u}}" target="clswindow">Full text online </a>
+                    <img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                            {%endif%}
+                            {% if not forloop.last %}<hr />{% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {%if item.ITEM_STATUS_DESC = 'Not Charged'%}
+                            <span style='color: green'>Available</span>
+                        {%else%}
+                            {% if item.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
+                            <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
+                            {% else %}
+                                {{ item.ITEM_STATUS_DESC }}
+                            {% endif %}
+                        {%endif%}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.ELIGIBLE %}
+                    <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                    {% endif %}
+                </td>
+            </tr>
+                {% endfor %}
+            <!--  If no item data use old template -->
+            {% else %}
+                <tr>
+                    <td>{% if holding.AVAILABILITY.TEMPLOCATION %}
+                            <span class='temp-loc-label'>Temporarily held at:</span><br />
+                            {{ holding.AVAILABILITY.TEMPLOCATION }}
                         {% else %}
-                            {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
+                            {{ holding.TRIMMED_LOCATION_DISPLAY_NAME }}
                         {% endif %}
-                    {%endif%}
-                {% endif %}
-            </td>
-            <td>
-                {% if holding.ELIGIBLE %}
-                <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                {% endif %}
-            </td>
-        </tr>
+                        {% if holding.LIBRARY_HAS %}
+                            {% for line in holding.LIBRARY_HAS %}
+                                <br />
+                                <span class="library-has">{{ line }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if holding.DISPLAY_CALL_NO %}
+                            {{ holding.DISPLAY_CALL_NO }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U %}
+                            {% if holding.ELECTRONIC_DATA.LINK8563 %}
+                                <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
+                            {% endif %}
+                            {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
+                                <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img><a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online {{holding.LIBRARY_NAME}} only</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                            {%else%}
+                                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                            {%endif%}
+                        {% else %}
+                            {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
+                                <span style='color: green'>Available</span>
+                            {%else%}
+                                {% if holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
+                                    <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
+                                {% else %}
+                                    {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
+                                {% endif %}
+                            {%endif%}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if holding.ELIGIBLE %}
+                            <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endif %}
         {% endfor %}
     {% endfor %}
     </tbody>
