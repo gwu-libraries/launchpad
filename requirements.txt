@@ -1,7 +1,8 @@
+cx_Oracle
 django
+django-nose
 ply
 pycountry
 python-memcached
 pytz
 git+https://github.com/asl2/PyZ3950.git
-cx_Oracle
