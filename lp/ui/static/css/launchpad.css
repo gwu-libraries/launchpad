@@ -2,9 +2,13 @@
     background-image: url(/static/img/bg-local-nav-bottom.png);
 }
 
+body {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
 .library-has {
-    color:rgb(96,96,96);
-    font-size: x-small;
+    color: gray;
+    font-size: small;
 }
 
 table {
@@ -18,7 +22,7 @@ tr, td, th {
 
 th {
     font-weight: normal;
-    background-color: #778899;
+    color: gray;
 }
 
 td {
@@ -28,43 +32,41 @@ td {
 }
 
 .library-group-header{
-    font-size: 1.25em; /* 20px; */
-	font-family: Georgia, serif;
-	color: #555;
-    background-color: #e0e0e0;
-	font-weight: normal;
-	line-height: 1.5em; /* 24px; */
-	letter-spacing: -1px;
-	text-shadow: 0px 1px 1px #ccc;
+    padding-top: 1em;
+    font-size: large;
+    font-family: Georgia, serif;
+    font-weight: normal;
+    color: #444;
+    line-height: 1.3em;
+    border-bottom: none;
 }
 
 .temp-loc-label{
-    color:rgb(96,96,96);
+    color: rgb(96,96,96);
     font-size: small;
 }
 
 .off-site{
-    color:black;
+    color: black;
 }
 
 .off-site-explanation{
-    color:green;
-    font-size:small;
+    color: green;
+    font-size: small;
 }
 
 .link-volumes{
-    font-size:small;
-    color: #606060;
+    font-size: small;
+    color: gray;
 }
 
 .note-label{
-    font-size: x-small;
-    font-weight: bold;
+    font-size: small;
     color: black;
 }
 
 .note{
-    font-size: x-small;
+    font-size: small;
     color: gray;
 }
 

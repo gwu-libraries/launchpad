@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 from django.template.defaultfilters import stringfilter
 
 
@@ -46,3 +47,10 @@ def cjk_info(value):
             cjk['AUTHOR600'] = val
     return cjk
 
+@register.filter
+@stringfilter
+def noscream(value):
+    for scream, calm in settings.SCREAMING_LOCATIONS:
+        if scream in value:
+            value = value.replace(scream, calm)
+    return value

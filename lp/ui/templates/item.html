@@ -95,25 +95,20 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
 {% if holdings %}
     {% regroup holdings by LIBRARY_FULL_NAME as library_list %}
 <table WIDTH='100%'> 
-<!--
     <thead>
         <tr>
             <th width='40%'>Location</th>
-            <th width='30%'>Call Number</th>
-            <th width='15%'>Status</th>
+            <th width='25%'>Call Number</th>
+            <th width='20%'>Status</th>
             <th width='15%'>Consortium Loan</th>
         </tr>
-    </thead>-->
+    </thead>
     <tbody>		
     {% for library in library_list %}
-        <tr><th colspan='4' class='library-group-header'>
-            {{ library.grouper }}
-        </th></tr>
         <tr>
-            <th width='40%'>Location</th>
-            <th width='30%'>Call Number / Volume</th>
-            <th width='15%'>Status</th>
-            <th width='15%'>Consortium Loan</th>
+            <td class='library-group-header'>
+            {{ library.grouper }}
+            </td>
         </tr>
         {% for holding in library.list %}
             {% if holding.ITEMS %}
@@ -121,10 +116,11 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
             <tr>
                 <td>
                     {% if item.TEMPLOCATION %}
-                    <span class='temp-loc-label'>Temporarily held at:</span><br />
-                        {{ item.TEMPLOCATION }}
+                        {{ item.TEMPLOCATION|noscream }}
+                        <br />
+                        <span class='temp-loc-label'>Temporarily held</span>
                     {% else %}
-                        {{ item.TRIMMED_LOCATION_DISPLAY_NAME }}
+                        {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                     {% endif %}
                     {% if holding.MFHD_DATA and holding.MFHD_DATA.marc866list and forloop|length_is:"1" %}
                         {% for line in holding.MFHD_DATA.marc866list %}
@@ -133,8 +129,8 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                         {% endfor %}
                     {% endif %}
                     {% if holding.MFHD_DATA.marc852 and forloop.first %}
-                    <br /><span class="note-label">Note: </span>
-                    <span class="note">{{ holding.MFHD_DATA.marc852 }}</span>
+                        <br />
+                        <span class="note">{{ holding.MFHD_DATA.marc852|lower|capfirst }}</span>
                     {% endif %}
                 </td>
                 <td>
@@ -148,12 +144,13 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     <span class="link-volumes">[{{ link.3 }}]</span>
                             {% endif %}
                             {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
+                    <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                    <br />
                     <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
-                    <a href="{{link.u}}" target="clswindow">Full text online {{holding.LIBRARY_NAME}} only</a>
-                    <img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                            {%else%}
+                    {{holding.LIBRARY_NAME}} only
+                            {% else %}
                     <a href="{{link.u}}" target="clswindow"><button>Full text online</button></a>
-                            {%endif%}
+                            {% endif %}
                             {% if not forloop.last %}<hr />{% endif %}
                         {% endfor %}
                     {% else %}
@@ -161,7 +158,9 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                             <span style='color: green'>Available</span>
                         {%else%}
                             {% if item.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
-                            <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
+                                <span class='off-site'>Off-site </span>
+                                <br />
+                                <span class='off-site-explanation'>(Available by request)</span>
                             {% else %}
                                 {{ item.ITEM_STATUS_DESC }}
                             {% endif %}
@@ -170,7 +169,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                 </td>
                 <td>
                     {% if item.ELIGIBLE %}
-                    <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                        <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     {% endif %}
                 </td>
             </tr>
@@ -178,11 +177,13 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
             <!--  If no item data use old template -->
             {% else %}
                 <tr>
-                    <td>{% if holding.AVAILABILITY.TEMPLOCATION %}
-                            <span class='temp-loc-label'>Temporarily held at:</span><br />
-                            {{ holding.AVAILABILITY.TEMPLOCATION }}
+                    <td>
+                        {% if holding.AVAILABILITY.TEMPLOCATION %}
+                            {{ holding.AVAILABILITY.TEMPLOCATION|noscream }}
+                            <br />
+                            <span class='temp-loc-label'>Temporarily held</span>
                         {% else %}
-                            {{ holding.TRIMMED_LOCATION_DISPLAY_NAME }}
+                            {{ holding.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                         {% endif %}
                         {% if holding.LIBRARY_HAS %}
                             {% for line in holding.LIBRARY_HAS %}
@@ -193,7 +194,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     </td>
                     <td>
                         {% if holding.DISPLAY_CALL_NO %}
-                            {{ holding.DISPLAY_CALL_NO }}
+                            {{ holding.DISPLAY_CALL_NO|noscream }}
                         {% endif %}
                     </td>
                     <td>
@@ -202,20 +203,23 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                                 <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
                             {% endif %}
                             {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
-                                <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img><a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online {{holding.LIBRARY_NAME}} only</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                            {%else%}
-                                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                            {%endif%}
+                                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                                <br />
+                                <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img>
+                                {{holding.LIBRARY_NAME}} only
+                            {% else %}
+                                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                            {% endif %}
                         {% else %}
-                            {%if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged'%}
+                            {% if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged' %}
                                 <span style='color: green'>Available</span>
-                            {%else%}
+                            {% else %}
                                 {% if holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
                                     <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
                                 {% else %}
                                     {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
                                 {% endif %}
-                            {%endif%}
+                            {% endif %}
                         {% endif %}
                     </td>
                     <td>
@@ -239,32 +243,24 @@ No copies found in WRLC.  ADD ILL LINK.
 <h3>Debugging info</h3>
 
 <p>
-{% with json_url="item_json" %}
-View JSON: <a href='{% url json_url bibid %}'>{% url json_url bibid %}</a>
-{% endwith %}
+View JSON: <a href='{% url "item_json" bibid %}'>{% url "item_json" bibid %}</a>
 &nbsp;
 
 {% if bib.ISBN|clean_isbn %}
-{% with isbn_url="isbn" %}
-ISBN: <a href='{% url isbn_url bib.ISBN|clean_isbn %}'>{% url isbn_url bib.ISBN|clean_isbn %}</a>
+ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a>
 &nbsp;
 (<a href='http://findit.library.gwu.edu/go?isbn={{ bib.ISBN|clean_isbn }}'>findit</a>)
 &nbsp;
-{% endwith %}
 {% endif %}
 {% if bib.ISSN|clean_issn %}
-{% with issn_url="issn" %}
-ISSN: <a href='{% url issn_url bib.ISSN|clean_issn %}'>{% url issn_url bib.ISSN|clean_issn %}</a>
+ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}'>{% url "issn" bib.ISSN|clean_issn %}</a>
 &nbsp;
 (<a href='http://findit.library.gwu.edu/go?issn={{ bib.ISSN|clean_issn }}'>findit</a>)
 &nbsp;
-{% endwith %}
 {% endif %}
 {% if bib.NETWORK_NUMBER|clean_oclc %}
-{% with oclc_url="oclc" %}
-OCLC: <a href='{% url oclc_url bib.NETWORK_NUMBER|clean_oclc %}'>{% url oclc_url bib.NETWORK_NUMBER|clean_oclc %}</a>
+OCLC: <a href='{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}'>{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}</a>
 &nbsp;
-{% endwith %}
 {% endif %}
 </p>
 

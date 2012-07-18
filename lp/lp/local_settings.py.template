@@ -118,6 +118,22 @@ INELIGIBLE_TEMP_LOCS = ['RESERVE']
 INELIGIBLE_STATUS = ['RENEWED','MISSING','LOST','OVERDUE','TRANSIT','HOLD',
                      'CHARGED','UNAVAILABLE','WITHDRAWN','DAMAGED','LIB USE ONLY']
                      
+SCREAMING_LOCATIONS = [
+    ('GELMAN', 'Gelman'),
+    ('LAU', 'Lauinger'),
+    # NOTE: 'LAU' must preceed 'AU'
+    ('AU', 'American'),
+    ('VAN NESS', 'Van Ness'),
+    ('MARYMOUNT', 'Marymount'),    
+    ('LOWER LEVEL', 'lower level'),
+    ('UNBOUND', 'unbound'),
+    ('MT VERNON CAMPUS', 'Mt. Vernon campus'),
+    ('SCIENCE', 'Science'),    
+    ('FLOOR', 'floor'),
+    ('GROUND', 'ground'),    
+    ('Stacks', 'stacks'),
+    ]
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
