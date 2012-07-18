@@ -144,7 +144,18 @@ modify line 35 from this:
 	will need to change the user name and possibly the Python
 	version number.
 
-3. Add apache config file to sites-enabled and edit it
+3. If you want to use memcached, configure and ensure it has started:
+
+        sudo vim /etc/memcached.conf
+        sudo /etc/init.d/memcached start
+
+4. At this point, you should be able to run the app and view it working,
+even without apache configured.  This might be sufficient for dev/test.
+
+        python manage.py runserver 0.0.0.0:8080
+        (visit http://your-server:8080/item/198738 to test)
+
+5. If you want to use apache, add apache config file to sites-enabled and edit it
 
         sudo cp ../apache/lp /etc/apache2/sites-available/lp
         vim /etc/apache2/sites-available/lp
@@ -152,17 +163,12 @@ modify line 35 from this:
 	Change the values of LPHOME, server, user, and python version
 	in the document as appropriate.
 
-4. Enable these apache modules:
+6. Enable these apache modules:
 
         sudo a2enmod expires
         sudo a2enmod headers
 
-5. If you want to use memcached, configure and ensure it has started:
-
-        sudo vim /etc/memcached.conf
-        sudo /etc/init.d/memcached start
-
-6. Enable the app in apache and bounce apache2 to start it up
+7. Enable the app in apache and bounce apache2 to start it up
 
         sudo a2ensite lp
         sudo /etc/init.d/apache2 restart
