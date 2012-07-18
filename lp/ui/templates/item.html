@@ -13,6 +13,7 @@
 {% block javascript_extra %}
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js'></script>
 <script type='text/javascript'>
+// hide missing cover images' surrounding <div>
 $(document).ready(function() {
     $('#cover-image').load(function() {
         if ($('#cover-image').width() == 1) {
@@ -20,6 +21,15 @@ $(document).ready(function() {
         };
     });
 });
+
+// show txt/email button
+var newwindow;
+function sms(url) {
+    newwindow = window.open(url, 'name', 'height=590,width=400,toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0');
+    if (window.focus) {
+        newwindow.focus();
+    };
+};
 </script>
 {% endblock javascript_extra %}
 
@@ -164,6 +174,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     {% else %}
                         {%if item.ITEM_STATUS_DESC = 'Not Charged'%}
                             <span style='color: green'>Available</span>
+                            <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if item.DISPLAY_CALL_NO %}call={{ item.DISPLAY_CALL_NO|urlencode }}{% endif %}&amp;{% if item.TRIMMED_LOCATION_DISPLAY_NAME %}loc={{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream|urlencode }}{% endif %}&amp;title={{ bib.TITLE|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
                         {%else%}
                             {% if item.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
                                 <span class='off-site'>Off-site </span>
