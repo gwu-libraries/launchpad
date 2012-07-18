@@ -479,7 +479,7 @@ def _get_gt_holdings(id,query,query_type,bib,lib):
                 results.append(arow)
         if 'Rec: USMARCnonstrict MARC:' in lines[0]:
             linkdata = get_gt_link(lines)
-            arow = {'STATUS':'GT Only', 'LOCATION':location, 'CALLNO':callno,'LINK':linkdata['url'],'MESSAGE':linkdata['msg'],'NOTE':note}
+            arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':linkdata['url'],'MESSAGE':linkdata['msg'],'NOTE':note}
             results.append(arow)
     conn.close()
     res = get_z3950_mfhd_data(id,lib,results)

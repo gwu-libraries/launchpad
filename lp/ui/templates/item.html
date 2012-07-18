@@ -144,12 +144,12 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                         <br />
                         <span class="note">{{ holding.MFHD_DATA.marc852|lower|capfirst }}</span>
                     {% endif %}
-                    {% if holding.LIBRARY_HAS %}
-                        {% for line in holding.LIBRARY_HAS %}
-                            <br />
-                            <span class="library-has">{{ line }}</span>
-                        {% endfor %}
-                    {% endif %}
+                    {#{% if holding.LIBRARY_HAS %}#}
+                        {#{% for line in holding.LIBRARY_HAS %}#}
+                            <!--<br />
+                            <span class="library-has">{{ line }}</span>-->
+                        {#{% endfor %}#}
+                    {#{% endif %}#}
                 </td>
                 <td>
                     {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
@@ -167,7 +167,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
                     {{holding.LIBRARY_NAME}} only
                             {% else %}
-                    <a href="{{link.u}}" target="clswindow"><button>Full text online</button></a>
+                    <form action="{{link.u}}" target="clswindow" style='display:inline-block;'><input type='submit' value='Full text online'></form>
                             {% endif %}
                             {% if not forloop.last %}<hr />{% endif %}
                         {% endfor %}
@@ -229,6 +229,19 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                             {% else %}
                                 <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                             {% endif %}
+                        
+                        {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
+			    {% for link in holding.MFHD_DATA.marc856list %}
+				{% if link.3 == ""%}
+			            <span class="link-volumes">[{{ link.3 }}]</span>
+				{% endif %}
+				{% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
+			            <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+			            <br />
+			            <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
+			            {{holding.LIBRARY_NAME}} only
+                                {% endif %}
+                            {% endfor %}
                         {% else %}
                             {% if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged' %}
                                 <span style='color: green'>Available</span>
