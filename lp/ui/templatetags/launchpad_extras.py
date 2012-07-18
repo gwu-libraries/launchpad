@@ -12,6 +12,7 @@ def clean_isbn(value):
         return ''
     isbn = isbn.replace('-', '')
     isbn = isbn.replace(':', '')
+    isbn = isbn.replace('.', '')
     return isbn
 
 @register.filter

@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'django_nose',
     'ui',
 )
 
@@ -164,6 +165,8 @@ Z3950_SERVERS = {
         'PREFERRED_RECORD_SYNTAX': '',
     }
 }
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Be sure to create your own 'local_settings.py' file as described in README
 try:

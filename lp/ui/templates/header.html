@@ -1,10 +1,12 @@
+{% load url from future %}
+
 <header>
     <div id="libheader-container" style="">
         <div id="libheader" style="">
             <div class="libheader-logo hide-lo" style=""><a href="http://www.gwu.edu" target="_blank" title="GWU website"><img src="{{ STATIC_URL }}img/gwheaderlogo.png" width='309' height='32' alt="logo: The George Washington University" /></a></div>
             <div class="libheader-liblink" style=""><a href="http://library.gwu.edu" target="_blank" title="GW Libraries website">GW Libraries</a></div>
-                <div class="libheader-link" style=""><a href="{% url about %}" target="_blank" title="about">About</a></div>
-                <div class="libheader-link" style=""><a href="{% url api %}" target="_blank" title="">API</a></div>
+                <div class="libheader-link" style=""><a href="{% url 'about' %}" target="_blank" title="about">About</a></div>
+                <div class="libheader-link" style=""><a href="{% url 'api' %}" target="_blank" title="">API</a></div>
         </div>
     </div>
 </header>
