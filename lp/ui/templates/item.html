@@ -105,11 +105,13 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
     </thead>
     <tbody>		
     {% for library in library_list %}
+        {% if library.grouper %}
         <tr>
             <td class='library-group-header'>
             {{ library.grouper }}
             </td>
         </tr>
+        {% endif %}
         {% for holding in library.list %}
             {% if holding.ITEMS %}
                 {% for item in holding.ITEMS %}
@@ -131,6 +133,12 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     {% if holding.MFHD_DATA.marc852 and forloop.first %}
                         <br />
                         <span class="note">{{ holding.MFHD_DATA.marc852|lower|capfirst }}</span>
+                    {% endif %}
+                    {% if holding.LIBRARY_HAS %}
+                        {% for line in holding.LIBRARY_HAS %}
+                            <br />
+                            <span class="library-has">{{ line }}</span>
+                        {% endfor %}
                     {% endif %}
                 </td>
                 <td>
@@ -175,7 +183,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
             </tr>
                 {% endfor %}
             <!--  If no item data use old template -->
-            {% else %}
+            {% elif "Click" not in holding.TRIMMED_LOCATION_DISPLAY_NAME %}
                 <tr>
                     <td>
                         {% if holding.AVAILABILITY.TEMPLOCATION %}
