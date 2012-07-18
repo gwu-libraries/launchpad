@@ -232,7 +232,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                         
                         {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
 			    {% for link in holding.MFHD_DATA.marc856list %}
-				{% if link.3 == ""%}
+				{% if link.3%}
 			            <span class="link-volumes">[{{ link.3 }}]</span>
 				{% endif %}
 				{% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
