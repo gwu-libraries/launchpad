@@ -33,26 +33,31 @@ TEMPLATE_DIRS = (
 )
 
 
-LIB_LOOKUP = {'AU':'American',
-              'AL':'Washington Law (American)',
-              'CU':'Catholic',
-              'LL':'Catholic',
-              'DC':'UDC',
-              'GA':'Gallaudet',
-              'GM':'George Mason',
-              'GT':'Georgetown',
-              'DA':'Dahlgren Medical (Georgetown)',
-              'GW':'George Washington',
-              'HI':'Himmelfarb Health Sciences (George Washington)',
-              'JB':'Jacob Burns Law (George Washington)',
-              'HU':'Howard',
-              'HL':'Howard Law',
-              'HS':'Howard Health Sciences',
-              'MU':'Marymount',
-              'TR':'Trinity',
-              'E-Resources':'WRLC',
-              'E-GovDoc':'WRLC',
-              'WR':'WRLC'}
+LIB_LOOKUP = {
+    'AU': 'American',
+    'AL': 'Washington Law (American)',
+    'CU': 'Catholic',
+    'DC': 'UDC',
+    'E-GovDoc': 'WRLC',
+    'E-Resources': 'WRLC',
+    'GA': 'Gallaudet',
+    'GM': 'George Mason',
+    'GT': 'Georgetown',
+    'DA': 'Dahlgren Medical (Georgetown)',
+    'GW': 'George Washington',
+    # HD is Himmelfarb-Dahlgren items jointly held in storage
+    'HD': 'WRLC',
+    'HI': 'Himmelfarb Health Sciences (George Washington)',
+    'HL': 'Howard Law',
+    'HS': 'Howard Health Sciences',
+    'HU': 'Howard',
+    'JB': 'Jacob Burns Law (George Washington)',
+    'LL': 'Catholic',
+    'MU': 'Marymount',
+    'TR': 'Trinity',
+    'WR': 'WRLC',
+}
+
 
 Z3950_SERVERS = {
     'LIBRARY_ID': {
@@ -67,29 +72,6 @@ INDEX_CODES = {'isbn':['020N','020A','ISB3'],
                'issn':['022A','022Z'],
                'oclc':['035A']}
 
-
-# Sorting Options
-
-# Sorting by library
-# Use the following codes
-# AU -- American University
-# AL -- AU Washington College of Law
-# CU -- Catholic University
-# DC -- University of District of Columbia
-# GA -- Gallaudet University
-# GM -- George Mason University
-# GT -- Georgetown University
-# DA -- Georgetown Dahlgren Health Sciences
-# GW -- George Washington University
-# HI -- George Washington Himmelfarb Health Sciences
-# JB -- George Washington Jacob Burns Law
-# HU -- Howard University
-# HL -- Howard Law
-# HS -- Howard Health Sciences
-# MU -- Marymount University
-# TR -- Trinity College
-# E-Resources -- Electronic Resources
-# E-GovDoc -- Electronic Government Documents
 
 # Preferred library for bib record and top of the holdings list
 # ex.: 'GW'
