@@ -232,15 +232,22 @@ ORDER BY library.library_name"""
             else:
                 done.append(holding['BIB_ID'])
             res = get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','')
-            holding.update(  {'MFHD_DATA':res['mfhd'],
-                            'ITEMS':res['items'],
-	    	            'ELECTRONIC_DATA': res['electronic'],
-                            'AVAILABILITY': res['availability']})
-            if holding['AVAILABILITY']['PERMLOCATION'] == ''  and holding['AVAILABILITY']['DISPLAY_CALL_NO'] == '' and holding['AVAILABILITY']['ITEM_STATUS_DESC'] == '' and len(holding['MFHD_DATA']['marc856list']) == 0:
-                holding['REMOVE'] = True
+            if res is not None:
+                holding.update(  {'MFHD_DATA':res['mfhd'],
+                                  'ITEMS':res['items'],
+	    	                  'ELECTRONIC_DATA': res['electronic'],
+                                  'AVAILABILITY': res['availability']})
+                if holding['AVAILABILITY']['PERMLOCATION'] == ''  and holding['AVAILABILITY']['DISPLAY_CALL_NO'] == '' and holding['AVAILABILITY']['ITEM_STATUS_DESC'] == '' and len(holding['MFHD_DATA']['marc856list']) == 0:
+                    holding['REMOVE'] = True
+                else:
+                    holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
+                    holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
             else:
-                holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
-                holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
+                holding.update({'MFHD_DATA':{},
+                                'ITEMS':[],
+                                'AVAILABILITY':{},
+                                'ELECTRONIC_DATA':{}})
+                holding['REMOVE'] = True
         else:
             holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']),
                             'AVAILABILITY': get_availability(holding['MFHD_ID'])})
@@ -743,11 +750,11 @@ def is_item_eligible(item, library_name):
 def get_z3950_availability_data(bib,school,location,status,callno,item_status,found = True):
     availability = {}
     catlink = ''
-    if school == 'GT':
+    if school == 'GT' and len(bib) > 0:
         catlink = 'Click on the following link to get the information about this item from GeorgeTown Catalog <br>'+ 'http://catalog.library.georgetown.edu/record='+'b'+bib[0]+'~S4'
-    elif school == 'GM':
+    elif school == 'GM' and len(bib) > 0:
         catlink = 'Click on the following link to get the information about this item from George Mason Catalog <br>'+ 'http://magik.gmu.edu/cgi-bin/Pwebrecon.cgi?BBID='+bib[0]
-    else:
+    elif len(bib) > 0:
         catlink = 'Click on the following link to get the information about this item from Dahlgren library Catalog <br>'+ 'http://catalog.library.georgetown.edu/record='+'b'+bib[0]+'~S4'
     if found :
         availability = { 'BIB_ID' : bib,
