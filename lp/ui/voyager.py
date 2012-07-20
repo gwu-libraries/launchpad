@@ -232,15 +232,22 @@ ORDER BY library.library_name"""
             else:
                 done.append(holding['BIB_ID'])
             res = get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','')
-            holding.update(  {'MFHD_DATA':res['mfhd'],
-                            'ITEMS':res['items'],
-	    	            'ELECTRONIC_DATA': res['electronic'],
-                            'AVAILABILITY': res['availability']})
-            if holding['AVAILABILITY']['PERMLOCATION'] == ''  and holding['AVAILABILITY']['DISPLAY_CALL_NO'] == '' and holding['AVAILABILITY']['ITEM_STATUS_DESC'] == '' and len(holding['MFHD_DATA']['marc856list']) == 0:
-                holding['REMOVE'] = True
+            if res is not None:
+                holding.update(  {'MFHD_DATA':res['mfhd'],
+                                  'ITEMS':res['items'],
+	    	                  'ELECTRONIC_DATA': res['electronic'],
+                                  'AVAILABILITY': res['availability']})
+                if holding['AVAILABILITY']['PERMLOCATION'] == ''  and holding['AVAILABILITY']['DISPLAY_CALL_NO'] == '' and holding['AVAILABILITY']['ITEM_STATUS_DESC'] == '' and len(holding['MFHD_DATA']['marc856list']) == 0:
+                    holding['REMOVE'] = True
+                else:
+                    holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
+                    holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
             else:
-                holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
-                holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
+                holding.update({'MFHD_DATA':{},
+                                'ITEMS':[],
+                                'AVAILABILITY':{},
+                                'ELECTRONIC_DATA':{}})
+                holding['REMOVE'] = True
         else:
             holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']),
                             'AVAILABILITY': get_availability(holding['MFHD_ID'])})

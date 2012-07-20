@@ -1,112 +1,91 @@
+GM
 Rec: OPAC Bibliographic MARC: 
-0 cas  a 
-1 372707
-5 20080506113003.0
-8 750806c19599999nyumr1p       0uuua0eng d
-10   $a61065941 $zsc 76000456
-12   $a3 $b3 $en $k1 $m1
-19   $a2446101
-22   $a0001-0782 $z0588-8069
-30   $aCACMA2
-32   $a126160 $bUSPS
-35   $a(OCoLC)01514517
-35   $a0084188 $bMULS $aUlp   No.  1090200005 $aPITT NO.  0935700005
-35   $9ABV0987GM
-40   $aMUL $cMUL $dNSD $dDLC $dNSD $dOCL $dm.c. $dOCL $dDLC $dNST $dDLC $dRCS $dNST $dDLC $dAIP $dDLC $dAIP $dNSD $dAIP $dm/c $dNST $dNSD
-42   $ansdp $alc
-50 00$aQA76 $b.A772
-60 0 $aZ 699.A1 C734
-69 1 $aC32640000
-82 0 $a001.64/05 $219
-210 0 $aCommun. ACM
-212 0 $aCommunications of the Association for Computing Machinery
-222 00$aCommunications of the ACM
-245 00$aCommunications of the ACM.
-246 10$aCommunications of the A.C.M.
-260 01$a[New York] : $bAssociation for Computing Machinery, $c1959-
-265   $a1133 Avenue of the Americas, 10036
-300   $av. : $bill. ; $c28 cm.
-350   $a$35.00 (members) $a$42.00 (non-members)
-362 0 $aVol. 2, no. 11 (Nov. 1959)-
-510 1 $aApplied science & technology $x0003-6986
-510 1 $aComputer & control abstracts $x0036-8113 $b1968-
-510 1 $aElectrical & electronics abstracts $x0036-8105 $b1968-
-510 1 $aPhysics abstracts. Science abstracts. Series A $x0036-8091 $b1968-
-510 2 $aABI/INFORM $bMarch 1972-March 1973
-510 2 $aElectronics and communications abstracts journal (Riverdale) $x0361-3313
-510 2 $aEngineering index annual (1968) $x0360-8557
-510 2 $aEngineering index bioengineering abstracts $x0736-6213
-510 2 $aEngineering index energy abstracts $x0093-8408
-510 2 $aEngineering index monthly (1984) $x0742-1974
-510 2 $aInternational aerospace abstracts $x0020-5842
-510 2 $aISMEC bulletin $x0306-0039
-510 2 $aMathematical reviews $x0025-5629
-510 2 $aMLA international bibliography of books and articles on the modern languages and literatures (Complete edition) $x0024-8215
-510 2 $aPollution abstracts with indexes $x0032-3624
-510 2 $aSafety science abstracts journal $x0160-1342
-510 2 $aShip abstracts $x0346-1025
-650  0$aComputers $xPeriodicals.
-710 20$aAssociation for Computing Machinery.
-780 00$tCommunications of the Association for Computing Machinery $w(DLC)sf 84001031 $w(OCoLC)2103367
-852   $aVGM $bVGMP $wPer. $e4 $f8 $g0 $v26- $oFor microfilm see OCLC #11828957 $y1983-
-856 40$xhttp://mutex.gmu.edu:2048/login?url=http://www.acm.org/pubs/contents/journals/cacm $zElectronic journal
-936   $aJan. 1975 (surrogate)
+0 cam Ia 
+1 1268989
+5 20100323150051.0
+8 050713s2006    caua     b    001 0 eng d
+20   $a0321344758
+35   $a(OCoLC)ocm61895021
+40   $aEQO $cEQO $dUAB $dBAKER $dVGM
+49   $aVGMM
+50  4$aTK5105.888 $b.K78 2006
+100 1 $aKrug, Steve
+245 10$aDon't make me think! : $ba common sense approach to web usability / $cSteve Krug.
+250   $a2nd ed.
+260   $aBerkeley, Calif. : $bNew Riders, $cc2006.
+300   $axiii, 201 p. : $bill. ; $c24 cm.
+500   $aPrevious ed.: 2000.
+504   $aIncludes bibliographical references and index.
+650  0$aWeb sites $xDesign.
+650  0$aWeb sites $xEvaluation.
+994   $aC0 $bVGM
+
+{'mfhd': {'marc866list': [], 'marc852': '', 'marc856list': []}, 'electronic': {'LINK856Z': '', 'MFHD_ID': None, 'LINK856U': '', 'LINK852A': None, 'LINK866': None, 'LINK852H': ''}, 'availability': {'ITEM_STATUS_DATE': '', 'PERMLOCATION': '', 'TEMPLOCATION': None, 'ITEM_STATUS_DESC': '', 'ITEM_ENUM': None, 'ITEM_ID': None, 'CHRON': None, 'ITEM_STATUS': 0, 'DISPLAY_CALL_NO': '', 'BIB_ID': [u'1268989']}, 'items': []}
+GT
+Rec: OPAC Bibliographic MARC: 
+0 cam Ia 
+1 61895021
+3 OCoLC
+5 20060421013401.0
+8 051010s2006    caua     b    001 0 eng d
+20   $a0321344758 (pbk.)
+24 3 $a9780321344755 (pbk.)
+40   $aEQO $cEQO $dUAB $dBAKER $dCOU $dNGU $dBUR $dDGU
+49   $aDGUU
+50  4$aTK5105.888 $b.K78 2006
+100 1 $aKrug, Steve.
+245 10$aDon't make me think! : $ba common sense approach to Web usability / $cSteve Krug.
+250   $a2nd ed.
+260   $aBerkeley, Calif. : $bNew Riders, $cc2006.
+300   $axiii, 201 p. : $bill. (some col.) ; $c23 cm.
+500   $aPrevious ed.: 2000.
+504   $aIncludes bibliographical references (p. 187-191) and index.
+505 0 $a[Pt. 1:] Guiding principles. Don't make me think! : Krug's first law of usability ; How we really use the Web : scanning, satisficing, and muddling through ; Billboard design 101 : designing pages for scanning, not reading ; Animal, vegetable, or mineral? : why users like mindless choices ; Omit needless words : the art of not writing for the Web -- [Pt. 2:] Things you need to get right. Street signs and breadcrumbs : designing navigation ; The first step in recovery is admitting that the home page is beyond your control : designing the home page -- [Pt. 3:] Making sure you got them right. "The farmer and the cowman should be friends" : why most Web design team arguments about usability are a waste of time, and how to avoid them ; Usability testing on 10 cents a day : why user testing--done simply enough--is the cure for all your site's ills -- [Pt. 4:] Larger concerns and outside influences. Usability as common courtesy : why your Web site should be a mensch ; Accessibility, Cascading Style Sheets, and you : just when you think you're done, a cat floats by with buttered toast strapped to its back ; Help! My boss wants me to ---- : when bad design decisions happen to good people.
+599   $aja 4/06.
+650  0$aWeb sites $xDesign.
+650  0$aWeb sites $xEvaluation.
+650 12$aInternet.
+650 22$aWriting.
+650 22$aPublishing.
+650 22$aData Display.
+650 22$aUser-Computer Interface.
+856 41$zCONNECT TO ONLINE RESOURCE $uhttp://0-proquest.safaribooksonline.com.library.lausys.georgetown.edu/0321344758
+999   $a2006
 
 Holdings 0:
-	receiptAcqStatus: ' '
-	completeness: ' '
-	publicNote: 'v.3-v.21, v.26-v.29 (1960-1978, 1983-1986) volumes located off-site (WRLC Center). To request, submit a Consortium Loan Request. Circulation restrictions apply.\x00'
-	typeOfRecord: 'y'
-	dateOfReport: '      '
-	localLocation: '.Fenwick Periodicals - Print Collection\x00'
-	encodingLevel: '1'
-	nucCode: 'fper\x00'
-	generalRetention: ' '
+	localLocation: 'SCIENCE Stacks'
+	publicNote: ' AVAILABLE'
+	callNumber: 'TK5105.888 .K78 2006 '
 Holdings 1:
-	receiptAcqStatus: '4'
-	completeness: '1'
-	typeOfRecord: 'x'
-	dateOfReport: '901128'
-	localLocation: 'Electronic Subscription (GMU Patrons Only)\x00'
-	encodingLevel: '4'
-	nucCode: 'elec sub\x00'
-	generalRetention: '8'
-{'STATUS': 'Not Charged', 'NOTE': 'For microfilm see OCLC #11828957 ', 'CALLNO': '', 'LINK': 'http://mutex.gmu.edu:2048/login?url=http://www.acm.org/pubs/contents/journals/cacm', 'LOCATION': 'GM: Electronic Subscription (GMU Patrons Only)', 'MESSAGE': '56 40$xhttp://mutex.gmu.edu:2048/login?url=http://www.acm.org/pubs/contents/journals/cacm $zElectronic journal'}
-Rec: OPAC Bibliographic MARC: 
-0 cas  a 
-1 377169
-7 hdrafb --buca
-8 850320c19599999miuuu p a     0uuua0eng d
-19   $a12086702
-22   $a0001-0782
-35   $a(OCoLC)11828957
-35   $9ABV7473GM
-40   $aOKO $cOKO $dOCL $dm/c
-90   $aQA76 $b.A772
-245 00$aCommunications of the ACM $h[microform]
-260 01$a[New York] : $bAssociation for Computing Machinery, $c1959-
-300   $av. : $bill. ; $c28 cm.
-310   $aMonthly
-362 0 $aVol. 2, no. 11 (Nov. 1959)-
-500   $aTitle from cover.
-500   $aImprint varies.
-533   $aMicrofilm $bAnn Arbor,Mich. : $cUniversity Microfilms International. $eMicrofilm reels; 35 mm.
-580   $aVol. 3 includes a reprint of: Digital computer newsletter, v. 12, no. 1 (Jan. 1960)-v. 12, no. 4 (Oct. 1960).
-650  0$aComputers $xPeriodicals.
-710 20$aAssociation for Computing Machinery.
-730 00$aDigital computer newsletter.
-776 0 $tCommunications of the ACM $w(OCoLC)1514517
-780 00$tCommunications of the Association for Computing Machinery $w(OCoLC) 2103367
-787 1 $tDigital computer newsletter
-852   $aVGM $bVGMX $e5 $f8 $g0 $v2-25 $oFor hard copy see OCLC #1514517 $y1959-1982
-
-Holdings 0:
-	receiptAcqStatus: '|'
-	completeness: '|'
-	typeOfRecord: 'y'
-	dateOfReport: '      '
-	localLocation: '- Fenwick Periodicals - Microfilm\x00'
-	encodingLevel: '1'
-	nucCode: 'fper mflm\x00'
-	generalRetention: '|'
-{'STATUS': '', 'NOTE': 'For hard copy see OCLC #1514517 ', 'CALLNO': '', 'LINK': '', 'LOCATION': 'GM: Fenwick Periodicals - Microfilm', 'MESSAGE': ''}
+	localLocation: 'LAU Stacks'
+	publicNote: ' AVAILABLE'
+	callNumber: 'TK5105.888 .K78 2006 '
+{'mfhd': {'marc866list': [], 'marc852': '', 'marc856list': []}, 'electronic': {'LINK856Z': '', 'MFHD_ID': None, 'LINK856U': '', 'LINK852A': None, 'LINK866': None, 'LINK852H': ''}, 'availability': {'ITEM_STATUS_DATE': '', 'PERMLOCATION': u'GT: LAU Stacks', 'TEMPLOCATION': None, 'ITEM_STATUS_DESC': 'Not Charged', 'ITEM_ENUM': None, 'ITEM_ID': None, 'CHRON': None, 'ITEM_STATUS': 1, 'DISPLAY_CALL_NO': 'TK5105.888 .K78 2006 ', 'BIB_ID': [u'b2822113']}, 'items': [{'ITEM_ENUM': None, 'ITEM_STATUS': 0, 'TEMPLOCATION': None, 'ITEM_STATUS_DESC': 'Not Charged', 'ITEM_ID': 0, 'PERMLOCATION': u'GT: SCIENCE Stacks', 'LIBRARY_FULL_NAME': '', 'ELIGIBLE': '', 'TRIMMED_LOCATION_DISPLAY_NAME': '', 'CHRON': None, 'DISPLAY_CALL_NO': 'TK5105.888 .K78 2006 ', 'BIB_ID': 6564364}, {'ITEM_ENUM': None, 'ITEM_STATUS': 0, 'TEMPLOCATION': None, 'ITEM_STATUS_DESC': 'Not Charged', 'ITEM_ID': 0, 'PERMLOCATION': u'GT: LAU Stacks', 'LIBRARY_FULL_NAME': '', 'ELIGIBLE': '', 'TRIMMED_LOCATION_DISPLAY_NAME': '', 'CHRON': None, 'DISPLAY_CALL_NO': 'TK5105.888 .K78 2006 ', 'BIB_ID': 6564364}]}
+GT
+Rec: USMARCnonstrict MARC: 
+0 nam Ia 
+3 OCoLC
+5 20060925142239.0
+6 a     s     001 0
+7 cr unu
+8 060925s2006    caua    sb    001 0 eng d
+20   $a0321344758
+37   $aCL0500000005 $bSafari Books Online
+40   $aUMI $cUMI
+49   $aUMIA
+100 1 $aKrug, Steve.
+245 10$aDon't make me think! $h[electronic resource] : $ba common sense approach to Web usability / $cSteve Krug.
+246 30$aCommon sense approach to Web usability.
+250   $a2nd ed.
+260   $aBerkeley, Calif : $bNew Riders Pub., $cc2006.
+300   $axiii, 201 p. : $bcol. ill.
+504   $aIncludes bibliographical references (p. 187-191) and index.
+505 0 $aGuiding principles. Don't make me think! : Krug's first law of usability ; How we really use the Web : scanning, satisficing, and muddling through ; Billboard design 101 : designing pages for scanning, not reading ; Animal, vegetable, or mineral? : why users like mindless choices ; Omit needless words : the art of not writing for the Web -- Things you need to get right. Street signs and breadcrumbs : designing navigation ; The first step in recovery is admitting that the home page is beyond your control : designing the home page -- Making sure you got them right. "The farmer and the cowman should be friends" : why most Web design team arguments about usability are a waste of time, and how to avoid them ; Usability testing on 10 cents a day : why user testing--done simply enough--is the cure for all your site's ills -- Larger concerns and outside influences. Usability as common courtesy : why your Web site should be a mensch ; Accessibility, Cascading Style Sheets, and you : just when you think you're done, a cat floats by with buttered toast strapped to its back ; Help! My boss wants me to ---- : when bad design decisions happen to good people.
+520   $aYesterday's Web looked far different from today's Web, and tomorrow's Web will look more different still. Amidst all of this change, however, one aspect of Web use remains the same: The sites that offer the best, easiest, most intuitive experience are the ones people visit again and again. To ensure that your sites provide that experience, this guide from usability guru Krug distills his years of on-the-job experience into a practical primer on the do's and don'ts of good Web design. The second edition of this classic adds three new chapters that explain why people really leave Web sites, how to make sites usable and accessible, and the art of surviving executive design whims, plus a new preface and updated recommended reading.--From publisher description.
+533   $aElectronic reproduction. $bBoston, Mass. : $cSafari Books Online, $d2006. $nMode of access: World Wide Web. $nAvailable to subscribing institutions. $7s2006    maun s.
+650  0$aWeb sites $xDesign.
+650  0$aWeb site development.
+856 40$zCONNECT TO ONLINE RESOURCE $uhttp://0-proquestcombo.safaribooksonline.com.library.lausys.georgetown.edu/?uiCode=gtown&xmlId=0321344758###################
+998   $ainet $b11-04-06 $cm $de $e- $feng $gcau $h0 $i0
+999   $a2006
+{'mfhd': {'marc866list': [], 'marc852': '', 'marc856list': [{'3': '', 'z': 'CONNECT TO ONLINE RESOURCE ', 'u': 'http://0-proquestcombo.safaribooksonline.com.library.lausys.georgetown.edu/?uiCode=gtown&xmlId=0321344758###################'}]}, 'electronic': {'LINK856Z': '', 'MFHD_ID': None, 'LINK856U': '', 'LINK852A': None, 'LINK866': None, 'LINK852H': ''}, 'availability': {'ITEM_STATUS_DATE': '', 'PERMLOCATION': '', 'TEMPLOCATION': None, 'ITEM_STATUS_DESC': '', 'ITEM_ENUM': None, 'ITEM_ID': None, 'CHRON': None, 'ITEM_STATUS': 0, 'DISPLAY_CALL_NO': '', 'BIB_ID': [u'b3097498']}, 'items': []}
