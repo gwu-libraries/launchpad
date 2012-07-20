@@ -743,11 +743,11 @@ def is_item_eligible(item, library_name):
 def get_z3950_availability_data(bib,school,location,status,callno,item_status,found = True):
     availability = {}
     catlink = ''
-    if school == 'GT':
+    if school == 'GT' and len(bib) > 0:
         catlink = 'Click on the following link to get the information about this item from GeorgeTown Catalog <br>'+ 'http://catalog.library.georgetown.edu/record='+'b'+bib[0]+'~S4'
-    elif school == 'GM':
+    elif school == 'GM' and len(bib) > 0:
         catlink = 'Click on the following link to get the information about this item from George Mason Catalog <br>'+ 'http://magik.gmu.edu/cgi-bin/Pwebrecon.cgi?BBID='+bib[0]
-    else:
+    elif len(bib) > 0:
         catlink = 'Click on the following link to get the information about this item from Dahlgren library Catalog <br>'+ 'http://catalog.library.georgetown.edu/record='+'b'+bib[0]+'~S4'
     if found :
         availability = { 'BIB_ID' : bib,
