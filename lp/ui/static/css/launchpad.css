@@ -78,3 +78,8 @@ td {
 #description {
     float: left;
 }
+
+#cover-image {
+    border-left: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
