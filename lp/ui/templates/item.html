@@ -125,8 +125,9 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
         {% for holding in library.list %}
             {% if holding.ITEMS %}
                 {% for item in holding.ITEMS %}
-            <tr>
+            <tr >
                 <td>
+                    <div class="itemrow">
                     {% if item.TEMPLOCATION %}
                         {{ item.TEMPLOCATION|noscream }}
                         <br />
@@ -150,6 +151,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                             <span class="library-has">{{ line }}</span>-->
                         {#{% endfor %}#}
                     {#{% endif %}#}
+                    </div>
                 </td>
                 <td>
                     {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
@@ -197,6 +199,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
             {% elif "Click" not in holding.TRIMMED_LOCATION_DISPLAY_NAME %}
                 <tr>
                     <td>
+                        <div class="itemrow">
                         {% if holding.AVAILABILITY.TEMPLOCATION %}
                             {{ holding.AVAILABILITY.TEMPLOCATION|noscream }}
                             <br />
@@ -210,6 +213,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                                 <span class="library-has">{{ line }}</span>
                             {% endfor %}
                         {% endif %}
+                        </div>
                     </td>
                     <td>
                         {% if holding.DISPLAY_CALL_NO %}
