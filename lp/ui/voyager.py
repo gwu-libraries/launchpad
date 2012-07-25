@@ -214,13 +214,14 @@ SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
        mfhd_master.display_call_no, location.location_display_name,
        library.library_name
 FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
-     location, library
+     location, library,bib_master
 WHERE mfhd_master.location_id=location.location_id
 AND bib_mfhd.bib_id IN """
     query += "(%s)" % _in_clause(bib_data['BIB_ID_LIST'])
     query += """
 AND mfhd_master.suppress_in_opac !='Y'
-AND location.library_id=library.library_id
+AND bib_mfhd.bib_id = bib_master.bib_id 
+AND bib_master.library_id=library.library_id
 ORDER BY library.library_name"""
     cursor = connection.cursor()
     cursor.execute(query, [])
@@ -255,7 +256,7 @@ ORDER BY library.library_name"""
                             'ITEMS': get_items(holding['MFHD_ID'])})
         if holding.get('ITEMS'):
             for item in holding['ITEMS']:
-                item['ELIGIBLE'] = is_item_eligible(item, holding.get('LIBRARY_NAME',''))
+                item['ELIGIBLE'] = is_item_eligible(item,holding.get('LIBRARY_NAME',''))
                 item['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
                 item['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_item_display_name(item)
             holding['LIBRARY_FULL_NAME'] = holding['ITEMS'][0]['LIBRARY_FULL_NAME']
@@ -935,3 +936,4 @@ def get_illiad_link(bib_data):
 
 
 #def get_illiad_links()
+
