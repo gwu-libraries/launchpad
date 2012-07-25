@@ -167,7 +167,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
                     {{holding.LIBRARY_NAME}} only
                             {% else %}
-                    <form action="{{link.u}}" target="clswindow" style='display:inline-block;'><input type='submit' value='Full text online'></form>
+                                <button onclick="window.open('{{link.u}}')" > Full text online </button>
                             {% endif %}
                             {% if not forloop.last %}<hr />{% endif %}
                         {% endfor %}
