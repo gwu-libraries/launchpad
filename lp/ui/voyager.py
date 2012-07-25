@@ -891,7 +891,7 @@ def get_illiad_link(bib_data):
     aulast = ''
     oclc = ''
     title = ''
-    query_args ={'rft.genre':'','rft.auinit':'','rft.pub':'','rft.isbn':'','rft.place':'','rft.aufirst':'','linktype':'openurl','rft.oclcnum':'','rft.auinit1':'','rft.data':'','rft.aulast':'','rft.btitle':''}
+    query_args ={'rft.genre':'','rft.auinit':'','rft.pub':'','rft.isbn':'','rft.place':'','rft.aufirst':'','linktype':'openurl','rft.oclcnum':'','rft.auinit':'','rft.data':'','rft.aulast':'','rft.btitle':''}
     url = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
     if bib_data['BIB_FORMAT']:
         query_args['rft.genre']=bib_data['BIB_FORMAT']
@@ -901,29 +901,34 @@ def get_illiad_link(bib_data):
             auinit = bib_data['AUTHOR'][ind+1:1]
             aufirst = bib_data['AUTHOR'][0:ind]
             aulast = bib_data['AUTHOR'][ind+2:]
-    query_args['rft.auinit'] = auinit
-        
+            query_args['rft.auinit'] = auinit
+            query_args['rft.aufirst'] = aufirst 
+            query_args['rft.aulast'] = aulast 
+            query_args['rft.auinit1'] = auinit
+        elif len(bib_data['AUTHORS']) > 0:
+            query_args['rft.aulast'] = bib_data['AUTHORS'][0]
+             
     if bib_data['PUBLISHER']:
         query_args['rft.pub'] = bib_data['PUBLISHER']
     if bib_data['ISBN']:
         query_args['rft.isbn'] = bib_data['ISBN']
     if bib_data['PUB_PLACE']:
         query_args['rft.place'] =  bib_data['PUB_PLACE'] 
-    query_args['rft.aufirst'] = aufirst 
     if bib_data['OCLC']:
         ind = bib_data['OCLC'].find(')')
         if ind != -1:
             oclc = bib_data['OCLC'][ind+1:]
         query_args['rft.oclcnum'] = oclc 
-    query_args['rft.auinit1'] = auinit 
     if bib_data['PUBLISHER_DATE']:
         query_args['rft.date'] = bib_data['PUBLISHER_DATE'] 
-    query_args['rft.aulast'] = aulast 
     if bib_data['TITLE']:
         ind = bib_data['TITLE'].find('/')
         if ind != -1:
             title = bib_data['TITLE'][0:ind]
+        else:
+            title = bib_data['TITLE']
         query_args['rft.btitle'] = title 
+    query_args['rfr_id'] = settings.ILLIAD_SID 
     encoded_args = urllib.urlencode(query_args)
     url += encoded_args
     return url

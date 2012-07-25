@@ -116,6 +116,8 @@ SCREAMING_LOCATIONS = [
     ('Stacks', 'stacks'),
     ]
 
+ILLIAD_SID = 'GWfindit'
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
