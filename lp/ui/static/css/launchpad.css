@@ -70,6 +70,10 @@ td {
     color: gray;
 }
 
+.itemrow{
+    padding-left: 1em;
+}
+
 #cover {
     float: left;
     padding: 1.2em 1em .5em 0;
