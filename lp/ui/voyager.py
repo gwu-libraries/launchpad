@@ -723,7 +723,7 @@ def is_eligible(holding):
         if loc in temp_loc:
             return False
     for stat in settings.INELIGIBLE_STATUS:
-        if stat == status:
+        if stat == status[:len(stat)]:
             return False
     return True
 
@@ -745,7 +745,7 @@ def is_item_eligible(item, library_name):
         if loc in temp_loc:
             return False
     for stat in settings.INELIGIBLE_STATUS:
-        if stat == status:
+        if stat == status[:len(stat)]:
             return False
     return True
 
