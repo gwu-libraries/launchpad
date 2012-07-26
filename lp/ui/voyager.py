@@ -93,7 +93,7 @@ AND bib_master.suppress_in_opac='N'"""
     except:
         bib['LANGUAGE_DISPLAY'] = ''
     # get all associated standard numbers (ISBN, ISSN, OCLC)
-    bibids = set([bib['BIB_ID']])
+    bibids = [{'BIB_ID':bib['BIB_ID'], 'LIBRARY_NAME':bib['LIBRARY_NAME']}]
     for num_type in ['isbn','issn','oclc']:
         if bib.get(num_type.upper(),''):
             norm_set, disp_set = set(), set()
@@ -105,7 +105,10 @@ AND bib_master.suppress_in_opac='N'"""
                 bib['NORMAL_%s_LIST' % num_type.upper()] = list(norm_set)
                 bib['DISPLAY_%s_LIST' % num_type.upper()] = list(disp_set)
                 # use std nums to get related bibs
-                bibids.update(get_related_bibids(norm, num_type))
+                new_bibids = get_related_bibids(norm, num_type)
+                for nb in new_bibids:
+                    if nb['BIB_ID'] not in [x['BIB_ID'] for x in bibids]:
+                        bibids.append(nb)
     bib['BIB_ID_LIST'] = list(bibids)
     return bib
     
@@ -154,9 +157,11 @@ def _normalize_num(num, num_type):
 
 def get_related_bibids(num_list, num_type):
     query = """
-SELECT DISTINCT bib_index.bib_id, bib_index.display_heading
-FROM bib_index
-WHERE bib_index.index_code IN """
+SELECT DISTINCT bib_index.bib_id, bib_index.display_heading, library.library_name
+FROM bib_index, library, bib_master
+WHERE bib_index.bib_id=bib_master.bib_id
+AND bib_master.library_id=library.library_id
+AND bib_index.index_code IN """
     query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
     query += """
 AND bib_index.normal_heading IN (
@@ -176,14 +181,11 @@ AND bib_index.normal_heading IN (
 ORDER BY bib_index.bib_id"""
     cursor = connection.cursor()
     cursor.execute(query, [])
-    results = cursor.fetchall()
+    results = _make_dict(cursor)
+    output_keys = ('BIB_ID', 'LIBRARY_NAME')
     if num_type == 'oclc':
-        tmp = []
-        for pair in results:
-            if _is_oclc(pair[1]):
-                tmp.append(pair[0])
-        return tmp
-    return [row[0] for row in results]
+        return [dict([(k, row[k]) for k in output_keys]) for row in results if _is_oclc(row['DISPLAY_HEADING'])]
+    return [dict([(k, row[k]) for k in output_keys]) for row in results]
 
 
 def get_related_std_nums(bibid, num_type):
@@ -217,7 +219,7 @@ FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
      location, library,bib_master
 WHERE mfhd_master.location_id=location.location_id
 AND bib_mfhd.bib_id IN """
-    query += "(%s)" % _in_clause(bib_data['BIB_ID_LIST'])
+    query += "(%s)" % _in_clause([b['BIB_ID'] for b in bib_data['BIB_ID_LIST']])
     query += """
 AND mfhd_master.suppress_in_opac !='Y'
 AND bib_mfhd.bib_id = bib_master.bib_id 
