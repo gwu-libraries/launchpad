@@ -46,7 +46,7 @@ LIB_LOOKUP = {
     'DA': 'Dahlgren Medical (Georgetown)',
     'GW': 'George Washington',
     # HD is Himmelfarb-Dahlgren items jointly held in storage
-    'HD': 'WRLC',
+    'HD': 'Himmelfarb-Dahlgren',
     'HI': 'Himmelfarb Health Sciences (George Washington)',
     'HL': 'Howard Law',
     'HS': 'Howard Health Sciences',

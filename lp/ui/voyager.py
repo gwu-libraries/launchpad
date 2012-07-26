@@ -263,7 +263,9 @@ ORDER BY library.library_name"""
         holding.update({'ELIGIBLE': is_eligible(holding)})
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
         holding['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
-        holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding) 
+        holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)
+        if len(holding['MFHD_DATA']['marc866list']) == 0 and len(holding['MFHD_DATA']['marc856list']) == 0 and len(holding['ITEMS']) == 0:
+            holding['REMOVE'] = True
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
