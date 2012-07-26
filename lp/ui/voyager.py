@@ -605,10 +605,10 @@ def get_z3950_holdings(id, school, id_type, query_type):
                         ind1 = line.find('\\')
                         location = 'GM: ' + line[ind+3:ind1].strip(' -.')
                         holding_found = True
-                if holding_found == True:
-                    arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg, 'NOTE':note}
-                    results.append(arow)
-                holding_found = False
+                    if holding_found == True:
+                        arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg, 'NOTE':note}
+                        results.append(arow)
+                    holding_found = False
             conn.close()
             dataset['availability'] = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
             dataset['electronic'] = get_z3950_electronic_data('GM',url,msg,note)
@@ -842,13 +842,15 @@ def get_z3950_mfhd_data(id,school,links):
     m852 = ''
     res = []
     for link in links:
+        if link['STATUS'] == 'MISSING':
+            link['STATUS'] = 'Missing'
         if link['LINK']:
             val = {'3':'','z':link['MESSAGE'],'u':link['LINK']}
             m856list.append(val)
-        if link['STATUS'] != 'Charged' and link['STATUS'] != 'Not Charged' and 'INTERNET' not in link['LOCATION'] :
+        if link['STATUS'] not in  ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and 'INTERNET' not in link['LOCATION'] :
             if link['STATUS'] != '':
                 m866list.append(link['STATUS'])
-        if link['STATUS'] == 'Charged' or link['STATUS'] == 'Not Charged' and 'INTERNET' not in link['LOCATION']:
+        else:
             val = {'ITEM_ENUM': None,
                    'ELIGIBLE': '',
                    'ITEM_STATUS': 0,
@@ -860,8 +862,7 @@ def get_z3950_mfhd_data(id,school,links):
                    'PERMLOCATION': link['LOCATION'],
                    'TRIMMED_LOCATION_DISPLAY_NAME': '',
                    'DISPLAY_CALL_NO': link['CALLNO'],
-                   'CHRON': None}
-            
+                   'CHRON': None} 
             items.append(val)
         
     res.append(m866list)
