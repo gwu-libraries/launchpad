@@ -603,10 +603,10 @@ def get_z3950_holdings(id, school, id_type, query_type):
                         ind1 = line.find('\\')
                         location = 'GM: ' + line[ind+3:ind1].strip(' -.')
                         holding_found = True
-                if holding_found == True:
-                    arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg, 'NOTE':note}
-                    results.append(arow)
-                holding_found = False
+                    if holding_found == True:
+                        arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg, 'NOTE':note}
+                        results.append(arow)
+                    holding_found = False
             conn.close()
             dataset['availability'] = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
             dataset['electronic'] = get_z3950_electronic_data('GM',url,msg,note)
@@ -845,7 +845,7 @@ def get_z3950_mfhd_data(id,school,links):
         if link['LINK']:
             val = {'3':'','z':link['MESSAGE'],'u':link['LINK']}
             m856list.append(val)
-        if link['STATUS'] not in  ['Charged', 'Not Charged', 'Missing'] and 'DUE' not in link['STATUS'] and 'INTERNET' not in link['LOCATION'] :
+        if link['STATUS'] not in  ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and 'INTERNET' not in link['LOCATION'] :
             if link['STATUS'] != '':
                 m866list.append(link['STATUS'])
         else:
