@@ -18,6 +18,11 @@ def item(request, bibid):
     bib = voyager.get_bib_data(bibid)
     if not bib:
         raise Http404
+    # Ensure bib data is ours if possible
+    if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
+        for alt_bib in bib['BIB_ID_LIST']:
+            if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
+                return item(request, alt_bib['BIB_ID'])
     holdings = voyager.get_holdings(bib)
     ours, theirs, shared = splitsort(holdings)
     holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) + libsort(elecsort(availsort(theirs), rev=True))
