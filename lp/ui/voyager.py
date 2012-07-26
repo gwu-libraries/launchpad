@@ -840,13 +840,15 @@ def get_z3950_mfhd_data(id,school,links):
     m852 = ''
     res = []
     for link in links:
+        if link['STATUS'] == 'MISSING':
+            link['STATUS'] = 'Missing'
         if link['LINK']:
             val = {'3':'','z':link['MESSAGE'],'u':link['LINK']}
             m856list.append(val)
-        if link['STATUS'] != 'Charged' and link['STATUS'] != 'Not Charged' and 'INTERNET' not in link['LOCATION'] :
+        if link['STATUS'] not in  ['Charged', 'Not Charged', 'Missing'] and 'DUE' not in link['STATUS'] and 'INTERNET' not in link['LOCATION'] :
             if link['STATUS'] != '':
                 m866list.append(link['STATUS'])
-        if link['STATUS'] == 'Charged' or link['STATUS'] == 'Not Charged' and 'INTERNET' not in link['LOCATION']:
+        else:
             val = {'ITEM_ENUM': None,
                    'ELIGIBLE': '',
                    'ITEM_STATUS': 0,
@@ -858,8 +860,7 @@ def get_z3950_mfhd_data(id,school,links):
                    'PERMLOCATION': link['LOCATION'],
                    'TRIMMED_LOCATION_DISPLAY_NAME': '',
                    'DISPLAY_CALL_NO': link['CALLNO'],
-                   'CHRON': None}
-            
+                   'CHRON': None} 
             items.append(val)
         
     res.append(m866list)
