@@ -5,16 +5,17 @@ from django.template.defaultfilters import stringfilter
 
 register = template.Library()
 
+
 @register.filter
 @stringfilter
 def clean_isbn(value):
     isbn, sep, remainder = value.strip().partition(' ')
     if len(isbn) < 10:
         return ''
-    isbn = isbn.replace('-', '')
-    isbn = isbn.replace(':', '')
-    isbn = isbn.replace('.', '')
+    for char in '-:.;':
+        isbn = isbn.replace(char, '')
     return isbn
+
 
 @register.filter
 @stringfilter
@@ -23,12 +24,14 @@ def clean_issn(value):
         return ''
     return value.strip().replace(' ', '-')
 
+
 @register.filter
 @stringfilter
 def clean_oclc(value):
     if len(value) < 8:
         return ''
     return ''.join([c for c in value if c.isdigit()])
+
 
 @register.filter
 @stringfilter
@@ -46,6 +49,7 @@ def cjk_info(value):
         elif field.startswith('600'):
             cjk['AUTHOR600'] = val
     return cjk
+
 
 @register.filter
 @stringfilter
