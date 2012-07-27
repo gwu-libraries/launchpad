@@ -7,11 +7,13 @@ from django.views.decorators.cache import cache_page
 from ui import voyager
 from ui.sort import libsort, availsort, elecsort, splitsort
 
+
 def home(request):
     return render(request, 'home.html', {
         'title': 'launchpad home',
-        'settings': settings,
+        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
         })
+
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid):
@@ -25,24 +27,28 @@ def item(request, bibid):
                 return item(request, alt_bib['BIB_ID'])
     holdings = voyager.get_holdings(bib)
     ours, theirs, shared = splitsort(holdings)
-    holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) + libsort(elecsort(availsort(theirs), rev=True))
+    holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) \
+        + libsort(elecsort(availsort(theirs), rev=True))
     return render(request, 'item.html', {
         'bibid': bibid,
-        'bib': bib, 
+        'bib': bib,
         'debug': settings.DEBUG,
         'holdings': holdings,
-        'link': bib.get('LINK', '')[9:]
+        'link': bib.get('LINK', '')[9:],
+        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
         })
+
 
 def _date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item_json(request, bibid):
     bib_data = voyager.get_bib_data(bibid)
     bib_data['holdings'] = voyager.get_holdings(bib_data)
-    return HttpResponse(json.dumps(bib_data, default=_date_handler, indent=2), 
-        content_type='application/json')
+    return HttpResponse(json.dumps(bib_data, default=_date_handler,
+        indent=2), content_type='application/json')
 
 
 def gtitem(request, gtbibid):
@@ -79,11 +85,13 @@ def isbn(request, isbn):
         return redirect('item', bibid=bibid)
     raise Http404
 
+
 def issn(request, issn):
     bibid = voyager.get_primary_bibid(num=issn, num_type='issn')
     if bibid:
         return redirect('item', bibid=bibid)
     raise Http404
+
 
 def oclc(request, oclc):
     bibid = voyager.get_primary_bibid(num=oclc, num_type='oclc')
@@ -91,10 +99,13 @@ def oclc(request, oclc):
         return redirect('item', bibid=bibid)
     raise Http404
 
+
 def error500(request):
     return render(request, '500.html', {
         'title': 'error',
+        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
         }, status=500)
+
 
 def robots(request):
     return render(request, 'robots.txt', {}, content_type='text/plain')
