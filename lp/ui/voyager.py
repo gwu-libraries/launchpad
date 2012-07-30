@@ -639,12 +639,14 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 item_status = 1
                 status = 'Not Charged'
                 results.append({'STATUS':'', 'LOCATION':'', 'CALLNO':'','LINK':url,'MESSAGE':msg,'NOTE':note})
-            if query_type == 'availability':
-                availability = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
-                return availability
-            elif query_type == 'electronic':
-                electronic = get_z3950_electronic_data('GM',url,msg,note)
-                return electronic
+            dataset['availability'] = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
+            dataset['electronic'] = get_z3950_electronic_data('GM',url,msg,note)
+            res = get_z3950_mfhd_data(id,school,results)
+            dataset['mfhd'] ={'marc866list': res[0],
+                             'marc856list': res[1],
+                             'marc852': '' }
+            dataset['items'] = res[2]
+            return dataset
     elif school=='GT' or school =='DA':
         if id_type =='bib':
             bib = get_gtbib_from_gwbib(id)
@@ -852,6 +854,21 @@ def get_z3950_mfhd_data(id,school,links):
     items = []
     m852 = ''
     res = []
+    if len(links) == 0:
+        m856list.append({'3':'','z':'','u':''})
+        m866list.append('')
+        items.append({'ITEM_ENUM': None,
+                   'ELIGIBLE': '',
+                   'ITEM_STATUS': 0,
+                   'TEMPLOCATION': None,
+                   'ITEM_STATUS_DESC': '',
+                   'BIB_ID': id,
+                   'ITEM_ID': 0,
+                   'LIBRARY_FULL_NAME': '',
+                   'PERMLOCATION':'',
+                   'TRIMMED_LOCATION_DISPLAY_NAME': '',
+                   'DISPLAY_CALL_NO': '',
+                   'CHRON': None} )
     for link in links:
         if link['STATUS'] == 'MISSING':
             link['STATUS'] = 'Missing'
