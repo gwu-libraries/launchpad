@@ -30,6 +30,7 @@ def item(request, bibid):
         'bibid': bibid,
         'bib': bib, 
         'debug': settings.DEBUG,
+        'title_chars': settings.TITLE_CHARS,
         'holdings': holdings,
         'link': bib.get('LINK', '')[9:]
         })

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load launchpad_extras %}
+{% load url from future %}
+{% block title %} Testing Jquery Expander {% endblock title%}
+{% block link_extra %}
+{% with url_name="item_json" %}
+<link rel='alternate' type='application/json' href='{% url url_name bibid %}' />
+{% endwith %}
+{% endblock link_extra %}
+
+{% block javascript_extra %}
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
+<script type='text/javascript' src= '{{STATIC_URL}}js/jquery_expander.js'>
+<script type='text/javascript'>
+// hide missing cover images' surrounding <div>
+$(document).ready(function() {
+$('div.expandable p').expander({
+    slicePoint:       80,  // default is 100
+    expandPrefix:     ' ', // default is '... '
+    expandText:       '[...]', // default is 'read more'
+    collapseTimer:    5000, // re-collapses after 5 seconds; default is 0, so no re-collapsing
+    userCollapseText: '[^]'  // default is 'read less'
+  });
+
+});
+

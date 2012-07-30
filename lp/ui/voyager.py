@@ -66,6 +66,7 @@ def get_bib_data(bibid):
 SELECT bib_text.bib_id, title, author, edition, isbn, issn, network_number AS OCLC, 
        publisher, pub_place, imprint, bib_format, language, library_name, publisher_date, 
        RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) as LINK,
+       RTRIM(wrlcdb.GetMarcField(%s,0,0,'245','','',1)) as TITLE_ALL,
        wrlcdb.GetAllBibTag(%s, '880', 1) as CJK_INFO,
        RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','z',1)) as MESSAGE 
 FROM bib_text, bib_master, library
@@ -74,7 +75,7 @@ AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
-    cursor.execute(query, [bibid, bibid, bibid, bibid])
+    cursor.execute(query, [bibid, bibid, bibid, bibid, bibid])
     bib = _make_dict(cursor, first=True)
     # if bib is empty, there's no match -- return immediately
     if not bib:
@@ -87,6 +88,7 @@ AND bib_master.suppress_in_opac='N'"""
     # split up the 880 (CJK) fields/values if available
     if bib.get('CJK_INFO', ''):
         bib['CJK_INFO'] = cjk_info(bib['CJK_INFO'])
+    bib['TITLE_ALL'] = clean_title(bib['TITLE_ALL'][7:])
     try:
         language = pycountry.languages.get(bibliographic=bib['LANGUAGE'])
         bib['LANGUAGE_DISPLAY'] = language.name
@@ -227,6 +229,7 @@ AND bib_master.library_id=library.library_id
 ORDER BY library.library_name"""
     cursor = connection.cursor()
     cursor.execute(query, [])
+    eligibility = False
     holdings = _make_dict(cursor)
     for holding in holdings:
         if holding['LIBRARY_NAME'] == 'GM' or holding['LIBRARY_NAME'] == 'GT' or holding['LIBRARY_NAME'] == 'DA':
@@ -263,11 +266,17 @@ ORDER BY library.library_name"""
                 item['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_item_display_name(item)
             holding['LIBRARY_FULL_NAME'] = holding['ITEMS'][0]['LIBRARY_FULL_NAME']
         holding.update({'ELIGIBLE': is_eligible(holding)})
+        if holding['ELIGIBLE'] == True:
+            eligibility = True
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
         holding['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
         holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)
         if len(holding['MFHD_DATA']['marc866list']) == 0 and len(holding['MFHD_DATA']['marc856list']) == 0 and len(holding['ITEMS']) == 0:
             holding['REMOVE'] = True
+    if eligibility == False:
+        bib_data.update({'ILLIAD_LINK': get_illiad_link(bib_data)})
+    else:
+        bib_data.update({'ILLIAD_LINK': ''})
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
@@ -940,5 +949,8 @@ def get_illiad_link(bib_data):
     return url
 
 
-#def get_illiad_links()
+def clean_title(title):
+    for field in settings.MARC_245_SUBFIELDS:
+        title = title.replace(field,"")
+    return title 
 

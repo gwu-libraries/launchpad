@@ -12,6 +12,7 @@
 
 {% block javascript_extra %}
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
+<script type='text/javascript' src= '{{STATIC_URL}}js/jquery_expander.js'></script>
 <script type='text/javascript'>
 // hide missing cover images' surrounding <div>
 $(document).ready(function() {
@@ -19,6 +20,13 @@ $(document).ready(function() {
         if ($('#cover-image').width() == 1) {
             $('#cover').toggle(200);
         };
+    });
+    $('h1.title span').expander({
+     slicePoint:     {{title_chars}},
+     expandPrefix:   '... ',
+     expandText:     '[more]',
+     collapseTimer: 0,
+     userCollapseText: '[less]'
     });
 });
 
@@ -48,11 +56,7 @@ function sms(url) {
 {% if bib.CJK_INFO.TITLE %}
     {{ bib.CJK_INFO.TITLE }} <br />
 {% endif %}
-{% if bib.TITLE|length <= 254 %}
-    {{ bib.TITLE }}
-{% else %}
-    {{ bib.TITLE|truncatewords:-1 }}
-{% endif %}
+<span> {{bib.TITLE_ALL}} </span>
 </h1>
 
 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
@@ -92,6 +96,9 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
     <span class="isbn-label">ISSN </span>
     <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
 {% endif %}
+{%if bib.ILLIAD_LINK %}
+    <span class="catlink"> Make a request for this item through ILL <a href= {{bib.ILLIAD_LINK}} target='newwin'> Request </a> </span>
+{%endif%}
 
 <p>
 <span class="catlink">View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>Aladin Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/></span>
