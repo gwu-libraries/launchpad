@@ -120,6 +120,11 @@ SCREAMING_LOCATIONS = [
 
 ILLIAD_SID = 'GWfindit'
 
+TITLE_CHARS = 255
+
+MARC_245_SUBFIELDS=['$a','$b','$c','$f','$g','$h','$k','$n','$p','$s','$6','$8']
+
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
