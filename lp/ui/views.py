@@ -36,6 +36,7 @@ def item(request, bibid):
         'holdings': holdings,
         'link': bib.get('LINK', '')[9:],
         'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
+        'link_resolver': settings.LINK_RESOLVER,
         })
 
 

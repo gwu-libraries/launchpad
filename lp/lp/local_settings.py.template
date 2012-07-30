@@ -132,3 +132,10 @@ ITEM_PAGE_CACHE_SECONDS = 60 * 60 # one hour
 
 # If this value is present (not empty), GA bug will be added to html
 GOOGLE_ANALYTICS_UA = ''
+
+# Link resolver information, only used in debug mode now
+LINK_RESOLVER = {
+    'base_url': 'http://findit.library.gwu.edu/go',
+    'name': 'findit',
+    }
+
