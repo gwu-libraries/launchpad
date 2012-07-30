@@ -150,7 +150,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     {% endif %}
                     {% if holding.MFHD_DATA.marc852 and forloop.first %}
                         <br />
-                        <span class="note">{{ holding.MFHD_DATA.marc852|lower|capfirst }}</span>
+                        <span class="note">{{ holding.MFHD_DATA.marc852 }}</span>
                     {% endif %}
                     {#{% if holding.LIBRARY_HAS %}#}
                         {#{% for line in holding.LIBRARY_HAS %}#}
@@ -292,14 +292,18 @@ View JSON: <a href='{% url "item_json" bibid %}'>{% url "item_json" bibid %}</a>
 {% if bib.ISBN|clean_isbn %}
 ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a>
 &nbsp;
-(<a href='http://findit.library.gwu.edu/go?isbn={{ bib.ISBN|clean_isbn }}'>findit</a>)
+    {% if link_resolver.base_url and link_resolver.name %}
+(<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}'>{{ link_resolver.name }}</a>)
 &nbsp;
+    {% endif %}
 {% endif %}
 {% if bib.ISSN|clean_issn %}
 ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}'>{% url "issn" bib.ISSN|clean_issn %}</a>
 &nbsp;
-(<a href='http://findit.library.gwu.edu/go?issn={{ bib.ISSN|clean_issn }}'>findit</a>)
+    {% if link_resolver.base_url and link_resolver.name %}
+(<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}'>{{ link_resolver.name }}</a>)
 &nbsp;
+    {% endif %}
 {% endif %}
 {% if bib.NETWORK_NUMBER|clean_oclc %}
 OCLC: <a href='{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}'>{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}</a>

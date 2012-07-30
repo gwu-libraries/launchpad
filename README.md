@@ -134,6 +134,8 @@ modify line 35 from this:
         ITEM_PAGE_CACHE_SECONDS to something low.
 
         NOTE: If you are deploying to production, set DEBUG = False.
+        Also, set GOOGLE_ANALYTICS_UA to your UA to enable google 
+        analytics in production.
 
 2. Edit wsgi file
 

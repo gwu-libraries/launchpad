@@ -19,12 +19,12 @@ if 'test' in sys.argv:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': '', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': '',                      # Or path to database file if using sqlite3.
-            'USER': '',                      # Not used with sqlite3.
-            'PASSWORD': '',                  # Not used with sqlite3.
-            'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-            'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+            'ENGINE': '',
+            'NAME': '',
+            'USER': '',
+            'PASSWORD': '',
+            'HOST': '',
+            'PORT': '',
         }
     }
 
@@ -68,9 +68,9 @@ Z3950_SERVERS = {
     }
 }
 
-INDEX_CODES = {'isbn':['020N','020A','ISB3'],
-               'issn':['022A','022Z'],
-               'oclc':['035A']}
+INDEX_CODES = {'isbn': ['020N', '020A', 'ISB3'],
+               'issn': ['022A', '022Z'],
+               'oclc': ['035A']}
 
 
 # Preferred library for bib record and top of the holdings list
@@ -83,22 +83,24 @@ BOTTOM_LIBS = []
 
 # Eligibility Options
 
-INELIGIBLE_LIBRARIES = ['JB','HL','HS','AL']
+INELIGIBLE_LIBRARIES = ['JB', 'HL', 'HS', 'AL']
 
 
-INELIGIBLE_PERM_LOCS = ['REFERENCE','REF','RESERVE','NON-CIRC','RESTRICTED',
-                        'ONLY','IN LIBRARY','MICRO','ARCHIVES','KIEV','SPEC',
-                        'IBT','AUDIOTAPES','CD-ROM','DISCS','RECORDS','RUSH',
-                        'VIDEOTAPES','VIDEODISCS','MEDIA VIDEOS','DEAF DVD',
-                        'DEAF VHS','IN PROCESS','AU: LAW','GT: QATAR STACKS']
+INELIGIBLE_PERM_LOCS = ['REFERENCE', 'REF', 'RESERVE', 'NON-CIRC', 
+    'RESTRICTED', 'ONLY', 'IN LIBRARY', 'MICRO', 'ARCHIVES', 'KIEV', 'SPEC',
+    'IBT', 'AUDIOTAPES', 'CD-ROM', 'DISCS', 'RECORDS', 'RUSH', 'VIDEOTAPES',
+    'VIDEODISCS', 'MEDIA VIDEOS', 'DEAF DVD', 'DEAF VHS', 'IN PROCESS',
+    'AU: LAW', 'GT: QATAR STACKS']
 
 # Add electronic locations
-INELIGIBLE_PERM_LOCS += ['SHARED','ONLINE','ELECTRONIC','INTERNET','STREAMING']
+INELIGIBLE_PERM_LOCS += ['SHARED', 'ONLINE', 'ELECTRONIC', 'INTERNET',
+    'STREAMING']
 
 INELIGIBLE_TEMP_LOCS = ['RESERVE', 'BINDERY']
 
-INELIGIBLE_STATUS = ['RENEWED','MISSING','LOST','OVERDUE','TRANSIT','HOLD', 'DUE'
-                     'CHARGED','UNAVAILABLE','WITHDRAWN','DAMAGED','LIB USE ONLY']
+INELIGIBLE_STATUS = ['RENEWED', 'MISSING', 'LOST', 'OVERDUE', 'TRANSIT',
+    'HOLD', 'DUE' 'CHARGED', 'UNAVAILABLE', 'WITHDRAWN', 'DAMAGED',
+    'LIB USE ONLY']
                      
 SCREAMING_LOCATIONS = [
     ('GELMAN', 'Gelman'),
@@ -122,9 +124,18 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': '127.0.0.1:11211',
-        'TIMEOUT': 60 * 60, # default to one hour
+        'TIMEOUT': 60 * 60,  # default to one hour
         }
     }
 
 ITEM_PAGE_CACHE_SECONDS = 60 * 60 # one hour
+
+# If this value is present (not empty), GA bug will be added to html
+GOOGLE_ANALYTICS_UA = ''
+
+# Link resolver information, only used in debug mode now
+LINK_RESOLVER = {
+    'base_url': 'http://findit.library.gwu.edu/go',
+    'name': 'findit',
+    }
 
