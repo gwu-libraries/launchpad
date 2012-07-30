@@ -143,7 +143,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     {% endif %}
                     {% if holding.MFHD_DATA.marc852 and forloop.first %}
                         <br />
-                        <span class="note">{{ holding.MFHD_DATA.marc852|lower|capfirst }}</span>
+                        <span class="note">{{ holding.MFHD_DATA.marc852 }}</span>
                     {% endif %}
                     {#{% if holding.LIBRARY_HAS %}#}
                         {#{% for line in holding.LIBRARY_HAS %}#}
