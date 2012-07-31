@@ -340,37 +340,33 @@ function showmore(id)
     {% endfor %}
     </tbody>
 </table> 
-{% else %}
-<p>
-No copies found in WRLC.  ADD ILL LINK.
-</p>
 {% endif %}
 
 {% if debug %}
 <h3>Debugging info</h3>
 
 <p>
-View JSON: <a href='{% url "item_json" bibid %}'>{% url "item_json" bibid %}</a>
+View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
 &nbsp;
 
 {% if bib.ISBN|clean_isbn %}
 ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a>
 &nbsp;
     {% if link_resolver.base_url and link_resolver.name %}
-(<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}'>{{ link_resolver.name }}</a>)
+    (<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}&{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
 &nbsp;
     {% endif %}
 {% endif %}
 {% if bib.ISSN|clean_issn %}
-ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}'>{% url "issn" bib.ISSN|clean_issn %}</a>
+ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}?{{ bib.openurl.query_string|escape }}'>{% url "issn" bib.ISSN|clean_issn %}</a>
 &nbsp;
     {% if link_resolver.base_url and link_resolver.name %}
-(<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}'>{{ link_resolver.name }}</a>)
+    (<a href='{{ link_resolver.base_url }}?issn={{ bib.ISSN|clean_issn }}&amp;{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
 &nbsp;
     {% endif %}
 {% endif %}
 {% if bib.NETWORK_NUMBER|clean_oclc %}
-OCLC: <a href='{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}'>{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}</a>
+OCLC: <a href='{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}?{{ bib.openurl.query_string|escape }}'>{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}</a>
 &nbsp;
 {% endif %}
 </p>
