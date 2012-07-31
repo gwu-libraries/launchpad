@@ -89,6 +89,12 @@ AND bib_master.suppress_in_opac='N'"""
     if bib.get('CJK_INFO', ''):
         bib['CJK_INFO'] = cjk_info(bib['CJK_INFO'])
     bib['TITLE_ALL'] = clean_title(bib['TITLE_ALL'][7:])
+    if len(bib['TITLE_ALL']) > settings.TITLE_CHARS:
+        brief = bib['TITLE_ALL'][:settings.TITLE_CHARS]
+        ind = brief.rfind(' ')
+        if ind == -1:
+            ind = settings_TITLE_CHARS		
+        bib['TITLE_BRIEF']=brief[0:ind]
     try:
         language = pycountry.languages.get(bibliographic=bib['LANGUAGE'])
         bib['LANGUAGE_DISPLAY'] = language.name
@@ -968,6 +974,6 @@ def get_illiad_link(bib_data):
 
 def clean_title(title):
     for field in settings.MARC_245_SUBFIELDS:
-        title = title.replace(field,"")
+        title = title.replace(field," ")
     return title 
 
