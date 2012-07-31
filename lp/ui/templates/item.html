@@ -23,7 +23,6 @@
 
 {% block javascript_extra %}
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
-<script type='text/javascript' src= '{{STATIC_URL}}js/jquery_expander.js'></script>
 <script type='text/javascript'>
 // hide missing cover images' surrounding <div>
 $(document).ready(function() {
@@ -31,16 +30,9 @@ $(document).ready(function() {
         if ($('#cover-image').width() == 1) {
             $('#cover').toggle(200);
         };
-    });
-    $('h1.title span').expander({
-     slicePoint:     {{title_chars}},
-     expandPrefix:   '... ',
-     expandText:     '[more]',
-     collapseTimer: 0,
-     userCollapseText: '[less]'
-    });
-});
+        });
 
+    });
 // show txt/email button
 var newwindow;
 function sms(url) {
@@ -49,6 +41,29 @@ function sms(url) {
         newwindow.focus();
     };
 };
+
+//function to expand/collapse title if its bigger than a threshold
+function showmore(id)
+	{
+		var objt = document.getElementById("toggle-"+id);
+		var objb = document.getElementById("brief-"+id);
+		var objf = document.getElementById("full-"+id);
+		if(objf.style.display == 'block') 
+                {
+			objf.style.display='none';
+			objb.style.display='block';
+			objt.innerHTML="<a href=javascript:showmore('1');>Full...</a>";
+
+		}
+                else 
+                {
+			objf.style.display='block';
+			objb.style.display='none';
+			objt.innerHTML="<a href=javascript:showmore('1');>Brief</a>";
+		}		
+
+	};
+
 </script>
 {% endblock javascript_extra %}
 
@@ -65,13 +80,26 @@ function sms(url) {
             </div>
             {% endif %}
             <div id='description'>
-                <h1 class="title">
-                    {% if bib.CJK_INFO.TITLE %}
-                        <span itemprop="author">{{ bib.CJK_INFO.TITLE }}</span> <br />
-                    {% endif %}
-                    <span itemprop="name">{{bib.TITLE_ALL}}</span>
+                <span id="titleinfo">
+                <h1 class="title" >
+                {% if bib.CJK_INFO.TITLE %}
+                    <span itemprop="name">{{ bib.CJK_INFO.TITLE }}</span> <br />
+                {% endif %}
+                {%if bib.TITLE_ALL|length <= title_chars%}
+                    <span itemprop="name">{{bib.TITLE_ALL}}</span><br/>
+                {%else%}
+                    <div id="brief-1" style="display:block">
+                        {{bib.TITLE_BRIEF}}
+                    </div>
+                    <div id="full-1" style="display:none">
+                        <span itemprop="name">{{bib.TITLE_ALL}}</span>
+                    </div>
+                    <div id="toggle-1"> 
+                        <a href='javascript:showmore("1")';>Full...</a>
+                    </div>
+                {% endif %}
                 </h1>
-
+                </span>
                 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
                     <span class="author">
                     {% if bib.CJK_INFO.AUTHOR %}
