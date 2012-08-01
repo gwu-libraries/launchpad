@@ -252,6 +252,7 @@ ORDER BY library.library_name"""
     cursor.execute(query, [])
     eligibility = False
     holdings = _make_dict(cursor)
+    illiad_link = get_illiad_link(bib_data)
     for holding in holdings:
         if holding['LIBRARY_NAME'] == 'GM' or holding['LIBRARY_NAME'] == 'GT' or holding['LIBRARY_NAME'] == 'DA':
             if holding['BIB_ID'] in done:
@@ -294,8 +295,8 @@ ORDER BY library.library_name"""
         holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)
         if len(holding['MFHD_DATA']['marc866list']) == 0 and len(holding['MFHD_DATA']['marc856list']) == 0 and len(holding['ITEMS']) == 0:
             holding['REMOVE'] = True
-    if eligibility == False:
-        bib_data.update({'ILLIAD_LINK': get_illiad_link(bib_data)})
+    if eligibility == False or bib_data['BIB_FORMAT'] == 'as':
+        bib_data.update({'ILLIAD_LINK': illiad_link})
     else:
         bib_data.update({'ILLIAD_LINK': ''})
     return [h for h in holdings if not h.get('REMOVE', False)]
@@ -922,6 +923,8 @@ def get_z3950_mfhd_data(id,school,links):
         
 #def get_gt_holding_record():
 
+
+
 def get_gt_link(lines):
     url = msg = ''
     linkdata = {'url': '','msg': ''}
@@ -944,47 +947,97 @@ def get_illiad_link(bib_data):
     aulast = ''
     oclc = ''
     title = ''
-    query_args ={'rft.genre':'','rft.auinit':'','rft.pub':'','rft.isbn':'','rft.place':'','rft.aufirst':'','linktype':'openurl','rft.oclcnum':'','rft.auinit':'','rft.data':'','rft.aulast':'','rft.btitle':''}
+    ind = 0
+    query_args ={}
     url = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
-    if bib_data['BIB_FORMAT']:
-        query_args['rft.genre']=bib_data['BIB_FORMAT']
-    if bib_data['AUTHOR']:
-        ind = bib_data['AUTHOR'].find(',')
-        if ind != -1:
-            auinit = bib_data['AUTHOR'][ind+1:1]
-            aufirst = bib_data['AUTHOR'][0:ind]
-            aulast = bib_data['AUTHOR'][ind+2:]
-            query_args['rft.auinit'] = auinit
-            query_args['rft.aufirst'] = aufirst 
-            query_args['rft.aulast'] = aulast 
-            query_args['rft.auinit1'] = auinit
+    if bib_data['BIB_FORMAT'] == 'as':
+        query_args['genre']= 'journal'
+        query_args['rft.genre']= 'journal'
+        if bib_data['AUTHOR']:
+            ind = bib_data['AUTHOR'].find(',')
+            if ind != -1:
+                auinit = bib_data['AUTHOR'][ind+1:1]
+                aufirst = bib_data['AUTHOR'][0:ind]
+                aulast = bib_data['AUTHOR'][ind+2:]
+                query_args['aufirst'] = aufirst
+                query_args['aulast'] = aulast
+                query_args['auinitm'] = auinit
         elif len(bib_data['AUTHORS']) > 0:
-            query_args['rft.aulast'] = bib_data['AUTHORS'][0]
-             
-    if bib_data['PUBLISHER']:
-        query_args['rft.pub'] = bib_data['PUBLISHER']
-    if bib_data['ISBN']:
-        query_args['rft.isbn'] = bib_data['ISBN']
-    if bib_data['PUB_PLACE']:
-        query_args['rft.place'] =  bib_data['PUB_PLACE'] 
-    if bib_data['OCLC']:
-        ind = bib_data['OCLC'].find(')')
-        if ind != -1:
-            oclc = bib_data['OCLC'][ind+1:]
-        query_args['rft.oclcnum'] = oclc 
-    if bib_data['PUBLISHER_DATE']:
-        query_args['rft.date'] = bib_data['PUBLISHER_DATE'] 
-    if bib_data['TITLE']:
-        ind = bib_data['TITLE'].find('/')
+            ind = bib_data['AUTHORS'][0].find(',')
+            if ind == -1:
+                ind = bib_data['AUTHORS'][0].find(' ')
+            auinit = bib_data['AUTHORS'][0][ind+1:1]
+            aufirst = bib_data['AUTHORS'][0][0:ind]
+            aulast = bib_data['AUTHORS'][0][ind+2:]
+            query_args['aufirst'] = aufirst
+            query_args['aulast'] = aulast
+            query_args['auinitm'] = auinit
+        if bib_data['PUBLISHER']:
+            query_args['rft.pub'] = bib_data['PUBLISHER']
+        if bib_data['ISBN']:
+            query_args['isbn'] = bib_data['ISBN']
+        if bib_data['PUB_PLACE']:
+            query_args['rft.place'] =  bib_data['PUB_PLACE']
+        if bib_data['PUBLISHER_DATE']:
+            query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:]
+        if bib_data['TITLE']:
+            ind = bib_data['TITLE'].find('/')
         if ind != -1:
             title = bib_data['TITLE'][0:ind]
         else:
             title = bib_data['TITLE']
-        query_args['rft.btitle'] = title 
-    query_args['rfr_id'] = settings.ILLIAD_SID 
+        if bib_data['ISSN']:
+            query_args['rft_issn'] = bib_data['ISSN']
+        query_args['rft.jtitle'] = title.encode('ascii','replace') 
+        query_args['sid'] = settings.ILLIAD_SID    
+    else:
+        query_args['rft.genre']= 'book'
+        if bib_data['AUTHOR']:
+            ind = bib_data['AUTHOR'].find(',')
+            if ind != -1:
+                auinit = bib_data['AUTHOR'][ind+1:1]
+                aufirst = bib_data['AUTHOR'][0:ind]
+                aulast = bib_data['AUTHOR'][ind+2:]
+                query_args['rft.auinit'] = auinit
+                query_args['rft.aufirst'] = aufirst 
+                query_args['rft.aulast'] = aulast 
+                query_args['rft.auinit1'] = auinit
+        elif len(bib_data['AUTHORS']) > 0:
+            ind = bib_data['AUTHORS'][0].find(',')
+            if ind == -1:
+                ind = bib_data['AUTHORS'][0].find(' ')
+            auinit = bib_data['AUTHORS'][0][ind+1:1]
+            aufirst = bib_data['AUTHORS'][0][0:ind]
+            aulast = bib_data['AUTHORS'][0][ind+2:]
+            query_args['rft.auinit'] = auinit
+            query_args['rft.aufirst'] = aufirst
+            query_args['rft.aulast'] = aulast
+            query_args['rft.auinit1'] = auinit
+        if bib_data['PUBLISHER']:
+            query_args['rft.pub'] = bib_data['PUBLISHER']
+        if bib_data['ISBN']:
+            query_args['rft.isbn'] = bib_data['ISBN']
+        if bib_data['PUB_PLACE']:
+            query_args['rft.place'] =  bib_data['PUB_PLACE'] 
+        if bib_data['OCLC']:
+            ind = bib_data['OCLC'].find(')')
+        if ind != -1:
+            oclc = bib_data['OCLC'][ind+1:]
+        query_args['rft.oclcnum'] = oclc 
+        if bib_data['PUBLISHER_DATE']:
+            query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:] 
+        if bib_data['TITLE']:
+            ind = bib_data['TITLE'].find('/')
+        if ind != -1:
+            title = bib_data['TITLE'][0:ind]
+        else:
+            title = bib_data['TITLE']
+        query_args['rft.btitle'] = title.encode('ascii','replace') 
+        query_args['rfr_id'] = settings.ILLIAD_SID 
     encoded_args = urllib.urlencode(query_args)
     url += encoded_args
     return url
+
 
 
 def clean_title(title):

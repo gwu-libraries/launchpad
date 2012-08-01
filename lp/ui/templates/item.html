@@ -339,6 +339,29 @@ function showmore(id)
             {% endif %}
         {% endfor %}
     {% endfor %}
+    {%if bib.BIB_FORMAT == 'as'%}
+         <tr>
+             <td class='library-group-header'>
+              InterLibrary Loan
+             </td>
+          </tr>
+          <tr>
+               <td>
+                    <div class="itemrow">
+                    Available through ILL
+                    </div>
+               </td>
+               <td>                   </td>
+               <td> 
+                {%if bib.openurl.query_string%}  
+<a href= {{bib.ILLIAD_LINK|add:bib.openurl.query_string|escape }} target='newwin'> Request </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>    
+                {%else%}
+<a href= {{bib.ILLIAD_LINK }} target='newwin'> Request </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
+               {%endif%}
+                </td>
+               <td> </td>
+           </tr>
+       {%endif%}
     </tbody>
 </table> 
 {% endif %}
