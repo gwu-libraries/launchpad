@@ -16,9 +16,11 @@
 {% endblock title %}
 
 {% block link_extra %}
-{% with url_name="item_json" %}
-<link rel='alternate' type='application/json' href='{% url url_name bibid %}' />
-{% endwith %}
+{% if bibid %}
+    {% with url_name="item_json" %}
+        <link rel='alternate' type='application/json' href='{% url url_name bibid %}' />
+    {% endwith %}
+{% endif %}
 {% endblock link_extra %}
 
 {% block javascript_extra %}
@@ -350,8 +352,10 @@ No copies found in WRLC.  ADD ILL LINK.
 <h3>Debugging info</h3>
 
 <p>
+{% if bibid %}
 View JSON: <a href='{% url "item_json" bibid %}'>{% url "item_json" bibid %}</a>
 &nbsp;
+{% endif %}
 
 {% if bib.ISBN|clean_isbn %}
 ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a>

@@ -144,3 +144,6 @@ LINK_RESOLVER = {
     'name': 'findit',
     }
 
+API_LIST = [
+    'googlebooks',
+    ]
