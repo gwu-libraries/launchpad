@@ -2,12 +2,21 @@
 {% load launchpad_extras %}
 {% load url from future %}
 
-{% block title %}{% if bib.CJK_INFO.TITLE %}{{ bib.CJK_INFO.TITLE }}{% else %}{% if bib.TITLE|length <= 254 %}{{ bib.TITLE }}{% else %}{{ bib.TITLE|truncatewords:-1 }}{% endif %}{% endif %}{% endblock title %}
+
+{% block title %}
+    {% if bib.CJK_INFO.TITLE %}
+        {{ bib.CJK_INFO.TITLE }}
+    {% else %}
+        {% if bib.TITLE|length <= 254 %}
+            {{ bib.TITLE }}
+        {% else %}
+            {{ bib.TITLE|truncatewords:-1 }}
+        {% endif %}
+    {% endif %}
+{% endblock title %}
 
 {% block link_extra %}
-{% with url_name="item_json" %}
-<link rel='alternate' type='application/json' href='{% url url_name bibid %}' />
-{% endwith %}
+<link rel='alternate' type='application/json' href='{% url "item_json" bibid %}' />
 {% endblock link_extra %}
 
 {% block javascript_extra %}
@@ -58,73 +67,99 @@ function showmore(id)
 
 {% block content %}
 
+<div itemscope itemtype="{{bib.MICRODATA_TYPE}}">
+
 <table border='0' style='width:100%;'>
     <tr>
         <td>
             {% if bib.ISBN|clean_isbn %}
             <div id='cover'>
-                <img id='cover-image' src='http://covers.openlibrary.org/b/isbn/{{ bib.ISBN|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
+                <img itemprop="image" id='cover-image' src='http://covers.openlibrary.org/b/isbn/{{ bib.ISBN|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
             </div>
             {% endif %}
             <div id='description'>
-<span id="titleinfo">
-<h1 class="title" >
-{% if bib.CJK_INFO.TITLE %}
-    {{ bib.CJK_INFO.TITLE }} <br />
-{% endif %}
-{%if bib.TITLE_ALL|length <= title_chars%}
-    {{bib.TITLE_ALL}}<br/>
-{%else%}
-    <div id="brief-1" style="display:block">
-	{{bib.TITLE_BRIEF}}
-    </div>
-    <div id="full-1" style="display:none">
-        {{bib.TITLE_ALL}}
-    </div>
-    <div id="toggle-1"> 
-        <a href='javascript:showmore("1")';>Full...</a>
-    </div>
-{% endif %}
-</h1>
-</span>
+                <span id="titleinfo">
+                <h1 class="title" >
+                {% if bib.CJK_INFO.TITLE %}
+                    <span itemprop="name">{{ bib.CJK_INFO.TITLE }}</span> <br />
+                {% endif %}
+                {%if bib.TITLE_ALL|length <= title_chars%}
+                    <span itemprop="name">{{bib.TITLE_ALL}}</span><br/>
+                {%else%}
+                    <div id="brief-1" style="display:block">
+                        {{bib.TITLE_BRIEF}}
+                    </div>
+                    <div id="full-1" style="display:none">
+                        <span itemprop="name">{{bib.TITLE_ALL}}</span>
+                    </div>
+                    <div id="toggle-1"> 
+                        <a href='javascript:showmore("1")';>Full...</a>
+                    </div>
+                {% endif %}
+                </h1>
+                </span>
+                {% if bib.openurl.query_string %}
+                    {% include "openurl.html" %}
+                {% endif %}
+                {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
+                    <span class="author">
+                    {% if bib.CJK_INFO.AUTHOR %}
+                        <span itemprop="author">{{ bib.CJK_INFO.AUTHOR }}</span> <br />
+                    {% endif %}
+                    {% if bib.AUTHORS %}
+                        {% for contributor in bib.AUTHORS %}
+                            {% if forloop.first %}
+                                <span itemprop="author">{{contributor}}</span>
+                            {% else %}
+                                <span itemprop="contributor">{{contributor}}</span>
+                            {% endif %}
+                            {% if not forloop.last %}; {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% if bib.AUTHOR %}
+                            <span itemprop="author">{{ bib.AUTHOR }}</span>
+                        {% endif %}
+                    {% endif %}
+                    </span><br />
+                {% endif %}
 
-{% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
-<span class="author">
-{% if bib.CJK_INFO.AUTHOR %}
-    {{ bib.CJK_INFO.AUTHOR }} <br />
-{% endif %}
-{% if bib.AUTHORS %}
-    {{ bib.AUTHORS|join:"; " }}
-    <br />
-{% endif %}
-</span>
-{% endif %}
+                {% if bib.EDITION %}
+                    <span class="edition">{{ bib.EDITION }}.</span>
+                {% endif %}
+                <span class="imprint">
+                    {% if bib.CJK_INFO.IMPRINT %}
+                        <span itemprop="publisher">
+                        {{ bib.CJK_INFO.IMPRINT }}
+                        </span><br />
+                    {% endif %}
+                    {% if bib.IMPRINT %}
+                        <span itemprop="publisher">
+                        {{ bib.IMPRINT }}
+                        </span>
+                        {% if bib.IMPRINT|slice:"-1:" == '.' or bib_IMPRINT|slice:"-2:" == '. ' %}
+                        {% else %}.
+                        {% endif %}
+                    {% endif %}
+                </span>
 
-{% if bib.EDITION %}
-<span class="edition">{{ bib.EDITION }}.</span>
-{% endif %}
-<span class="imprint">
-{% if bib.CJK_INFO.IMPRINT %}
-    {{ bib.CJK_INFO.IMPRINT }} <br />
-{% endif %}
-{% if bib.IMPRINT %}
-    {{ bib.IMPRINT }}</span>{% if bib.IMPRINT|slice:"-1:" == '.' or bib_IMPRINT|slice:"-2:" == '. ' %}{% else %}.{% endif %}
-{% endif %}
+                {% if bib.LANGUAGE_DISPLAY %}
+                    In <span itemprop="inLanguage" class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
+                {% endif %}
+                <br />
 
-</span>
-{% if bib.LANGUAGE_DISPLAY %}
-In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
-{% endif %}
-<br />
-
-{% if bib.DISPLAY_ISBN_LIST %}
-    <span class="isbn-label">ISBN </span>
-    <span class="isbn">{{ bib.DISPLAY_ISBN_LIST|join:", " }}</span><br/>
-{% endif %}
-{% if bib.DISPLAY_ISSN_LIST %}
-    <span class="isbn-label">ISSN </span>
-    <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
-{% endif %}
+                {% if bib.DISPLAY_ISBN_LIST %}
+                    <span class="isbn-label">ISBN </span>
+                    <span class="isbn">
+                        {% for isbn in bib.DISPLAY_ISBN_LIST %}
+                            <span itemprop="isbn">{{ isbn }}</span>
+                            {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </span><br />
+                {% endif %}
+                {% if bib.DISPLAY_ISSN_LIST %}
+                    <span class="isbn-label">ISSN </span>
+                    <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
+                {% endif %}
 {%if bib.ILLIAD_LINK %}
     <p><span class="catlink"> Make a request for this item through ILL <a href= {{bib.ILLIAD_LINK}} target='newwin'> Request </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> </span></p>
 {%endif%}
@@ -136,6 +171,8 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
         </td>
     </tr>
 </table>
+
+</div>
 
 
 {% if holdings %}
@@ -304,37 +341,33 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
     {% endfor %}
     </tbody>
 </table> 
-{% else %}
-<p>
-No copies found in WRLC.  ADD ILL LINK.
-</p>
 {% endif %}
 
 {% if debug %}
 <h3>Debugging info</h3>
 
 <p>
-View JSON: <a href='{% url "item_json" bibid %}'>{% url "item_json" bibid %}</a>
+View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
 &nbsp;
 
 {% if bib.ISBN|clean_isbn %}
 ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a>
 &nbsp;
     {% if link_resolver.base_url and link_resolver.name %}
-(<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}'>{{ link_resolver.name }}</a>)
+    (<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}&{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
 &nbsp;
     {% endif %}
 {% endif %}
 {% if bib.ISSN|clean_issn %}
-ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}'>{% url "issn" bib.ISSN|clean_issn %}</a>
+ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}?{{ bib.openurl.query_string|escape }}'>{% url "issn" bib.ISSN|clean_issn %}</a>
 &nbsp;
     {% if link_resolver.base_url and link_resolver.name %}
-(<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}'>{{ link_resolver.name }}</a>)
+    (<a href='{{ link_resolver.base_url }}?issn={{ bib.ISSN|clean_issn }}&amp;{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
 &nbsp;
     {% endif %}
 {% endif %}
 {% if bib.NETWORK_NUMBER|clean_oclc %}
-OCLC: <a href='{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}'>{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}</a>
+OCLC: <a href='{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}?{{ bib.openurl.query_string|escape }}'>{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}</a>
 &nbsp;
 {% endif %}
 </p>

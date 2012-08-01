@@ -61,21 +61,25 @@ AND bib_index.index_code IN ('700H', '710H', '711H')
     #        authors.remove(author)
     return authors
 
+
 def get_bib_data(bibid):
     query = """
 SELECT bib_text.bib_id, title, author, edition, isbn, issn, network_number AS OCLC, 
        publisher, pub_place, imprint, bib_format, language, library_name, publisher_date, 
-       RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) as LINK,
-       RTRIM(wrlcdb.GetMarcField(%s,0,0,'245','','',1)) as TITLE_ALL,
-       wrlcdb.GetAllBibTag(%s, '880', 1) as CJK_INFO,
-       RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','z',1)) as MESSAGE 
+       RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) AS LINK,
+       RTRIM(wrlcdb.GetMarcField(%s,0,0,'245','','',1)) AS TITLE_ALL,
+       wrlcdb.GetAllBibTag(%s, '880', 1) AS CJK_INFO,
+       RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','z',1)) AS MESSAGE,
+       wrlcdb.GetBibTag(%s, '006') AS MARC006,
+       wrlcdb.GetBibTag(%s, '007') AS MARC007,
+       wrlcdb.GetBibTag(%s, '008') AS MARC008 
 FROM bib_text, bib_master, library
 WHERE bib_text.bib_id=%s
 AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
-    cursor.execute(query, [bibid, bibid, bibid, bibid, bibid])
+    cursor.execute(query, [bibid, bibid, bibid, bibid, bibid, bibid, bibid, bibid])
     bib = _make_dict(cursor, first=True)
     # if bib is empty, there's no match -- return immediately
     if not bib:
@@ -118,6 +122,8 @@ AND bib_master.suppress_in_opac='N'"""
                     if nb['BIB_ID'] not in [x['BIB_ID'] for x in bibids]:
                         bibids.append(nb)
     bib['BIB_ID_LIST'] = list(bibids)
+    # parse fields for microdata
+    bib['MICRODATA_TYPE'] = get_microdata_type(bib)
     return bib
     
 
@@ -130,7 +136,16 @@ def _is_oclc(num):
         return True
     return False
 
-    
+
+def get_microdata_type(bib):
+    output = 'http://schema.org/'
+    for i in range(18, 35):
+        if bib['MARC008'][i] != '':
+            return output + 'Book'
+    if len(bib.get('DISPLAY_ISBN_LIST','')) > 0:
+        return output + 'Book'
+    return output + 'CreativeWork'
+
 
 def get_primary_bibid(num, num_type):
     num = _normalize_num(num, num_type)

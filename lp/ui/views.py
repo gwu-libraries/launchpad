@@ -1,4 +1,7 @@
+import urllib
+
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.utils import simplejson as json
@@ -15,11 +18,24 @@ def home(request):
         })
 
 
+def _openurl_dict(params):
+    """Split openurl params into a useful structure"""
+    p = {}
+    for k, v in dict(params).items():
+        p[k] = ','.join(v)
+    d = {'params':  p}
+    d['query_string'] = '&'.join(['%s=%s' % (k, v) for k, v
+        in params.items()])
+    d['query_string_encoded'] = urllib.urlencode(params)
+    return d
+
+
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid):
     bib = voyager.get_bib_data(bibid)
     if not bib:
         raise Http404
+    bib['openurl'] = _openurl_dict(request.GET)
     # Ensure bib data is ours if possible
     if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
         for alt_bib in bib['BIB_ID_LIST']:
@@ -38,6 +54,7 @@ def item(request, bibid):
         'link': bib.get('LINK', '')[9:],
         'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
         'link_resolver': settings.LINK_RESOLVER,
+        'enable_humans': settings.ENABLE_HUMANS,
         })
 
 
@@ -49,6 +66,7 @@ def _date_handler(obj):
 def item_json(request, bibid):
     bib_data = voyager.get_bib_data(bibid)
     bib_data['holdings'] = voyager.get_holdings(bib_data)
+    bib_data['openurl'] = _openurl_dict(request.GET)
     return HttpResponse(json.dumps(bib_data, default=_date_handler,
         indent=2), content_type='application/json')
 
@@ -83,22 +101,31 @@ def gmitem_json(request, gmbibid):
 
 def isbn(request, isbn):
     bibid = voyager.get_primary_bibid(num=isbn, num_type='isbn')
+    openurl = _openurl_dict(request.GET)
     if bibid:
-        return redirect('item', bibid=bibid)
+        url = '%s?%s' % (reverse('item', args=[bibid]),
+            openurl['query_string_encoded'])
+        return redirect(url)
     raise Http404
 
 
 def issn(request, issn):
     bibid = voyager.get_primary_bibid(num=issn, num_type='issn')
+    openurl = _openurl_dict(request.GET)
     if bibid:
-        return redirect('item', bibid=bibid)
+        url = '%s?%s' % (reverse('item', args=[bibid]),
+            openurl['query_string_encoded'])
+        return redirect(url)
     raise Http404
 
 
 def oclc(request, oclc):
     bibid = voyager.get_primary_bibid(num=oclc, num_type='oclc')
+    openurl = _openurl_dict(request.GET)
     if bibid:
-        return redirect('item', bibid=bibid)
+        url = '%s?%s' % (reverse('item', args=[bibid]),
+            openurl['query_string_encoded'])
+        return redirect(url)
     raise Http404
 
 
@@ -111,3 +138,7 @@ def error500(request):
 
 def robots(request):
     return render(request, 'robots.txt', {}, content_type='text/plain')
+
+
+def humans(request):
+    return render(request, 'humans.txt', {}, content_type='text/plain')
