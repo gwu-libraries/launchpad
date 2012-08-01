@@ -1,0 +1,30 @@
+/* TEAM */
+
+    Web developer: Christian Aldridge
+
+    Analyst/Resource sharing: Glenn Canner
+
+    Analyst/Public services: Chandler Christoffel
+
+    PM/developer: Daniel Chudnov
+    Twitter: @dchud 
+
+    Lead developer: Michael Cummings
+    
+    Developer: Raza Gilani
+    
+    Developer: Joshua Gomez 
+
+    Analyst/E-Resources: Laura Wrubel
+
+    
+/* THANKS */
+
+    Infrastructre: Washington Regional Library Consortium http://wrlc.org
+
+    Cover images: http://openlibrary.org/dev/docs/api/covers
+
+
+/* SITE */
+        
+    Tools: Python, Django, Oracle, jQuery, Ex Libris Voyager, git

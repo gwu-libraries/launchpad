@@ -144,3 +144,5 @@ LINK_RESOLVER = {
     'name': 'findit',
     }
 
+# Show humans.txt?
+ENABLE_HUMANS = False

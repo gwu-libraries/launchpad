@@ -54,6 +54,7 @@ def item(request, bibid):
         'link': bib.get('LINK', '')[9:],
         'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
         'link_resolver': settings.LINK_RESOLVER,
+        'enable_humans': settings.ENABLE_HUMANS,
         })
 
 
@@ -137,3 +138,7 @@ def error500(request):
 
 def robots(request):
     return render(request, 'robots.txt', {}, content_type='text/plain')
+
+
+def humans(request):
+    return render(request, 'humans.txt', {}, content_type='text/plain')
