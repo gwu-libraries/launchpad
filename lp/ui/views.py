@@ -74,7 +74,7 @@ def item_json(request, bibid):
 def non_wrlc_item(request, num, num_type):
     bib = apis.get_bib_data(num=num, num_type=num_type)
     if not bib:
-        raise Http404
+        return render(request, 'noitem.html', {'num':num, 'num_type':num_type.upper()})
     bib['ILLIAD_LINK'] = voyager.get_illiad_link(bib)
     return render(request, 'item.html', {
        'bibid': '',
