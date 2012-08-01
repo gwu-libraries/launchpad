@@ -139,9 +139,9 @@ def _is_oclc(num):
 
 def get_microdata_type(bib):
     output = 'http://schema.org/'
-    for i in range(18, 35):
-        if bib['MARC008'][i] != '':
-            return output + 'Book'
+    format = bib.get('BIB_FORMAT','')
+    if format == 'am':
+        return output + 'Book'
     if len(bib.get('DISPLAY_ISBN_LIST','')) > 0:
         return output + 'Book'
     return output + 'CreativeWork'
