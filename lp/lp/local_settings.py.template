@@ -144,5 +144,9 @@ LINK_RESOLVER = {
     'name': 'findit',
     }
 
+API_LIST = [
+    'googlebooks',
+    ]
+
 # Show humans.txt?
 ENABLE_HUMANS = False

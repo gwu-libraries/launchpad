@@ -139,9 +139,9 @@ def _is_oclc(num):
 
 def get_microdata_type(bib):
     output = 'http://schema.org/'
-    for i in range(18, 35):
-        if bib['MARC008'][i] != '':
-            return output + 'Book'
+    format = bib.get('BIB_FORMAT','')
+    if format == 'am':
+        return output + 'Book'
     if len(bib.get('DISPLAY_ISBN_LIST','')) > 0:
         return output + 'Book'
     return output + 'CreativeWork'
@@ -956,10 +956,10 @@ def get_illiad_link(bib_data):
     ind = 0
     query_args ={}
     url = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
-    if bib_data['BIB_FORMAT'] == 'as':
+    if bib_data.get('BIB_FORMAT') == 'as':
         query_args['genre']= 'journal'
         query_args['rft.genre']= 'journal'
-        if bib_data['AUTHOR']:
+        if bib_data.get('AUTHOR'):
             ind = bib_data['AUTHOR'].find(',')
             if ind != -1:
                 auinit = bib_data['AUTHOR'][ind+1:1]
@@ -968,7 +968,7 @@ def get_illiad_link(bib_data):
                 query_args['aufirst'] = aufirst
                 query_args['aulast'] = aulast
                 query_args['auinitm'] = auinit
-        elif len(bib_data['AUTHORS']) > 0:
+        elif len(bib_data.get('AUTHORS')) > 0:
             ind = bib_data['AUTHORS'][0].find(',')
             if ind == -1:
                 ind = bib_data['AUTHORS'][0].find(' ')
@@ -978,27 +978,27 @@ def get_illiad_link(bib_data):
             query_args['aufirst'] = aufirst
             query_args['aulast'] = aulast
             query_args['auinitm'] = auinit
-        if bib_data['PUBLISHER']:
+        if bib_data.get('PUBLISHER'):
             query_args['rft.pub'] = bib_data['PUBLISHER']
-        if bib_data['ISBN']:
+        if bib_data.get('ISBN'):
             query_args['isbn'] = bib_data['ISBN']
-        if bib_data['PUB_PLACE']:
+        if bib_data.get('PUB_PLACE'):
             query_args['rft.place'] =  bib_data['PUB_PLACE']
-        if bib_data['PUBLISHER_DATE']:
+        if bib_data.get('PUBLISHER_DATE'):
             query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:]
-        if bib_data['TITLE']:
+        if bib_data.get('TITLE'):
             ind = bib_data['TITLE'].find('/')
         if ind != -1:
             title = bib_data['TITLE'][0:ind]
         else:
             title = bib_data['TITLE']
-        if bib_data['ISSN']:
+        if bib_data.get('ISSN'):
             query_args['rft_issn'] = bib_data['ISSN']
         query_args['rft.jtitle'] = title.encode('ascii','replace') 
         query_args['sid'] = settings.ILLIAD_SID    
     else:
         query_args['rft.genre']= 'book'
-        if bib_data['AUTHOR']:
+        if bib_data.get('AUTHOR'):
             ind = bib_data['AUTHOR'].find(',')
             if ind != -1:
                 auinit = bib_data['AUTHOR'][ind+1:1]
@@ -1008,7 +1008,7 @@ def get_illiad_link(bib_data):
                 query_args['rft.aufirst'] = aufirst 
                 query_args['rft.aulast'] = aulast 
                 query_args['rft.auinit1'] = auinit
-        elif len(bib_data['AUTHORS']) > 0:
+        elif len(bib_data.get('AUTHORS')) > 0:
             ind = bib_data['AUTHORS'][0].find(',')
             if ind == -1:
                 ind = bib_data['AUTHORS'][0].find(' ')
@@ -1019,27 +1019,27 @@ def get_illiad_link(bib_data):
             query_args['rft.aufirst'] = aufirst
             query_args['rft.aulast'] = aulast
             query_args['rft.auinit1'] = auinit
-        if bib_data['PUBLISHER']:
+        if bib_data.get('PUBLISHER'):
             query_args['rft.pub'] = bib_data['PUBLISHER']
-        if bib_data['ISBN']:
+        if bib_data.get('ISBN'):
             query_args['rft.isbn'] = bib_data['ISBN']
-        if bib_data['PUB_PLACE']:
+        if bib_data.get('PUB_PLACE'):
             query_args['rft.place'] =  bib_data['PUB_PLACE'] 
-        if bib_data['OCLC']:
+        if bib_data.get('OCLC'):
             ind = bib_data['OCLC'].find(')')
-        if ind != -1:
-            oclc = bib_data['OCLC'][ind+1:]
-        query_args['rft.oclcnum'] = oclc 
-        if bib_data['PUBLISHER_DATE']:
+            if ind != -1:
+                oclc = bib_data['OCLC'][ind+1:]
+            query_args['rft.oclcnum'] = oclc 
+        if bib_data.get('PUBLISHER_DATE'):
             query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:] 
-        if bib_data['TITLE']:
+        if bib_data.get('TITLE'):
             ind = bib_data['TITLE'].find('/')
-        if ind != -1:
-            title = bib_data['TITLE'][0:ind]
-        else:
-            title = bib_data['TITLE']
-        query_args['rft.btitle'] = title.encode('ascii','replace') 
-        query_args['rfr_id'] = settings.ILLIAD_SID 
+            if ind != -1:
+                title = bib_data['TITLE'][0:ind]
+            else:
+                title = bib_data['TITLE']
+            query_args['rft.btitle'] = title.encode('ascii','replace') 
+            query_args['rfr_id'] = settings.ILLIAD_SID 
     encoded_args = urllib.urlencode(query_args)
     url += encoded_args
     return url

@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
-from ui import voyager
+from ui import voyager, apis
 from ui.sort import libsort, availsort, elecsort, splitsort
 
 
@@ -71,6 +71,23 @@ def item_json(request, bibid):
         indent=2), content_type='application/json')
 
 
+def non_wrlc_item(request, num, num_type):
+    bib = apis.get_bib_data(num=num, num_type=num_type)
+    if not bib:
+        return render(request, 'noitem.html', {'num':num, 'num_type':num_type.upper()})
+    bib['ILLIAD_LINK'] = voyager.get_illiad_link(bib)
+    return render(request, 'item.html', {
+       'bibid': '',
+       'bib': bib,
+       'debug': settings.DEBUG,
+       'title_chars': settings.TITLE_CHARS,
+       'holdings': [],
+       'link': '',
+       'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
+       'link_resolver': settings.LINK_RESOLVER,
+       })
+
+
 def gtitem(request, gtbibid):
     bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
     if bibid:
@@ -106,7 +123,7 @@ def isbn(request, isbn):
         url = '%s?%s' % (reverse('item', args=[bibid]),
             openurl['query_string_encoded'])
         return redirect(url)
-    raise Http404
+    return non_wrlc_item(request, num=isbn, num_type='isbn')
 
 
 def issn(request, issn):
@@ -116,7 +133,7 @@ def issn(request, issn):
         url = '%s?%s' % (reverse('item', args=[bibid]),
             openurl['query_string_encoded'])
         return redirect(url)
-    raise Http404
+    return non_wrlc_item(request, num=issn, num_type='issn')
 
 
 def oclc(request, oclc):

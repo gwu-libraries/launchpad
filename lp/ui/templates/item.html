@@ -16,7 +16,11 @@
 {% endblock title %}
 
 {% block link_extra %}
-<link rel='alternate' type='application/json' href='{% url "item_json" bibid %}' />
+{% if bibid %}
+    {% with url_name="item_json" %}
+        <link rel='alternate' type='application/json' href='{% url "item_json" bibid %}' />
+    {% endwith %}
+{% endif %}
 {% endblock link_extra %}
 
 {% block javascript_extra %}
@@ -371,8 +375,10 @@ function showmore(id)
 <h3>Debugging info</h3>
 
 <p>
+{% if bibid %}
 View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
 &nbsp;
+{% endif %}
 
 {% if bib.ISBN|clean_isbn %}
 ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a>
