@@ -47,6 +47,9 @@
     </script>
     {% endif %}
 {% endblock analytics_bug %}
+{% if enable_humans %}
+    <link type="text/plain" rel="author" href="{% url humans %}" />
+{% endif %}
 </head>
 <body>
 

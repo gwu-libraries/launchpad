@@ -147,3 +147,6 @@ LINK_RESOLVER = {
 API_LIST = [
     'googlebooks',
     ]
+
+# Show humans.txt?
+ENABLE_HUMANS = False
