@@ -16,9 +16,7 @@
 {% endblock title %}
 
 {% block link_extra %}
-{% with url_name="item_json" %}
-<link rel='alternate' type='application/json' href='{% url url_name bibid %}' />
-{% endwith %}
+<link rel='alternate' type='application/json' href='{% url "item_json" bibid %}' />
 {% endblock link_extra %}
 
 {% block javascript_extra %}
@@ -100,6 +98,9 @@ function showmore(id)
                 {% endif %}
                 </h1>
                 </span>
+                {% if bib.openurl.query_string %}
+                    {% include "openurl.html" %}
+                {% endif %}
                 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
                     <span class="author">
                     {% if bib.CJK_INFO.AUTHOR %}
