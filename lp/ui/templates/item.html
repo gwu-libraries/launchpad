@@ -41,14 +41,14 @@ function showmore(id)
                 {
 			objf.style.display='none';
 			objb.style.display='block';
-			objt.innerHTML="<a href=javascript:showmore('1');>Full...</a>";
+			objt.innerHTML="<a href=javascript:showmore('1');>More...</a>";
 
 		}
                 else 
                 {
 			objf.style.display='block';
 			objb.style.display='none';
-			objt.innerHTML="<a href=javascript:showmore('1');>Brief</a>";
+			objt.innerHTML="<a href=javascript:showmore('1');>Less</a>";
 		}		
 
 	};
@@ -170,7 +170,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                     {% else %}
                         {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                     {% endif %}
-                    {% if holding.MFHD_DATA and holding.MFHD_DATA.marc866list and forloop|length_is:"1" %}
+                    {% if holding.MFHD_DATA and holding.MFHD_DATA.marc866list and forloop.first_ %}
                         {% for line in holding.MFHD_DATA.marc866list %}
                             <br />
                             <span class="library-has">{{ line }}</span>
