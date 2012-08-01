@@ -589,26 +589,16 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 values = str(r)
                 lines = values.split('\n')
                 for line in lines:
+                    values = status = location = callno = url = msg = note = ''
                     if alt_callno is None:
                         alt_callno = get_callno(line)
-                    ind = line.find('856 4')
-                    if ind !=-1:
-                        ind = line.find('$x')
-                        ind1 = line.find(' ',ind)
-                        url = line[ind+2:ind1]
-                        location = 'GM: online'
-                        item_status = 1
-                        status = 'Not Charged'
-                        ind = line.find('$z')
-                        ind1 = line.find('$x',ind+2)
-                        msg = line[ind1+2:]
-                    
-                    ind = line.find('852') 
+
+                    ind = line.find('852')
                     if ind != -1:
                         ind = line.find('$o')
                         ind2 = line.find('$y', ind)
                         note = line[ind+2:ind2]
-   
+
                     ind = line.find('availableNow')
                     if ind != -1:
                         ind = line.find(':')
@@ -626,12 +616,6 @@ def get_z3950_holdings(id, school, id_type, query_type):
                         ind1 = line.find('\\')
                         callno = line[ind+3:ind1]
                     
-                    ind = line.find('852')
-                    if ind != -1:
-                        ind = line.find('$o')
-                        ind2 = line.find('$y', ind)
-                        note = line[ind+2:ind2]
-
                     ind = line.find('localLocation')
                     if ind!= -1:
                         ind = line.find(':')
@@ -642,6 +626,11 @@ def get_z3950_holdings(id, school, id_type, query_type):
                         arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg, 'NOTE':note}
                         results.append(arow)
                     holding_found = False
+                if 'Rec: OPAC Bibliographic MARC:' in lines[0]:
+                    linkdata = get_gm_link(lines)
+                    arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':linkdata['url'],'MESSAGE':linkdata['msg'],'NOTE':note}
+                    results.append(arow)
+
             conn.close()
             dataset['availability'] = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
             dataset['electronic'] = get_z3950_electronic_data('GM',url,msg,note)
@@ -897,10 +886,9 @@ def get_z3950_mfhd_data(id,school,links):
         if link['LINK']:
             val = {'3':'','z':link['MESSAGE'],'u':link['LINK']}
             m856list.append(val)
-        if link['STATUS'] not in  ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and 'INTERNET' not in link['LOCATION'] :
-            if link['STATUS'] != '':
-                m866list.append(link['STATUS'])
-        else:
+        if link['STATUS'] not in  ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and 'INTERNET' not in link['LOCATION'] and link['STATUS'] !='':
+            m866list.append(link['STATUS'])
+        elif link['STATUS'] != '' or link['LOCATION'] != '' or link['CALLNO'] != '':
             val = {'ITEM_ENUM': None,
                    'ELIGIBLE': '',
                    'ITEM_STATUS': 0,
@@ -914,7 +902,6 @@ def get_z3950_mfhd_data(id,school,links):
                    'DISPLAY_CALL_NO': link['CALLNO'],
                    'CHRON': None} 
             items.append(val)
-        
     res.append(m866list)
     res.append(m856list)
     res.append(items)
@@ -938,6 +925,25 @@ def get_gt_link(lines):
             ind1 = line.find('$u',ind)
             msg = line[ind+2:ind1]
             break
+    res = {'url': url,'msg': msg}
+    return res
+
+def get_gm_link(lines):
+    url = msg = ''
+    linkdata = {'url': '', 'msg':''}
+    for line in lines:
+        ind = line.find('856 4')
+        if ind !=-1:
+            ind = line.find('$x')
+            ind1 = line.find(' ',ind)
+            url = line[ind+2:ind1]
+            location = 'GM: online'
+            item_status = 1
+            status = 'Not Charged'
+            ind = line.find('$z')
+            ind1 = line.find('$x',ind+2)
+            msg = line[ind1+2:]
+            break           
     res = {'url': url,'msg': msg}
     return res
 
