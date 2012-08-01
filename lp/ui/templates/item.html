@@ -126,7 +126,7 @@ In <span class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
     <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
 {% endif %}
 {%if bib.ILLIAD_LINK %}
-    <span class="catlink"> Make a request for this item through ILL <a href= {{bib.ILLIAD_LINK}} target='newwin'> Request </a> </span>
+    <p><span class="catlink"> Make a request for this item through ILL <a href= {{bib.ILLIAD_LINK}} target='newwin'> Request </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> </span></p>
 {%endif%}
 
 <p>
