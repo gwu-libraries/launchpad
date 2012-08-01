@@ -37,4 +37,5 @@ def googlebooks(num, num_type):
         bib['DISPLAY_%s_LIST' % num_type.upper()] = list(std_nums)
     bib['IMPRINT'] = volinfo.get('publishedDate', '')
     bib['PUBLISHER_DATE'] = bib['IMPRINT']
+    bib['BIB_FORMAT'] = 'as' if num_type=='issn' else 'am'
     return bib
