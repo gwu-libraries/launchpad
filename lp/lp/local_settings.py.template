@@ -145,7 +145,17 @@ LINK_RESOLVER = {
     }
 
 API_LIST = [
-    'googlebooks',
+    'googlebooks': {'url':'https://www.googleapis.com/books/v1/volumes?q=%s:%s',
+                        'key': ''},
+                            'worldcat': {'url':'http://www.worldcat.org/webservices/catalog/content/%s/%s?wskey=%s',
+                                             'key':'MmH4bDecNtB2OsKNLNzTCHP9qGUZrJUT7bdNc4BHligfY2pXcE7pb7lL2GnMV4MPqsrCUqZwsbY8Yu84'}
+                                                 ]
+
+API_LIST = [
+    'googlebooks': {'url': 'https://www/googleapis.com/books/v1/volumes?q=%s:%s',
+                    'key': ''},
+    'worldcat': {'url':'http://www.worldcat.org/webservices/catalog/content/%s/%s?wskey=%s',
+                 'key':''}
     ]
 
 # Show humans.txt?

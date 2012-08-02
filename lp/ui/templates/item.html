@@ -165,11 +165,14 @@ function showmore(id)
                     <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
                 {% endif %}
                 <p>
-                <span class="catlink" >View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>Aladin Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
-{%if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as'%}
-   &nbsp; &nbsp; | &nbsp; &nbsp; Request this title through  <a href= {{bib.ILLIAD_LINK}} target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
-{%endif%}
-</span>
+                    <span class="catlink" >
+                    {% if bib.BIB_ID %}
+                        View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>Aladin Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                    {% endif %}
+                    {%if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as'%}
+                       &nbsp; &nbsp; | &nbsp; &nbsp; Request this title through  <a href= {{bib.ILLIAD_LINK}} target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
+                    {%endif%}
+                    </span>
                 </p>
             </div>
         </td>

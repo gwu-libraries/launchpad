@@ -959,7 +959,7 @@ def get_illiad_link(bib_data):
     if bib_data.get('BIB_FORMAT') == 'as':
         query_args['genre']= 'journal'
         query_args['rft.genre']= 'journal'
-        if bib_data.get('AUTHOR'):
+        if bib_data.get('AUTHOR',''):
             ind = bib_data['AUTHOR'].find(',')
             if ind != -1:
                 auinit = bib_data['AUTHOR'][ind+1:1]
@@ -968,7 +968,7 @@ def get_illiad_link(bib_data):
                 query_args['aufirst'] = aufirst
                 query_args['aulast'] = aulast
                 query_args['auinitm'] = auinit
-        elif len(bib_data.get('AUTHORS')) > 0:
+        elif len(bib_data.get('AUTHORS',[])) > 0:
             ind = bib_data['AUTHORS'][0].find(',')
             if ind == -1:
                 ind = bib_data['AUTHORS'][0].find(' ')
@@ -978,27 +978,27 @@ def get_illiad_link(bib_data):
             query_args['aufirst'] = aufirst
             query_args['aulast'] = aulast
             query_args['auinitm'] = auinit
-        if bib_data.get('PUBLISHER'):
+        if bib_data.get('PUBLISHER',''):
             query_args['rft.pub'] = bib_data['PUBLISHER']
-        if bib_data.get('ISBN'):
+        if bib_data.get('ISBN',''):
             query_args['isbn'] = bib_data['ISBN']
-        if bib_data.get('PUB_PLACE'):
+        if bib_data.get('PUB_PLACE',''):
             query_args['rft.place'] =  bib_data['PUB_PLACE']
-        if bib_data.get('PUBLISHER_DATE'):
+        if bib_data.get('PUBLISHER_DATE',''):
             query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:]
-        if bib_data.get('TITLE'):
+        if bib_data.get('TITLE',''):
             ind = bib_data['TITLE'].find('/')
         if ind != -1:
             title = bib_data['TITLE'][0:ind]
         else:
             title = bib_data['TITLE']
-        if bib_data.get('ISSN'):
+        if bib_data.get('ISSN',''):
             query_args['rft_issn'] = bib_data['ISSN']
         query_args['rft.jtitle'] = title.encode('ascii','replace') 
         query_args['sid'] = settings.ILLIAD_SID    
     else:
         query_args['rft.genre']= 'book'
-        if bib_data.get('AUTHOR'):
+        if bib_data.get('AUTHOR',''):
             ind = bib_data['AUTHOR'].find(',')
             if ind != -1:
                 auinit = bib_data['AUTHOR'][ind+1:1]
@@ -1008,7 +1008,7 @@ def get_illiad_link(bib_data):
                 query_args['rft.aufirst'] = aufirst 
                 query_args['rft.aulast'] = aulast 
                 query_args['rft.auinit1'] = auinit
-        elif len(bib_data.get('AUTHORS')) > 0:
+        elif len(bib_data.get('AUTHORS',[])) > 0:
             ind = bib_data['AUTHORS'][0].find(',')
             if ind == -1:
                 ind = bib_data['AUTHORS'][0].find(' ')
@@ -1019,20 +1019,20 @@ def get_illiad_link(bib_data):
             query_args['rft.aufirst'] = aufirst
             query_args['rft.aulast'] = aulast
             query_args['rft.auinit1'] = auinit
-        if bib_data.get('PUBLISHER'):
+        if bib_data.get('PUBLISHER',''):
             query_args['rft.pub'] = bib_data['PUBLISHER']
-        if bib_data.get('ISBN'):
+        if bib_data.get('ISBN',''):
             query_args['rft.isbn'] = bib_data['ISBN']
-        if bib_data.get('PUB_PLACE'):
+        if bib_data.get('PUB_PLACE',''):
             query_args['rft.place'] =  bib_data['PUB_PLACE'] 
-        if bib_data.get('OCLC'):
+        if bib_data.get('OCLC',''):
             ind = bib_data['OCLC'].find(')')
             if ind != -1:
                 oclc = bib_data['OCLC'][ind+1:]
             query_args['rft.oclcnum'] = oclc 
-        if bib_data.get('PUBLISHER_DATE'):
+        if bib_data.get('PUBLISHER_DATE',''):
             query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:] 
-        if bib_data.get('TITLE'):
+        if bib_data.get('TITLE',''):
             ind = bib_data['TITLE'].find('/')
             if ind != -1:
                 title = bib_data['TITLE'][0:ind]
