@@ -153,3 +153,13 @@ API_LIST = [
 
 # Show humans.txt?
 ENABLE_HUMANS = False
+
+# Show sitemaps in robots.txt?
+ENABLE_SITEMAPS = False
+
+# Relative path of sitemap files on local disk
+SITEMAPS_DIR = os.path.join(os.path.dirname(__file__), '../ui/static/sitemaps')
+
+# Base public URL of links; used by sitemap generator, no trailing slash
+SITEMAPS_BASE_URL = 'http://findit.library.gwu.edu'
+

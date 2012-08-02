@@ -34,7 +34,8 @@ def _openurl_dict(params):
 def item(request, bibid):
     bib = voyager.get_bib_data(bibid)
     if not bib:
-        return render(request, 'noitem.html', {'num':bibid, 'num_type':'BIB ID'})
+        return render(request, 'noitem.html', {'num': bibid,
+            'num_type': 'BIB ID'})
     bib['openurl'] = _openurl_dict(request.GET)
     # Ensure bib data is ours if possible
     if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
@@ -58,6 +59,25 @@ def item(request, bibid):
         })
 
 
+@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
+def item_bib(request, bibid):
+    bib = voyager.get_bib_data(bibid, expand_ids=False)
+    if not bib:
+        return render(request, 'noitem.html', {'num': bibid,
+            'num_type': 'BIB ID'})
+    # Don't bother expanding bibids; we don't need correct holdings
+    return render(request, 'item.html', {
+        'bibid': bibid,
+        'bib': bib,
+        'debug': settings.DEBUG,
+        'title_chars': settings.TITLE_CHARS,
+        'link': bib.get('LINK', '')[9:],
+        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
+        'link_resolver': settings.LINK_RESOLVER,
+        'enable_humans': settings.ENABLE_HUMANS,
+        })
+
+
 def _date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
 
@@ -74,7 +94,8 @@ def item_json(request, bibid):
 def non_wrlc_item(request, num, num_type):
     bib = apis.get_bib_data(num=num, num_type=num_type)
     if not bib:
-        return render(request, 'noitem.html', {'num':num, 'num_type':num_type.upper()})
+        return render(request, 'noitem.html', {'num': num,
+            'num_type': num_type.upper()})
     bib['ILLIAD_LINK'] = voyager.get_illiad_link(bib)
     return render(request, 'item.html', {
        'bibid': '',
@@ -92,7 +113,8 @@ def gtitem(request, gtbibid):
     bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
     if bibid:
         return redirect('item', bibid=bibid)
-    return render(request, 'noitem.html', {'num':gtbibid, 'num_type':'Georgetown BIB ID'})
+    return render(request, 'noitem.html', {'num': gtbibid,
+        'num_type': 'Georgetown BIB ID'})
 
 
 def gtitem_json(request, gtbibid):
@@ -106,7 +128,8 @@ def gmitem(request, gmbibid):
     bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
     if bibid:
         return redirect('item', bibid=bibid)
-    return render(request, 'noitem.html', {'num':gmbibid, 'num_type':'George Mason BIB ID'})
+    return render(request, 'noitem.html', {'num': gmbibid,
+        'num_type': 'George Mason BIB ID'})
 
 
 def gmitem_json(request, gmbibid):
@@ -143,7 +166,8 @@ def oclc(request, oclc):
         url = '%s?%s' % (reverse('item', args=[bibid]),
             openurl['query_string_encoded'])
         return redirect(url)
-    return render(request, 'noitem.html', {'num':oclc, 'num_type':'OCLC number'})
+    return render(request, 'noitem.html', {'num': oclc,
+        'num_type': 'OCLC number'})
 
 
 def error500(request):
@@ -154,7 +178,10 @@ def error500(request):
 
 
 def robots(request):
-    return render(request, 'robots.txt', {}, content_type='text/plain')
+    return render(request, 'robots.txt', {
+        'enable_sitemaps': settings.ENABLE_SITEMAPS,
+        'sitemaps_base_url': settings.SITEMAPS_BASE_URL,
+        }, content_type='text/plain')
 
 
 def humans(request):

@@ -17,9 +17,8 @@
 
 {% block link_extra %}
 {% if bibid %}
-    {% with url_name="item_json" %}
-        <link rel='alternate' type='application/json' href='{% url "item_json" bibid %}' />
-    {% endwith %}
+    <link rel='canonical' href='{% url "item" bibid %}' />
+    <link rel='alternate' type='application/json' href='{% url "item_json" bibid %}' />
 {% endif %}
 {% endblock link_extra %}
 

@@ -62,7 +62,7 @@ AND bib_index.index_code IN ('700H', '710H', '711H')
     return authors
 
 
-def get_bib_data(bibid):
+def get_bib_data(bibid, expand_ids=True):
     query = """
 SELECT bib_text.bib_id, title, author, edition, isbn, issn, network_number AS OCLC, 
        publisher, pub_place, imprint, bib_format, language, library_name, publisher_date, 
@@ -105,23 +105,24 @@ AND bib_master.suppress_in_opac='N'"""
     except:
         bib['LANGUAGE_DISPLAY'] = ''
     # get all associated standard numbers (ISBN, ISSN, OCLC)
-    bibids = [{'BIB_ID':bib['BIB_ID'], 'LIBRARY_NAME':bib['LIBRARY_NAME']}]
-    for num_type in ['isbn','issn','oclc']:
-        if bib.get(num_type.upper(),''):
-            norm_set, disp_set = set(), set()
-            std_nums = get_related_std_nums(bib['BIB_ID'], num_type)
-            if std_nums:
-                norm, disp = zip(*std_nums)
-                norm_set.update(norm)
-                disp_set.update([num.strip() for num in disp])
-                bib['NORMAL_%s_LIST' % num_type.upper()] = list(norm_set)
-                bib['DISPLAY_%s_LIST' % num_type.upper()] = list(disp_set)
-                # use std nums to get related bibs
-                new_bibids = get_related_bibids(norm, num_type)
-                for nb in new_bibids:
-                    if nb['BIB_ID'] not in [x['BIB_ID'] for x in bibids]:
-                        bibids.append(nb)
-    bib['BIB_ID_LIST'] = list(bibids)
+    if expand_ids:
+        bibids = [{'BIB_ID':bib['BIB_ID'], 'LIBRARY_NAME':bib['LIBRARY_NAME']}]
+        for num_type in ['isbn','issn','oclc']:
+            if bib.get(num_type.upper(),''):
+                norm_set, disp_set = set(), set()
+                std_nums = get_related_std_nums(bib['BIB_ID'], num_type)
+                if std_nums:
+                    norm, disp = zip(*std_nums)
+                    norm_set.update(norm)
+                    disp_set.update([num.strip() for num in disp])
+                    bib['NORMAL_%s_LIST' % num_type.upper()] = list(norm_set)
+                    bib['DISPLAY_%s_LIST' % num_type.upper()] = list(disp_set)
+                    # use std nums to get related bibs
+                    new_bibids = get_related_bibids(norm, num_type)
+                    for nb in new_bibids:
+                        if nb['BIB_ID'] not in [x['BIB_ID'] for x in bibids]:
+                            bibids.append(nb)
+        bib['BIB_ID_LIST'] = list(bibids)
     # parse fields for microdata
     bib['MICRODATA_TYPE'] = get_microdata_type(bib)
     return bib
