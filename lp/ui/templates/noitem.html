@@ -4,9 +4,12 @@
 
 <h1>No items found</h1>
 
-<p>We're sorry, but we can find no information on works with the {{num_type}} you provided.</p>
+<p><b>We're sorry, but we can find no items based on the information provided.</b></p>
+{% if num_type %}
+<p>{{num_type}} : {{num}}</p>
+{% endif %}
 
-<p>Try a keyword search in our catalog, Article's Plus.</p>
+<p><b>Try a keyword search in our catalog, Article's Plus.</b></p>
 
 <form name="input" action="http://gw.summon.serialssolutions.com/search" method="get">
     <input type="text" name="q" size="50" />
@@ -15,7 +18,7 @@
 
 <br />
 
-<p>You may also wish to try one of the following resources:<br />
+<p><b>You may also wish to try one of the following resources:</b><br />
     <ul>
         <li><a href='http://findit.library.gwu.edu/'>Journals List</a></li>
         <li><a href='http://library.gwu.edu/help/reference/ask-a-librarian'>Ask a Librarian</a></li>
