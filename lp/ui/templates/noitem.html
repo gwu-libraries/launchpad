@@ -5,6 +5,9 @@
 <h1>No items found</h1>
 
 <p><b>We're sorry, but we can find no items based on the information provided.</b></p>
+{% if num_type %}
+<p>{{num_type}} : {{num}}</p>
+{% endif %}
 
 <p><b>Try a keyword search in our catalog, Article's Plus.</b></p>
 
@@ -25,4 +28,5 @@
 
 <br /><br /><br />
 
-{% endblock %}
+
+{% endblock content %}

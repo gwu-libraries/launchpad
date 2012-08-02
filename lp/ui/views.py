@@ -34,7 +34,7 @@ def _openurl_dict(params):
 def item(request, bibid):
     bib = voyager.get_bib_data(bibid)
     if not bib:
-        raise Http404
+        return render(request, 'noitem.html', {'num':bibid, 'num_type':'BIB ID'})
     bib['openurl'] = _openurl_dict(request.GET)
     # Ensure bib data is ours if possible
     if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
@@ -92,7 +92,7 @@ def gtitem(request, gtbibid):
     bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
     if bibid:
         return redirect('item', bibid=bibid)
-    raise Http404
+    return render(request, 'noitem.html', {'num':gtbibid, 'num_type':'Georgetown BIB ID'})
 
 
 def gtitem_json(request, gtbibid):
@@ -106,7 +106,7 @@ def gmitem(request, gmbibid):
     bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
     if bibid:
         return redirect('item', bibid=bibid)
-    raise Http404
+    return render(request, 'noitem.html', {'num':gmbibid, 'num_type':'George Mason BIB ID'})
 
 
 def gmitem_json(request, gmbibid):
@@ -143,7 +143,7 @@ def oclc(request, oclc):
         url = '%s?%s' % (reverse('item', args=[bibid]),
             openurl['query_string_encoded'])
         return redirect(url)
-    raise Http404
+    return render(request, 'noitem.html', {'num':oclc, 'num_type':'OCLC number'})
 
 
 def error500(request):
