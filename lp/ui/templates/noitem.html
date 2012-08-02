@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>No items found</h1>
+
+<p>We're sorry, but we can find no information on works with the {{num_type}} you provided.</p>
+
+<p>Try a keyword search in our catalog, Article's Plus.</p>
+
+<form name="input" action="http://gw.summon.serialssolutions.com/search" method="get">
+    <input type="text" name="q" size="50" />
+    <input type="submit" value="Search" />
+</form>
+
+<br /><br /><br />
+
+
+{% endblock content %}
