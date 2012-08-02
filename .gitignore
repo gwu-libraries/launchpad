@@ -37,3 +37,4 @@ ENV
 *local_settings.py
 *wsgi.py
 PyZ3950_parsetab.py*
+*sitemaps
