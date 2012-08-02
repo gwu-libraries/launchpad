@@ -174,3 +174,9 @@ even without apache configured.  This might be sufficient for dev/test.
 
         sudo a2ensite lp
         sudo /etc/init.d/apache2 restart
+
+8. If you are in production mode, and want to provide sitemaps, set the
+ENABLE_SITEMAPS, SITEMAPS_DIR, and SITEMAPS_BASE_URL settings.  Make sure
+SITEMAPS_DIR exists, then run the management command:
+
+        manage.py make_sitemap
