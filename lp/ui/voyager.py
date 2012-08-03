@@ -1006,7 +1006,7 @@ def get_illiad_link(bib_data):
     title = ''
     ind = 0
     query_args ={}
-    url = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
+    url = settings.ILLIAD_URL
     if bib_data.get('BIB_FORMAT') == 'as':
         query_args['genre']= 'journal'
         query_args['rft.genre']= 'journal'

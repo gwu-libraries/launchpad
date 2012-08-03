@@ -163,3 +163,4 @@ SITEMAPS_DIR = os.path.join(os.path.dirname(__file__), '../ui/static/sitemaps')
 # Base public URL of links; used by sitemap generator, no trailing slash
 SITEMAPS_BASE_URL = 'http://findit.library.gwu.edu'
 
+ILLIAD_URL = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
