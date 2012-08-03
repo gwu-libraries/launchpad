@@ -299,6 +299,7 @@ ORDER BY library.library_name"""
         bib_data.update({'ILLIAD_LINK': illiad_link})
     else:
         bib_data.update({'ILLIAD_LINK': ''})
+    holdings = correct_gt_holding(holdings)
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
@@ -1099,4 +1100,30 @@ def clean_title(title):
     for field in settings.MARC_245_SUBFIELDS:
         title = title.replace(field," ")
     return title 
+
+def correct_gt_holding(holdings):
+    internet_items = []
+    internet_holding = {}
+    for holding in holdings:
+        if holding['LIBRARY_NAME'] == 'GT':
+            if holding.get('ITEMS'):
+                for item in holding['ITEMS']:
+                    if 'INTERNET' in item['PERMLOCATION']:
+                        internet_items.append(item)
+                        item['REMOVE'] = True
+                holding['ITEMS'][:] = [x for x in holding['ITEMS'] if not x.get('REMOVE',False)]
+    for holding in holdings:
+        if holding['LIBRARY_NAME'] == 'GT':
+            if 'MFHD_DATA' in holding.keys(): 
+                if len(holding['MFHD_DATA']['marc856list']) > 0:
+                    holding = allign_gt_internet_link(internet_items,holding)
+                
+    return [h for h in holdings if not h.get('REMOVE', False)]
+
+        
+
+def allign_gt_internet_link(items,internet):
+    for item in items:
+        internet['ITEMS'].append(item)
+    return internet
 
