@@ -4,6 +4,7 @@ import urllib
  
 from django.conf import settings
 from django.db import connection, transaction
+from django.utils.encoding import smart_str, smart_unicode
 
 from ui.templatetags.launchpad_extras import cjk_info
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc, clean_issn
@@ -1090,7 +1091,12 @@ def get_illiad_link(bib_data):
                 title = bib_data['TITLE']
             query_args['rft.btitle'] = title.encode('ascii','replace') 
             query_args['rfr_id'] = settings.ILLIAD_SID 
-    encoded_args = urllib.urlencode(query_args)
+    str_args = {}
+    for k,v in query_args.iteritems():
+        str_args[k] = unicode(v).encode('utf-8')
+    encoded_args = urllib.urlencode(str_args)
+    for item in str_args:
+        item = item.encode('ascii','replace')
     url += encoded_args
     return url
 
