@@ -1119,7 +1119,7 @@ def correct_gt_holding(holdings):
                         item['REMOVE'] = True
                 holding['ITEMS'][:] = [x for x in holding['ITEMS'] if not x.get('REMOVE',False)]
     for holding in holdings:
-        if holding['LIBRARY_NAME'] == 'GT':
+        if holding['LIBRARY_NAME'] == 'GT' or holding['LIBRARY_NAME'] == 'DA':
             if 'MFHD_DATA' in holding.keys(): 
                 if len(holding['MFHD_DATA']['marc856list']) > 0:
                     holding = allign_gt_internet_link(internet_items,holding)
