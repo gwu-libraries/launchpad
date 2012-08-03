@@ -2,31 +2,53 @@
 
 {% block content %}
 
+<table border='0' style='width:100%;'>
+    <tr>
+        <td>
+<div id='description'>
+
 <h1>No items found</h1>
 
-<p><b>We're sorry, but we can find no items based on the information provided.</b></p>
+<p>
+We're sorry, but we cannot find 
 {% if num_type %}
-<p>{{num_type}} : {{num}}</p>
+    anything for {{ num }}.
+{% else %}
+    that.
 {% endif %}
+</p>
 
-<p><b>Try a keyword search in ArticlesPlus:</b></p>
+<p>
+Try a keyword search:
 
-<form name="input" action="http://gw.summon.serialssolutions.com/search" method="get">
-    <input type="text" name="q" size="50" />
-    <input type="submit" value="Search" />
-</form>
+    <form name="input" action="http://surveyor.gelman.gwu.edu/" method="get">
+        <input autocorrect="off" autocapitalize="off" type="text" name="q">
+        <input type="submit" value="Search" />
+    </form>
+</p>
 
 <br />
 
-<p><b>You may also wish to try one of the following resources:</b><br />
+<p>
+If you're at GWU:
     <ul>
         <li><a href='http://findit.library.gwu.edu/'>Journals List</a></li>
         <li><a href='http://library.gwu.edu/help/reference/ask-a-librarian'>Ask a Librarian</a></li>
-        <li><a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&PAGE=First'>WRLC Aladin Catalog Search</a></li>
-        <li><a href='http://www.worldcat.org'>WorldCat Search</a></li>
     </ul>
+</p>
 
-<br /><br /><br />
+<p>
+Otherwise, try:
+    <ul>
+        <li><a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&PAGE=First'>WRLC Aladin Catalog</a></li>
+        <li><a href='http://www.worldcat.org'>WorldCat</a></li>
+    </ul>
+</p>
 
+</div>
+
+        </td>
+    </tr>
+</table>
 
 {% endblock content %}
