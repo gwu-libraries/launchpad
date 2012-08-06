@@ -34,8 +34,8 @@ def _openurl_dict(params):
 def item(request, bibid):
     bib = voyager.get_bib_data(bibid)
     if not bib:
-        return render(request, 'noitem.html', {'num': bibid,
-            'num_type': 'BIB ID'})
+        return render(request, '404.html', {'num': bibid,
+            'num_type': 'BIB ID'}, status=404)
     bib['openurl'] = _openurl_dict(request.GET)
     # Ensure bib data is ours if possible
     if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
@@ -63,8 +63,8 @@ def item(request, bibid):
 def item_bib(request, bibid):
     bib = voyager.get_bib_data(bibid, expand_ids=False)
     if not bib:
-        return render(request, 'noitem.html', {'num': bibid,
-            'num_type': 'BIB ID'})
+        return render(request, '404.html', {'num': bibid,
+            'num_type': 'BIB ID'}, status=404)
     # Don't bother expanding bibids; we don't need correct holdings
     return render(request, 'item.html', {
         'bibid': bibid,
@@ -94,8 +94,8 @@ def item_json(request, bibid):
 def non_wrlc_item(request, num, num_type):
     bib = apis.get_bib_data(num=num, num_type=num_type)
     if not bib:
-        return render(request, 'noitem.html', {'num': num,
-            'num_type': num_type.upper()})
+        return render(request, '404.html', {'num': num,
+            'num_type': num_type.upper()}, status=404)
     bib['ILLIAD_LINK'] = voyager.get_illiad_link(bib)
     return render(request, 'item.html', {
        'bibid': '',
@@ -113,8 +113,8 @@ def gtitem(request, gtbibid):
     bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
     if bibid:
         return redirect('item', bibid=bibid)
-    return render(request, 'noitem.html', {'num': gtbibid,
-        'num_type': 'Georgetown BIB ID'})
+    return render(request, '404.html', {'num': gtbibid,
+        'num_type': 'Georgetown BIB ID'}, status=404)
 
 
 def gtitem_json(request, gtbibid):
@@ -128,8 +128,8 @@ def gmitem(request, gmbibid):
     bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
     if bibid:
         return redirect('item', bibid=bibid)
-    return render(request, 'noitem.html', {'num': gmbibid,
-        'num_type': 'George Mason BIB ID'})
+    return render(request, '404.html', {'num': gmbibid,
+        'num_type': 'George Mason BIB ID'}, status=404)
 
 
 def gmitem_json(request, gmbibid):
@@ -166,8 +166,8 @@ def oclc(request, oclc):
         url = '%s?%s' % (reverse('item', args=[bibid]),
             openurl['query_string_encoded'])
         return redirect(url)
-    return render(request, 'noitem.html', {'num': oclc,
-        'num_type': 'OCLC number'})
+    return render(request, '404.html', {'num': oclc,
+        'num_type': 'OCLC number'}, status=404)
 
 
 def error500(request):
