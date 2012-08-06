@@ -294,8 +294,8 @@ ORDER BY library.library_name"""
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
         holding['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
         holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)
-        if len(holding['MFHD_DATA']['marc866list']) == 0 and len(holding['MFHD_DATA']['marc856list']) == 0 and len(holding['ITEMS']) == 0:
-            holding['REMOVE'] = True
+        #if len(holding['MFHD_DATA']['marc866list']) == 0 and len(holding['MFHD_DATA']['marc856list']) == 0 and len(holding['ITEMS']) == 0:
+            #holding['REMOVE'] = True
     if eligibility == False or bib_data['BIB_FORMAT'] == 'as':
         bib_data.update({'ILLIAD_LINK': illiad_link})
     else:
@@ -600,15 +600,20 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 values = str(r)
                 lines = values.split('\n')
                 for line in lines:
-                    values = status = location = callno = url = msg = note = ''
                     if alt_callno is None:
                         alt_callno = get_callno(line)
                      
                     ind = line.find('852')
                     if ind != -1:
-                        ind = line.find('$o')
-                        ind2 = line.find('$y', ind)
-                        note = line[ind+2:ind2]
+                        ind = line.find('$u')
+                        #ind2 = line.find('$y', ind)
+                        if ind != -1: 
+                            note = line[ind+2:ind2]
+                    
+                    ind = line.find('publicNote')
+                    if ind != -1:
+                        ind = line.find(':')
+                        note = line[ind+2:]
 
                     ind = line.find('availableNow')
                     if ind != -1:
@@ -638,6 +643,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                     if holding_found == True:
                         arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg, 'NOTE':note}
                         results.append(arow)
+                        values = status = location = callno = url = msg = note = ''
                     holding_found = False
                 found = False
                 i = 0
@@ -650,7 +656,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 if found:
                     linkdata = get_gm_link(lines, lines[i])
                     for item in linkdata['internet_items']:
-                        arow = {'STATUS':'', 'LOCATION':item['LOCATION'], 'CALLNO':'','LINK':'','MESSAGE':'','NOTE':''}
+                        arow = {'STATUS':item['STATUS'], 'LOCATION':item['LOCATION'], 'CALLNO':'','LINK':'','MESSAGE':'','NOTE':''}
                         internet_items.append(arow)
                     arow = {'STATUS':'', 'LOCATION':'', 'CALLNO':'','LINK':linkdata['url'],'MESSAGE':linkdata['msg'],'NOTE':''}
                     internet_items.append(arow)
