@@ -7,15 +7,15 @@ from pymarc import marcxml
 
 def get_bib_data(num, num_type):
     for api in settings.API_LIST:
-        bib = globals()[api](num=num, num_type=num_type)
+        bib = globals()[api['name']](num=num, num_type=num_type,
+            url=api.get('url',''), key=api.get('key',''))
         if bib:
             return bib
     return None
 
 
-def googlebooks(num, num_type):
-    api_info = settings.API_LIST['googlebooks']
-    url = api_info['url'] % (num_type, num)
+def googlebooks(num, num_type, url, key):
+    url = url % (num_type, num)
     response = urlopen(url)
     json_data = json.loads(response.read())
     if json_data['totalItems'] == 0:
@@ -43,9 +43,8 @@ def googlebooks(num, num_type):
     return bib
 
 
-def worldcat(num, num_type):
-    api_info = settings.API_LIST['worldcat']
-    url = api_info['url'] % (num_type, num, api_info['key'])
+def worldcat(num, num_type, url, key):
+    url = url % (num_type, num, key)
     records = marcxml.parse_xml_to_array(urlopen(url))
     if not records:
         return None

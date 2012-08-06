@@ -145,10 +145,12 @@ LINK_RESOLVER = {
     }
 
 API_LIST = [
-    'googlebooks': {'url': 'https://www/googleapis.com/books/v1/volumes?q=%s:%s',
-                    'key': ''},
-    'worldcat': {'url':'http://www.worldcat.org/webservices/catalog/content/%s/%s?wskey=%s',
-                 'key':''}
+    {'name': 'googlebooks',
+     'url': 'https://www/googleapis.com/books/v1/volumes?q=%s:%s',
+     'key': ''},
+    {'name': 'worldcat',
+     'url': 'http://www.worldcat.org/webservices/catalog/content/%s/%s?wskey=%s',
+     'key': ''}
     ]
 
 # Show humans.txt?
