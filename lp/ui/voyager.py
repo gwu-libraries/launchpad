@@ -992,7 +992,8 @@ def get_gm_link(lines,line):
     if found == True:
         line = lines[i+3]
         ind = line.find(':')
-        location = 'GM: ' + line[ind+3:ind1].strip(' -.').strip('\\x00')
+        chars = len(line)
+        location = 'GM: ' + line[ind+3:chars-1].strip(' -.').strip('\\x00')
     arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg, 'NOTE':note}
     internet_items.append(arow)
     res = {'url': url,'msg': msg,'internet_items':internet_items}
