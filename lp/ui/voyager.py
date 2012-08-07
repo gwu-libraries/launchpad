@@ -1069,16 +1069,17 @@ def get_illiad_link(bib_data):
                 query_args['aufirst'] = aufirst
                 query_args['aulast'] = aulast
                 query_args['auinitm'] = auinit
-        elif len(bib_data.get('AUTHORS',[])) > 0:
-            ind = str(bib_data['AUTHORS'][0]).find(',')
-            if ind == -1:
-                ind = bib_data['AUTHORS'][0].find(' ')
-            auinit = bib_data['AUTHORS'][0][ind+1:1]
-            aufirst = bib_data['AUTHORS'][0][0:ind]
-            aulast = bib_data['AUTHORS'][0][ind+2:]
-            query_args['aufirst'] = aufirst
-            query_args['aulast'] = aulast
-            query_args['auinitm'] = auinit
+        elif bib_data.get('AUTHORS',[]):
+            if isinstance(bib_data['AUTHORS'][0], str):
+                ind = bib_data['AUTHORS'][0].find(',')
+                if ind == -1:
+                    ind = bib_data['AUTHORS'][0].find(' ')
+                auinit = bib_data['AUTHORS'][0][ind+1:1]
+                aufirst = bib_data['AUTHORS'][0][0:ind]
+                aulast = bib_data['AUTHORS'][0][ind+2:]
+                query_args['aufirst'] = aufirst
+                query_args['aulast'] = aulast
+                query_args['auinitm'] = auinit
         if bib_data.get('PUBLISHER',''):
             query_args['rft.pub'] = bib_data['PUBLISHER']
         if bib_data.get('ISBN',''):
