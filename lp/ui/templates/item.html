@@ -243,13 +243,13 @@ function showmore(id)
                     {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
                         {% for link in holding.MFHD_DATA.marc856list %}
                             {% if link.3 %}
-                    <span class="link-volumes">[{{ link.3 }}]</span>
+                                <span class="link-volumes">[{{ link.3 }}]</span>
                             {% endif %}
                             {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
-                    <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                    <br />
-                    <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
-                    {{holding.LIBRARY_NAME}} only
+                                <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                                <br />
+                                <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
+                                {{holding.LIBRARY_NAME}} only
                             {% else %}
                                 <button onclick="window.open('{{link.u}}')" > Full text online </button>
                             {% endif %}
@@ -328,16 +328,14 @@ function showmore(id)
 			            {{holding.LIBRARY_NAME}} only
                                 {% endif %}
                             {% endfor %}
+                        {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME == 'WRLC Center' %}
+                            <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
+                        {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
+                            <span style='color: green'>Available</span>
+                        {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
+                            <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
                         {% else %}
-                            {% if holding.AVAILABILITY.ITEM_STATUS_DESC = 'Not Charged' %}
-                                <span style='color: green'>Available</span>
-                            {% else %}
-                                {% if holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
-                                    <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
-                                {% else %}
-                                    {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
-                                {% endif %}
-                            {% endif %}
+                            {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
                         {% endif %}
                     </td>
                     <td>
