@@ -1105,11 +1105,14 @@ def get_illiad_link(bib_data):
     return url
 
 
-
 def clean_title(title):
     for field in settings.MARC_245_SUBFIELDS:
         title = title.replace(field," ")
+    title = title.strip()
+    if title.startswith('880-01'):
+        title = title[6:].strip()
     return title 
+
 
 def correct_gt_holding(holdings):
     internet_items = []
