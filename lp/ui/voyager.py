@@ -941,20 +941,6 @@ def get_z3950_mfhd_data(id,school,links,internet_items):
         m852 = ''
     res = []
     if len(links) == 0:
-        #m856list.append({'3':'','z':'','u':''})
-        #m866list.append('')
-        #items.append({'ITEM_ENUM': None,
-                   #'ELIGIBLE': '',
-                   #'ITEM_STATUS': 0,
-                   #'TEMPLOCATION': None,
-                   #'ITEM_STATUS_DESC': '',
-                   #'BIB_ID': id,
-                   #'ITEM_ID': 0,
-                   #'LIBRARY_FULL_NAME': '',
-                   #'PERMLOCATION':'',
-                   #'TRIMMED_LOCATION_DISPLAY_NAME': '',
-                   #'DISPLAY_CALL_NO': '',
-                   #'CHRON': None} )
         return []
     for link in links:
         if link['STATUS'] == 'MISSING':
