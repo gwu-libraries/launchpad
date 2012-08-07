@@ -630,7 +630,6 @@ def get_z3950_holdings(id, school, id_type, query_type):
             res = conn.search(query)
             for r in res:
                 values = str(r)
-                print values
                 lines = values.split('\n')
                 for line in lines:
                     if alt_callno is None:
