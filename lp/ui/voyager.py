@@ -105,7 +105,6 @@ AND bib_master.suppress_in_opac='N'"""
         bib['LANGUAGE_DISPLAY'] = language.name
     except:
         bib['LANGUAGE_DISPLAY'] = ''
-    # get all associated standard numbers (ISBN, ISSN, OCLC)
     if expand_ids:
         bibids = [{'BIB_ID':bib['BIB_ID'], 'LIBRARY_NAME':bib['LIBRARY_NAME']}]
         for num_type in ['isbn','issn','oclc']:
@@ -226,12 +225,17 @@ ORDER BY bib_index.normal_heading"""
     cursor.execute(query, [bibid])
     results = cursor.fetchall()
     if num_type == 'oclc':
-        tmp = []
-        for pair in results:
-            if _is_oclc(pair[1]):
-                tmp.append(pair)
-        results = tmp
+        return [pair for pair in results if _is_oclc(pair[1])]
+    if num_type == 'issn':
+        return [pair for pair in results if _is_valid_issn(pair[0])]
     return results
+
+
+def _is_valid_issn(num):
+    import re
+    if re.match('\d{4}[ -]\d{3}[0-9xX]', num):
+        return True
+    return False
 
 
 def get_holdings(bib_data):
