@@ -55,7 +55,7 @@ def worldcat(num, num_type, url, key):
     if not bib['TITLE']:
         bib['TITLE'] = record.title() if record.title() else ''
     bib['TITLE_ALL'] = bib['TITLE']
-    bib['AUTHORS'] = record.addedentries() if record.addedentries() else []
+    bib['AUTHORS'] = [entry.format_field() for entry in record.addedentries()]
     bib['AUTHOR'] = record.author() if record.author() else ''
     if bib['AUTHOR']:
         bib['AUTHORS'].insert(0, bib['AUTHOR'])
