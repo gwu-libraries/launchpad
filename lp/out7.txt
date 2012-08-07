@@ -1,0 +1,41 @@
+Rec: USMARCnonstrict MARC: 
+0 nas    
+3 WaSeSS
+5 20120310113213.0
+6 m        d        
+7 cr  n         
+8 741224c19709999enkmr p o     0   a0eng  
+10   $a78017622
+22   $a0021-8502
+32   $a008821 $bUSPS
+35   $a(WaSeSS)ssj0007915
+40   $aDLC $cDLC $dNSDP $dDLC $dNSDP $dOCoLC $dAIP $dOCoLC $dInU $dNST $dNSDP $dNST $dNSDP $dNST $dNSDP $dDLC $dInU $dNSDP $dWaU $dOCU-M $dCU-S $dOCoLC $dDNLM $dInU $dOCoLC $dCLU $dOCoLC $dU9S $dCPT $dOCoLC $dWaSeSS
+41 0 $aengfreger
+42   $apcc $ansdp
+50 00$aQC882 $b.J68
+210 0 $aJ. aerosol sci.
+222  0$aJournal of aerosol science.
+245 00$aJournal of aerosol science $h[electronic resource]
+246 17$aAerosol science $f1970-
+260   $aOxford, $aNew York, $bElsevier [etc.]
+310   $aMonthly, $b2000-
+321   $aFrequency varies, $b1970-1999.
+362 0 $av. 1- Feb. 1970-
+500   $aPublished: Pergamon, 1970-2003.
+525   $aSupplements accompany some volumes.
+525   $aVols. for <2000-> include annual supplement: Abstracts of the European Aerosol Conference.
+546   $aEnglish, French, and German.
+550   $aIssued in association with: Gesellschaft fèur Aerosolforschung, <Mar. 1992->
+550   $aPublished in association with: the European Aerosol Assembly, <1995>-
+555   $aVols. 11 (1980)-20 (1989). 1 v.
+650  0$aAerosols $vPeriodicals.
+650  2$aAerosols $vPeriodicals.
+655  4$aElectronic journals.
+710 2 $aGesellschaft fèur Aerosolforschung (Germany)
+710 2 $aEuropean Aerosol Assembly.
+711 22$aEuropean Aerosol Conference. $tAbstracts of the European Aerosol Conference.
+856 40$zConnect to Online Issues $uhttp://XR8EL9YB8V.search.serialssolutions.com/?V=1.0&L=XR8EL9YB8V&S=JCs&C=JOUROFAERSC&T=marc
+999   $a1970
+[]
+[{'STATUS': '', 'NOTE': '', 'CALLNO': '', 'LINK': 'http://XR8EL9YB8V.search.serialssolutions.com/?V=1.0&L=XR8EL9YB8V&S=JCs&C=JOUROFAERSC&T=marc', 'LOCATION': '', 'MESSAGE': 'Connect to Online Issues '}]
+[{'mfhd': {'marc866list': [], 'marc852': '', 'marc856list': [{'3': '', 'z': 'Connect to Online Issues ', 'u': 'http://XR8EL9YB8V.search.serialssolutions.com/?V=1.0&L=XR8EL9YB8V&S=JCs&C=JOUROFAERSC&T=marc'}]}, 'electronic': {'LINK856Z': '', 'MFHD_ID': None, 'LINK856U': '', 'LINK852A': None, 'LINK866': None, 'LINK852H': ''}, 'availability': {'ITEM_STATUS_DATE': '', 'PERMLOCATION': '', 'TEMPLOCATION': None, 'ITEM_STATUS_DESC': '', 'ITEM_ENUM': None, 'ITEM_ID': None, 'CHRON': None, 'ITEM_STATUS': 0, 'DISPLAY_CALL_NO': '', 'BIB_ID': [u'b4314417']}, 'items': []}]

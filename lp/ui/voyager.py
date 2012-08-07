@@ -2,7 +2,6 @@ import pycountry
 from PyZ3950 import zoom
 import urllib
 import copy
-from pprint import pprint
  
 from django.conf import settings
 from django.db import connection, transaction
@@ -667,9 +666,11 @@ def get_z3950_holdings(id, school, id_type, query_type):
                     ind = line.find('localLocation')
                     if ind!= -1:
                         ind = line.find('Electronic Subscription')
-                        if ind == -1:
+                        ind1 = line.find('Online')
+                        if ind == -1 and ind1 == -1:
                             holding_found = True
                         else:
+                            holding_found = False
                             continue
                         ind = line.find(':')
                         ind1 = line.find('\\')
@@ -685,13 +686,14 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 found = False
                 i = 0
                 for line in lines: 
-                    if '856' in line:
+                    if '856 40$' in line:
                         found = True
                         break
                     else:
                         i = i + 1
                 if found:
                     linkdata = get_gm_link(lines, lines[i])
+                    #if len(linkdata['internet_items'])> 0:
                     for item in linkdata['internet_items']:
                         arow = {'STATUS':item['STATUS'], 'LOCATION':item['LOCATION'], 'CALLNO':'','LINK':'','MESSAGE':'','NOTE':''}
                         internet_items.append(arow)
@@ -702,7 +704,8 @@ def get_z3950_holdings(id, school, id_type, query_type):
             availability = get_z3950_availability_data(bib,'GM',location,status,callno,item_status)
             electronic = get_z3950_electronic_data('GM',url,msg,note)
             res = get_z3950_mfhd_data(id,school,results,[])
-            dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': res[3]}, 'items': res[2]})
+            if len(res) > 0:
+                dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': res[3]}, 'items': res[2]})
             if len(internet_items) > 0:
                 res = get_z3950_mfhd_data(id,school,internet_items,[])
                 dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': ''}, 'items': res[2]})
@@ -813,6 +816,10 @@ def is_eligible(holding):
     for stat in settings.INELIGIBLE_STATUS:
         if stat == status[:len(stat)]:
             return False
+    
+    marc856 = holding.get('MFHD_DATA', {}).get('marc856list', [])
+    if marc856 and marc856[0].get('u',''):
+        return False
     return True
 
 
@@ -934,20 +941,21 @@ def get_z3950_mfhd_data(id,school,links,internet_items):
         m852 = ''
     res = []
     if len(links) == 0:
-        m856list.append({'3':'','z':'','u':''})
-        m866list.append('')
-        items.append({'ITEM_ENUM': None,
-                   'ELIGIBLE': '',
-                   'ITEM_STATUS': 0,
-                   'TEMPLOCATION': None,
-                   'ITEM_STATUS_DESC': '',
-                   'BIB_ID': id,
-                   'ITEM_ID': 0,
-                   'LIBRARY_FULL_NAME': '',
-                   'PERMLOCATION':'',
-                   'TRIMMED_LOCATION_DISPLAY_NAME': '',
-                   'DISPLAY_CALL_NO': '',
-                   'CHRON': None} )
+        #m856list.append({'3':'','z':'','u':''})
+        #m866list.append('')
+        #items.append({'ITEM_ENUM': None,
+                   #'ELIGIBLE': '',
+                   #'ITEM_STATUS': 0,
+                   #'TEMPLOCATION': None,
+                   #'ITEM_STATUS_DESC': '',
+                   #'BIB_ID': id,
+                   #'ITEM_ID': 0,
+                   #'LIBRARY_FULL_NAME': '',
+                   #'PERMLOCATION':'',
+                   #'TRIMMED_LOCATION_DISPLAY_NAME': '',
+                   #'DISPLAY_CALL_NO': '',
+                   #'CHRON': None} )
+        return []
     for link in links:
         if link['STATUS'] == 'MISSING':
             link['STATUS'] = 'Missing'
@@ -969,7 +977,7 @@ def get_z3950_mfhd_data(id,school,links,internet_items):
                    'DISPLAY_CALL_NO': item['CALLNO'],
                    'CHRON': None}
             items.append(val)
-        if link['STATUS'] not in  ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and 'INTERNET' not in link['LOCATION'] and link['STATUS'] !='':
+        if link['STATUS'] not in  ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and 'INTERNET' not in link['LOCATION'] and 'Online' not in link['LOCATION'] and link['STATUS'] !='':
             m866list.append(link['STATUS'])
         elif link['STATUS'] != '' or link['LOCATION'] != '' or link['CALLNO'] != '' and  not link['LINK']:
             val = {'ITEM_ENUM': None,
@@ -1021,12 +1029,17 @@ def get_gm_link(lines,line):
     ind = line.find('856 4')
     if ind !=-1:
         ind = line.find('$x')
-        ind1 = line.find(' ',ind)
-        url = line[ind+2:ind1]
+        if ind == -1:
+            ind = line.find('$a')
+        ind1 = line.find(' ',ind)  
+        if ind1 != -1:
+            url = line[ind+2:ind1]
+        else:
+            url = line[ind+2:]
         location = 'GM: online'
         ind = line.find('$z')
-        ind1 = line.find('$x',ind+2)
-        msg = line[ind1+2:]
+        ind1 = line.rfind(' ',ind)
+        msg = line[ind+2:ind1]
     i = 0
     for line in lines:
         i = i +1
@@ -1039,13 +1052,13 @@ def get_gm_link(lines,line):
         ind = line.find(':')
         chars = len(line)
         location = 'GM: ' + line[ind+3:chars-1].strip(' -.').strip('\\x00')
-    if 'Electronic Subscription' in location:
+    if location in ['GM: Electronic Subscription (GMU Patrons Only)', 'GM: Available Online through Mason Libraries'] :
         arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg, 'NOTE':note}
         internet_items.append(arow)
         res = {'url': url,'msg': msg,'internet_items':internet_items}
         return res
     else:
-        return []
+        return {'url':'','msg':'','internet_items':[]}
 
 def get_illiad_link(bib_data):
     auinit = ''
