@@ -264,7 +264,7 @@ ORDER BY library.library_name"""
             else:
                 done.append(holding['BIB_ID'])
             result = get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','')   
-            if result is not None:
+            if len(result)> 0:
                 holding.update({'MFHD_DATA':result[0]['mfhd'],
                               'ITEMS':result[0]['items'],
 	    	              'ELECTRONIC_DATA': result[0]['electronic'],
@@ -570,7 +570,8 @@ def _get_gt_holdings(id,query,query_type,bib,lib):
     #dataset['items'] = res[2]
     availability = get_z3950_availability_data(bib,lib,location,status,callno,item_status)
     electronic = get_z3950_electronic_data(lib,url,msg,note)
-    dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': ''}, 'items': res[2]})
+    if len(res) > 0:
+        dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': ''}, 'items': res[2]})
     return dataset
 
 
@@ -629,6 +630,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
             res = conn.search(query)
             for r in res:
                 values = str(r)
+                print values
                 lines = values.split('\n')
                 for line in lines:
                     if alt_callno is None:
@@ -1068,7 +1070,7 @@ def get_illiad_link(bib_data):
                 query_args['aulast'] = aulast
                 query_args['auinitm'] = auinit
         elif len(bib_data.get('AUTHORS',[])) > 0:
-            ind = bib_data['AUTHORS'][0].find(',')
+            ind = str(bib_data['AUTHORS'][0]).find(',')
             if ind == -1:
                 ind = bib_data['AUTHORS'][0].find(' ')
             auinit = bib_data['AUTHORS'][0][ind+1:1]
@@ -1169,7 +1171,7 @@ def correct_gt_holding(holdings):
     for holding in holdings:
         if holding['LIBRARY_NAME'] == 'GT' or holding['LIBRARY_NAME'] == 'DA':
             if 'MFHD_DATA' in holding.keys(): 
-                if len(holding['MFHD_DATA']['marc856list']) > 0:
+                if holding['MFHD_DATA'].get('marc856list',[]):
                     holding = allign_gt_internet_link(internet_items,holding)
                 
     return [h for h in holdings if not h.get('REMOVE', False)]
