@@ -2,16 +2,33 @@
 
 {% block content %}
 
-<h1>sorry, something went wrong.</h1>
+<h1>No items found</h1>
+
+<p> We're sorry, but we cannot find
+{% if num_type %}
+    anything for {{ num }}.
+{% else %}
+    that.
+{% endif %}
+</p>
 
 <p>
-Our staff have been notified of the error by email. 
+Try a keyword search:
+
+    <form name="input" action="http://surveyor.gelman.gwu.edu/" method="get">
+        <input autocorrect="off" autocapitalize="off" type="text" name="q">
+        <input type="submit" value="Search" />
+    </form>
 </p>
 
-<p>We also sent a message to the 
-<a href='http://www.gwu.edu/~presemer/hippo.html'>hippo</a>, but
-we don't always hear back.  Busy, I guess.
-</p>
+<br />
 
+<p>
+If you're at GWU:
+    <ul>
+        <li><a href='http://findit.library.gwu.edu/'>Journals List</a></li>
+        <li><a href='http://library.gwu.edu/help/reference/ask-a-librarian'>Ask a Librarian</a></li>
+    </ul>
+</p>
 
 {% endblock %}

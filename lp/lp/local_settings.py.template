@@ -28,6 +28,7 @@ else:
         }
     }
 
+
 TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
 )
@@ -37,11 +38,13 @@ LIB_LOOKUP = {
     'AU': 'American',
     'AL': 'Washington Law (American)',
     'CU': 'Catholic',
+    'LI': 'Catholic',
     'DC': 'UDC',
     'E-GovDoc': 'WRLC',
     'E-Resources': 'WRLC',
     'GA': 'Gallaudet',
     'GM': 'George Mason',
+    'LL': 'George Mason',
     'GT': 'Georgetown',
     'DA': 'Dahlgren Medical (Georgetown)',
     'GW': 'George Washington',
@@ -69,7 +72,7 @@ Z3950_SERVERS = {
 }
 
 INDEX_CODES = {'isbn': ['020N', '020A', 'ISB3'],
-               'issn': ['022A', '022Z'],
+               'issn': ['022A', '022Z', '022Y'],
                'oclc': ['035A']}
 
 
@@ -90,7 +93,7 @@ INELIGIBLE_PERM_LOCS = ['REFERENCE', 'REF', 'RESERVE', 'NON-CIRC',
     'RESTRICTED', 'ONLY', 'IN LIBRARY', 'MICRO', 'ARCHIVES', 'KIEV', 'SPEC',
     'IBT', 'AUDIOTAPES', 'CD-ROM', 'DISCS', 'RECORDS', 'RUSH', 'VIDEOTAPES',
     'VIDEODISCS', 'MEDIA VIDEOS', 'DEAF DVD', 'DEAF VHS', 'IN PROCESS',
-    'AU: LAW', 'GT: QATAR STACKS']
+    'AU: LAW', 'GT: QATAR STACKS', 'CAMPUS USE']
 
 # Add electronic locations
 INELIGIBLE_PERM_LOCS += ['SHARED', 'ONLINE', 'ELECTRONIC', 'INTERNET',
@@ -145,10 +148,12 @@ LINK_RESOLVER = {
     }
 
 API_LIST = [
-    'googlebooks': {'url': 'https://www/googleapis.com/books/v1/volumes?q=%s:%s',
-                    'key': ''},
-    'worldcat': {'url':'http://www.worldcat.org/webservices/catalog/content/%s/%s?wskey=%s',
-                 'key':''}
+    {'name': 'googlebooks',
+     'url': 'https://www/googleapis.com/books/v1/volumes?q=%s:%s',
+     'key': ''},
+    {'name': 'worldcat',
+     'url': 'http://www.worldcat.org/webservices/catalog/content/%s/%s?wskey=%s',
+     'key': ''}
     ]
 
 # Show humans.txt?
