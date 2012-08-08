@@ -58,3 +58,8 @@ def noscream(value):
         if scream in value:
             value = value.replace(scream, calm)
     return value
+
+
+@register.filter
+def remove_empty_links(marc856list):
+    return [link_dict for link_dict in marc856list if link_dict.get('u',None)]

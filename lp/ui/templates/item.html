@@ -241,7 +241,7 @@ function showmore(id)
                 </td>
                 <td>
                     {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
-                        {% for link in holding.MFHD_DATA.marc856list %}
+                        {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
                             {% if link.3 %}
                                 <span class="link-volumes">[{{ link.3 }}]</span>
                             {% endif %}
