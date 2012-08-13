@@ -294,6 +294,7 @@ ORDER BY library.library_name"""
                 item['ELIGIBLE'] = is_item_eligible(item,holding.get('LIBRARY_NAME',''))
                 item['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
                 item['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_item_display_name(item)
+                item['TEMPLOCATION'] = trim_item_temp_location(item)
             holding['LIBRARY_FULL_NAME'] = holding['ITEMS'][0]['LIBRARY_FULL_NAME']
         holding.update({'ELIGIBLE': is_eligible(holding)})
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
@@ -351,6 +352,12 @@ def trim_item_display_name(item):
     if index == 2:
         return item['PERMLOCATION'][3:].strip()
     return item['PERMLOCATION']
+
+def trim_item_temp_location(item):
+    index = item['TEMPLOCATION'].find(':') if item['TEMPLOCATION'] else -1
+    if index == 2:
+        return item['TEMPLOCATION'][3:].strip()
+    return item['TEMPLOCATION']
 
     
 def _in_clause(items):
