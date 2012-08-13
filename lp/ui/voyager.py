@@ -297,6 +297,7 @@ ORDER BY library.library_name"""
                 item['ELIGIBLE'] = is_item_eligible(item,holding.get('LIBRARY_NAME',''))
                 item['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
                 item['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_item_display_name(item)
+                item['TEMPLOCATION'] = trim_item_temp_location(item)
             holding['LIBRARY_FULL_NAME'] = holding['ITEMS'][0]['LIBRARY_FULL_NAME']
         holding.update({'ELIGIBLE': is_eligible(holding)})
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
@@ -354,6 +355,12 @@ def trim_item_display_name(item):
     if index == 2:
         return item['PERMLOCATION'][3:].strip()
     return item['PERMLOCATION']
+
+def trim_item_temp_location(item):
+    index = item['TEMPLOCATION'].find(':') if item['TEMPLOCATION'] else -1
+    if index == 2:
+        return item['TEMPLOCATION'][3:].strip()
+    return item['TEMPLOCATION']
 
     
 def _in_clause(items):
@@ -504,11 +511,8 @@ def _get_gt_holdings(id,query,query_type,bib,lib):
         arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
         results.append(arow)
         res = get_z3950_mfhd_data(id,lib,results,[])
-        dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': ''}, 'items': res[2]})
-        #dataset['mfhd'] ={'marc866list': res[0],
-        #   'marc856list': res[1],
-        #   'marc852': '' }
-        #dataset['items'] = res[2]
+        if len(res) > 0:
+            dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': ''}, 'items': res[2]})
         return dataset
     try:
         res = conn.search(query)
@@ -518,11 +522,8 @@ def _get_gt_holdings(id,query,query_type,bib,lib):
         arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
         results.append(arow)
         res = get_z3950_mfhd_data(id,lib,results,[])
-        dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': ''}, 'items': res[2]})
-        #dataset['mfhd'] ={'marc866list': res[0],
-        #   'marc856list': res[1],
-        #   'marc852': '' }
-        #dataset['items'] = res[2]
+        if len(res) > 0:
+            dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': ''}, 'items': res[2]})
         return dataset
 
 
@@ -601,15 +602,13 @@ def get_z3950_holdings(id, school, id_type, query_type):
         try:
             conn = _get_z3950_connection(settings.Z3950_SERVERS['GM'])
         except:
-            dataset['availability'] = get_z3950_availability_data(bib,'GM','','','',item_status,False)
-            dataset['electronic'] = get_z3950_electronic_data('GM','','', note,False)
+            availability = get_z3950_availability_data(bib,'GM','','','',item_status,False)
+            electronic = get_z3950_electronic_data('GM','','', note,False)
             arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
             results.append(arow)
             res = get_z3950_mfhd_data(id,school,results,[])
-            dataset['mfhd'] ={'marc866list': res[0],
-                              'marc856list': res[1],
-                              'marc852': res[3] }
-            dataset['items'] = res[2]
+            if len(res) > 0:
+                dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': ''}, 'items': res[2]})
             return dataset
         if len(bib) > 0:
             correctbib=''
@@ -623,16 +622,14 @@ def get_z3950_holdings(id, school, id_type, query_type):
             try:
                 query = zoom.Query('PQF', '@attr 1=12 %s' % correctbib.encode('utf-8'))
             except:
-                dataset['availability'] = get_z3950_availability_data(bib,'GM','','','',item_status,False)
-                dataset['electronic'] = get_z3950_electronic_data('GM','','', note,False)
+                availability = get_z3950_availability_data(bib,'GM','','','',item_status,False)
+                electronic = get_z3950_electronic_data('GM','','', note,False)
 
                 arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
                 results.append(arow)
                 res = get_z3950_mfhd_data(id,school,results,[])
-                dataset['mfhd'] ={'marc866list': res[0],
-                                'marc856list': res[1],
-                                'marc852': '' }
-                dataset['items'] = res[2]
+                if len(res) > 0:
+                    dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': ''}, 'items': res[2]})
                 return dataset
             res = conn.search(query)
             for r in res:
