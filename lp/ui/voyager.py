@@ -189,6 +189,7 @@ AND bib_master.library_id=library.library_id
 AND bib_index.index_code IN """
     query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
     query += """
+AND bib_index.normal_heading != 'OCOLC'
 AND bib_index.normal_heading IN (
     SELECT bib_index.normal_heading
     FROM bib_index
@@ -201,6 +202,7 @@ AND bib_index.normal_heading IN (
         AND bib_index.normal_heading IN """
     query += '(%s)' % _in_clause(num_list)
     query += """
+        AND bib_index.normal_heading != 'OCOLC'
         )
     )
 ORDER BY bib_index.bib_id"""
@@ -221,6 +223,7 @@ WHERE bib_index.index_code IN """
     query += "(%s)" % _in_clause(settings.INDEX_CODES[num_type])
     query += """
 AND bib_id = %s
+AND bib_index.normal_heading != 'OCOLC'
 ORDER BY bib_index.normal_heading"""
     cursor = connection.cursor()
     cursor.execute(query, [bibid])
