@@ -43,12 +43,79 @@ AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
-    cursor.execute(query, [bibid, bibid, bibid, bibid, bibid, bibid, bibid, bibid, bibid, bibid])
+    cursor.execute(query, [bibid]*10)
     data = _make_dict(cursor, first=True)
     bib = Bib()
     for field in data:
         bib[field.lower()] = data[field]
     return bib
+
+
+def bibid(num, num_type):
+    if num_type in ('gtbibid', 'gmbibid'):
+        return _convert_to_wrlc_bibid(bibid=num, bibid_type=num_type)
+    num = _normalize_num(num, num_type)
+    query = """
+SELECT bib_index.bib_id, bib_master.library_id, library.library_name
+FROM bib_index, bib_master, library
+WHERE bib_index.index_code IN %s
+AND bib_index.normal_heading = '%s'
+AND bib_index.bib_id=bib_master.bib_id
+AND bib_master.library_id=library.library_id"""
+    query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
+    cursor = connection.cursor()
+    cursor.execute(query, [])
+    bibs = _make_dict(cursor)
+    for bib in bibs:
+        if bib['LIBRARY_NAME'] == settings.PREF_LIB:
+            return bib['BIB_ID']
+    return bibs[0]['BIB_ID'] if bibs else None
+
+
+def _convert_to_wrlc_bibid(bibid, bibid_type):
+    query = """
+SELECT bib_index.bib_id
+FROM bib_index
+WHERE bib_index.index_code = '%s'
+AND bib_index.normal_heading = '%s'"""
+    if bibid_type == 'gtbibid':
+        index_code = '907A'
+    elif bibid_type == 'gmbibid':
+        index_code = '035A'
+        query += "\nAND bib_index.normal_heading=bib_index.display_heading"
+    query = query % (index_code, bibid)
+    print query
+    cursor = connection.cursor()
+    cursor.execute(query, [])
+    return cursor.fetchone()[0] 
+
+
+def related_bibids(num_list, num_type):
+    query = """
+SELECT DISTINCT bib_index.bib_id, bib_index.display_heading, library.library_name
+FROM bib_index, library, bib_master
+WHERE bib_index.bib_id=bib_master.bib_id
+AND bib_master.library_id=library.library_id
+AND bib_index.index_code IN %s
+AND bib_index.normal_heading IN (
+    SELECT bib_index.normal_heading
+    FROM bib_index
+    WHERE bib_id IN (
+        SELECT DISTINCT bib_index.bib_id
+        FROM bib_index
+        WHERE bib_index.index_code IN %s
+        AND bib_index.normal_heading IN %s
+        )
+    )
+ORDER BY bib_index.bib_id"""
+    query = query % (_in_clause(settings.INDEX_CODES[num_type]), _in_clause(settings.INDEX_CODES[num_type]), _in_clause(num_list))
+    cursor = connection.cursor()
+    cursor.execute(query, [])
+    results = _make_dict(cursor)
+    output_keys = ('BIB_ID', 'LIBRARY_NAME')
+    if num_type == 'oclc':
+        return [dict([(k, row[k]) for k in output_keys]) for row in results if _is_oclc(row['DISPLAY_HEADING'])]
+    return [dict([(k, row[k]) for k in output_keys]) for row in results]
 
 
 def _make_dict(cursor, first=False):
@@ -70,3 +137,16 @@ def _make_dict(cursor, first=False):
         return {}
     return mapped
 
+
+def _normalize_num(num, num_type):
+    if num_type == 'isbn':
+        return clean_isbn(num)
+    elif num_type == 'issn':
+        return num.replace('-',' ')
+    elif num_type == 'oclc':
+        return clean_oclc(num)
+    return num
+
+
+def _in_clause(items):
+    return '(%s)' % ','.join(["'%s'" % item for item in items])
