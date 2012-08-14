@@ -1,4 +1,5 @@
 {% with bib.openurl.params as p %}
+{% if p.atitle %}
 <span class='openurl-citation'>
 {% if p.aulast and p.auinit %}
     {{ p.aulast }} {{ p.auinit }}.    
@@ -7,4 +8,5 @@
 {% if p.volume %}{{ p.volume }}{% endif %}{% if p.issue %}({{ p.issue }}){% endif %}{% if p.spage %}{% if p.volume or p.issue %}:{% endif %} p. {{ p.spage }}{% endif %}{% if p.date %}, {{ p.date }}.{% endif %}
 </span>
 <br />
+{% endif %}
 {% endwith %}
