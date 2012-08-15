@@ -508,7 +508,7 @@ def _get_gt_holdings(id,query,query_type,bib,lib):
     except:  
         availability = get_z3950_availability_data(bib,lib,'','','',item_status,False)
         electronic = get_z3950_electronic_data(lib,'','',note,False)
-        arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
+        arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg,'NOTE':note}
         results.append(arow)
         res = get_z3950_mfhd_data(id,lib,results,[])
         if len(res) > 0:
@@ -519,7 +519,7 @@ def _get_gt_holdings(id,query,query_type,bib,lib):
     except:
         availability = get_z3950_availability_data(bib,lib,'','','',item_status,False)
         electronic = get_z3950_electronic_data(lib,'','',note,False)
-        arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
+        arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg,'NOTE':note}
         results.append(arow)
         res = get_z3950_mfhd_data(id,lib,results,[])
         if len(res) > 0:
@@ -604,7 +604,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
         except:
             availability = get_z3950_availability_data(bib,'GM','','','',item_status,False)
             electronic = get_z3950_electronic_data('GM','','', note,False)
-            arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
+            arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg,'NOTE':note}
             results.append(arow)
             res = get_z3950_mfhd_data(id,school,results,[])
             if len(res) > 0:
@@ -625,7 +625,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 availability = get_z3950_availability_data(bib,'GM','','','',item_status,False)
                 electronic = get_z3950_electronic_data('GM','','', note,False)
 
-                arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
+                arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg,'NOTE':note}
                 results.append(arow)
                 res = get_z3950_mfhd_data(id,school,results,[])
                 if len(res) > 0:
