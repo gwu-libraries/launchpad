@@ -270,8 +270,10 @@ ORDER BY library.library_name"""
                 continue
             else:
                 done.append(holding['BIB_ID'])
-            result = get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','')   
+            result = get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','')  
             if len(result)> 0:
+                if len(result[0]['items']) == 0 and len(result[0]['mfhd']['marc856list']) == 0 and len(result[0]['mfhd']['marc866list'])== 0 and result[0]['mfhd']['marc852']=='':
+                    continue  
                 holding.update({'MFHD_DATA':result[0]['mfhd'],
                               'ITEMS':result[0]['items'],
 	    	              'ELECTRONIC_DATA': result[0]['electronic'],
