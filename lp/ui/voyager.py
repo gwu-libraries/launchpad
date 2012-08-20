@@ -307,6 +307,7 @@ ORDER BY library.library_name"""
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
         holding['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
         holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)
+        if holding['LIBRARY_NAME']=='HU' and len(holding['MFHD_DATA']['marc866list']) == 0 and len(holding['MFHD_DATA']['marc856list']) == 0 and len(holding['ITEMS']) == 0:	  	      holding['REMOVE'] = True
     for item in added_holdings:
         holdings.append(item)
     for holding in holdings:
@@ -316,9 +317,10 @@ ORDER BY library.library_name"""
                 eligibility = True
             remove_duplicate_items(i , holding['ITEMS'])
             i = i + 1
-        for item in holding['ITEMS'][:]:
-            if 'REMOVE' in item:
-                holding['ITEMS'].remove(item)
+        if holding.get('ITEMS'):
+            for item in holding['ITEMS'][:]:
+                if 'REMOVE' in item:
+                    holding['ITEMS'].remove(item)
     if eligibility == False or bib_data['BIB_FORMAT'] == 'as':
         bib_data.update({'ILLIAD_LINK': illiad_link})
     else:
@@ -355,23 +357,25 @@ def get_additional_holdings(result,holding):
 def remove_duplicate_items(i, items):
     #check if the item has already been processed
     if 'REMOVE' in items[i]: 
-        return
-    if items[i]['ITEM_STATUS_DATE'] is None:
-        items[i]['REMOVE'] = True
+        return 
+    if 'ITEM_STATUS_DATE' in items[i]:
+        if items[i]['ITEM_STATUS_DATE'] is None:
+            items[i]['REMOVE'] = True
     j = i + 1 
-    while j < len(items):
-        
-        
+    while j < len(items): 
         if items[i]['ITEM_ID'] == items[j]['ITEM_ID']:
-            if items[i]['ITEM_STATUS_DATE'] is None:
-                items[i]['REMOVE'] = True
-            if items[j]['ITEM_STATUS_DATE'] is None:
-                items[j]['REMOVE'] = True
-            if items[i]['ITEM_STATUS_DATE'] is not None and items[j]['ITEM_STATUS_DATE'] is not None:
-                if items[i]['ITEM_STATUS_DATE'] > items[j]['ITEM_STATUS_DATE']:
-                    items[j]['REMOVE'] = True
-                else:
+            if 'ITEM_STATUS_DATE' in items[i]:
+                if items[i]['ITEM_STATUS_DATE'] is None:
                     items[i]['REMOVE'] = True
+            if 'ITEM_STATUS_DATE' in items[j]:
+                if items[j]['ITEM_STATUS_DATE'] is None:
+                    items[j]['REMOVE'] = True
+            if 'ITEM_STATUS_DATE' in items[i] and 'ITEM_STATUS_DATE' in items[j]:
+                if items[i]['ITEM_STATUS_DATE'] is not None and items[j]['ITEM_STATUS_DATE'] is not None:
+                    if items[i]['ITEM_STATUS_DATE'] > items[j]['ITEM_STATUS_DATE']:
+                        items[j]['REMOVE'] = True
+                    else:
+                        items[i]['REMOVE'] = True
         j = j + 1
 
 def trim_display_name(holding):
