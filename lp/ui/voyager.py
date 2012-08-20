@@ -295,11 +295,13 @@ ORDER BY library.library_name"""
             holding.update({'MFHD_DATA': get_mfhd_data(holding['MFHD_ID']), 
                             'ITEMS': get_items(holding['MFHD_ID'])})
         if holding.get('ITEMS', []):
+            i = 0
             for item in holding['ITEMS']:
                 item['ELIGIBLE'] = is_item_eligible(item,holding.get('LIBRARY_NAME',''))
                 item['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
                 item['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_item_display_name(item)
                 item['TEMPLOCATION'] = trim_item_temp_location(item)
+                remove_duplicate_items(i , holding['ITEMS']) 
             holding['LIBRARY_FULL_NAME'] = holding['ITEMS'][0]['LIBRARY_FULL_NAME']
         holding.update({'ELIGIBLE': is_eligible(holding)})
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
@@ -308,10 +310,15 @@ ORDER BY library.library_name"""
     for item in added_holdings:
         holdings.append(item)
     for holding in holdings:
+        i = 0
         for item in holding.get('ITEMS', []):
             if item['ELIGIBLE'] == True:
                 eligibility = True
-    
+            remove_duplicate_items(i , holding['ITEMS'])
+            i = i + 1
+        for item in holding['ITEMS'][:]:
+            if 'REMOVE' in item:
+                holding['ITEMS'].remove(item)
     if eligibility == False or bib_data['BIB_FORMAT'] == 'as':
         bib_data.update({'ILLIAD_LINK': illiad_link})
     else:
@@ -344,6 +351,19 @@ def get_additional_holdings(result,holding):
         added_holdings.append(item)
         i = i + 1   
     return added_holdings
+
+def remove_duplicate_items(i, items):
+    #check if the item has already been processed
+    if 'REMOVE' in items[i]: 
+        return
+    j = i + 1 
+    while j < len(items):
+        if items[i]['ITEM_ID'] == items[j]['ITEM_ID']:
+            if items[i]['ITEM_STATUS_DATE'] > items[j]['ITEM_STATUS_DATE']:
+                items[j]['REMOVE'] = True
+            else:
+                items[i]['REMOVE'] = True
+        j = j + 1
 
 def trim_display_name(holding):
     index = holding['LOCATION_DISPLAY_NAME'].find(':')
