@@ -356,13 +356,22 @@ def remove_duplicate_items(i, items):
     #check if the item has already been processed
     if 'REMOVE' in items[i]: 
         return
+    if items[i]['ITEM_STATUS_DATE'] is None:
+        items[i]['REMOVE'] = True
     j = i + 1 
     while j < len(items):
+        
+        
         if items[i]['ITEM_ID'] == items[j]['ITEM_ID']:
-            if items[i]['ITEM_STATUS_DATE'] > items[j]['ITEM_STATUS_DATE']:
-                items[j]['REMOVE'] = True
-            else:
+            if items[i]['ITEM_STATUS_DATE'] is None:
                 items[i]['REMOVE'] = True
+            if items[j]['ITEM_STATUS_DATE'] is None:
+                items[j]['REMOVE'] = True
+            if items[i]['ITEM_STATUS_DATE'] is not None and items[j]['ITEM_STATUS_DATE'] is not None:
+                if items[i]['ITEM_STATUS_DATE'] > items[j]['ITEM_STATUS_DATE']:
+                    items[j]['REMOVE'] = True
+                else:
+                    items[i]['REMOVE'] = True
         j = j + 1
 
 def trim_display_name(holding):
