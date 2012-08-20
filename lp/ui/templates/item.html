@@ -260,10 +260,9 @@ function showmore(id)
                             <span style='color: green'>Available</span>
                             <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if item.DISPLAY_CALL_NO %}call={{ item.DISPLAY_CALL_NO|urlencode }}{% endif %}&amp;{% if item.TRIMMED_LOCATION_DISPLAY_NAME %}loc={{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream|urlencode }}{% endif %}&amp;title={{ bib.TITLE|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
                         {%else%}
-                            {% if item.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
+                            {% if item.TEMPLOCATION == 'WRLC Center'%}
                                 <span class='off-site'>Off-site </span>
                                 <br />
-                                <span class='off-site-explanation'>(Available by request)</span>
                             {% else %}
                                 {{ item.ITEM_STATUS_DESC }}
                             {% endif %}
@@ -329,11 +328,11 @@ function showmore(id)
                                 {% endif %}
                             {% endfor %}
                         {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME == 'WRLC Center' %}
-                            <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
+                            <span class='off-site'>Off-site </span>
                         {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
                             <span style='color: green'>Available</span>
                         {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
-                            <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
+                            <span class='off-site'>Off-site </span>
                         {% else %}
                             {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
                         {% endif %}
