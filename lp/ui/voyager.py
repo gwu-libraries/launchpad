@@ -833,6 +833,8 @@ def is_eligible(holding):
     perm_loc = ''
     temp_loc = ''
     status = ''
+    if len(holding['MFHD_DATA']['marc856list']) == 0 and len(holding['ITEMS']) == 0:
+        return True
     if holding['AVAILABILITY']:
         if holding['AVAILABILITY']['PERMLOCATION']:
             perm_loc = holding['AVAILABILITY']['PERMLOCATION'].upper()
