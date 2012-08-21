@@ -303,6 +303,7 @@ ORDER BY library.library_name"""
                 item['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_item_display_name(item)
                 item['TEMPLOCATION'] = trim_item_temp_location(item)
                 remove_duplicate_items(i , holding['ITEMS']) 
+                i = i + 1
             holding['LIBRARY_FULL_NAME'] = holding['ITEMS'][0]['LIBRARY_FULL_NAME']
         holding.update({'ELIGIBLE': is_eligible(holding)})
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
