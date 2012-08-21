@@ -848,11 +848,11 @@ def is_eligible(holding):
         return False
     if holding['LIBRARY_NAME'] in settings.INELIGIBLE_LIBRARIES:
         return False
-    if 'WRLC' in temp_loc or 'WRLC' in perm_loc:
-        return True
     for loc in settings.INELIGIBLE_PERM_LOCS:
         if loc in perm_loc:
             return False
+    if 'WRLC' in temp_loc or 'WRLC' in perm_loc:
+        return True
     for loc in settings.INELIGIBLE_TEMP_LOCS:
         if loc in temp_loc:
             return False
