@@ -164,17 +164,18 @@ class Bib(object):
 
     def get_altscripts(self, asdict=False):
         alts = {}
-        if self.pymarc:
-            fields = self.pymarc.get_fields('880')
+        if self.marc:
+            fields = self.marc.get_fields('880')
             for field in fields:
-                if field['6'] == '245':
+                reltag = field['6'][:3]
+                if reltag == '245':
                     alts['title'] = ' '.join(field.get_subfields('a', 'b'))
-                elif field['6'] == '260':
+                elif reltag == '260':
                     alts['publisher'] = field['b']
                     alts['pubdate'] = field['c']
-                elif field['6'] in ('100', '110', '111'):
+                elif reltag in ('100', '110', '111'):
                     alts['author'] = field['a']
-                elif field['6'] in ('700', '710', '711', '720', '730', '740',
+                elif reltag in ('700', '710', '711', '720', '730', '740',
                     '752', '753', '754', '790', '791', '792', '793', '796',
                     '797', '798', '799'):
                     if not alts.get('addedentries', []):
