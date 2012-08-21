@@ -223,10 +223,6 @@ function showmore(id)
                             <span class="library-has">{{ line }}</span>
                         {% endfor %}
                     {% endif %}
-                    {% if holding.MFHD_DATA.marc852 and forloop.first %}
-                        <br />
-                        <span class="note">{{ holding.MFHD_DATA.marc852 }}</span>
-                    {% endif %}
                     {#{% if holding.LIBRARY_HAS %}#}
                         {#{% for line in holding.LIBRARY_HAS %}#}
                             <!--<br />
