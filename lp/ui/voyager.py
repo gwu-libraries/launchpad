@@ -186,6 +186,7 @@ SELECT DISTINCT bib_index.bib_id, bib_index.display_heading, library.library_nam
 FROM bib_index, library, bib_master
 WHERE bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
+AND bib_master.suppress_in_opac='N'
 AND bib_index.index_code IN """
     query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
     query += """
