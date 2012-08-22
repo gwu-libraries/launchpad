@@ -186,6 +186,7 @@ SELECT DISTINCT bib_index.bib_id, bib_index.display_heading, library.library_nam
 FROM bib_index, library, bib_master
 WHERE bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
+AND bib_master.suppress_in_opac='N'
 AND bib_index.index_code IN """
     query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
     query += """
@@ -270,8 +271,10 @@ ORDER BY library.library_name"""
                 continue
             else:
                 done.append(holding['BIB_ID'])
-            result = get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','')   
+            result = get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','')  
             if len(result)> 0:
+                if len(result[0]['items']) == 0 and len(result[0]['mfhd']['marc856list']) == 0 and len(result[0]['mfhd']['marc866list'])== 0 and result[0]['mfhd']['marc852']=='':
+                    continue  
                 holding.update({'MFHD_DATA':result[0]['mfhd'],
                               'ITEMS':result[0]['items'],
 	    	              'ELECTRONIC_DATA': result[0]['electronic'],
@@ -293,23 +296,34 @@ ORDER BY library.library_name"""
             holding.update({'MFHD_DATA': get_mfhd_data(holding['MFHD_ID']), 
                             'ITEMS': get_items(holding['MFHD_ID'])})
         if holding.get('ITEMS', []):
+            i = 0
             for item in holding['ITEMS']:
                 item['ELIGIBLE'] = is_item_eligible(item,holding.get('LIBRARY_NAME',''))
                 item['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
                 item['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_item_display_name(item)
                 item['TEMPLOCATION'] = trim_item_temp_location(item)
+                remove_duplicate_items(i , holding['ITEMS']) 
+                i = i + 1
             holding['LIBRARY_FULL_NAME'] = holding['ITEMS'][0]['LIBRARY_FULL_NAME']
         holding.update({'ELIGIBLE': is_eligible(holding)})
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
         holding['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
         holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)
+        if holding['LIBRARY_NAME']=='HU' and len(holding['MFHD_DATA']['marc866list']) == 0 and len(holding['MFHD_DATA']['marc856list']) == 0 and len(holding['ITEMS']) == 0:
+            holding['REMOVE'] = True
     for item in added_holdings:
         holdings.append(item)
     for holding in holdings:
+        i = 0
         for item in holding.get('ITEMS', []):
             if item['ELIGIBLE'] == True:
                 eligibility = True
-    
+            remove_duplicate_items(i , holding['ITEMS'])
+            i = i + 1
+        if holding.get('ITEMS'):
+            for item in holding['ITEMS'][:]:
+                if 'REMOVE' in item:
+                    holding['ITEMS'].remove(item)
     if eligibility == False or bib_data['BIB_FORMAT'] == 'as':
         bib_data.update({'ILLIAD_LINK': illiad_link})
     else:
@@ -342,6 +356,30 @@ def get_additional_holdings(result,holding):
         added_holdings.append(item)
         i = i + 1   
     return added_holdings
+
+def remove_duplicate_items(i, items):
+    #check if the item has already been processed
+    if 'REMOVE' in items[i]: 
+        return 
+    if 'ITEM_STATUS_DATE' in items[i]:
+        if items[i]['ITEM_STATUS_DATE'] is None:
+            items[i]['REMOVE'] = True
+    j = i + 1 
+    while j < len(items): 
+        if items[i]['ITEM_ID'] == items[j]['ITEM_ID']:
+            if 'ITEM_STATUS_DATE' in items[i]:
+                if items[i]['ITEM_STATUS_DATE'] is None:
+                    items[i]['REMOVE'] = True
+            if 'ITEM_STATUS_DATE' in items[j]:
+                if items[j]['ITEM_STATUS_DATE'] is None:
+                    items[j]['REMOVE'] = True
+            if 'ITEM_STATUS_DATE' in items[i] and 'ITEM_STATUS_DATE' in items[j]:
+                if items[i]['ITEM_STATUS_DATE'] is not None and items[j]['ITEM_STATUS_DATE'] is not None:
+                    if items[i]['ITEM_STATUS_DATE'] > items[j]['ITEM_STATUS_DATE']:
+                        items[j]['REMOVE'] = True
+                    else:
+                        items[i]['REMOVE'] = True
+        j = j + 1
 
 def trim_display_name(holding):
     index = holding['LOCATION_DISPLAY_NAME'].find(':')
@@ -508,7 +546,7 @@ def _get_gt_holdings(id,query,query_type,bib,lib):
     except:  
         availability = get_z3950_availability_data(bib,lib,'','','',item_status,False)
         electronic = get_z3950_electronic_data(lib,'','',note,False)
-        arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
+        arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg,'NOTE':note}
         results.append(arow)
         res = get_z3950_mfhd_data(id,lib,results,[])
         if len(res) > 0:
@@ -519,7 +557,7 @@ def _get_gt_holdings(id,query,query_type,bib,lib):
     except:
         availability = get_z3950_availability_data(bib,lib,'','','',item_status,False)
         electronic = get_z3950_electronic_data(lib,'','',note,False)
-        arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
+        arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg,'NOTE':note}
         results.append(arow)
         res = get_z3950_mfhd_data(id,lib,results,[])
         if len(res) > 0:
@@ -604,7 +642,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
         except:
             availability = get_z3950_availability_data(bib,'GM','','','',item_status,False)
             electronic = get_z3950_electronic_data('GM','','', note,False)
-            arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
+            arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg,'NOTE':note}
             results.append(arow)
             res = get_z3950_mfhd_data(id,school,results,[])
             if len(res) > 0:
@@ -625,7 +663,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                 availability = get_z3950_availability_data(bib,'GM','','','',item_status,False)
                 electronic = get_z3950_electronic_data('GM','','', note,False)
 
-                arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg}
+                arow = {'STATUS':status, 'LOCATION':location, 'CALLNO':callno,'LINK':url,'MESSAGE':msg,'NOTE':note}
                 results.append(arow)
                 res = get_z3950_mfhd_data(id,school,results,[])
                 if len(res) > 0:
@@ -797,6 +835,8 @@ def is_eligible(holding):
     perm_loc = ''
     temp_loc = ''
     status = ''
+    if len(holding['MFHD_DATA']['marc856list']) == 0 and len(holding['ITEMS']) == 0:
+        return True
     if holding['AVAILABILITY']:
         if holding['AVAILABILITY']['PERMLOCATION']:
             perm_loc = holding['AVAILABILITY']['PERMLOCATION'].upper()
@@ -810,11 +850,11 @@ def is_eligible(holding):
         return False
     if holding['LIBRARY_NAME'] in settings.INELIGIBLE_LIBRARIES:
         return False
-    if 'WRLC' in temp_loc or 'WRLC' in perm_loc:
-        return True
     for loc in settings.INELIGIBLE_PERM_LOCS:
         if loc in perm_loc:
             return False
+    if 'WRLC' in temp_loc or 'WRLC' in perm_loc:
+        return True
     for loc in settings.INELIGIBLE_TEMP_LOCS:
         if loc in temp_loc:
             return False
