@@ -33,9 +33,13 @@ class Bib(object):
             libcode
             formatcode
         '''
-        super(Bib, self).__setattr__('metadata', metadata)
-        super(Bib, self).__setattr__('holdings', holdings)
-        super(Bib, self).__setattr__('marc', raw_marc)
+        super(Bib, self).__setattr__('metadata', {})
+        super(Bib, self).__setattr__('holdings', [])
+        super(Bib, self).__setattr__('marc', None)
+        if metadata:
+            self.load_metadata(metadata)
+        if holdings:
+            self.load_holdings(holdings)
         if raw_marc:
             self.load_marc(raw_marc)
 
@@ -189,8 +193,8 @@ class Bib(object):
 
 class Holding(object):
 
-    def __init__(self):
-        
+    def __init__(self, metadata={}, raw_marc='', items=[]):
+
         '''
         self.metadata should be a dictionary containing the following keys:
             bibid
@@ -200,7 +204,76 @@ class Holding(object):
             loc
             callnum
         '''
-        self.metadata = {}
-        self.items = []
-        self.marc = None
+        super(Holding, self).__setattr__('metadata', {})
+        super(Holding, self).__setattr__('items', [])
+        super(Holding, self).__setattr__('marc', None)
+        if metadata:
+            self.load_metadata(metadata)
+        if items:
+            self.load_items(items)
+        if raw_marc:
+            self.load_marc(raw_marc)
 
+    def __getattr__(self, name):
+        if name.startswith('get_'):
+            return None
+        if getattr(self, 'get_' + name, None) is not None:
+            return getattr(self, 'get_' + name)()
+        try:
+            return self.metadata[name]
+        except:
+            return None
+
+    def __setattr__(self, name, value):
+        if name in self.__dict__:
+            super(Holding, self).__setattr__(name, value)
+        else:
+            fname = 'set_' + name
+            function = getattr(self, fname, None)
+            if function is not None:
+                function(value)
+            else:
+                self.metadata[name] = value
+
+    def load_marc(self, raw_marc):
+        try:
+            self.marc = pymarc.record.Record(data=raw_marc)
+        except:
+            pass
+
+    def load_items(self, items):
+        #TODO: add error catching
+        self.items = items
+
+    def load_metadata(self, metadata):
+        #TODO:add error catching
+        self.metadata = metadata
+
+    # 852 $z data (possibly repeatable, but unlikely, so using first hit)
+    def get_pubnote(self):
+        try:
+            return self.marc['852']['z']
+        except:
+            return ''
+
+    # 856 $u,z,3 data (repeatable field)
+    def get_links(self):
+        try:
+            links = []
+            for field in self.marc.get_fields('856'):
+                # each subfield is repeatable, but unlikely, so using 1st hit
+                link = {'url': field['u'],
+                        'note': field['z'],
+                        'material': field['3']}
+                links.append(link)
+            return links
+        except:
+            return [] 
+
+    #866 $a data (repeatable)
+    def get_textual(self):
+        try:
+            # subfield $a is non-repeatable
+            return [field['a'] for field in self.marc.get_fields('866')]
+        except:
+            return []

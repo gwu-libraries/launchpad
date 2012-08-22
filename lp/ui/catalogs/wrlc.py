@@ -10,7 +10,7 @@ from django.utils.encoding import smart_str, smart_unicode
 
 from ui.templatetags.launchpad_extras import cjk_info
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc, clean_issn
-from ui.models import Bib
+from ui.models import Bib, Holding
 
 
 '''
@@ -192,7 +192,13 @@ ORDER BY library.library_name"""
     query = query % _in_clause(bibids)
     cursor = connection.cursor()
     cursor.execute(query, [])
-    return _make_dict(cursor)
+    results = _make_dict(cursor)
+    holdings = []
+    for record in results:
+        marcblob = str(record.pop('marcblob'))
+        holding = Holding(metadata=record, raw_marc=marcblob)
+        holdings.append(holding)
+    return holdings
 
 
 def bibblob(bibid):
