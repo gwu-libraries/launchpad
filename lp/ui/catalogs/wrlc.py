@@ -2,6 +2,7 @@ import pycountry
 from PyZ3950 import zoom
 import urllib
 import copy
+import re
 
 from django.conf import settings
 from django.db import connection, transaction
@@ -80,11 +81,62 @@ AND bib_master.library_id=library.library_id"""
         return bibs[0]['bibid']
 
 
-def related_bibids(num_list, num_type):
+def related_stdnums(bibid, debug=False):
+    output = {'isbn':[], 'issn':[], 'oclc':[]}
+    query = '''
+SELECT normal_heading, 
+       display_heading,
+       index_code
+FROM bib_index
+WHERE index_code IN %s
+AND bib_id = %s
+AND normal_heading != 'OCOLC'
+ORDER BY normal_heading'''
+    index_codes = []
+    for numtype in output:
+        index_codes.extend(settings.INDEX_CODES[numtype])
+    query = query % (_in_clause(index_codes), bibid)
+    if debug:
+        print 'QUERY:\n%s\n' % query
+    cursor = connection.cursor()
+    cursor.execute(query, [])
+    results = _make_dict(cursor)
+    if debug:
+        print 'RESULTS:\n%s\n' % results
+    for item in results:
+        dictionary = {'norm':item['normal_heading'], 'disp':item['display_heading']}
+        if item['index_code'] in settings.INDEX_CODES['isbn']:
+            output['isbn'].append(dictionary)
+        elif item['index_code'] in settings.INDEX_CODES['issn']:
+            if _is_valid_issn(item['normal_heading']):
+                output['issn'].append(dictionary)
+        elif item['index_code'] in settings.INDEX_CODES['oclc']:
+            if _is_oclc(item['display_heading']):
+                output['oclc'].append(dictionary)
+    return output
+
+
+def _is_valid_issn(num):
+    if re.match('\d{4}[ -]\d{3}[0-9xX]', num):
+        return True
+    return False
+
+
+def _is_oclc(num):
+    if num.find('OCoLC') >= 0:
+        return True
+    if num.find('ocn') >= 0:
+        return True
+    if num.find('ocm') >= 0:
+        return True
+    return False
+
+
+def related_bibids(num_list, num_type, debug=False):
     query = """
-SELECT DISTINCT bib_index.bib_id, 
+SELECT DISTINCT bib_index.bib_id AS bibid, 
        bib_index.display_heading, 
-       library.library_name
+       library.library_name AS libcode
 FROM bib_index, library, bib_master
 WHERE bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
@@ -103,23 +155,28 @@ ORDER BY bib_index.bib_id"""
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), 
                      _in_clause(settings.INDEX_CODES[num_type]), 
                      _in_clause(num_list))
+    if debug:
+        print 'QUERY:\n%s\n' % query
     cursor = connection.cursor()
     cursor.execute(query, [])
     results = _make_dict(cursor)
-    output_keys = ('BIB_ID', 'LIBRARY_NAME')
+    if debug:
+        print 'RESULTS:\n%s\n' % results
+    output_keys = ('bibid', 'libcode')
     if num_type == 'oclc':
-        return [dict([(k, row[k]) for k in output_keys]) for row in results if _is_oclc(row['DISPLAY_HEADING'])]
+        return [dict([(k, row[k]) for k in output_keys]) for row in results if _is_oclc(row['display_heading'])]
     return [dict([(k, row[k]) for k in output_keys]) for row in results]
 
 
-def holdings(bib):
+def holdings(bibids):
     query = """
-SELECT bib_mfhd.bib_id,
-       mfhd_master.mfhd_id,
-       mfhd_master.location_id,
-       mfhd_master.display_call_no,
-       location.location_display_name,
-       library.library_name
+SELECT bib_mfhd.bib_id AS bibid,
+       mfhd_master.mfhd_id AS mfhdid,
+       mfhd_master.location_id AS locid,
+       mfhd_master.display_call_no AS callnum,
+       location.location_display_name AS loc,
+       library.library_name AS libcode,
+       wrlcdb.getMFHDBlob(mfhdid) AS mfhdblob
 FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
      location,
      library,
@@ -130,7 +187,7 @@ AND mfhd_master.suppress_in_opac !='Y'
 AND bib_mfhd.bib_id = bib_master.bib_id
 AND bib_master.library_id = library.library_id
 ORDER BY library.library_name"""
-    query = query % _in_clause([b['BIB_ID'] for b in bib['BIB_ID_LIST']])
+    query = query % _in_clause(bibids)
     cursor = connection.cursor()
     cursor.execute(query, [])
     return _make_dict(cursor)
