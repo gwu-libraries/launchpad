@@ -2,6 +2,7 @@ import urllib
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db.utils import DatabaseError
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.utils import simplejson as json
@@ -32,31 +33,38 @@ def _openurl_dict(params):
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid):
-    bib = voyager.get_bib_data(bibid)
-    if not bib:
-        return render(request, '404.html', {'num': bibid,
-            'num_type': 'BIB ID'}, status=404)
-    bib['openurl'] = _openurl_dict(request.GET)
-    # Ensure bib data is ours if possible
-    if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
-        for alt_bib in bib['BIB_ID_LIST']:
-            if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
-                return item(request, alt_bib['BIB_ID'])
-    holdings = voyager.get_holdings(bib)
-    ours, theirs, shared = splitsort(holdings)
-    holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) \
-        + libsort(elecsort(availsort(theirs), rev=True))
-    return render(request, 'item.html', {
-        'bibid': bibid,
-        'bib': bib,
-        'debug': settings.DEBUG,
-        'title_chars': settings.TITLE_CHARS,
-        'holdings': holdings,
-        'link': bib.get('LINK', '')[9:],
-        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-        'link_resolver': settings.LINK_RESOLVER,
-        'enable_humans': settings.ENABLE_HUMANS,
-        })
+    try:
+        bib = voyager.get_bib_data(bibid)
+        if not bib:
+            return render(request, '404.html', {'num': bibid,
+                'num_type': 'BIB ID'}, status=404)
+        bib['openurl'] = _openurl_dict(request.GET)
+        # Ensure bib data is ours if possible
+        if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
+            for alt_bib in bib['BIB_ID_LIST']:
+                if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
+                    return item(request, alt_bib['BIB_ID'])
+        holdings = voyager.get_holdings(bib)
+        ours, theirs, shared = splitsort(holdings)
+        holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) \
+            + libsort(elecsort(availsort(theirs), rev=True))
+        return render(request, 'item.html', {
+            'bibid': bibid,
+            'bib': bib,
+            'debug': settings.DEBUG,
+            'title_chars': settings.TITLE_CHARS,
+            'holdings': holdings,
+            'link': bib.get('LINK', '')[9:],
+            'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
+            'link_resolver': settings.LINK_RESOLVER,
+            'enable_humans': settings.ENABLE_HUMANS,
+            })
+    except DatabaseError, e:
+        from datetime import datetime
+        if datetime.now().hour == 3:
+            return render(request, '503.html', status=503)
+        else:
+            raise
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
