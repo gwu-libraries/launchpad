@@ -2,6 +2,7 @@ import urllib
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db.utils import DatabaseError
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.utils import simplejson as json
