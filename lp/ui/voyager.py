@@ -835,9 +835,6 @@ AND bib_index.normal_heading = %s"""
 
 
 def is_eligible(holding):
-    perm_loc = ''
-    temp_loc = ''
-    status = ''
     marc856 = holding.get('MFHD_DATA', {}).get('marc856list', [])
     if marc856 and len(marc856) == 0 and len(holding['ITEMS']) == 0:
         return True
@@ -862,7 +859,6 @@ def is_eligible(holding):
     for stat in settings.INELIGIBLE_STATUS:
         if stat == status[:len(stat)]:
             return False
-    
     if marc856 and marc856[0].get('u',''):
         return False
     return True
