@@ -176,12 +176,14 @@ SELECT bib_mfhd.bib_id AS bibid,
        mfhd_master.display_call_no AS callnum,
        location.location_display_name AS loc,
        library.library_name AS libcode,
-       wrlcdb.getMFHDBlob(mfhdid) AS mfhdblob
+       mfhdblob_vw.marc_record AS marcblob
 FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
      location,
      library,
-     bib_master
+     bib_master,
+     mfhdblob_vw
 WHERE mfhd_master.location_id=location.location_id
+AND mfhdblob_vw.mfhd_id=mfhd_master.mfhd_id
 AND bib_mfhd.bib_id IN %s
 AND mfhd_master.suppress_in_opac !='Y'
 AND bib_mfhd.bib_id = bib_master.bib_id

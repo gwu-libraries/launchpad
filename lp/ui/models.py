@@ -190,15 +190,17 @@ class Bib(object):
 class Holding(object):
 
     def __init__(self):
-
+        
+        '''
+        self.metadata should be a dictionary containing the following keys:
+            bibid
+            mfhdid
+            libcode
+            locid
+            loc
+            callnum
+        '''
         self.metadata = {}
         self.items = []
+        self.marc = None
 
-    def __getitem__(self, key):
-        try:
-            return self.metadata[key]
-        except:
-            return None
-
-    def __setitem__(self, key, value):
-        self.metadata[key] = value
