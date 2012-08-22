@@ -248,7 +248,7 @@ def get_holdings(bib_data):
     query = """
 SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
        mfhd_master.display_call_no, location.location_display_name,
-       library.library_name
+       library.library_name, location.location_name
 FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
      location, library,bib_master
 WHERE mfhd_master.location_id=location.location_id
@@ -309,8 +309,11 @@ ORDER BY library.library_name"""
         holding.update({'LIBRARY_HAS': get_library_has(holding)})
         holding['LIBRARY_FULL_NAME'] = settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
         holding['TRIMMED_LOCATION_DISPLAY_NAME'] = trim_display_name(holding)
-        if holding['LIBRARY_NAME']=='HU' and len(holding['MFHD_DATA']['marc866list']) == 0 and len(holding['MFHD_DATA']['marc856list']) == 0 and len(holding['ITEMS']) == 0:
+        if holding['LIBRARY_NAME'] == 'HU' and holding['LOCATION_NAME'] == 'hu link':
             holding['REMOVE'] = True
+        if holding['LIBRARY_NAME'] == 'HS' and holding['LOCATION_NAME'] == 'hs link':
+            holding['REMOVE'] = True
+
     for item in added_holdings:
         holdings.append(item)
     for holding in holdings:
@@ -832,7 +835,11 @@ AND bib_index.normal_heading = %s"""
 
 
 def is_eligible(holding):
-    if not holding.get('MFHD_DATA', {}).get('marc856list', []) and not holding.get('ITEMS', []):
+    perm_loc = ''
+    temp_loc = ''
+    status = ''
+    marc856 = holding.get('MFHD_DATA', {}).get('marc856list', [])
+    if marc856 and len(marc856) == 0 and len(holding['ITEMS']) == 0:
         return True
     if holding.get('AVAILABILITY', {}):
         perm_loc = holding['AVAILABILITY']['PERMLOCATION'].upper() if holding['AVAILABILITY'].get('PERMLOCATION', '') else ''
@@ -856,7 +863,6 @@ def is_eligible(holding):
         if stat == status[:len(stat)]:
             return False
     
-    marc856 = holding.get('MFHD_DATA', {}).get('marc856list', [])
     if marc856 and marc856[0].get('u',''):
         return False
     return True
