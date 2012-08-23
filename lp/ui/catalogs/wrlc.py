@@ -132,11 +132,14 @@ def _is_oclc(num):
     return False
 
 
-def related_bibids(num_list, num_type, debug=False):
+def related_bibids(stdnums, debug=False):
+    for key in stdnums.keys():
+        if not stdnums[key]:
+            stdnums.pop(key)
     query = """
 SELECT DISTINCT bib_index.bib_id AS bibid, 
-       bib_index.display_heading, 
-       library.library_name AS libcode
+       library.library_name AS libcode,
+       bib_index.display_heading AS disp
 FROM bib_index, library, bib_master
 WHERE bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
@@ -153,20 +156,23 @@ AND bib_index.normal_heading IN (
         )
     )
 ORDER BY bib_index.bib_id"""
-    query = query % (_in_clause(settings.INDEX_CODES[num_type]), 
-                     _in_clause(settings.INDEX_CODES[num_type]), 
-                     _in_clause(num_list))
-    if debug:
-        print 'QUERY:\n%s\n' % query
-    cursor = connection.cursor()
-    cursor.execute(query, [])
-    results = _make_dict(cursor)
-    if debug:
-        print 'RESULTS:\n%s\n' % results
-    output_keys = ('bibid', 'libcode')
-    if num_type == 'oclc':
-        return [dict([(k, row[k]) for k in output_keys]) for row in results if _is_oclc(row['display_heading'])]
-    return [dict([(k, row[k]) for k in output_keys]) for row in results]
+    bibids = []
+    for numtype in stdnums:
+        query = query % (_in_clause(settings.INDEX_CODES[numtype]), 
+                         _in_clause(settings.INDEX_CODES[numtype]), 
+                         _in_clause(stdnums))
+        if debug:
+            print 'QUERY:\n%s\n' % query
+        cursor = connection.cursor()
+        cursor.execute(query, [])
+        results = _make_dict(cursor)
+        if debug:
+            print 'RESULTS:\n%s\n' % results
+        if numtype == 'oclc':
+            results = [row for row in results if _is_oclc(row['disp'])]
+        bibids.extend([{'bibid':row['bibid'], 'libcode':row['libcode']}
+            for row in results])
+    return bibids
 
 
 def holdings(bibids):
