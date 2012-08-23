@@ -298,7 +298,7 @@ class Item(object):
             libcode
             chron
         '''
-        super(Holding, self).__setattr__('metadata', {})
+        super(Item, self).__setattr__('metadata', {})
 
     def __getattr__(self, name):
         if name.startswith('get_'):

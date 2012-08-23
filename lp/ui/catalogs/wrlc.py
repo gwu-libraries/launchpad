@@ -10,7 +10,7 @@ from django.utils.encoding import smart_str, smart_unicode
 
 from ui.templatetags.launchpad_extras import cjk_info
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc, clean_issn
-from ui.models import Bib, Holding
+from ui.models import Bib, Holding, Item
 
 
 '''
@@ -140,6 +140,7 @@ SELECT DISTINCT bib_index.bib_id AS bibid,
 FROM bib_index, library, bib_master
 WHERE bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
+AND bib_master.suppress_in_opac='N'
 AND bib_index.index_code IN %s
 AND bib_index.normal_heading IN (
     SELECT bib_index.normal_heading
@@ -201,7 +202,7 @@ ORDER BY library.library_name"""
     return holdings
 
 
-def items(mfhdids):
+def items(mfhdid):
     query = '''
 SELECT DISTINCT display_call_no AS callnum, 
        item_status_desc AS status, 
@@ -227,7 +228,7 @@ LEFT OUTER JOIN location tempLocation ON tempLocation.location_id = item.temp_lo
 WHERE bib_mfhd.mfhd_id = %s
 ORDER BY itemid'''
     cursor = connection.cursor()
-    cursor.execute(query, [mfhd_id])
+    cursor.execute(query, [mfhdid])
     results =  _make_dict(cursor)
     items = []
     for record in results:
