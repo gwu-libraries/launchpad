@@ -201,6 +201,48 @@ ORDER BY library.library_name"""
     return holdings
 
 
+def items(mfhdids):
+    query = '''
+SELECT DISTINCT display_call_no AS callnum, 
+       item_status_desc AS status, 
+       item_status.item_status AS statuscode,
+       permLocation.location_display_name as permloc,
+       tempLocation.location_display_name as temploc,
+       item.item_id AS itemid,
+       item_status_date AS statusdate,
+       bib_master.bib_id AS bibid,
+       mfhd_item.mfhd_id AS mfhdid,
+       library.library_id AS libcode
+FROM bib_master
+JOIN library ON library.library_id = bib_master.library_id
+JOIN bib_text ON bib_text.bib_id = bib_master.bib_id
+JOIN bib_mfhd ON bib_master.bib_id = bib_mfhd.bib_id
+JOIN mfhd_master ON mfhd_master.mfhd_id = bib_mfhd.mfhd_id
+JOIN mfhd_item on mfhd_item.mfhd_id = mfhd_master.mfhd_id
+JOIN item ON item.item_id = mfhd_item.item_id
+JOIN item_status ON item_status.item_id = item.item_id
+JOIN item_status_type ON item_status.item_status = item_status_type.item_status_type
+JOIN location permLocation ON permLocation.location_id = item.perm_location
+LEFT OUTER JOIN location tempLocation ON tempLocation.location_id = item.temp_location
+WHERE bib_mfhd.mfhd_id = %s
+ORDER BY itemid'''
+    cursor = connection.cursor()
+    cursor.execute(query, [mfhd_id])
+    results =  _make_dict(cursor)
+    items = []
+    for record in results:
+        item = Item(metadata=record)
+        items.append(item)
+        # now deduplicate
+        # (sometimes when an item has a temploc change there are two items with
+        # different statuses. We'll use the most recent change)
+        if items and item.itemid == items[-1].itemid:
+            if item.statusdate > items[-1].statusdate:
+                items[-1] = item
+        else:
+            items.append(item)
+    return items
+
 def bibblob(bibid):
     query = """
 SELECT wrlcdb.getBibBlob(%s) AS bibblob

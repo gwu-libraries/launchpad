@@ -239,6 +239,7 @@ class Holding(object):
         try:
             self.marc = pymarc.record.Record(data=raw_marc)
         except:
+            #TODO: flesh out error catching
             pass
 
     def load_items(self, items):
@@ -277,3 +278,71 @@ class Holding(object):
             return [field['a'] for field in self.marc.get_fields('866')]
         except:
             return []
+
+
+class Item(object):
+
+    def __init__(self, metadata={}):
+        
+        '''
+        self.metadata is a dictionary with the following keys:
+            itemid
+            mfhdid
+            bibid
+            enum
+            status
+            statuscode
+            statusdate
+            temploc
+            permloc
+            libcode
+            chron
+        '''
+        super(Holding, self).__setattr__('metadata', {})
+
+    def __getattr__(self, name):
+        if name.startswith('get_'):
+            return None
+        if getattr(self, 'get_' + name, None) is not None:
+            return getattr(self, 'get_' + name)()
+        try:
+            return self.metadata[name]
+        except:
+            return ''
+
+    def __setattr__(self, name, value):
+        if name in self.__dict__:
+            super(Item, self).__setattr__(name, value)
+        else:
+            fname = 'set_' + name
+            function = getattr(self, fname, None)
+            if function is not None:
+                function(value)
+            else:
+                self.metadata[name] = value
+
+    def get_loc(self):
+        loc = self.temploc if self.temploc else self.permloc
+        if loc[2] == ':':
+            loc = loc[3:].strip()
+        return loc
+
+    def get_eligible(self):
+        if self.metadata.get('eligible', None):
+            return self.metadata['metadata']
+        if 'Law' in self.permloc:
+            return False
+        if self.libcode in settings.INELIGIBLE_LIBRARIES:
+            return False
+        for loc in settings.INELIGIBLE_PERM_LOCS:
+            if loc in perm_loc:
+                return False
+        if 'WRLC' in self.temploc or 'WRLC' in self.permloc:
+            return True
+        for loc in settings.INELIGIBLE_TEMP_LOCS:
+            if loc in self.temp_loc:
+                return False
+        for status in settings.INELIGIBLE_STATUS:
+            if status == self.status[:len(status)]:
+                return False
+        return True
