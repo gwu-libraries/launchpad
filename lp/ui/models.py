@@ -160,12 +160,15 @@ class Bib(object):
         self.isbns = list(isbns)
 
     def get_isbns(self):
-        isbns = set([self.isbn]) if self.isbn else set()
+        isbns = set()
         if self.metadata.get('related_stdnums', {}).get('isbn', []):
-            isbns.update(i['disp'] for i in self.related_stdnums['isbn'])
+            isbns.update([i['disp'] for i in self.related_stdnums['isbn']])
         else:
             isbns.update(self.metadata.get('isbns', []))
-        return list(isbns)
+        isbns = list(isbns)
+        if self.isbn and self.isbn not in isbns:
+            isbns[:0] = [self.isbn]
+        return isbns
 
     def add_issns(self, new_issns):
         issns = set(self.issns)
@@ -173,18 +176,24 @@ class Bib(object):
         self.issns = list(issns)
 
     def get_issns(self):
-        issns = set([self.issn]) if self.issn else set()
+        issns = set()
         if self.metadata.get('related_stdnums', {}).get('issn', []):
-            issns.update(i['disp'] for i in self.related_stdnums['issn'])
+            issns.update([i['disp'] for i in self.related_stdnums['issn']])
         else:
             issns.update(self.metadata.get('issns', []))
-        return list(issns)
+        issns = list(issns)
+        if self.issn and self.issn not in issns:
+            issns[:0] = [self.issn]
+        return issns
 
     def get_oclcs(self):
-        oclcs = set([self.oclc]) if self.oclc else set()
-        oclcs.update(i['disp'] for i in
-            self.metadata.get('related_stdnums', {}).get('oclc', []))
-        return list(oclcs)
+        oclcs = set()
+        oclcs.update([i['disp'] for i in
+            self.metadata.get('related_stdnums', {}).get('oclc', [])])
+        oclcs = list(oclcs)
+        if self.oclc and self.oclc not in oclcs:
+            oclcs[:0] = [self.oclc]
+        return oclcs
 
     def get_language(self):
         try:

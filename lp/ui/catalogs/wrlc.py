@@ -133,15 +133,13 @@ def _is_oclc(num):
     return False
 
 
-def related_bibids(stdnums, debug=False):
-    if debug:
-        print 'stdnums: %s\n' % stdnums
+def related_bibids(stdnums):
     for key in stdnums.keys():
         if not stdnums[key]:
             stdnums.pop(key)
-    if debug:
-        print 'stdnums stripped: %s\n' % stdnums
-    query = """
+    bibids = []
+    for numtype in stdnums:
+        query = """
 SELECT DISTINCT bib_index.bib_id AS bibid,
        library.library_name AS libcode,
        bib_index.display_heading AS disp
@@ -153,7 +151,8 @@ AND bib_index.index_code IN %s
 AND bib_index.normal_heading IN (
     SELECT bib_index.normal_heading
     FROM bib_index
-    WHERE bib_id IN (
+    WHERE bib_index.index_code IN %s
+    AND bib_id IN (
         SELECT DISTINCT bib_index.bib_id
         FROM bib_index
         WHERE bib_index.index_code IN %s
@@ -161,28 +160,19 @@ AND bib_index.normal_heading IN (
         )
     )
 ORDER BY bib_index.bib_id"""
-    bibids = []
-    for numtype in stdnums:
         codes = settings.INDEX_CODES[numtype]
-        nums = [n['norm'] for n in stdnums[numtype]]
-        if debug:
-            print 'codes: %s\nnums: %s\n' % (codes, nums)
+        nums = set([n['norm'] for n in stdnums[numtype]])
         query = query % (_in_clause(codes),
                          _in_clause(codes),
+                         _in_clause(codes),
                          _in_clause(nums))
-        if debug:
-            print 'QUERY:\n%s\n' % query
         cursor = connection.cursor()
         cursor.execute(query, [])
         results = _make_dict(cursor)
-        if debug:
-            print 'RESULTS:\n%s\n' % results
         if numtype == 'oclc':
             results = [row for row in results if _is_oclc(row['disp'])]
         bibids.extend([{'bibid':row['bibid'], 'libcode':row['libcode']}
             for row in results])
-        if debug:
-            print 'bibids so far:\n%s' % bibids
     return bibids
 
 
