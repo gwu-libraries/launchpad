@@ -839,7 +839,7 @@ def is_eligible(holding):
     temp_loc = ''
     status = ''
     marc856 = holding.get('MFHD_DATA', {}).get('marc856list', [])
-    if not marc856 and not holding.get('ITEMS',[]):
+    if not marc856 and not holding.get('ITEMS', None):
         return True
     if holding.get('AVAILABILITY', {}):
         perm_loc = holding['AVAILABILITY']['PERMLOCATION'].upper() if holding['AVAILABILITY'].get('PERMLOCATION', '') else ''
