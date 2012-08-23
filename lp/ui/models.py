@@ -21,17 +21,36 @@ class Bib(object):
             author          (primary)
             addedentries    (additional authors and editors, etc.)
             edition
-            isbn            (the primary isbn associated with this item)
-            related_isbns   (a list of related isbns)
-            issn            (primary)
-            related_issns   (related)
-            oclc
             publisher
             pubplace
             pubyear
             langcode
             libcode
             formatcode
+            isbn            (primary isbn associated with this item)
+            isbns           (optional list for non-catalog data like Google)
+            issn            (primary)
+            issns           (optional)
+            oclc
+            related_stdnums (dictionary of related isbn, issn and oclc numbers,
+                with both normalized and display formats.
+                It has the following structure:
+                related_stdnums = {
+                    'isbn':[
+                            {'norm':'1234',
+                             'disp':'1234'},
+                            {'norm':'4567',
+                             'disp':'4567 (cloth)},],
+                    'issn':[
+                            {'norm':'1234 5678',
+                             'disp':'1234-5678'},
+                            {'norm':'4567 9876',
+                             'disp':'4567-9876'},],
+                    'oclc':[
+                            {'norm':'1234 5678',
+                             'disp':'1234-5678'},
+                            {'norm':'4567 9876',
+                             'disp':'4567-9876'},]}
         '''
         super(Bib, self).__setattr__('metadata', {})
         super(Bib, self).__setattr__('holdings', [])
@@ -117,41 +136,55 @@ class Bib(object):
 
     def get_bibids(self):
         bibids = [self.bibid] if self.bibid else []
-        bibids.extend(self.metadata.get('related_bibids', []))
+        bibids.extend(self.related_bibids)
         return bibids
 
     def add_bibids(self, new_bibids):
-        new_bibids = [nb for nb in new_bibids if nb not in self.get_bibids()]
-        self.metadata['related_bibids'].extend(new_bibids)
+        new_bibids = [nb for nb in new_bibids if nb not in self.bibids]
+        self.related_bibids.extend(new_bibids)
 
     def add_addedentries(self, new_names):
-        new_names = [nn for nn in new_names if nn not in self.get_added_entries() and not nn == self.author]
-        self.metadata['addedentries'].extend(new_names)
+        new_names = [nn for nn in new_names
+            if nn not in self.addedentries
+            and not nn == self.author]
+        self.addedentries.extend(new_names)
 
     def get_authors(self):
         authors = [self.author] if self.author else []
-        authors.extend(self.get_added_entries())
+        authors.extend(self.addedentries)
         return authors
 
     def add_isbns(self, new_isbns):
-        isbns = self.metadata.get('related_isbns', [])
-        new_isbns = [ni for ni in new_isbns if not ni == self.isbn and ni not in isbns]
-        self.metadata['related_isbns'] = isbns.extend(new_isbns)
+        isbns = set(self.isbns)
+        isbns.update([n for n in new_isbns if n != self.isbn])
+        self.isbns = list(isbns)
 
     def get_isbns(self):
-        isbns = [self.isbn] if self.isbn else []
-        isbns.extend(self.metadata.get('related_isbns', []))
-        return isbns
+        isbns = set([self.isbn]) if self.isbn else set()
+        if self.metadata.get('related_stdnums', {}).get('isbn', []):
+            isbns.update(i['disp'] for i in self.related_stdnums['isbn'])
+        else:
+            isbns.update(self.metadata.get('isbns', []))
+        return list(isbns)
 
     def add_issns(self, new_issns):
-        issns = self.metadata.get('related_issns', [])
-        new_issns = [ni for ni in new_issns if not ni == self.issn and ni not in issns]
-        self.metadata['related_issns'] = issns.extend(new_issns)
+        issns = set(self.issns)
+        issns.update([n for n in new_issns if n != self.issn])
+        self.issns = list(issns)
 
     def get_issns(self):
-        issns = [self.issn] if self.issn else []
-        issns.extend(self.metadata.get('related_issns', []))
-        return issns
+        issns = set([self.issn]) if self.issn else set()
+        if self.metadata.get('related_stdnums', {}).get('issn', []):
+            issns.update(i['disp'] for i in self.related_stdnums['issn'])
+        else:
+            issns.update(self.metadata.get('issns', []))
+        return list(issns)
+
+    def get_oclcs(self):
+        oclcs = set([self.oclc]) if self.oclc else set()
+        oclcs.update(i['disp'] for i in
+            self.metadata.get('related_stdnums', {}).get('oclc', []))
+        return list(oclcs)
 
     def get_language(self):
         try:
@@ -269,7 +302,7 @@ class Holding(object):
                 links.append(link)
             return links
         except:
-            return [] 
+            return []
 
     #866 $a data (repeatable)
     def get_textual(self):
@@ -283,7 +316,7 @@ class Holding(object):
 class Item(object):
 
     def __init__(self, metadata={}):
-        
+
         '''
         self.metadata is a dictionary with the following keys:
             itemid
@@ -299,6 +332,7 @@ class Item(object):
             chron
         '''
         super(Item, self).__setattr__('metadata', {})
+        self.load_metadata(metadata)
 
     def __getattr__(self, name):
         if name.startswith('get_'):
@@ -321,9 +355,16 @@ class Item(object):
             else:
                 self.metadata[name] = value
 
+    def load_metadata(self, metadata):
+        try:
+            for key in metadata:
+                self.metadata[key] = metadata[key] if metadata[key] else ''
+        except:
+            pass
+
     def get_loc(self):
         loc = self.temploc if self.temploc else self.permloc
-        if loc[2] == ':':
+        if loc and loc[2] == ':':
             loc = loc[3:].strip()
         return loc
 
@@ -335,12 +376,12 @@ class Item(object):
         if self.libcode in settings.INELIGIBLE_LIBRARIES:
             return False
         for loc in settings.INELIGIBLE_PERM_LOCS:
-            if loc in perm_loc:
+            if loc in self.permloc:
                 return False
         if 'WRLC' in self.temploc or 'WRLC' in self.permloc:
             return True
         for loc in settings.INELIGIBLE_TEMP_LOCS:
-            if loc in self.temp_loc:
+            if loc in self.temploc:
                 return False
         for status in settings.INELIGIBLE_STATUS:
             if status == self.status[:len(status)]:

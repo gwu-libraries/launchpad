@@ -26,7 +26,7 @@ SELECT bib_text.bib_id AS bibid,
        isbn,
        issn,
        imprint,
-       publisher, 
+       publisher,
        pub_place AS pubplace,
        publisher_date AS pubyear,
        bib_format AS formatcode,
@@ -40,7 +40,7 @@ AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
-    cursor.execute(query, [bibid]*2)
+    cursor.execute(query, [bibid] * 2)
     data = _make_dict(cursor, first=True)
     raw_marc = str(data.pop('marcblob'))
     bib = Bib(metadata=data, raw_marc=raw_marc)
@@ -82,9 +82,9 @@ AND bib_master.library_id=library.library_id"""
 
 
 def related_stdnums(bibid, debug=False):
-    output = {'isbn':[], 'issn':[], 'oclc':[]}
+    output = {'isbn': [], 'issn': [], 'oclc': []}
     query = '''
-SELECT normal_heading, 
+SELECT normal_heading,
        display_heading,
        index_code
 FROM bib_index
@@ -104,7 +104,8 @@ ORDER BY normal_heading'''
     if debug:
         print 'RESULTS:\n%s\n' % results
     for item in results:
-        dictionary = {'norm':item['normal_heading'], 'disp':item['display_heading']}
+        dictionary = {'norm': item['normal_heading'],
+                      'disp': item['display_heading']}
         if item['index_code'] in settings.INDEX_CODES['isbn']:
             output['isbn'].append(dictionary)
         elif item['index_code'] in settings.INDEX_CODES['issn']:
@@ -133,11 +134,15 @@ def _is_oclc(num):
 
 
 def related_bibids(stdnums, debug=False):
+    if debug:
+        print 'stdnums: %s\n' % stdnums
     for key in stdnums.keys():
         if not stdnums[key]:
             stdnums.pop(key)
+    if debug:
+        print 'stdnums stripped: %s\n' % stdnums
     query = """
-SELECT DISTINCT bib_index.bib_id AS bibid, 
+SELECT DISTINCT bib_index.bib_id AS bibid,
        library.library_name AS libcode,
        bib_index.display_heading AS disp
 FROM bib_index, library, bib_master
@@ -158,9 +163,13 @@ AND bib_index.normal_heading IN (
 ORDER BY bib_index.bib_id"""
     bibids = []
     for numtype in stdnums:
-        query = query % (_in_clause(settings.INDEX_CODES[numtype]), 
-                         _in_clause(settings.INDEX_CODES[numtype]), 
-                         _in_clause(stdnums))
+        codes = settings.INDEX_CODES[numtype]
+        nums = [n['norm'] for n in stdnums[numtype]]
+        if debug:
+            print 'codes: %s\nnums: %s\n' % (codes, nums)
+        query = query % (_in_clause(codes),
+                         _in_clause(codes),
+                         _in_clause(nums))
         if debug:
             print 'QUERY:\n%s\n' % query
         cursor = connection.cursor()
@@ -172,6 +181,8 @@ ORDER BY bib_index.bib_id"""
             results = [row for row in results if _is_oclc(row['disp'])]
         bibids.extend([{'bibid':row['bibid'], 'libcode':row['libcode']}
             for row in results])
+        if debug:
+            print 'bibids so far:\n%s' % bibids
     return bibids
 
 
@@ -210,8 +221,8 @@ ORDER BY library.library_name"""
 
 def items(mfhdid):
     query = '''
-SELECT DISTINCT display_call_no AS callnum, 
-       item_status_desc AS status, 
+SELECT DISTINCT display_call_no AS callnum,
+       item_status_desc AS status,
        item_status.item_status AS statuscode,
        permLocation.location_display_name as permloc,
        tempLocation.location_display_name as temploc,
@@ -228,14 +239,16 @@ JOIN mfhd_master ON mfhd_master.mfhd_id = bib_mfhd.mfhd_id
 JOIN mfhd_item on mfhd_item.mfhd_id = mfhd_master.mfhd_id
 JOIN item ON item.item_id = mfhd_item.item_id
 JOIN item_status ON item_status.item_id = item.item_id
-JOIN item_status_type ON item_status.item_status = item_status_type.item_status_type
+JOIN item_status_type
+    ON item_status.item_status = item_status_type.item_status_type
 JOIN location permLocation ON permLocation.location_id = item.perm_location
-LEFT OUTER JOIN location tempLocation ON tempLocation.location_id = item.temp_location
+LEFT OUTER JOIN location tempLocation
+    ON tempLocation.location_id = item.temp_location
 WHERE bib_mfhd.mfhd_id = %s
 ORDER BY itemid'''
     cursor = connection.cursor()
     cursor.execute(query, [mfhdid])
-    results =  _make_dict(cursor)
+    results = _make_dict(cursor)
     items = []
     for record in results:
         item = Item(metadata=record)
@@ -249,6 +262,7 @@ ORDER BY itemid'''
         else:
             items.append(item)
     return items
+
 
 def bibblob(bibid):
     query = """
@@ -266,7 +280,7 @@ SELECT wrlcdb.getMFHDBlob(%s) AS mfhdblob
 FROM mfhd_master
 WHERE mfhd_id = %s"""
     cursor = connection.cursor()
-    cursor.execute(query, [mfhdid]*2)
+    cursor.execute(query, [mfhdid] * 2)
     return cursor.fetchone()
 
 
