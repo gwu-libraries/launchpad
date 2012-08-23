@@ -1137,7 +1137,7 @@ def get_illiad_link(bib_data):
         else:
             title = bib_data['TITLE']
         if bib_data.get('ISSN',''):
-            query_args['rft_issn'] = bib_data['ISSN']
+            query_args['issn'] = bib_data['ISSN']
         query_args['rft.jtitle'] = title.encode('ascii','replace') 
         query_args['sid'] = settings.ILLIAD_SID    
     else:
