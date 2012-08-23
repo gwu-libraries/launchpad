@@ -194,7 +194,10 @@ AND bib_index.normal_heading != 'OCOLC'
 AND bib_index.normal_heading IN (
     SELECT bib_index.normal_heading
     FROM bib_index
-    WHERE bib_id IN (
+    WHERE bib_index.index_code IN """
+    query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
+    query += """
+    AND bib_id IN (
         SELECT DISTINCT bib_index.bib_id
         FROM bib_index
         WHERE bib_index.index_code IN """
