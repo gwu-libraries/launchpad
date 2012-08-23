@@ -58,6 +58,8 @@ def item(request, bibid):
             'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
             'link_resolver': settings.LINK_RESOLVER,
             'enable_humans': settings.ENABLE_HUMANS,
+            'audio_tags': settings.STREAMING_AUDIO_TAGS,
+            'video_tags': settings.STREAMING_VIDEO_TAGS,
             })
     except DatabaseError, e:
         from datetime import datetime
@@ -83,6 +85,8 @@ def item_bib(request, bibid):
         'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
         'link_resolver': settings.LINK_RESOLVER,
         'enable_humans': settings.ENABLE_HUMANS,
+        'audio_tags': settings.STREAMING_AUDIO_TAGS,
+        'video_tags': settings.STREAMING_VIDEO_TAGS,
         })
 
 
@@ -114,6 +118,8 @@ def non_wrlc_item(request, num, num_type):
        'link': '',
        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
        'link_resolver': settings.LINK_RESOLVER,
+       'audio_tags': settings.STREAMING_AUDIO_TAGS,
+       'video_tags': settings.STREAMING_VIDEO_TAGS,
        })
 
 
