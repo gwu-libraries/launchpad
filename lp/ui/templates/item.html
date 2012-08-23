@@ -252,7 +252,7 @@ function showmore(id)
                             {% if not forloop.last %}<hr />{% endif %}
                         {% endfor %}
                     {% else %}
-                        {%if item.ITEM_STATUS_DESC = 'Not Charged'%}
+                        {%if item.ITEM_STATUS_DESC == 'Not Charged' %}
                             <span style='color: green'>Available</span>
                             <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if item.DISPLAY_CALL_NO %}call={{ item.DISPLAY_CALL_NO|urlencode }}{% endif %}&amp;{% if item.TRIMMED_LOCATION_DISPLAY_NAME %}loc={{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream|urlencode }}{% endif %}&amp;title={{ bib.TITLE|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
                         {%else%}
@@ -327,6 +327,8 @@ function showmore(id)
                             <span class='off-site'>Off-site </span>
                         {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
                             <span style='color: green'>Available</span>
+                            <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if holding.DISPLAY_CALL_NO %}call={{ holding.DISPLAY_CALL_NO|urlencode }}{% endif %}&amp;{% if holding.TRIMMED_LOCATION_DISPLAY_NAME %}loc={{ holding.TRIMMED_LOCATION_DISPLAY_NAME|noscream|urlencode }}{% endif %}&amp;title={{ bib.TITLE|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
+
                         {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
                             <span class='off-site'>Off-site </span>
                         {% else %}
