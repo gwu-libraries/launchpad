@@ -101,6 +101,7 @@ AND bib_master.suppress_in_opac='N'"""
         if ind == -1:
             ind = settings_TITLE_CHARS		
         bib['TITLE_BRIEF']=brief[0:ind]
+        bib['BRIEF_LENGTH'] = len(bib['TITLE_ALL']) - len(bib['TITLE_BRIEF'])
     try:
         language = pycountry.languages.get(bibliographic=bib['LANGUAGE'])
         bib['LANGUAGE_DISPLAY'] = language.name

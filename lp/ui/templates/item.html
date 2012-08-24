@@ -86,9 +86,10 @@ function showmore(id)
                 {% if bib.CJK_INFO.TITLE %}
                     <span itemprop="name">{{ bib.CJK_INFO.TITLE }}</span> <br />
                 {% endif %}
-                {%if bib.TITLE_ALL|length <= title_chars%}
+                {%if bib.TITLE_ALL|length <= title_chars %}
                     <span itemprop="name">{{bib.TITLE_ALL}}</span><br/>
-                {%else%}
+                {%endif%}
+                {%if bib.TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH and  bib.BRIEF_LENGTH > title_leftover_chars%}
                     <div id="brief-1" style="display:block">
                         {{bib.TITLE_BRIEF}}
                     </div>
@@ -98,6 +99,8 @@ function showmore(id)
                     <div id="toggle-1"> 
                         <a href='javascript:showmore("1")';>More...</a>
                     </div>
+                {%else%}
+                    <span itemprop="name">{{bib.TITLE_ALL}}</span><br/>
                 {% endif %}
                 </h1>
                 </span>
