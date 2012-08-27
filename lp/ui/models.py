@@ -7,60 +7,16 @@ import pymarc
 
 class Bib(object):
 
-    def __init__(self, metadata={}, raw_marc=None, holdings=[]):
+    def __init__(self, metadata={}, raw_marc='', holdings=[]):
 
-        '''
-        self.metadata is used for indexed metadata in catalog databases as well
-        as metadata gathered from various bibliographic APIs such as Worldcat
-        and Google Books. It should be a dictionary using the following key
-        names (note that no field is required, this list is provided only to
-        ensure the key names match:
-            bibid           (catalog record)
-            related_bibids  (list of related catalog records)
-            title
-            author          (primary)
-            addedentries    (additional authors and editors, etc.)
-            edition
-            publisher
-            pubplace
-            pubyear
-            langcode
-            libcode
-            formatcode
-            isbn            (primary isbn associated with this item)
-            isbns           (optional list for non-catalog data like Google)
-            issn            (primary)
-            issns           (optional)
-            oclc
-            related_stdnums (dictionary of related isbn, issn and oclc numbers,
-                with both normalized and display formats.
-                It has the following structure:
-                related_stdnums = {
-                    'isbn':[
-                            {'norm':'1234',
-                             'disp':'1234'},
-                            {'norm':'4567',
-                             'disp':'4567 (cloth)},],
-                    'issn':[
-                            {'norm':'1234 5678',
-                             'disp':'1234-5678'},
-                            {'norm':'4567 9876',
-                             'disp':'4567-9876'},],
-                    'oclc':[
-                            {'norm':'1234 5678',
-                             'disp':'1234-5678'},
-                            {'norm':'4567 9876',
-                             'disp':'4567-9876'},]}
-        '''
         super(Bib, self).__setattr__('metadata', {})
         super(Bib, self).__setattr__('holdings', [])
         super(Bib, self).__setattr__('marc', None)
-        if metadata:
-            self.load_metadata(metadata)
+        self.set_metadata(metadata)
         if holdings:
-            self.load_holdings(holdings)
+            self.set_holdings(holdings)
         if raw_marc:
-            self.load_marc(raw_marc)
+            self.set_marc(raw_marc)
 
     '''
     The following methods allow for convenient access to bibliographic metadata
@@ -80,6 +36,7 @@ class Bib(object):
             return self.metadata[name]
         except:
             return None
+            #TODO: do something on error
 
     def __setattr__(self, name, value):
         if name in self.__dict__:
@@ -91,31 +48,65 @@ class Bib(object):
                 function(value)
             else:
                 self.metadata[name] = value
-    '''
-    Initial loading functions, provided as conveniences. This data can be
-    loaded during object creation. These functions overwrite previous data.
-    '''
-    def load_marc(self, raw_marc):
+
+    def set_marc(self, raw_marc):
         try:
             self.marc = pymarc.record.Record(data=raw_marc)
         except:
-            self.marc = None
-            #TODO: throw error
+            raise
+            #TODO: do something with error
 
-    def load_holdings(self, holdings):
-        self.holdings = []
-        self.add_holdings(holdings)
+    def set_holdings(self, new_holdings):
+        for h in new_holdings:
+            if not isinstance(h, Holding):
+                return None
+                #TODO: raise exception
+        self.holdings = new_holdings
 
-    def load_metadata(self, metadata):
+    def add_holdings(self, new_holdings):
+        holdings = self.holdings.extend(new_holdings)
+        self.set_holdings(holdings)
+
+    def set_metadata(self, new_metadata):
+        '''self.metadata is used for indexed metadata in catalog databases as
+        well as metadata gathered from various bibliographic APIs such as
+        Worldcat and Google Books.'''
+        template = {
+            'bibid': '',
+            'related_bibids': [],
+            'title': '',
+            'author': '',
+            'addedentries': [],
+            'edition': '',
+            'publisher': '',
+            'pubplace': '',
+            'pubyear': '',
+            'langcode': '',
+            'libcode': '',
+            'formatcode': '',
+            'isbn': '',
+            'isbns': [],
+            'issn': '',
+            'issns': [],
+            'oclc': '',
+            'related_stdnums': {'isbn': [], 'issn': [], 'oclc': []}
+            }
+        '''related_stdnums is a dictionary of related isbn, issn and oclc
+        numbers, with both normalized and display formats. Each has the
+        following structure:
+            'isbn':[{'norm':'1234', 'disp':'1234'},
+                    {'norm':'4567', 'disp':'4567 (cloth)}]'''
         try:
-            for key in metadata:
-                self.metadata[key] = metadata[key]
+            for key in new_metadata:
+                if new_metadata[key]:
+                    template[key] = new_metadata[key]
+            self.metadata = template
         except:
-            self.metadata = {}
-            #TODO: throw error
+            raise
+            #TODO: do something with error
 
     '''
-    getter, setter, and adder functions
+    getter, setter, and adder functions for metadata
     The getter and setter functions are called simply using the object's dot
     operator (ex: mybib.bibids or mybib.isbns = ['1234','3450','6294']).
     The adder functions ensure no duplicates when adding to a list attribute.
@@ -126,28 +117,26 @@ class Bib(object):
         mybib.bibids            (primary at front of list)
         mbbib.related_bibids    (list does not include primary)
     '''
-    def add_holdings(self, new_holdings):
-        #TODO: add type checking
-        ids = [holding.id for holding in self.holdings]
-        for new_holding in new_holdings:
-            if new_holding.id not in ids:
-                self.holdings.append(new_holding)
-                ids.append(new_holding.id)
-
     def get_bibids(self):
-        bibids = [self.bibid] if self.bibid else []
-        bibids.extend(self.related_bibids)
+        bibids = self.metadata['related_bibids']
+        if self.bibid not in bibids:
+            bibids[:0] = [self.bibid]
         return bibids
 
+    def set_bibids(self, new_bibids):
+        new_bibids = set(new_bibids)
+        self.metadata['related_bibids'] = list(new_bibids)
+
     def add_bibids(self, new_bibids):
-        new_bibids = [nb for nb in new_bibids if nb not in self.bibids]
-        self.related_bibids.extend(new_bibids)
+        bibids = set(self.metadata['related_bibids'])
+        bibids.update(new_bibids)
+        self.metadata['related_bibids'] = list(bibids)
 
     def add_addedentries(self, new_names):
         new_names = [nn for nn in new_names
             if nn not in self.addedentries
             and not nn == self.author]
-        self.addedentries.extend(new_names)
+        self.metadata['addedentries'].extend(new_names)
 
     def get_authors(self):
         authors = [self.author] if self.author else []
@@ -208,7 +197,7 @@ class Bib(object):
         except:
             return self.libcode
 
-    def get_altscripts(self, asdict=False):
+    def get_altscripts(self, as_list=True):
         alts = {}
         if self.marc:
             fields = self.marc.get_fields('880')
@@ -227,6 +216,8 @@ class Bib(object):
                     if not alts.get('addedentries', []):
                         alts['addedentries'] = []
                     alts['addedentries'].append(field['a'])
+        if not as_list:
+            return [alts[key] for key in alts]
         return alts
 
     def get_openurl(self):
@@ -235,26 +226,15 @@ class Bib(object):
 
 class Holding(object):
 
-    def __init__(self, metadata={}, raw_marc='', items=[]):
+    def __init__(self, metadata={}, raw_marc=None, items=[]):
 
-        '''
-        self.metadata should be a dictionary containing the following keys:
-            bibid
-            mfhdid
-            libcode
-            locid
-            loc
-            callnum
-        '''
         super(Holding, self).__setattr__('metadata', {})
         super(Holding, self).__setattr__('items', [])
         super(Holding, self).__setattr__('marc', None)
-        if metadata:
-            self.load_metadata(metadata)
-        if items:
-            self.load_items(items)
+        self.set_metadata(metadata)
+        self.set_items(items)
         if raw_marc:
-            self.load_marc(raw_marc)
+            self.set_marc(raw_marc)
 
     def __getattr__(self, name):
         if name.startswith('get_'):
@@ -277,20 +257,40 @@ class Holding(object):
             else:
                 self.metadata[name] = value
 
-    def load_marc(self, raw_marc):
+    def set_marc(self, raw_marc):
         try:
             self.marc = pymarc.record.Record(data=raw_marc)
         except:
             #TODO: flesh out error catching
-            pass
+            raise
 
-    def load_items(self, items):
-        #TODO: add error catching
+    def set_items(self, items):
+        for i in items:
+            if not isinstance(i, Item):
+                return None
+                #TODO: raise error
         self.items = items
 
-    def load_metadata(self, metadata):
-        #TODO:add error catching
-        self.metadata = metadata
+    def add_items(self, new_items):
+        for item in new_items:
+            if not isinstance(item, Item):
+                return None
+            #TODO: raise error
+        self.items.append(new_items)
+
+    def set_metadata(self, new_metadata):
+        '''self.metadata is a dictionary containing the following keys'''
+        template = {
+            'bibid': '',
+            'mfhdid': '',
+            'libcode': '',
+            'locid': '',
+            'loc': '',
+            'callnum': ''}
+        for key in new_metadata:
+            if new_metadata[key]:
+                template[key] = new_metadata[key]
+        self.metadata = template
 
     # 852 $z data (possibly repeatable, but unlikely, so using first hit)
     def get_pubnote(self):
@@ -326,22 +326,8 @@ class Item(object):
 
     def __init__(self, metadata={}):
 
-        '''
-        self.metadata is a dictionary with the following keys:
-            itemid
-            mfhdid
-            bibid
-            enum
-            status
-            statuscode
-            statusdate
-            temploc
-            permloc
-            libcode
-            chron
-        '''
         super(Item, self).__setattr__('metadata', {})
-        self.load_metadata(metadata)
+        self.set_metadata(metadata)
 
     def __getattr__(self, name):
         if name.startswith('get_'):
@@ -364,12 +350,28 @@ class Item(object):
             else:
                 self.metadata[name] = value
 
-    def load_metadata(self, metadata):
+    def set_metadata(self, metadata):
+        ''' self.metadata is a dictionary with the following keys'''
+        template = {
+            'itemid': '',
+            'mfhdid': '',
+            'bibid': '',
+            'enum': '',
+            'status': '',
+            'statuscode': '',
+            'statusdate': '',
+            'temploc': '',
+            'permloc': '',
+            'libcode': '',
+            'chron': ''}
         try:
             for key in metadata:
-                self.metadata[key] = metadata[key] if metadata[key] else ''
+                if metadata[key]:
+                    template[key] = metadata[key]
+            self.metadata = template
         except:
-            pass
+            raise
+            #TODO: do something with error
 
     def get_loc(self):
         loc = self.temploc if self.temploc else self.permloc

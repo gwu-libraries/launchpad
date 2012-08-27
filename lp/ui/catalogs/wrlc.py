@@ -1,23 +1,17 @@
-import pycountry
-from PyZ3950 import zoom
-import urllib
-import copy
 import re
 
 from django.conf import settings
-from django.db import connection, transaction
-from django.utils.encoding import smart_str, smart_unicode
+from django.db import connection
 
-from ui.templatetags.launchpad_extras import cjk_info
-from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc, clean_issn
+from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc
 from ui.models import Bib, Holding, Item
 
 
-'''
-Primary function for retrieving a record from the Voyager DB using the Bib
-object type
-'''
 def bib(bibid, expand=True):
+    '''
+    Primary function for retrieving a record from the Voyager DB using the
+    Bib object type
+    '''
     query = """
 SELECT bib_text.bib_id AS bibid,
        title,
@@ -39,21 +33,19 @@ WHERE bib_text.bib_id=%s
 AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
-    cursor = connection.cursor()
-    cursor.execute(query, [bibid] * 2)
-    data = _make_dict(cursor, first=True)
+    data = _ask_oracle(query, params=[bibid, bibid], first=True)
     raw_marc = str(data.pop('marcblob'))
     bib = Bib(metadata=data, raw_marc=raw_marc)
     return bib
 
 
-'''
-This function takes various standard numbers and returns a WRLC bibid number.
-It can accept: isbn, issn, oclc, gtbibid, gmbibid
-If there are multiple bibids it gives preference to the preferred library (as
-specified in the settings file)
-'''
 def bibid(num, num_type):
+    '''
+    This function takes various standard numbers and returns a WRLC bibid
+    number. It can accept: isbn, issn, oclc, gtbibid, gmbibid. If there are
+    multiple bibids it gives preference to the preferred library (as
+    specified in the settings file).
+    '''
     num = _normalize_num(num, num_type)
     query = """
 SELECT bib_index.bib_id AS  bibid,
@@ -71,17 +63,17 @@ AND bib_master.library_id=library.library_id"""
     else:
         index_codes = _in_clause(settings.INDEX_CODES[num_type])
     query = query % (index_codes, num)
-    cursor = connection.cursor()
-    cursor.execute(query, [])
-    bibs = _make_dict(cursor)
+    bibs = _ask_oracle(query)
     if bibs:
         for bib in bibs:
             if bib['library_code'] == settings.PREF_LIB:
                 return bib['bibid']
         return bibs[0]['bibid']
+    else:
+        return None
 
 
-def related_stdnums(bibid, debug=False):
+def related_stdnums(bibid):
     output = {'isbn': [], 'issn': [], 'oclc': []}
     query = '''
 SELECT normal_heading,
@@ -96,13 +88,7 @@ ORDER BY normal_heading'''
     for numtype in output:
         index_codes.extend(settings.INDEX_CODES[numtype])
     query = query % (_in_clause(index_codes), bibid)
-    if debug:
-        print 'QUERY:\n%s\n' % query
-    cursor = connection.cursor()
-    cursor.execute(query, [])
-    results = _make_dict(cursor)
-    if debug:
-        print 'RESULTS:\n%s\n' % results
+    results = _ask_oracle(query)
     for item in results:
         dictionary = {'norm': item['normal_heading'],
                       'disp': item['display_heading']}
@@ -151,7 +137,7 @@ AND bib_index.index_code IN %s
 AND bib_index.normal_heading IN (
     SELECT bib_index.normal_heading
     FROM bib_index
-    WHERE bib_index.index_code IN %s
+    WHERE index_code IN %s
     AND bib_id IN (
         SELECT DISTINCT bib_index.bib_id
         FROM bib_index
@@ -166,14 +152,14 @@ ORDER BY bib_index.bib_id"""
                          _in_clause(codes),
                          _in_clause(codes),
                          _in_clause(nums))
-        cursor = connection.cursor()
-        cursor.execute(query, [])
-        results = _make_dict(cursor)
+        results = _ask_oracle(query)
         if numtype == 'oclc':
             results = [row for row in results if _is_oclc(row['disp'])]
-        bibids.extend([{'bibid':row['bibid'], 'libcode':row['libcode']}
-            for row in results])
-    return bibids
+        for row in results:
+            if not bibids or row['bibid'] != bibids[-1]['bibid']:
+                bibids.append({'bibid': row['bibid'],
+                    'libcode': row['libcode']})
+        return bibids
 
 
 def holdings(bibids):
@@ -198,14 +184,11 @@ AND bib_mfhd.bib_id = bib_master.bib_id
 AND bib_master.library_id = library.library_id
 ORDER BY library.library_name"""
     query = query % _in_clause(bibids)
-    cursor = connection.cursor()
-    cursor.execute(query, [])
-    results = _make_dict(cursor)
+    results = _ask_oracle(query)
     holdings = []
     for record in results:
         marcblob = str(record.pop('marcblob'))
-        holding = Holding(metadata=record, raw_marc=marcblob)
-        holdings.append(holding)
+        holdings.append(Holding(metadata=record, raw_marc=marcblob))
     return holdings
 
 
@@ -236,9 +219,7 @@ LEFT OUTER JOIN location tempLocation
     ON tempLocation.location_id = item.temp_location
 WHERE bib_mfhd.mfhd_id = %s
 ORDER BY itemid'''
-    cursor = connection.cursor()
-    cursor.execute(query, [mfhdid])
-    results = _make_dict(cursor)
+    results = _ask_oracle(query, params=[mfhdid])
     items = []
     for record in results:
         item = Item(metadata=record)
@@ -272,6 +253,12 @@ WHERE mfhd_id = %s"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhdid] * 2)
     return cursor.fetchone()
+
+
+def _ask_oracle(query, params=[], first=False):
+    cursor = connection.cursor()
+    cursor.execute(query, params)
+    return _make_dict(cursor, first)
 
 
 def _make_dict(cursor, first=False):

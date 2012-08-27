@@ -7,7 +7,8 @@ from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
-from ui import voyager, apis
+from ui import voyager, apis, models
+from ui.catalogs import wrlc
 from ui.sort import libsort, availsort, elecsort, splitsort
 
 
@@ -31,28 +32,31 @@ def _openurl_dict(params):
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
-def item(request, bibid):
-    bib = voyager.get_bib_data(bibid)
+def item(request, bibid, expand=True):
+    bib = wrlc.bib(bibid)
     if not bib:
         return render(request, '404.html', {'num': bibid,
             'num_type': 'BIB ID'}, status=404)
-    bib['openurl'] = _openurl_dict(request.GET)
-    # Ensure bib data is ours if possible
-    if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
-        for alt_bib in bib['BIB_ID_LIST']:
-            if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
-                return item(request, alt_bib['BIB_ID'])
-    holdings = voyager.get_holdings(bib)
-    ours, theirs, shared = splitsort(holdings)
-    holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) \
-        + libsort(elecsort(availsort(theirs), rev=True))
+    bib.openurl = _openurl_dict(request.GET)
+    if expand:
+        bib.related_stdnums = wrlc.related_stdnums(bib.bibid)
+        related_bibids = wrlc.related_bibids(bib.related_stdnums)
+        bib.related_bibids = [b['bibid'] for b in related_bibids]
+        #replace MARC with ours
+        if bib.libcode != settings.PREF_LIB:
+            for b in related_bibids:
+                if b['libcode'] == settings.PREF_LIB:
+                    bib.marc = str(wrlc.bibblob(b['bibid'])
+                    break
+    holdings = wrlc.holdings(bib.bibids)
+    for holding in bib.holdings:
+        holding.items = wrlc.items(holding.mfhdid)
+    #TODO: add sorting
     return render(request, 'item.html', {
         'bibid': bibid,
         'bib': bib,
         'debug': settings.DEBUG,
         'title_chars': settings.TITLE_CHARS,
-        'holdings': holdings,
-        'link': bib.get('LINK', '')[9:],
         'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
         'link_resolver': settings.LINK_RESOLVER,
         'enable_humans': settings.ENABLE_HUMANS,
