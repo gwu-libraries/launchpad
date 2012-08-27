@@ -45,7 +45,7 @@ class Command(BaseCommand):
         fp_index.write(line)
         row = cursor.fetchone()
         while row:
-            line = '<url><loc>%s/item/%s/bib</loc></url>\n' % \
+            line = '<url><loc>%s/item/%s</loc></url>\n' % \
                 (settings.SITEMAPS_BASE_URL, row[0])
             fp.write(line)
             if i == 50000:

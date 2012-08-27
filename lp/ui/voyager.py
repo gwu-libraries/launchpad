@@ -1,8 +1,9 @@
-import pycountry 
-from PyZ3950 import zoom
-import urllib
 import copy
- 
+import urllib
+
+import pycountry
+from PyZ3950 import zoom
+
 from django.conf import settings
 from django.db import connection, transaction
 from django.utils.encoding import smart_str, smart_unicode

@@ -62,34 +62,12 @@ def item(request, bibid):
             'audio_tags': settings.STREAMING_AUDIO_TAGS,
             'video_tags': settings.STREAMING_VIDEO_TAGS,
             })
-    except DatabaseError, e:
+    except DatabaseError:
         from datetime import datetime
         if datetime.now().hour == 3:
             return render(request, '503.html', status=503)
         else:
             raise
-
-
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
-def item_bib(request, bibid):
-    bib = voyager.get_bib_data(bibid, expand_ids=False)
-    if not bib:
-        return render(request, '404.html', {'num': bibid,
-            'num_type': 'BIB ID'}, status=404)
-    # Don't bother expanding bibids; we don't need correct holdings
-    return render(request, 'item.html', {
-        'bibid': bibid,
-        'bib': bib,
-        'debug': settings.DEBUG,
-        'title_chars': settings.TITLE_CHARS,
-        'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
-        'link': bib.get('LINK', '')[9:],
-        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-        'link_resolver': settings.LINK_RESOLVER,
-        'enable_humans': settings.ENABLE_HUMANS,
-        'audio_tags': settings.STREAMING_AUDIO_TAGS,
-        'video_tags': settings.STREAMING_VIDEO_TAGS,
-        })
 
 
 def _date_handler(obj):

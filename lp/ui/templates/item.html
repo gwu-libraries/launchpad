@@ -393,7 +393,7 @@ View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|esca
 ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a>
 &nbsp;
     {% if link_resolver.base_url and link_resolver.name %}
-    (<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}&{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
+    (<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}&amp;{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
 &nbsp;
     {% endif %}
 {% endif %}

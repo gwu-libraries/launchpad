@@ -1,4 +1,4 @@
-import os.path
+import os
 import sys
 
 DEBUG = True
@@ -35,18 +35,16 @@ TEMPLATE_DIRS = (
 
 
 LIB_LOOKUP = {
-    'AU': 'American',
     'AL': 'Washington Law (American)',
+    'AU': 'American',
     'CU': 'Catholic',
-    'LI': 'Catholic',
+    'DA': 'Dahlgren Medical (Georgetown)',
     'DC': 'UDC',
     'E-GovDoc': 'WRLC',
     'E-Resources': 'WRLC',
     'GA': 'Gallaudet',
     'GM': 'George Mason',
-    'LL': 'George Mason',
     'GT': 'Georgetown',
-    'DA': 'Dahlgren Medical (Georgetown)',
     'GW': 'George Washington',
     # HD is Himmelfarb-Dahlgren items jointly held in storage
     'HD': 'Himmelfarb-Dahlgren',
@@ -55,6 +53,8 @@ LIB_LOOKUP = {
     'HS': 'Howard Health Sciences',
     'HU': 'Howard',
     'JB': 'Jacob Burns Law (George Washington)',
+    'LI': 'Catholic',
+    'LL': 'George Mason',
     'LL': 'Catholic',
     'MU': 'Marymount',
     'TR': 'Trinity',
@@ -71,9 +71,11 @@ Z3950_SERVERS = {
     }
 }
 
-INDEX_CODES = {'isbn': ['020N', '020A', 'ISB3'],
-               'issn': ['022A', '022Z', '022Y'],
-               'oclc': ['0350']}
+INDEX_CODES = {
+    'isbn': ['020N', '020A', 'ISB3'],
+    'issn': ['022A', '022Z', '022Y'],
+    'oclc': ['0350'],
+    }
 
 
 # Preferred library for bib record and top of the holdings list
@@ -87,7 +89,6 @@ BOTTOM_LIBS = []
 # Eligibility Options
 
 INELIGIBLE_LIBRARIES = ['JB', 'HL', 'HS', 'AL']
-
 
 INELIGIBLE_PERM_LOCS = ['REFERENCE', 'REF', 'RESERVE', 'NON-CIRC', 
     'RESTRICTED', 'ONLY', 'IN LIBRARY', 'MICRO', 'ARCHIVES', 'KIEV', 'SPEC',
@@ -106,20 +107,22 @@ INELIGIBLE_STATUS = ['RENEWED', 'MISSING', 'LOST', 'OVERDUE', 'TRANSIT',
     'LIB USE ONLY']
                      
 SCREAMING_LOCATIONS = [
-    ('GELMAN', 'Gelman'),
-    ('LAU', 'Lauinger'),
     # NOTE: 'LAU' must preceed 'AU'
+    ('LAU', 'Lauinger'),
     ('AU', 'American'),
-    ('VAN NESS', 'Van Ness'),
-    ('MARYMOUNT', 'Marymount'),    
+    ('FLOOR', 'floor'),
+    ('GELMAN', 'Gelman'),
+    ('GROUND', 'ground'),    
     ('LOWER LEVEL', 'lower level'),
-    ('UNBOUND', 'unbound'),
+    ('MARYMOUNT', 'Marymount'),    
     ('MT VERNON CAMPUS', 'Mt. Vernon campus'),
     ('SCIENCE', 'Science'),    
-    ('FLOOR', 'floor'),
-    ('GROUND', 'ground'),    
     ('Stacks', 'stacks'),
+    ('UNBOUND', 'unbound'),
+    ('VAN NESS', 'Van Ness'),
     ]
+
+ILLIAD_URL = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
 
 ILLIAD_SID = 'GWfindit'
 
@@ -127,8 +130,12 @@ TITLE_CHARS = 255
 
 TITLE_LEFTOVER_CHARS = 5
 
-MARC_245_SUBFIELDS=['$a','$b','$c','$f','$g','$h','$k','$n','$p','$s','$6','$8']
+MARC_245_SUBFIELDS = ['$a', '$b', '$c', '$f', '$g', '$h', '$k', '$n',
+    '$p', '$s', '$6', '$8']
 
+STREAMING_AUDIO_TAGS = ['GW: Streaming Audio']
+
+STREAMING_VIDEO_TAGS = ['GW: Streaming Video']
 
 CACHES = {
     'default': {
@@ -167,11 +174,6 @@ ENABLE_SITEMAPS = False
 # Relative path of sitemap files on local disk
 SITEMAPS_DIR = os.path.join(os.path.dirname(__file__), '../ui/static/sitemaps')
 
-STREAMING_AUDIO_TAGS = ['GW: Streaming Audio']
-
-STREAMING_VIDEO_TAGS = ['GW: Streaming Video']
-
 # Base public URL of links; used by sitemap generator, no trailing slash
 SITEMAPS_BASE_URL = 'http://findit.library.gwu.edu'
 
-ILLIAD_URL = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
