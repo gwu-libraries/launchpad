@@ -221,7 +221,16 @@ class Bib(object):
         return alts
 
     def get_openurl(self):
+        #TODO
         pass
+
+    def get_microdata_type(self):
+        output = 'http://schema.org/%s'
+        if self.formatcode == 'am' or len(bib.isbns) > 0:
+            return output % 'Book'
+        else:
+            return output % 'CreativeWork'
+
 
 
 class Holding(object):

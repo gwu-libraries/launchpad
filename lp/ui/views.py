@@ -48,9 +48,13 @@ def item(request, bibid, expand=True):
                 if b['libcode'] == settings.PREF_LIB:
                     bib.marc = str(wrlc.bibblob(b['bibid'])
                     break
-    holdings = wrlc.holdings(bib.bibids)
+    bib.holdings = wrlc.holdings(bib.bibids)
     for holding in bib.holdings:
-        holding.items = wrlc.items(holding.mfhdid)
+        if holding.libcode in settings.Z3950_SERVERS:
+            continue
+            #TODO: add z39.50 item lookup 
+        else:
+            holding.items = wrlc.items(holding.mfhdid)
     #TODO: add sorting
     return render(request, 'item.html', {
         'bibid': bibid,
