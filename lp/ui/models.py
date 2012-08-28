@@ -138,10 +138,21 @@ class Bib(object):
             and not nn == self.author]
         self.metadata['addedentries'].extend(new_names)
 
+    def get_addedentries(self):
+        if self.metadata['addedentries']:
+            return self.metadata['addedentries']
+        return [x.value() for x in self.marc.addedentries()]
+
     def get_authors(self):
         authors = [self.author] if self.author else []
         authors.extend(self.addedentries)
         return authors
+
+    def get_brief_title(self):
+        brief = self.title[:252]
+        while brief[-1] != ' ':
+            brief = brief[:-1]
+        return '%s...' % brief.rstrip()
 
     def add_isbns(self, new_isbns):
         isbns = set(self.isbns)
@@ -226,11 +237,10 @@ class Bib(object):
 
     def get_microdata_type(self):
         output = 'http://schema.org/%s'
-        if self.formatcode == 'am' or len(bib.isbns) > 0:
+        if self.formatcode == 'am' or len(self.isbns) > 0:
             return output % 'Book'
         else:
             return output % 'CreativeWork'
-
 
 
 class Holding(object):
@@ -329,6 +339,12 @@ class Holding(object):
             return [field['a'] for field in self.marc.get_fields('866')]
         except:
             return []
+
+    def get_library(self):
+        try:
+            return settings.LIB_LOOKUP[self.libcode]
+        except:
+            return self.libcode
 
 
 class Item(object):

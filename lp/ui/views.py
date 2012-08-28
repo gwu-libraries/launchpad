@@ -46,7 +46,7 @@ def item(request, bibid, expand=True):
         if bib.libcode != settings.PREF_LIB:
             for b in related_bibids:
                 if b['libcode'] == settings.PREF_LIB:
-                    bib.marc = str(wrlc.bibblob(b['bibid'])
+                    bib.marc = str(wrlc.bibblob(b['bibid']))
                     break
     bib.holdings = wrlc.holdings(bib.bibids)
     for holding in bib.holdings:
