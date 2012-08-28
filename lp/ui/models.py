@@ -382,15 +382,14 @@ class Item(object):
     def get_eligible(self):
         if self.metadata.get('eligible', None):
             return self.metadata['metadata']
-        if 'Law' in self.permloc:
-            return False
         if self.libcode in settings.INELIGIBLE_LIBRARIES:
             return False
+        for loc in settings.FORCE_ELIGIBLE_LOCS:
+            if loc in self.permloc or loc in self.temploc:
+                return True
         for loc in settings.INELIGIBLE_PERM_LOCS:
             if loc in self.permloc:
                 return False
-        if 'WRLC' in self.temploc or 'WRLC' in self.permloc:
-            return True
         for loc in settings.INELIGIBLE_TEMP_LOCS:
             if loc in self.temploc:
                 return False
