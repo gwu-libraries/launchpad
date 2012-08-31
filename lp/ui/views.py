@@ -41,13 +41,15 @@ def item(request, bibid, expand=True):
     if expand:
         bib.related_stdnums = wrlc.related_stdnums(bib.bibid)
         related_bibids = wrlc.related_bibids(bib.related_stdnums)
-        bib.related_bibids = [b['bibid'] for b in related_bibids]
+        if related_bibids:
+            bib.related_bibids = [b['bibid'] for b in related_bibids]
         #replace MARC with ours
         if bib.libcode != settings.PREF_LIB:
-            for b in related_bibids:
-                if b['libcode'] == settings.PREF_LIB:
-                    bib.marc = str(wrlc.bibblob(b['bibid']))
-                    break
+            if related_bibids is not None:
+                for b in related_bibids:
+                    if b['libcode'] == settings.PREF_LIB:
+                        bib.marc = str(wrlc.bibblob(b['bibid']))
+                        break
     bib.holdings = wrlc.holdings(bib.bibids)
     for holding in bib.holdings:
         if holding.libcode in settings.Z3950_SERVERS:
