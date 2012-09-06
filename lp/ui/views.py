@@ -27,7 +27,7 @@ def _openurl_dict(params):
     d = {'params':  p}
     d['query_string'] = '&'.join(['%s=%s' % (k, v) for k, v
         in params.items()])
-    d['query_string_encoded'] = urllib.urlencode(params)
+    d['query_string_encoded'] = urllib.urlencode(params).encode('utf-8')
     return d
 
 
