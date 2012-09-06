@@ -258,8 +258,9 @@ FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
      location, library,bib_master
 WHERE mfhd_master.location_id=location.location_id
 AND bib_mfhd.bib_id IN """
-    query += "(%s)" % _in_clause([b['BIB_ID'] for b in bib_data['BIB_ID_LIST']])
-    query += """
+    if bib_data['BIB_ID_LIST'] is not None:
+        query += "(%s)" % _in_clause( [b['BIB_ID'] for b in bib_data['BIB_ID_LIST']])
+        query += """
 AND mfhd_master.suppress_in_opac !='Y'
 AND bib_mfhd.bib_id = bib_master.bib_id 
 AND bib_master.library_id=library.library_id
@@ -690,7 +691,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                         ind = line.find('$u')
                         #ind2 = line.find('$y', ind)
                         if ind != -1: 
-                            note = line[ind+2:ind2]
+                            note = line[ind+2]
                     
                     ind = line.find('publicNote')
                     if ind != -1:
