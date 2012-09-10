@@ -126,6 +126,7 @@ AND bib_master.suppress_in_opac='N'"""
                         if nb['BIB_ID'] not in [x['BIB_ID'] for x in bibids]:
                             bibids.append(nb)
         bib['BIB_ID_LIST'] = list(bibids)
+        print bib['BIB_ID_LIST']
     # parse fields for microdata
     bib['MICRODATA_TYPE'] = get_microdata_type(bib)
     return bib
