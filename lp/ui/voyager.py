@@ -126,7 +126,6 @@ AND bib_master.suppress_in_opac='N'"""
                         if nb['BIB_ID'] not in [x['BIB_ID'] for x in bibids]:
                             bibids.append(nb)
         bib['BIB_ID_LIST'] = list(bibids)
-        print bib['BIB_ID_LIST']
     # parse fields for microdata
     bib['MICRODATA_TYPE'] = get_microdata_type(bib)
     return bib
@@ -164,7 +163,7 @@ AND bib_index.normal_heading = %s
 AND bib_index.bib_id=bib_master.bib_id 
 AND bib_master.library_id=library.library_id"""
     cursor = connection.cursor()
-    cursor.execute(query, [num])
+    cursor.execute(query, ['OCLOC '+num])
     bibs = _make_dict(cursor)
     for bib in bibs:
         if bib['LIBRARY_NAME'] == settings.PREF_LIB:
