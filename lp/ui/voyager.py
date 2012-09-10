@@ -294,8 +294,9 @@ ORDER BY library.library_name"""
                                 'AVAILABILITY':{},
                                 'ELECTRONIC_DATA':{}})
                 holding['REMOVE'] = True
-            holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
-            holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
+            if len(result) > 0:
+                holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
+                holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
            
         else:
             holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']),
@@ -782,7 +783,10 @@ def get_z3950_holdings(id, school, id_type, query_type):
         if id_type =='bib':
             bib = get_gtbib_from_gwbib(id)
             if len(bib) >= 1:
-                query = zoom.Query('PQF', '@attr 1=12 %s' % bib[0].encode('utf-8'))
+                if bib[0] is not None:
+                    query = zoom.Query('PQF', '@attr 1=12 %s' % bib[0].encode('utf-8'))
+                else:
+                    return []
         elif id_type == 'isbn':
             query = zoom.Query('PQF', '@attr 1=7 %s' % id)
         elif id_type == 'issn':
