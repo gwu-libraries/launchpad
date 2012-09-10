@@ -277,25 +277,26 @@ ORDER BY library.library_name"""
                 continue
             else:
                 done.append(holding['BIB_ID'])
-            result = get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','')  
-            if len(result)> 0:
+            result = get_z3950_holdings(holding['BIB_ID'],holding['LIBRARY_NAME'],'bib','') 
+            if len(result) > 0:  
                 if len(result[0]['items']) == 0 and len(result[0]['mfhd']['marc856list']) == 0 and len(result[0]['mfhd']['marc866list'])== 0 and result[0]['mfhd']['marc852']=='':
                     continue  
                 holding.update({'MFHD_DATA':result[0]['mfhd'],
                               'ITEMS':result[0]['items'],
 	    	              'ELECTRONIC_DATA': result[0]['electronic'],
                               'AVAILABILITY': result[0]['availability']})
-                if len(result) > 1 and holding['LIBRARY_NAME'] == 'GM':
-                    for item in get_additional_holdings(result,holding):
-                        added_holdings.append(item)                        
-                holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
-                holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
-            else:
+            if len(result) > 1 and holding['LIBRARY_NAME'] == 'GM':
+                for item in get_additional_holdings(result,holding):
+                    added_holdings.append(item)
+            if len(result) == 0:
                 holding.update({'MFHD_DATA':{},
                                 'ITEMS':[],
                                 'AVAILABILITY':{},
                                 'ELECTRONIC_DATA':{}})
                 holding['REMOVE'] = True
+            holding['LOCATION_DISPLAY_NAME'] = holding['AVAILABILITY']['PERMLOCATION'] if holding['AVAILABILITY']['PERMLOCATION'] else holding['LIBRARY_NAME'] 
+            holding['DISPLAY_CALL_NO'] = holding['AVAILABILITY']['DISPLAY_CALL_NO']
+           
         else:
             holding.update({'ELECTRONIC_DATA': get_electronic_data(holding['MFHD_ID']),
                             'AVAILABILITY': get_availability(holding['MFHD_ID'])})
@@ -319,7 +320,6 @@ ORDER BY library.library_name"""
             holding['REMOVE'] = True
         if holding['LIBRARY_NAME'] == 'HS' and holding['LOCATION_NAME'] == 'hs link':
             holding['REMOVE'] = True
-
     for item in added_holdings:
         holdings.append(item)
     for holding in holdings:
@@ -778,9 +778,11 @@ def get_z3950_holdings(id, school, id_type, query_type):
             dataset.append({'availability': availability, 'electronic': electronic, 'mfhd': {'marc866list': res[0], 'marc856list': res[1], 'marc852': ''}, 'items': res[2]})
             return dataset
     elif school=='GT' or school =='DA':
+        res=[]
         if id_type =='bib':
             bib = get_gtbib_from_gwbib(id)
-            query = zoom.Query('PQF', '@attr 1=12 %s' % bib)
+            if len(bib) >= 1:
+                query = zoom.Query('PQF', '@attr 1=12 %s' % bib[0].encode('utf-8'))
         elif id_type == 'isbn':
             query = zoom.Query('PQF', '@attr 1=7 %s' % id)
         elif id_type == 'issn':
