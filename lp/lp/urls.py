@@ -28,6 +28,7 @@ urlpatterns = patterns('ui.views',
     url(r'^api/', TemplateView.as_view(template_name='api.html'),
         name='api'),
     url(r'^robots.txt$', 'robots', name='robots'),
+    url(r'^503.html$', 'error503', name='error503'),
 )
 
 if settings.ENABLE_HUMANS:
