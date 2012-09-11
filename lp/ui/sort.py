@@ -20,6 +20,14 @@ def libsort(holdings_list):
 def availsort(holdings_list):
     top, remainder = [],[]
     for holding in holdings_list:
+        if holding.get('ITEMS', []):
+            topitems, remainderitems = [], []
+            for item in holding['ITEMS']:
+                if item.get('ITEM_STATUS', '') == 1 or item.get('ITEM_STATUS_DESC', '') == 'Not Charged':
+                    topitems.append(item)
+                else:
+                    remainderitems.append(item)
+            holding['ITEMS'] = topitems + remainderitems
         try:
             if holding['AVAILABILITY'] and holding['AVAILABILITY']['ITEM_STATUS'] == 1:
                 top.append(holding)
