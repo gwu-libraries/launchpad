@@ -163,7 +163,7 @@ AND bib_index.normal_heading = %s
 AND bib_index.bib_id=bib_master.bib_id 
 AND bib_master.library_id=library.library_id"""
     cursor = connection.cursor()
-    cursor.execute(query, ['OCLOC '+num])
+    cursor.execute(query, ['OCOLC '+num])
     bibs = _make_dict(cursor)
     for bib in bibs:
         if bib['LIBRARY_NAME'] == settings.PREF_LIB:
