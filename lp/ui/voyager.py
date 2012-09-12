@@ -785,8 +785,12 @@ def get_z3950_holdings(id, school, id_type, query_type):
             if len(bib) >= 1:
                 if bib[0] is not None:
                     query = zoom.Query('PQF', '@attr 1=12 %s' % bib[0].encode('utf-8'))
+                    return _get_gt_holdings(id,query, query_type, bib,school)
                 else:
                     return []
+            else:
+                    query = zoom.Query('PQF', '@attr 1=12 %s' % str(bib).encode('utf-8'))
+                    return _get_gt_holdings(id,query, query_type, bib,school)
         elif id_type == 'isbn':
             query = zoom.Query('PQF', '@attr 1=7 %s' % id)
         elif id_type == 'issn':
