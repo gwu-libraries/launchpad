@@ -39,8 +39,7 @@ def get_added_authors(bib):
 SELECT bib_index.display_heading AS author
 FROM bib_index
 WHERE bib_index.bib_id = %s
-AND bib_index.index_code IN ('700H', '710H', '711H')
-        """
+AND bib_index.index_code IN ('700H', '710H', '711H')"""
     cursor = connection.cursor()
     cursor.execute(query, [bib['BIB_ID']])
     authors = []
@@ -156,17 +155,18 @@ def get_microdata_type(bib):
 
 def get_primary_bibid(num, num_type):
     num = _normalize_num(num, num_type)
+    if num_type == 'oclc':
+        num = 'OCOLC %s' % num
     query = """
 SELECT bib_index.bib_id, bib_master.library_id, library.library_name
 FROM bib_index, bib_master, library
-WHERE bib_index.index_code IN """
-    query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
-    query += """
-AND bib_index.normal_heading = %s
+WHERE bib_index.index_code IN (%s)
+AND bib_index.normal_heading = '%s'
 AND bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id"""
+    query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
     cursor = connection.cursor()
-    cursor.execute(query, ['OCOLC ' + num])
+    cursor.execute(query, [])
     bibs = _make_dict(cursor)
     for bib in bibs:
         if bib['LIBRARY_NAME'] == settings.PREF_LIB:
@@ -193,29 +193,24 @@ FROM bib_index, library, bib_master
 WHERE bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'
-AND bib_index.index_code IN """
-    query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
-    query += """
+AND bib_index.index_code IN (%s)
 AND bib_index.normal_heading != 'OCOLC'
 AND bib_index.normal_heading IN (
     SELECT bib_index.normal_heading
     FROM bib_index
-    WHERE bib_index.index_code IN """
-    query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
-    query += """
+    WHERE bib_index.index_code IN (%s)
     AND bib_id IN (
         SELECT DISTINCT bib_index.bib_id
         FROM bib_index
-        WHERE bib_index.index_code IN """
-    query += '(%s)' % _in_clause(settings.INDEX_CODES[num_type])
-    query += """
-        AND bib_index.normal_heading IN """
-    query += '(%s)' % _in_clause(num_list)
-    query += """
+        WHERE bib_index.index_code IN (%s)
+        AND bib_index.normal_heading IN (%s)
         AND bib_index.normal_heading != 'OCOLC'
         )
     )
 ORDER BY bib_index.bib_id"""
+    indexclause = _in_clause(settings.INDEX_CODES[num_type])
+    numclause = _in_clause(num_list)
+    query = query % (indexclause, indexclause, indexclause, numclause)
     cursor = connection.cursor()
     cursor.execute(query, [])
     results = _make_dict(cursor)
@@ -231,14 +226,13 @@ def get_related_std_nums(bibid, num_type):
     query = """
 SELECT normal_heading, display_heading
 FROM bib_index
-WHERE bib_index.index_code IN """
-    query += "(%s)" % _in_clause(settings.INDEX_CODES[num_type])
-    query += """
+WHERE bib_index.index_code IN (%s)
 AND bib_id = %s
 AND bib_index.normal_heading != 'OCOLC'
 ORDER BY bib_index.normal_heading"""
+    query = query % (_in_clause(settings.INDEX_CODES[num_type]), bibid)
     cursor = connection.cursor()
-    cursor.execute(query, [bibid])
+    cursor.execute(query, [])
     results = cursor.fetchall()
     if num_type == 'oclc':
         return [pair for pair in results if _is_oclc(pair[1])]
@@ -263,15 +257,16 @@ SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
 FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
      location, library,bib_master
 WHERE mfhd_master.location_id=location.location_id
-AND bib_mfhd.bib_id IN """
-    if bib_data['BIB_ID_LIST'] is not None:
-        query += "(%s)" % _in_clause([b['BIB_ID'] for b in
-            bib_data['BIB_ID_LIST']])
-        query += """
+AND bib_mfhd.bib_id IN (%s)
 AND mfhd_master.suppress_in_opac !='Y'
 AND bib_mfhd.bib_id = bib_master.bib_id
 AND bib_master.library_id=library.library_id
 ORDER BY library.library_name"""
+    if bib_data.get('BIB_ID_LIST', []):
+        idclause = _in_clause([b['BIB_ID'] for b in bib_data['BIB_ID_LIST']])
+    else:
+        idclause = "'%s'" % bib_data['BIB_ID']
+    query = query % idclause
     cursor = connection.cursor()
     cursor.execute(query, [])
     eligibility = False
