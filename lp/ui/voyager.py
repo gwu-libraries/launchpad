@@ -1015,7 +1015,8 @@ http://magik.gmu.edu/cgi-bin/Pwebrecon.cgi?BBID=%s'''
         catlink = '''Click on the following link to get the information about
 this item from Dahlgren library Catalog <br>
 http://catalog.library.georgetown.edu/record=b%s~S4'''
-    catlink = catlink % bib[0]
+    if bib:
+        catlink = catlink % bib[0]
     if found:
         availability = {'BIB_ID': bib,
                      'CHRON': None,
