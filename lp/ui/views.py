@@ -65,7 +65,7 @@ def item(request, bibid):
             'audio_tags': settings.STREAMING_AUDIO_TAGS,
             'video_tags': settings.STREAMING_VIDEO_TAGS,
             })
-    except DatabaseError:
+    except:
         return redirect('error503')
 
 
