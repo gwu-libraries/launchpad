@@ -6,6 +6,7 @@ from PyZ3950 import zoom
 
 from django.conf import settings
 from django.db import connection
+from django.db.utils import DatabaseError
 
 from ui.templatetags.launchpad_extras import cjk_info
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc
