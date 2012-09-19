@@ -23,14 +23,14 @@ def _openurl_dict(params):
     """Split openurl params into a useful structure"""
     p = {}
     for k, v in dict(params).items():
-        p[k] = ','.join(v)
+        p[k] = ','.join(v).encode('ascii', 'ignore')
     d = {'params':  p}
     d['query_string'] = '&'.join(['%s=%s' % (k, v) for k, v
         in params.items()])
     try:
-        d['query_string_encoded'] = urllib.urlencode(params).encode('utf-8')
+        d['query_string_encoded'] = urllib.urlencode(d['params'])
     except UnicodeEncodeError:
-        d['query_string_encoded'] = urllib.urlencode(params)
+        pass
     return d
 
 
