@@ -1,5 +1,3 @@
-import urllib
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.utils import DatabaseError
@@ -19,18 +17,16 @@ def home(request):
         })
 
 
-def _openurl_dict(params):
+def _openurl_dict(request):
+    params = request.GET
     """Split openurl params into a useful structure"""
     p = {}
     for k, v in dict(params).items():
-        p[k] = ','.join(v).encode('ascii', 'ignore')
+        p[k] = ','.join(v)
     d = {'params':  p}
     d['query_string'] = '&'.join(['%s=%s' % (k, v) for k, v
         in params.items()])
-    try:
-        d['query_string_encoded'] = urllib.urlencode(d['params'])
-    except UnicodeEncodeError:
-        pass
+    d['query_string_encoded'] = request.META.get('QUERY_STRING', '')
     return d
 
 
@@ -41,7 +37,7 @@ def item(request, bibid):
         if not bib:
             return render(request, '404.html', {'num': bibid,
                 'num_type': 'BIB ID'}, status=404)
-        bib['openurl'] = _openurl_dict(request.GET)
+        bib['openurl'] = _openurl_dict(request)
         # Ensure bib data is ours if possible
         if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
             for alt_bib in bib['BIB_ID_LIST']:
@@ -78,7 +74,7 @@ def item_json(request, bibid):
     try:
         bib_data = voyager.get_bib_data(bibid)
         bib_data['holdings'] = voyager.get_holdings(bib_data)
-        bib_data['openurl'] = _openurl_dict(request.GET)
+        bib_data['openurl'] = _openurl_dict(request)
         return HttpResponse(json.dumps(bib_data, default=_date_handler,
             indent=2), content_type='application/json')
     except DatabaseError:
@@ -151,7 +147,7 @@ def gmitem_json(request, gmbibid):
 def isbn(request, isbn):
     try:
         bibid = voyager.get_primary_bibid(num=isbn, num_type='isbn')
-        openurl = _openurl_dict(request.GET)
+        openurl = _openurl_dict(request)
         if bibid:
             url = '%s?%s' % (reverse('item', args=[bibid]),
                 openurl['query_string_encoded'])
@@ -164,7 +160,7 @@ def isbn(request, isbn):
 def issn(request, issn):
     try:
         bibid = voyager.get_primary_bibid(num=issn, num_type='issn')
-        openurl = _openurl_dict(request.GET)
+        openurl = _openurl_dict(request)
         if bibid:
             url = '%s?%s' % (reverse('item', args=[bibid]),
                 openurl['query_string_encoded'])
@@ -179,7 +175,7 @@ def oclc(request, oclc):
         bibid = voyager.get_primary_bibid(num=oclc, num_type='oclc')
     except DatabaseError:
         return redirect('error503')
-    openurl = _openurl_dict(request.GET)
+    openurl = _openurl_dict(request)
     if bibid:
         url = '%s?%s' % (reverse('item', args=[bibid]),
             openurl['query_string_encoded'])
