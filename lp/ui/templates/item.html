@@ -317,7 +317,16 @@ function showmore(id)
                                 <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img>
                                 {{holding.LIBRARY_NAME}} only
                             {% else %}
-                                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                                {%if holding.DISPLAY_CALL_NO in audio_tags%}
+                                    <button onclick="window.open('{{link.u}}')" > Listen online </button>
+                                {%endif%}
+                                {%if holding.DISPLAY_CALL_NO in video_tags%}
+                                    <button onclick="window.open('{{link.u}}')" > Watch online </button>
+                                {%endif%}
+                                {%if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags%}
+                                    <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
+                                {%endif%}
+
                             {% endif %}
                         
                         {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
@@ -330,7 +339,18 @@ function showmore(id)
 			            <br />
 			            <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
 			            {{holding.LIBRARY_NAME}} only
+                                {% else %}
+                                    {%if holding.DISPLAY_CALL_NO in audio_tags%}
+                                        <button onclick="window.open('{{link.u}}')" > Listen online </button>
+                                    {%endif%}
+                                    {%if holding.DISPLAY_CALL_NO in video_tags%}
+                                        <button onclick="window.open('{{link.u}}')" > Watch online </button>
+                                    {%endif%}
+                                    {%if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags%}
+                                        <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
+                                    {%endif%}
                                 {% endif %}
+
                             {% endfor %}
                         {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME == 'WRLC Center' %}
                             <span class='off-site'>Off-site </span>
