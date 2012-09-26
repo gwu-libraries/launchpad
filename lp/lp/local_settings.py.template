@@ -133,9 +133,9 @@ TITLE_LEFTOVER_CHARS = 5
 MARC_245_SUBFIELDS = ['$a', '$b', '$c', '$f', '$g', '$h', '$k', '$n',
     '$p', '$s', '$6', '$8']
 
-STREAMING_AUDIO_TAGS = ['GW: Streaming Audio']
+STREAMING_AUDIO_TAGS = ['GW: Streaming Audio', 'GW Streaming Audio']
 
-STREAMING_VIDEO_TAGS = ['GW: Streaming Video']
+STREAMING_VIDEO_TAGS = ['GW: Streaming Video', 'GW Streaming Video']
 
 CACHES = {
     'default': {
