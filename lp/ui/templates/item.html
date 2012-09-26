@@ -318,13 +318,13 @@ function showmore(id)
                                 {{holding.LIBRARY_NAME}} only
                             {% else %}
                                 {%if holding.DISPLAY_CALL_NO in audio_tags%}
-                                    <button onclick="window.open('{{link.u}}')" > Listen online </button>
+                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Listen online </button>
                                 {%endif%}
                                 {%if holding.DISPLAY_CALL_NO in video_tags%}
-                                    <button onclick="window.open('{{link.u}}')" > Watch online </button>
+                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Watch online </button>
                                 {%endif%}
                                 {%if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags%}
-                                    <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
+                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
                                 {%endif%}
 
                             {% endif %}
