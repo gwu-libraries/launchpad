@@ -61,5 +61,6 @@
     #ProxyPassMatch /api/.* !
     #ProxyPassMatch /robots.txt !
     #ProxyPassMatch /sitemap.* !
+    #ProxyPassMatch /503.html !
 
 </VirtualHost>
