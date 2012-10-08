@@ -218,18 +218,12 @@ function showmore(id)
                     {% else %}
                         {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                     {% endif %}
-                    {% if holding.MFHD_DATA and holding.MFHD_DATA.marc866list and forloop.first_ %}
+                    {% if holding.MFHD_DATA and holding.MFHD_DATA.marc866list and forloop.first%}
                         {% for line in holding.MFHD_DATA.marc866list %}
                             <br />
                             <span class="library-has">{{ line }}</span>
                         {% endfor %}
                     {% endif %}
-                    {#{% if holding.LIBRARY_HAS %}#}
-                        {#{% for line in holding.LIBRARY_HAS %}#}
-                            <!--<br />
-                            <span class="library-has">{{ line }}</span>-->
-                        {#{% endfor %}#}
-                    {#{% endif %}#}
                     </div>
                 </td>
                 <td>
