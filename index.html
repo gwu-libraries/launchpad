@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Launchpad : A django based system that provides a stable URL for every item in the library's catalog. Various discovery services will link to these URLs. The page for each item will in turn link out to various other resources that provide methods for accessing the content of the items." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Launchpad</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/gwu-libraries/launchpad">View on GitHub</a>
+
+          <h1 id="project_title">Launchpad</h1>
+          <h2 id="project_tagline">A django based system that provides a stable URL for every item in the library's catalog. Various discovery services will link to these URLs. The page for each item will in turn link out to various other resources that provide methods for accessing the content of the items.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/gwu-libraries/launchpad/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/gwu-libraries/launchpad/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>About the GW Findit Project</h3>
+
+<p>GW Library's Findit service connects you as quickly as we can to what you're looking for. It uses our catalog, journals, databases, and some additional tools we're mixing together here in Foggy Bottom. We're working to make it easier to get to what you're looking for or give you a way to get what you need even if it's not readily available at GW or our consortium peer libraries. </p>
+
+<h3>Limits on use</h3>
+
+<p>This system pulls data from several different sources. We and our colleagues in our consortium depend on these sources to keep our libraries running. If we find automated, heavy use of this service that negatively impacts the performance or availability of it or any of the related systems it uses, many people in our communities may be affected. </p>
+
+<p>We reserve the right to block or limit access to this system by any users or automated agents that are impacting its performance or availability. If you are interested in bulk access to this data, or data like it, let us know directly. We'd be happy to discuss your interest and see if we can help.</p>
+
+<h3>Feature Summary</h3>
+
+<p>Here is a summary of some of the key elements of the Findit project user interface:</p>
+
+<ul>
+<li>Summary information identifies each work (title, author, standard numbers)</li>
+<li>Consortial holdings are listed, grouped by institution and library location</li>
+<li>Real time availability -- based on live query of three different library systems</li>
+<li>Associated records from all members libraries based on standard numbers (ISBN, ISSN, OCLC) are retrieved</li>
+<li>Conditional logic for consortium borrowing is applied to the items found (for example a Reference book or an item Charged is not eligible)</li>
+<li>Links to the Consortium loan request form and to an Interlibrary Loan Request form, as appropriate</li>
+<li>Book jacket thumbnail images from OpenLibrary.org are displayed, when available</li>
+<li>Non-Roman script (unicode for Chinese, Japanese, and other languages) is displayed whenever appropriate</li>
+<li>An SMS link enables the patrons to text or email the item information to themselves</li>
+<li>A standard URL pattern provides access from Worldcat, Google, and local catalogs based upon standard numbers (Bibliographic / Item ID, ISBN, ISSN, and OCLC)</li>
+<li>Resources outside the consortium may be retrieved (via the GoogleBooks API and WorldCat API when the consortium does not have a match for a requested standard number)</li>
+<li>The user interface uses CSS in order to follow the general look and feel of the library web site</li>
+</ul><h3>GW Findit environment</h3>
+
+<p>The Findit project brings together information from three separate integrated library systems:</p>
+
+<ul>
+<li>Georgetown University: Innovative Interfaces Millenium ILS</li>
+<li>George Mason University: ExLibris Voyager ILS</li>
+<li>Washington Research Library Consortium (WRLC): ExLibris Voyager ILS</li>
+</ul><p>The WRLC Voyager ILS is a <em>union</em> catalog. It is used to maintain bibliographic, holding, and item information by most members of the library consortium. These institutions are listed here with the approximate number of titles held by each:</p>
+
+<ul>
+<li>American University (1,300,000)</li>
+<li>Catholic University (860,000)</li>
+<li>Gallaudet University (400,000)</li>
+<li>George Washington University 1,700,000)</li>
+<li>Howard University (760,000)</li>
+<li>Marymount University (185,000)</li>
+<li>University of the District of Columbia 575,000)</li>
+</ul><p>In addition, the WRLC Voyager ILS stores a copy of bibliographic information provided by two other local institutions that maintain their own ILS:</p>
+
+<ul>
+<li>George Mason University (1,750,000)</li>
+<li>Georgetown University (2,740,000)</li>
+</ul><p>The Voyager ILS hosted by WRLC does not have the holdings and items from the other two sytems. In order to obtain detailed holding and circulation status for George Mason and Georgetown it is necessary to query those systems directly. </p>
+
+<h3>The Findit programming environment</h3>
+
+<p>The Findit project is a <strong>Django</strong> based system with programming in <strong>Python</strong>. </p>
+
+<h4>Django / Python Requirements</h4>
+
+<pre><code>cx_Oracle
+django
+django-nose
+ply
+pycountry
+pymarc
+python-memcached
+pytz
+git+https://github.com/asl2/PyZ3950.git
+</code></pre>
+
+<h4>Other Requirements</h4>
+
+<pre><code>Apache Web Server
+Oracle SQL Plus InstantClient
+Z39.30
+</code></pre>
+
+<p>The Django application framework follows the model-view-controller architectural pattern. The application optimizes the interactions with the integrated library systems by minimizing the number of database connections and employing caching mechanisms. </p>
+
+<h4>How Findit obtains real time availability</h4>
+
+<p>The Findit program runs in a Linux environment hosted at the WRLC facilities. Findit uses Oracle SQLPlus InstantClient software on this server to execute SQL queries against the WRLC Voyager Oracle database using a read-only user account. When a title is held by Georgetown or George Mason, Findit executes Z39.50 queries against the appropriate remote database. The application collates the responses and generates a web page or JSON data structure.</p>
+
+<h3>Findit API</h3>
+
+<h4>Link patterns in Findit</h4>
+
+<p>The standard URL for any item in findit is its WRLC Voyager database bibliographic identifier, or "bib id". Every request to Findit should result in a URL like this: </p>
+
+<p><a href="http://findit.library.gwu.edu/item/3992408">http://findit.library.gwu.edu/item/3992408</a>
+In this example, 3992408 is the bib id. </p>
+
+<p>This bookmark is stable, which is to say: if you want to bookmark it, please do. As long as this item is in our consortium catalog, this link will resolve to all the information we can provide you about the item and its availability. </p>
+
+<p>There's an additional way you can create links to findit: using standard identifiers like ISBN and ISSN. The example above is a book, with ISBN 0439136350. ISBN and ISSN are very common, and it can be useful to create a link using these values. findit supports this kind of link: </p>
+
+<p><a href="http://findit.library.gwu.edu//isbn/0439136350">http://findit.library.gwu.edu//isbn/0439136350</a></p>
+
+<p><a href="http://findit.library.gwu.edu//issn/0000-0019">http://findit.library.gwu.edu//issn/0000-0019</a></p>
+
+<p>There's one more identifier that redirects like this, and though it might be most useful to us librarians, you can use it too. It's for the OCLC number of an item: </p>
+
+<p><a href="http://findit.library.gwu.edu//oclc/00162792">http://findit.library.gwu.edu//oclc/00162792</a>
+It should work with a redirect to an /item/[bib id] link, just like ISBN and ISSN links. </p>
+
+<h4>Raw data from findit in JSON</h4>
+
+<p>We do our best to lay out the information on findit pages as clearly as we can, but maybe you just want the raw data under the hood. You can have it! Just add ".json" to the end of any /item/[bib id] URL: </p>
+
+<p><a href="http://findit.library.gwu.edu/item/3992408.json">http://findit.library.gwu.edu/item/3992408.json</a>
+We're using JSON because it's useful in most every programming language. You should be able to use your language of choice to process this data. </p>
+
+<p>In each of these records, basic bibliographic data is at the top level, and separate holdings data is listed one by one. The data itself reflects several aspects of how we've managed data in libraries over many decades, so it might seemed odd if you've never seen anything like it before. It should mostly be self-explanatory, but if not, please don't hesitate to ask us about it. </p>
+
+<p><em>We are actively refactoring / improving the source. The JSON structure is subject to change.</em></p>
+
+<h3>Indexing</h3>
+
+<h4>Schema.org</h4>
+
+<p>The Findit pages contain semantic markup compatible with standards established by <a href="http://schema.org/CreativeWork">schema.org</a></p>
+
+<h4>Google site index</h4>
+
+<p>Content from the Findit project is gradually being index with the Google site index tool. This indexing is progressing at the rate of approximately 50,000 titles per day. There are somewhere in the neighborhood of 10 million titles in the WLRC collection. Searching a title and the phrase "gwu libraries" will yield search results that link to Findit by the item identifier.</p>
+
+<p>For example search
+<code>data mining gwu libraries</code></p>
+
+<h3>License</h3>
+
+<p>Copyright (c) 2012, The George Washington University</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+
+<h3>Contact Information</h3>
+
+<p>Visit <a href="http://github.com/gwu-libraries/launchpad">http://github.com/gwu-libraries/launchpad</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Launchpad maintained by <a href="https://github.com/gwu-libraries">gwu-libraries</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
