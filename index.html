@@ -126,21 +126,22 @@ In this example, 3992408 is the bib id. </p>
 
 <p>There's an additional way you can create links to findit: using standard identifiers like ISBN and ISSN. The example above is a book, with ISBN 0439136350. ISBN and ISSN are very common, and it can be useful to create a link using these values. findit supports this kind of link: </p>
 
-<p><a href="http://findit.library.gwu.edu//isbn/0439136350">http://findit.library.gwu.edu//isbn/0439136350</a></p>
+<p><a href="http://findit.library.gwu.edu/isbn/0439136350">http://findit.library.gwu.edu/isbn/0439136350</a></p>
 
-<p><a href="http://findit.library.gwu.edu//issn/0000-0019">http://findit.library.gwu.edu//issn/0000-0019</a></p>
+<p><a href="http://findit.library.gwu.edu/issn/0000-0019">http://findit.library.gwu.edu/issn/0000-0019</a></p>
 
 <p>There's one more identifier that redirects like this, and though it might be most useful to us librarians, you can use it too. It's for the OCLC number of an item: </p>
 
-<p><a href="http://findit.library.gwu.edu//oclc/00162792">http://findit.library.gwu.edu//oclc/00162792</a>
+<p><a href="http://findit.library.gwu.edu/oclc/00162792">http://findit.library.gwu.edu/oclc/00162792</a>
 It should work with a redirect to an /item/[bib id] link, just like ISBN and ISSN links. </p>
 
 <h4>Raw data from findit in JSON</h4>
 
 <p>We do our best to lay out the information on findit pages as clearly as we can, but maybe you just want the raw data under the hood. You can have it! Just add ".json" to the end of any /item/[bib id] URL: </p>
 
-<p><a href="http://findit.library.gwu.edu/item/3992408.json">http://findit.library.gwu.edu/item/3992408.json</a>
-We're using JSON because it's useful in most every programming language. You should be able to use your language of choice to process this data. </p>
+<p><a href="http://findit.library.gwu.edu/item/3992408.json">http://findit.library.gwu.edu/item/3992408.json</a></p>
+
+<p>We're using JSON because it's useful in most every programming language. You should be able to use your language of choice to process this data. </p>
 
 <p>In each of these records, basic bibliographic data is at the top level, and separate holdings data is listed one by one. The data itself reflects several aspects of how we've managed data in libraries over many decades, so it might seemed odd if you've never seen anything like it before. It should mostly be self-explanatory, but if not, please don't hesitate to ask us about it. </p>
 
