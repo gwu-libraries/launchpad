@@ -298,6 +298,11 @@ function showmore(id)
                                 <span class="library-has">{{ line }}</span>
                             {% endfor %}
                         {% endif %}
+                        {%if holding.ELECTRONIC_DATA.LINK852Z%}
+                            <br />
+                            <span class= "note-label"> {{holding.ELECTRONIC_DATA.LINK852Z}} </span>
+                        {%endif%}
+
                         </div>
                     </td>
                     <td>
