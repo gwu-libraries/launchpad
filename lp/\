@@ -25,16 +25,6 @@
 {% block javascript_extra %}
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
 <script type='text/javascript'>
-function toggle_visibility(tbid,lnkid)
-{
- if(document.all){document.getElementById(tbid).style.display = document.getElementById(tbid).style.display == "block" ? "none" : "block";}
-  else{document.getElementById(tbid).style.display = document.getElementById(tbid).style.display == "table" ? "none" : "table";}
-  document.getElementById(lnkid).value = document.getElementById(lnkid).value == "[-] Collapse" ? "[+] Expand" : "[-] Collapse";
-
-}
-</script>
-
-<script>
 // hide missing cover images' surrounding <div>
 $(document).ready(function() {
     $('#cover-image').load(function() {
@@ -224,7 +214,7 @@ function showmore(id)
         {% for holding in library.list %}
             {% if holding.ITEMS %}
                 {% for item in holding.ITEMS %}
-                            <tr>
+                        <tr>
                             <td>
                             <div class="itemrow">
                             {% if item.TEMPLOCATION %}
@@ -295,20 +285,22 @@ function showmore(id)
                 </td>
             {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
                 <td></td>
-                <td align="right"><input id="{{holding.BIB_ID}}1" type="button" value="[+] Expand" style="border:none;background:none;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> </td>
+                <td bgcolor="#EEEEEE" align="right"><input id='{{holding.BIB_ID}}1' type="button" value="[+] Expand" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"></td>
     
             {%endif%}
 
             </tr>
             {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
-                <td colspan=4>
-                <table width="100%" id="{{holding.BIB_ID}}" style="display:none;">
+                <tr>
+                <td width="100%">
+                <table width="100%" id="{{holding.BIB_ID}}">
 
             {%endif%}
             {%if holding.ITEMS|length > max_items and forloop.last%}
                  
                 </table>
                 </td>
+                </tr>
             {%endif%}
                 {% endfor %}
             <!--  If no item data use old template -->

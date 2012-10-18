@@ -122,6 +122,8 @@ SCREAMING_LOCATIONS = [
     ('VAN NESS', 'Van Ness'),
     ]
 
+MAX_ITEMS = 6
+
 ILLIAD_URL = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
 
 ILLIAD_SID = 'GWfindit'

@@ -60,6 +60,7 @@ def item(request, bibid):
             'enable_humans': settings.ENABLE_HUMANS,
             'audio_tags': settings.STREAMING_AUDIO_TAGS,
             'video_tags': settings.STREAMING_VIDEO_TAGS,
+            'max_items': settings.MAX_ITEMS,
             })
     except:
         return redirect('error503')
