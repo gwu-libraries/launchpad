@@ -29,7 +29,7 @@ function toggle_visibility(tbid,lnkid)
 {
  if(document.all){document.getElementById(tbid).style.display = document.getElementById(tbid).style.display == "block" ? "none" : "block";}
   else{document.getElementById(tbid).style.display = document.getElementById(tbid).style.display == "table" ? "none" : "table";}
-  document.getElementById(lnkid).value = document.getElementById(lnkid).value == "[-]" ? "[+]" : "[-]";
+  document.getElementById(lnkid).value = document.getElementById(lnkid).value == "[-] Less Items" ? "[+] More Items" : "[-] Less Items";
 
 }
 </script>
@@ -228,16 +228,18 @@ function showmore(id)
                             <td>
                             <div class="itemrow">
                             {% if item.TEMPLOCATION %}
-                                {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
-                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+]" style="border:none;background:none;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');">
-                                {%endif%}
                                 {{ item.TEMPLOCATION|noscream }}
+                                <br/>
+                                {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
+                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');">
+                                {%endif%}
                                 <br />
                             {% else %}
-                                {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
-                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+]" style="border:none;background:none;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
-                                {%endif%}
                                 {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
+                                <br />
+                                {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
+                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
+                                {%endif%}
                             {% endif %}
                             {% if holding.MFHD_DATA and holding.MFHD_DATA.marc866list and not holding.MFHD_DATA.marc856list and forloop.first%}
                                 {% for line in holding.MFHD_DATA.marc866list %}
