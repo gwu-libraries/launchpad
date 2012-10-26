@@ -11,7 +11,23 @@ body {
     font-size: small;
 }
 
-
+.item_list {
+	margin: 0px auto;
+	padding: 0px;
+	width: 383px;
+	height:311px;
+}
+.item_head {
+	padding: 5px 10px;
+	cursor: pointer;
+	position: relative;
+	background-color:#FFCCCC;
+	margin:1px;
+}
+.item_body {
+	padding: 5px 10px 15px;
+	background-color:#F4F4F8;
+}
 
 table {
     border: None;
@@ -31,6 +47,8 @@ td {
     border-bottom: 1px solid #e6e6e6;
     padding-top: .4em;
     padding-bottom: .4em;
+    MARGIN: 0px;
+    COLOR: #000000;
 }
 
 .library-group-header{
