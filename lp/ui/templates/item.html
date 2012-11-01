@@ -31,10 +31,31 @@ function toggle_visibility(tbid,lnkid)
   else{document.getElementById(tbid).style.display = document.getElementById(tbid).style.display == "table" ? "none" : "table";}
   document.getElementById(lnkid).value = document.getElementById(lnkid).value == "[-] Less Items" ? "[+] More Items" : "[-] Less Items";
 
-}
+};
+
+function showmore(id)
+	{
+		var objt = document.getElementById("toggle-"+id);
+		var objb = document.getElementById("brief-"+id);
+		var objf = document.getElementById("full-"+id);
+		if(objf.style.display == 'block') 
+                {
+			objf.style.display='none';
+			objb.style.display='block';
+			objt.innerHTML="<a href=javascript:showmore('1');>[+] More Text</a>";
+
+		}
+                else 
+                {
+			objf.style.display='block';
+			objb.style.display='none';
+			objt.innerHTML="<a href=javascript:showmore('1');>[-] Less Text</a>";
+		}		
+
+	};
 </script>
 
-<script>
+<script type='text/javascript'>
 // hide missing cover images' surrounding <div>
 $(document).ready(function() {
     $('#cover-image').load(function() {
@@ -58,27 +79,6 @@ function sms(url) {
     };
 };
 
-//function to expand/collapse title if its bigger than a threshold
-function showmore(id)
-	{
-		var objt = document.getElementById("toggle-"+id);
-		var objb = document.getElementById("brief-"+id);
-		var objf = document.getElementById("full-"+id);
-		if(objf.style.display == 'block') 
-                {
-			objf.style.display='none';
-			objb.style.display='block';
-			objt.innerHTML="<a href=javascript:showmore('1');>More...</a>";
-
-		}
-                else 
-                {
-			objf.style.display='block';
-			objb.style.display='none';
-			objt.innerHTML="<a href=javascript:showmore('1');>Less</a>";
-		}		
-
-	};
 
 </script>
 {% endblock javascript_extra %}
@@ -112,7 +112,7 @@ function showmore(id)
                         <span itemprop="name">{{bib.TITLE_ALL}}</span>
                     </div>
                     <div id="toggle-1"> 
-                        <a href='javascript:showmore("1")';>More...</a>
+                        <a href='javascript:showmore("1")';>[+] More Text</a>
                     </div>
                 {% endif %}
                 </h1>
@@ -252,28 +252,40 @@ function showmore(id)
                         {%endif%}
                     {%endif%}
                     <tr>
-                    <td>
+                    {%if holding.ITEMS|length > max_items and forloop.counter >= max_items%}
+                    <td width='51%'>
+                    {%else%}    
+                    <td width='40%'>
+                    {%endif%}
                     <div class="itemrow">
                             {% if item.TEMPLOCATION %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
                                 {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
-                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');">
+                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;color:blue;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');">
                                 {%endif%}
                             {% else %}
                                 {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                                 <br />
                                 {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
-                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
+                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;color:blue;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
                                 {%endif%}
                             {% endif %}
                         </div>
                         </td>
-                        <td>
+                        {%if holding.ITEMS|length > max_items and forloop.counter >= max_items%}
+                        <td width='23%'>
+                        {%else%}
+                        <td width='25%'>
+                        {%endif%}
                            {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
                            {% if item.ITEM_ENUM %} {{ item.ITEM_ENUM }} {% endif %}
                        </td>
-                       <td>
+                       {%if holding.ITEMS|length > max_items and forloop.counter >= max_items%}
+                       <td width='17%'>
+                       {%else%}
+                       <td width='20%'>
+                       {%endif%}
                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
                                    {% if link.3 %}
@@ -311,14 +323,18 @@ function showmore(id)
                                {%endif%}
                            {%endif%}
                        </td>
-                       <td>
+                       {%if holding.ITEMS|length > max_items and forloop.counter >= max_items%}
+                       <td width= '9%'>
+                       {%else%}
+                       <td width='15%'>
+                       {%endif%}
                            {% if item.ELIGIBLE %}
                                <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                            {% endif %}
                        </td>
                   </tr>
                            {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
-                               <td colspan=4>
+                               <td colspan="4">
                                <table width="100%" id="{{holding.BIB_ID}}" style="display:none;">
                            {%endif%}
                            {%if holding.ITEMS|length > max_items and forloop.last%}
