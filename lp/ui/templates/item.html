@@ -241,13 +241,13 @@ function showmore(id)
                                     <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
                                 {%endif%}
                             {% endif %}
-                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc866list and not holding.MFHD_DATA.marc856list and forloop.first%}
+                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc866list and not holding.MFHD_DATA.marc856list and forloop.last%}
                                 {% for line in holding.MFHD_DATA.marc866list %}
                                     <br />
                                     <span class="library-has">{{ line }}</span>
                                 {% endfor %}
                             {% endif %}
-                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc852 and not holding.MFHD_DATA.marc856list and forloop.first%}
+                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc852 and not holding.MFHD_DATA.marc856list and forloop.last%}
                                 <br />
                                 <span class="note-label">{{ holding.MFHD_DATA.marc852 }}</span>
                             {% endif %}
@@ -361,9 +361,7 @@ function showmore(id)
                                 {%if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags%}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
                                 {%endif%}
-
                             {% endif %}
-                        
                         {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
 			    {% for link in holding.MFHD_DATA.marc856list %}
 				{% if link.3%}
@@ -381,11 +379,10 @@ function showmore(id)
                                     {%if holding.DISPLAY_CALL_NO in video_tags%}
                                         <button onclick="window.open('{{link.u}}')" > Watch online </button>
                                     {%endif%}
-                                    {%if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags%}
+                                    {%if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags %}
                                         <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
                                     {%endif%}
                                 {% endif %}
-
                             {% endfor %}
                         {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME == 'WRLC Center' %}
                             <span class='off-site'>Off-site </span>
