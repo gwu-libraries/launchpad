@@ -224,16 +224,42 @@ function showmore(id)
         {% for holding in library.list %}
             {% if holding.ITEMS %}
                 {% for item in holding.ITEMS %}
-                            <tr>
-                            <td>
-                            <div class="itemrow">
+                    {%if holding.MFHD_DATA.marc866list or holding.MFHD_DATA.marc852%}
+                        {%if forloop.first and not holding.MFHD_DATA.marc856list%}
+                        <tr>
+                        <td>
+                        <div class="itemrow">
+                            {% if item.TEMPLOCATION %}
+                                {{ item.TEMPLOCATION|noscream }}
+                                <br/>
+                            {% else %}
+                                {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
+                                <br />
+                            {%endif%}
+                            {% if holding.MFHD_DATA.marc866list%}
+                                {% for line in holding.MFHD_DATA.marc866list %}
+                                    <span class="library-has">{{ line }}</span>
+                                    <br />
+                                {% endfor %}
+                            {% endif %}
+                            {% if holding.MFHD_DATA.marc852 %}
+                                <span class="note-label">{{ holding.MFHD_DATA.marc852 }}</span>
+                                <br />
+                            {% endif %}
+                        </tr>
+                        </td>
+                        </div>
+                        {%endif%}
+                    {%endif%}
+                    <tr>
+                    <td>
+                    <div class="itemrow">
                             {% if item.TEMPLOCATION %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
                                 {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
                                     <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');">
                                 {%endif%}
-                                <br />
                             {% else %}
                                 {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                                 <br />
@@ -241,18 +267,7 @@ function showmore(id)
                                     <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
                                 {%endif%}
                             {% endif %}
-                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc866list and not holding.MFHD_DATA.marc856list and forloop.last%}
-                                {% for line in holding.MFHD_DATA.marc866list %}
-                                    <br />
-                                    <span class="library-has">{{ line }}</span>
-                                {% endfor %}
-                            {% endif %}
-                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc852 and not holding.MFHD_DATA.marc856list and forloop.last%}
-                                <br />
-                                <span class="note-label">{{ holding.MFHD_DATA.marc852 }}</span>
-                            {% endif %}
-
-                            </div>
+                        </div>
                         </td>
                         <td>
                            {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
