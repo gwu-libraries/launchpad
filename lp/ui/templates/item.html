@@ -203,7 +203,7 @@ function sms(url) {
 
 {% if holdings %}
     {% regroup holdings by LIBRARY_FULL_NAME as library_list %}
-<table WIDTH='100%'> 
+<table WIDTH='100%' > 
     <thead>
         <tr>
             <th width='40%'>Location</th>
@@ -227,8 +227,8 @@ function sms(url) {
                     {%if holding.MFHD_DATA.marc866list or holding.MFHD_DATA.marc852%}
                         {%if forloop.first and not holding.MFHD_DATA.marc856list%}
                         <tr>
-                        <td>
-                        <div class="itemrow">
+                        <td >
+                        <div style="width:320px;overflow:hidden;" >
                             {% if item.TEMPLOCATION %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
@@ -238,26 +238,22 @@ function sms(url) {
                             {%endif%}
                             {% if holding.MFHD_DATA.marc866list%}
                                 {% for line in holding.MFHD_DATA.marc866list %}
-                                    <span class="library-has">{{ line }}</span>
+                                    <span class="library-has">{{line}}</span>
                                     <br />
                                 {% endfor %}
                             {% endif %}
                             {% if holding.MFHD_DATA.marc852 %}
-                                <span class="note-label">{{ holding.MFHD_DATA.marc852 }}</span>
+                                <span class="note-label" >{{holding.MFHD_DATA.marc852}}</span>
                                 <br />
                             {% endif %}
-                        </tr>
-                        </td>
                         </div>
+                        </td>
+                        </tr>
                         {%endif%}
                     {%endif%}
                     <tr>
-                    {%if holding.ITEMS|length > max_items and forloop.counter >= max_items%}
-                    <td width='51%'>
-                    {%else%}    
-                    <td width='40%'>
-                    {%endif%}
-                    <div class="itemrow">
+                    <td>
+                    <div class='itemrow'>
                             {% if item.TEMPLOCATION %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
@@ -273,19 +269,12 @@ function sms(url) {
                             {% endif %}
                         </div>
                         </td>
-                        {%if holding.ITEMS|length > max_items and forloop.counter >= max_items%}
-                        <td width='23%'>
-                        {%else%}
-                        <td width='25%'>
-                        {%endif%}
+                        <td>
+                        
                            {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
                            {% if item.ITEM_ENUM %} {{ item.ITEM_ENUM }} {% endif %}
                        </td>
-                       {%if holding.ITEMS|length > max_items and forloop.counter >= max_items%}
-                       <td width='17%'>
-                       {%else%}
-                       <td width='20%'>
-                       {%endif%}
+                       <td>
                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
                                    {% if link.3 %}
@@ -323,19 +312,19 @@ function sms(url) {
                                {%endif%}
                            {%endif%}
                        </td>
-                       {%if holding.ITEMS|length > max_items and forloop.counter >= max_items%}
-                       <td width= '9%'>
-                       {%else%}
-                       <td width='15%'>
-                       {%endif%}
+                       <td>
                            {% if item.ELIGIBLE %}
                                <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                            {% endif %}
                        </td>
                   </tr>
                            {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
-                               <td colspan="4">
-                               <table width="100%" id="{{holding.BIB_ID}}" style="display:none;">
+                               <td colspan="4" width="100%">
+                               <table width="100%"  id="{{holding.BIB_ID}}" style="display:none;">
+                               <col width="40%">
+                               <col width="25%">
+                               <col width="20%">
+                               <col width="15%">
                            {%endif%}
                            {%if holding.ITEMS|length > max_items and forloop.last%}
                                </table>

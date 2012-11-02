@@ -9,7 +9,6 @@ body {
 .library-has {
     color: gray;
     font-size: small;
-    overflow:hidden;
 }
 
 .item_list {
