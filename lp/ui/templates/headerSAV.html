@@ -1,9 +1,6 @@
 {% load url from future %}
 
 <header>
-<script language='javascript'>
-function feedback() { var fbform="https://docs.google.com/spreadsheet/viewform?formkey=dDVfMTNIT0tneVFvNFZoQkNXc01SN2c6MQ"; fbform += "&entry_3=" + window.location; window.open(fbform); }
-</script>
     <div id="libheader-container">
         <div id="libheader" >
             <div class="libheader-logo hide-lo"><a href="http://www.gwu.edu" target="_blank" title="GWU website"><img src="{{ STATIC_URL }}img/gwheaderlogo.png" width='309' height='32' alt="logo: The George Washington University" /></a></div>
@@ -11,8 +8,6 @@ function feedback() { var fbform="https://docs.google.com/spreadsheet/viewform?f
                 <div class="libheader-link"><a href="{% url 'about' %}" target="_blank" title="about">About</a></div>
                 <div class="libheader-link">&bull;</div>
                 <div class="libheader-link"><a href="{% url 'api' %}" target="_blank" title="">API</a></div>
-                <div class="libheader-link">&bull;</div>
-                <div class="libheader-link"><a href="javascript:feedback();" >Found a Problem?</a></div>
         </div>
     </div>
 </header>
