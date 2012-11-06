@@ -44,9 +44,13 @@ def item(request, bibid):
                 if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
                     return item(request, alt_bib['BIB_ID'])
         holdings = voyager.get_holdings(bib)
-        ours, theirs, shared = splitsort(holdings)
-        holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) \
-            + libsort(elecsort(availsort(theirs), rev=True))
+        if holdings:
+            show_aladin_link = True
+            ours, theirs, shared = splitsort(holdings)
+            holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) \
+                + libsort(elecsort(availsort(theirs), rev=True))
+        else:
+            show_aladin_link = False
         return render(request, 'item.html', {
             'bibid': bibid,
             'bib': bib,
@@ -61,6 +65,7 @@ def item(request, bibid):
             'audio_tags': settings.STREAMING_AUDIO_TAGS,
             'video_tags': settings.STREAMING_VIDEO_TAGS,
             'max_items': settings.MAX_ITEMS,
+            'show_aladin_link': show_aladin_link
             })
     except:
         return redirect('error503')
