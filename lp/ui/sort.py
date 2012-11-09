@@ -49,6 +49,34 @@ def _is_electronic(holding):
         return False
 
 
+def numstrip(num):
+    if num:
+        newnum = ''
+        for char in num:
+            if char in '0123456789':
+                newnum += char
+            elif newnum:
+                break
+        if newnum:
+            return int(newnum)
+
+
+def enumsort(holdings_list):
+    for holding in holdings_list:
+        if holding.get('ITEMS', None):
+            holding['ITEMS'] = sorted(holding['ITEMS'],
+                key=lambda item: numstrip(item['ITEM_ENUM']))
+    return holdings_list
+
+
+def callnumsort(holdings_list):
+    for holding in holdings_list:
+        if holding.get('ITEMS', None):
+            holding['ITEMS'] = sorted(holding['ITEMS'],
+                key=lambda item: numstrip(item['DISPLAY_CALL_NO']))
+    return holdings_list
+
+
 def elecsort(holdings_list, rev=False):
     elec, rest = [], []
     for holding in holdings_list:

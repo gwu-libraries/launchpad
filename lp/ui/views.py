@@ -7,7 +7,8 @@ from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
 from ui import voyager, apis
-from ui.sort import libsort, availsort, elecsort, splitsort
+from ui.sort import libsort, availsort, elecsort, \
+    splitsort, enumsort, callnumsort
 
 
 def home(request):
@@ -46,8 +47,9 @@ def item(request, bibid):
         holdings = voyager.get_holdings(bib)
         if holdings:
             show_aladin_link = True
-            ours, theirs, shared = splitsort(holdings)
-            holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) \
+            ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
+            holdings = availsort(elecsort(ours)) \
+                + availsort(elecsort(shared)) \
                 + libsort(elecsort(availsort(theirs), rev=True))
         else:
             show_aladin_link = False
@@ -68,7 +70,8 @@ def item(request, bibid):
             'show_aladin_link': show_aladin_link
             })
     except:
-        return redirect('error503')
+        raise
+        #return redirect('error503')
 
 
 def _date_handler(obj):
