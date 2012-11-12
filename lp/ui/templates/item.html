@@ -29,7 +29,7 @@ function toggle_visibility(tbid,lnkid)
 {
  if(document.all){document.getElementById(tbid).style.display = document.getElementById(tbid).style.display == "block" ? "none" : "block";}
   else{document.getElementById(tbid).style.display = document.getElementById(tbid).style.display == "table" ? "none" : "table";}
-  document.getElementById(lnkid).value = document.getElementById(lnkid).value == "[-] Less Items" ? "[+] More Items" : "[-] Less Items";
+  document.getElementById(lnkid).value = document.getElementById(lnkid).value == "[-] Hide " ? "[+] Show " : "[-] Hide ";
 
 };
 
@@ -42,14 +42,14 @@ function showmore(id)
                 {
 			objf.style.display='none';
 			objb.style.display='block';
-			objt.innerHTML="<a href=javascript:showmore('1');>[+] More Text</a>";
+			objt.innerHTML="<a href=javascript:showmore('1');>[+] Show</a>";
 
 		}
                 else 
                 {
 			objf.style.display='block';
 			objb.style.display='none';
-			objt.innerHTML="<a href=javascript:showmore('1');>[-] Less Text</a>";
+			objt.innerHTML="<a href=javascript:showmore('1');>[-] Hide</a>";
 		}		
 
 	};
@@ -112,7 +112,7 @@ function sms(url) {
                         <span itemprop="name">{{bib.TITLE_ALL}}</span>
                     </div>
                     <div id="toggle-1"> 
-                        <a href='javascript:showmore("1")';>[+] More Text</a>
+                        <a href='javascript:showmore("1")';>[+] Show</a>
                     </div>
                 {% endif %}
                 </h1>
@@ -260,13 +260,13 @@ function sms(url) {
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
                                 {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
-                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;color:blue;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');">
+                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] Show " style="border:none;background:none;color:blue;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');">
                                 {%endif%}
                             {% else %}
                                 {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                                 <br />
                                 {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
-                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] More Items" style="border:none;background:none;color:blue;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
+                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] Show " style="border:none;background:none;color:blue;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
                                 {%endif%}
                             {% endif %}
                         </div>
