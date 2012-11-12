@@ -71,8 +71,7 @@ def item(request, bibid):
             'show_aladin_link': show_aladin_link
             })
     except:
-        raise
-        #return redirect('error503')
+        return redirect('error503')
 
 
 def _date_handler(obj):
@@ -84,8 +83,8 @@ def item_json(request, bibid):
     try:
         bib_data = voyager.get_bib_data(bibid)
         if not bib_data:
-            return render(request, '404.html', {'num': bibid,
-                'num_type': 'BIB ID'}, status=404)
+            return HttpResponse('{}', content_type='application_json',
+                status_code=404)
         bib_data['holdings'] = voyager.get_holdings(bib_data)
         bib_data['openurl'] = _openurl_dict(request)
         return HttpResponse(json.dumps(bib_data, default=_date_handler,
