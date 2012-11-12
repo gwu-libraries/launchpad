@@ -186,7 +186,7 @@ function sms(url) {
                     {% endif %}
                     </span>
                     </p>
-                    {%if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as'%}
+                    {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID %}
                      <p>
                      <span class = "catlink"> 
                       Request this title through  <a href= {{bib.ILLIAD_LINK}} target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
@@ -253,7 +253,9 @@ function sms(url) {
                     {%endif%}
                     <tr>
                     <td>
-                    <div class='itemrow'>
+                        {% if bib.FINDING_AID %}Gelman Special Collections<br />
+                        {% else %}
+                        <div class='itemrow'>
                             {% if item.TEMPLOCATION %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
@@ -268,14 +270,17 @@ function sms(url) {
                                 {%endif%}
                             {% endif %}
                         </div>
-                        </td>
-                        <td>
-                        
+                        {% endif %}
+                    </td>
+                    <td>
                            {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
                            {% if item.ITEM_ENUM %} {{ item.ITEM_ENUM }} {% endif %}
-                       </td>
+                           {% if bib.FINDING_AID %}
+                               <br /><a href="{{bib.FINDING_AID}}" target="clswindow">View the Finding Aid</a>
+                           {% endif %}
+                    </td>
                        <td>
-                           {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
+                           {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list and not bib.FINDING_AID %}
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
                                    {% if link.3 %}
                                        <span class="link-volumes">[{{ link.3 }}]</span>
@@ -299,11 +304,11 @@ function sms(url) {
                                    {% if not forloop.last %}<hr />{% endif %}
                                {% endfor %}
                            {% else %}
-                               {%if item.ITEM_STATUS_DESC == 'Not Charged' %}
+                               {%if item.ITEM_STATUS_DESC == 'Not Charged' and not bib.FINDING_AID %}
                                    <span style='color: green'>Available</span>
                                    <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if item.DISPLAY_CALL_NO %}call={{ item.DISPLAY_CALL_NO|urlencode }}{% endif %}&amp;{% if item.TRIMMED_LOCATION_DISPLAY_NAME %}loc={{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream|urlencode }}{% endif %}&amp;title={{ bib.TITLE|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
                                {%else%}
-                                   {% if item.TEMPLOCATION == 'WRLC Center'%}
+                                   {% if item.TEMPLOCATION == 'WRLC Center' or bib.FINDING_AID %}
                                        <span class='off-site'>Off-site </span>
                                        <br />
                                    {% else %}
