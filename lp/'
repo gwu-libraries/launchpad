@@ -344,7 +344,7 @@ ORDER BY library.library_name"""
         if (holding['LIBRARY_NAME'] == 'HS' and
             holding['LOCATION_NAME'] == 'hs link'):
             holding['REMOVE'] = True
-        if (holding['TRIMMED_LOCATION_DISPLAY_NAME'] == ' Online'  and holding['ELECTRONIC_DATA']['LINK856U'] is None and len(holding['ITEMS'])==0):
+        if (holding['TRIMMED_LOCATION_NAME'] == 'Online' and holding['ELECTRONIC_DATA'] and holding['ELECTRONIC_DATA']['LINK856U'].strip() and len(holding['ITEMS'])==0):
             holding['REMOVE'] = True
     for item in added_holdings:
         holdings.append(item)

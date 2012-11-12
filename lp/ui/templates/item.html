@@ -362,7 +362,7 @@ function sms(url) {
                         {% endif %}
                     </td>
                     <td>
-                        {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U %}
+                        {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U  %}
                             {% if holding.ELECTRONIC_DATA.LINK8563 %}
                                 <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
                             {% endif %}
@@ -382,7 +382,7 @@ function sms(url) {
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
                                 {%endif%}
                             {% endif %}
-                        {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list %}
+                        {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list and holding.MFHD_DATA.marc856list.strip%}
 			    {% for link in holding.MFHD_DATA.marc856list %}
 				{% if link.3%}
 			            <span class="link-volumes">[{{ link.3 }}]</span>
