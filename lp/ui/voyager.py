@@ -131,6 +131,8 @@ AND bib_master.suppress_in_opac='N'"""
         bib['BIB_ID_LIST'] = list(bibids)
     # parse fields for microdata
     bib['MICRODATA_TYPE'] = get_microdata_type(bib)
+    if bib.get('LINK') and bib.get('MESSAGE', '') == '856:42:$zCONNECT TO FINDING AID':
+        bib['FINDING_AID'] = bib['LINK'][9:]
     return bib
 
 

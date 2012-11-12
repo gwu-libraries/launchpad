@@ -7,7 +7,8 @@ from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
 from ui import voyager, apis
-from ui.sort import libsort, availsort, elecsort, splitsort
+from ui.sort import libsort, availsort, elecsort, \
+    splitsort, enumsort, callnumsort, strip_bad_holdings
 
 
 def home(request):
@@ -44,9 +45,15 @@ def item(request, bibid):
                 if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
                     return item(request, alt_bib['BIB_ID'])
         holdings = voyager.get_holdings(bib)
-        ours, theirs, shared = splitsort(holdings)
-        holdings = availsort(elecsort(ours)) + availsort(elecsort(shared)) \
-            + libsort(elecsort(availsort(theirs), rev=True))
+        if holdings:
+            holdings = strip_bad_holdings(holdings)
+            show_aladin_link = True
+            ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
+            holdings = elecsort(availsort(ours)) \
+                + elecsort(availsort(shared)) \
+                + libsort(elecsort(availsort(theirs), rev=True))
+        else:
+            show_aladin_link = False
         return render(request, 'item.html', {
             'bibid': bibid,
             'bib': bib,
@@ -61,6 +68,7 @@ def item(request, bibid):
             'audio_tags': settings.STREAMING_AUDIO_TAGS,
             'video_tags': settings.STREAMING_VIDEO_TAGS,
             'max_items': settings.MAX_ITEMS,
+            'show_aladin_link': show_aladin_link
             })
     except:
         return redirect('error503')
@@ -74,6 +82,9 @@ def _date_handler(obj):
 def item_json(request, bibid):
     try:
         bib_data = voyager.get_bib_data(bibid)
+        if not bib_data:
+            return HttpResponse('{}', content_type='application_json',
+                status_code=404)
         bib_data['holdings'] = voyager.get_holdings(bib_data)
         bib_data['openurl'] = _openurl_dict(request)
         return HttpResponse(json.dumps(bib_data, default=_date_handler,
