@@ -25,6 +25,12 @@ class RecordSet():
     def bibs(self):
         self._bibs = []
 
+    def gtbibs(self):
+        return [bib for bib in self.bibs if bib.libcode in settings.GTCODES]
+
+    def gmbibs(self):
+        return [bib for bib in self.bibs if bib.libcode in settings.GMCODES]
+
     def holdings(self):
         return [bib.holdings for bib in self.bibs]
 
