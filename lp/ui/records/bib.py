@@ -1,7 +1,7 @@
 import pymarc
 
 from django.conf import settings
-from ui.holding import Holding
+from ui.records.holding import Holding
 
 
 META_TEMPLATE_BIB = {
@@ -96,6 +96,9 @@ class Bib():
     @holdings.deleter
     def holdings(self):
         self._holdings = []
+
+    def items(self):
+        return [h.items for h in self.holdings]
 
     def altmeta(self):
         alts = {}

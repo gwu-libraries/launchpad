@@ -1,7 +1,7 @@
 import pymarc
 
 from django.conf import settings
-from ui import Item
+from ui.records.item import Item
 
 
 META_TEMPLATE_HOLD = {
