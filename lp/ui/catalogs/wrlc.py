@@ -1,4 +1,5 @@
 import re
+import pymarc
 
 from django.conf import settings
 from django.db import connection
@@ -7,7 +8,8 @@ from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc
 from ui.models import Bib, Holding, Item
 
 
-def bib(bibid, expand=True):
+def bib(bibid):
+    assert re.match(r'^\d{2,8}$', bibid), '%s is not a proper bibid' % bibid
     '''
     Primary function for retrieving a record from the Voyager DB using the
     Bib object type
@@ -35,7 +37,8 @@ AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     data = _ask_oracle(query, params=[bibid, bibid], first=True)
     raw_marc = str(data.pop('marcblob'))
-    bib = Bib(metadata=data, raw_marc=raw_marc)
+    marc = pymarc.record.Record(data=raw_marc)
+    bib = Bib(metadata=data, marc=marc)
     return bib
 
 
@@ -46,6 +49,9 @@ def bibid(num, num_type):
     multiple bibids it gives preference to the preferred library (as
     specified in the settings file).
     '''
+    assert num_type in ('gtbibid', 'gmbibid', 'isbn', 'issn', 'oclc'), \
+        'num_type must be one of (gtbibid, gmbibid, isbn, issn, oclc)'
+    assert isinstance(num, str), 'num must be a string'
     num = _normalize_num(num, num_type)
     query = """
 SELECT bib_index.bib_id AS  bibid,
@@ -74,6 +80,7 @@ AND bib_master.library_id=library.library_id"""
 
 
 def related_stdnums(bibid):
+    assert re.match(r'^\d{2,8}$', bibid), '%s is not a proper bibid' % bibid
     output = {'isbn': [], 'issn': [], 'oclc': []}
     query = '''
 SELECT normal_heading,
@@ -104,12 +111,14 @@ ORDER BY normal_heading'''
 
 
 def _is_valid_issn(num):
+    assert isinstance(num, str), 'num must be a string'
     if re.match('\d{4}[ -]\d{3}[0-9xX]', num):
         return True
     return False
 
 
 def _is_oclc(num):
+    assert isinstance(num, str), 'num must be a string'
     if num.find('OCoLC') >= 0:
         return True
     if num.find('ocn') >= 0:
@@ -120,6 +129,12 @@ def _is_oclc(num):
 
 
 def related_bibids(stdnums):
+    assert isinstance(stdnums, dict), 'stdnums must be a dictionary'
+    assert all(key in ('oclc', 'issn', 'bib') for key in stdnums), \
+        'stdnum types can only be (isbn, issn, oclc)'
+    assert all(isinstance(stdnums[k], str) for k in stdnums), \
+        'each num in stdnums must be a string'
+    # pop off any empty values to reduce number of DB queries
     for key in stdnums.keys():
         if not stdnums[key]:
             stdnums.pop(key)
@@ -163,6 +178,9 @@ ORDER BY bib_index.bib_id"""
 
 
 def holdings(bibids):
+    assert isinstance(bibids, list), 'bibids must be a list'
+    assert all(re.match(r'^\d{2,8}$', bibid), for bibid in bibids), \
+        '%s is not a proper bibid' % bibid
     query = """
 SELECT bib_mfhd.bib_id AS bibid,
        mfhd_master.mfhd_id AS mfhdid,
@@ -188,11 +206,15 @@ ORDER BY library.library_name"""
     holdings = []
     for record in results:
         marcblob = str(record.pop('marcblob'))
-        holdings.append(Holding(metadata=record, raw_marc=marcblob))
+        marc = pymarc.record.Record(data=marcblob)
+        holdings.append(Holding(metadata=record, marc=marc))
     return holdings
 
 
 def items(mfhdid):
+    assert isinstance(mfhdid, str), 'mfhdid must be a string'
+    assert re.match(r'^\d{2,16}$', mfhdid), \
+        '%s is not a proper mfhdid' % mfhdid
     query = '''
 SELECT DISTINCT display_call_no AS callnum,
        item_status_desc AS status,
@@ -236,6 +258,8 @@ ORDER BY itemid'''
 
 
 def bibblob(bibid):
+    assert isinstance(bibid, str), 'bibid must be a string'
+    assert re.match(r'^\d{2,8}$', bibid), '%s is not a proper bibid' % bibid
     query = """
 SELECT wrlcdb.getBibBlob(%s) AS bibblob
 FROM bib_text
@@ -246,6 +270,9 @@ WHERE bib_text.bib_id = %s"""
 
 
 def mfhdblob(mfhdid):
+    assert isinstance(mfhdid, str), 'mfhdid must be a string'
+    assert re.match(r'^\d{2,16}$', mfhdid), \
+        '%s is not a proper mfhdid' % mfhdid
     query = """
 SELECT wrlcdb.getMFHDBlob(%s) AS mfhdblob
 FROM mfhd_master
@@ -256,12 +283,17 @@ WHERE mfhd_id = %s"""
 
 
 def _ask_oracle(query, params=[], first=False):
+    assert isinstance(query, str), 'query must be a string'
+    assert isinstance(params, list), 'params must be a list'
+    assert isinstance(first, bool), 'first must be a boolean'
     cursor = connection.cursor()
     cursor.execute(query, params)
     return _make_dict(cursor, first)
 
 
 def _make_dict(cursor, first=False):
+    #TODO, assert cursor type
+    assert isinstance(first, bool), 'first must be a boolean'
     desc = cursor.description
     mapped = [
         dict(zip([col[0].lower() for col in desc], row))
@@ -282,6 +314,9 @@ def _make_dict(cursor, first=False):
 
 
 def _normalize_num(num, num_type):
+    assert num_type in ('isbn', 'issn', 'oclc'), \
+        'num_type must be one of (isbn, issn, oclc)'
+    assert isinstance(num, str), 'num must be a string'
     if num_type == 'isbn':
         return clean_isbn(num)
     elif num_type == 'issn':
@@ -292,4 +327,6 @@ def _normalize_num(num, num_type):
 
 
 def _in_clause(items):
+    assert isinstance(items, list), 'items must be a list'
+    assert all(isinstance(i, str), for i in items), 'items must be strings'
     return '(%s)' % ','.join(["'%s'" % item for item in items])
