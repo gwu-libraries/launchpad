@@ -33,30 +33,12 @@ def _openurl_dict(params):
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid, expand=True):
-    bib = wrlc.bib(bibid)
-    if not bib:
+    wrlc = WRLC()
+    recordset = wrlc.build_record_set(bibid)
+    if not recordset:
         return render(request, '404.html', {'num': bibid,
             'num_type': 'BIB ID'}, status=404)
-    bib.openurl = _openurl_dict(request.GET)
-    if expand:
-        bib.related_stdnums = wrlc.related_stdnums(bib.bibid)
-        related_bibids = wrlc.related_bibids(bib.related_stdnums)
-        if related_bibids:
-            bib.related_bibids = [b['bibid'] for b in related_bibids]
-        #replace MARC with ours
-        if bib.libcode != settings.PREF_LIB:
-            if related_bibids is not None:
-                for b in related_bibids:
-                    if b['libcode'] == settings.PREF_LIB:
-                        bib.marc = str(wrlc.bibblob(b['bibid']))
-                        break
-    bib.holdings = wrlc.holdings(bib.bibids)
-    for holding in bib.holdings:
-        if holding.libcode in settings.Z3950_SERVERS:
-            continue
-            #TODO: add z39.50 item lookup 
-        else:
-            holding.items = wrlc.items(holding.mfhdid)
+    recordset.openurl = _openurl_dict(request.GET)
     #TODO: add sorting
     return render(request, 'item.html', {
         'bibid': bibid,
@@ -69,34 +51,18 @@ def item(request, bibid, expand=True):
         })
 
 
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
-def item_bib(request, bibid):
-    bib = voyager.get_bib_data(bibid, expand_ids=False)
-    if not bib:
-        return render(request, '404.html', {'num': bibid,
-            'num_type': 'BIB ID'}, status=404)
-    # Don't bother expanding bibids; we don't need correct holdings
-    return render(request, 'item.html', {
-        'bibid': bibid,
-        'bib': bib,
-        'debug': settings.DEBUG,
-        'title_chars': settings.TITLE_CHARS,
-        'link': bib.get('LINK', '')[9:],
-        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-        'link_resolver': settings.LINK_RESOLVER,
-        'enable_humans': settings.ENABLE_HUMANS,
-        })
-
-
 def _date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item_json(request, bibid):
-    bib_data = voyager.get_bib_data(bibid)
-    bib_data['holdings'] = voyager.get_holdings(bib_data)
-    bib_data['openurl'] = _openurl_dict(request.GET)
+    wrlc = WRLC()
+    recordset = wrlc.build_record_set(bibid)
+    if not recordset:
+        return HttpResponse('{}', content_type='application_json',
+            status_code=404)
+    recordset.openurl = _openurl_dict(request.GET)
     return HttpResponse(json.dumps(bib_data, default=_date_handler,
         indent=2), content_type='application/json')
 
