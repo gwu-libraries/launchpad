@@ -53,24 +53,7 @@ function showmore(id)
 		}		
 
 	};
-</script>
 
-<script type='text/javascript'>
-// hide missing cover images' surrounding <div>
-$(document).ready(function() {
-    $('#cover-image').load(function() {
-        if ($('#cover-image').width() == 1) {
-            $('#cover').toggle(200);
-        };
-        //hide the all of the items with class item_body
-	$(".item_body").hide();
-	//toggle the componenet with class item_body
-	$(".item_head").click(function(){
-		$(this).next(".item_body").slideToggle(250);
-        });
-
-    });
-// show txt/email button
 var newwindow;
 function sms(url) {
     newwindow = window.open(url, 'name', 'height=590,width=400,toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0');
@@ -78,6 +61,20 @@ function sms(url) {
         newwindow.focus();
     };
 };
+</script>
+
+<script type='text/javascript'>
+$(document).ready(function() {
+    $('#cover-image').load(function() {
+        if ($('#cover-image').width() == 1) {
+            $('#cover').toggle(200);
+        };
+	$(".item_body").hide();
+	$(".item_head").click(function(){
+		$(this).next(".item_body").slideToggle(250);
+        });
+
+    });
 
 
 </script>
