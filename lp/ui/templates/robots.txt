@@ -4,8 +4,7 @@
 # Hi there.  This is a test server. Please don't index it!
 {% endif %}
 
-User-agent: *
-{% if enable_sitemaps %}
+User-agent: *{% if enable_sitemaps %}
 Sitemap: {{ sitemaps_base_url }}/sitemap-index.xml
 Disallow: /go
 Disallow: /log
