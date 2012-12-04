@@ -18,7 +18,7 @@
 {% block link_extra %}
 {% if bibid %}
     {% if non_wrlc_item %}
-    <link rel='canonical' href='{% url "gtitem" bib.bibid %}' />
+    <link rel='canonical' href='{% url "gtitem" bib.BIB_ID %}' />
     {% else %}
     <link rel='canonical' href='{% url "item" bibid %}' />
     <link rel='alternate' type='application/json' href='{% url "item_json" bibid %}' />
