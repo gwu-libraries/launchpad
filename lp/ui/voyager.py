@@ -3,6 +3,9 @@ import urllib
 
 import pycountry
 from PyZ3950 import zoom
+from PyZ3950 import zmarc
+import pymarc
+import traceback
 
 from django.conf import settings
 from django.db import connection
@@ -34,7 +37,7 @@ def _make_dict(cursor, first=False):
     return mapped
 
 
-def get_added_authors(bib):
+def  get_added_authors(bib):
     """Starting with the main author entry, build up a list of all authors."""
     query = """
 SELECT bib_index.display_heading AS author
@@ -88,7 +91,12 @@ AND bib_master.suppress_in_opac='N'"""
     bib = _make_dict(cursor, first=True)
     # if bib is empty, there's no match -- return immediately
     if not bib:
-        return None
+        # the following checks is for a record that only have GM or GT holdings
+        # check if a record for a matching bib is not found in wrlc
+        bib = get_z3950_bib_data(bibid,'GM')
+        if bib is None:
+            bib = get_z3950_bib_data('b'+bibid[:-1],'GT')
+        return bib
     # ensure the NETWORK_NUMBER is OCLC
     if not bib.get('OCLC', '') or not _is_oclc(bib.get('OCLC', '')):
         bib['OCLC'] = ''
@@ -134,7 +142,6 @@ AND bib_master.suppress_in_opac='N'"""
     if bib.get('LINK') and bib.get('MESSAGE', '') == '856:42:$zCONNECT TO FINDING AID':
         bib['FINDING_AID'] = bib['LINK'][9:]
     return bib
-
 
 def _is_oclc(num):
     if num.find('OCoLC') >= 0:
@@ -251,7 +258,7 @@ def _is_valid_issn(num):
     return False
 
 
-def get_holdings(bib_data):
+def get_holdings(bib_data,lib=None):
     done = []
     query = """
 SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
@@ -271,11 +278,14 @@ ORDER BY library.library_name"""
         idclause = "'%s'" % bib_data['BIB_ID']
     query = query % idclause
     cursor = connection.cursor()
-    cursor.execute(query, [])
+    if not lib:
+        cursor.execute(query, [])
+        holdings = _make_dict(cursor)
+        illiad_link = get_illiad_link(bib_data)
+    else:
+        holdings = init_z3950_holdings(bib_data['BIB_ID'], lib)
     eligibility = False
     added_holdings = []
-    holdings = _make_dict(cursor)
-    illiad_link = get_illiad_link(bib_data)
     for holding in holdings:
         if (holding['LIBRARY_NAME'] == 'GM' or
             holding['LIBRARY_NAME'] == 'GT' or
@@ -367,6 +377,19 @@ ORDER BY library.library_name"""
         bib_data.update({'ILLIAD_LINK': ''})
     holdings = correct_gt_holding(holdings)
     return [h for h in holdings if not h.get('REMOVE', False)]
+
+def init_z3950_holdings(bibid,lib):
+    holdings = []
+    data = {}
+    data['MFHD_ID'] = ''
+    data['LIBRARY_NAME'] = lib
+    data['LOCATION_NAME'] = ''
+    data['LOCATION_DISPLAY_NAME'] = '' 
+    data['LOCATION_ID'] = 0
+    data['BIB_ID'] = bibid
+    data['DISPLAy_CALL_NO'] = ''
+    holdings.append(data)
+    return holdings
 
 
 def get_additional_holdings(result, holding):
@@ -580,12 +603,84 @@ ORDER BY PermLocation, TempLocation, item_status_date desc"""
     return _make_dict(cursor)
 
 
+def get_z3950_bib_data(bibid, lib):
+    conn = None
+    res = []
+    authors = []
+    id_list=[]
+    bib = None
+    try:
+        conn = _get_z3950_connection(settings.Z3950_SERVERS[lib])
+    except:
+        return None
+    query = zoom.Query('PQF', '@attr 1=12 %s' %
+        bibid.encode('utf-8'))
+    try:
+        res = conn.search(query)
+        for r in res:
+            bib = {}
+            rec = pymarc.record.Record(r.data.bibliographicRecord.encoding[1])
+            bib['LIBRARY_NAME'] = lib
+	    bib['AUTHOR'] = rec.author()
+	    bib['BIB_ID'] = bibid
+	    bib['BIB_FORMAT'] = rec['000']
+            id_list.append({'BIB_ID':bibid, 'LIBRARY_NAME':lib})
+	    bib['BIB_ID_LIST'] = id_list
+            if rec['250']:
+	        bib['EDITION'] = rec['250']['a']
+            else:
+                bib['EDITION'] = None
+	    bib['IMPRINT'] = rec['260'].value()
+	    bib['LANGUAGE'] = rec['008'].value()[35:38]
+            if rec['856']:
+	        bib['LINK'] = rec['856']['u']
+            else:
+                bib['LINK'] = []
+            if rec['006']:
+	        bib['MARC006'] = rec['006'].value()
+            else:
+                bib['MARC006'] = None
+            if rec['007']:
+	        bib['MARC007'] = rec['007'].value()
+            else:
+                bib['MARC007'] = None
+            if rec['008']:
+	        bib['MARC008'] = rec['008'].value()
+            else:
+                 bib['MARC008'] = None
+            if rec['MESSAGE']:
+	        bib['MESSAGE'] = rec['856']['z']
+            else:
+                bib['MESSAGE'] = None
+            if rec['035']:
+	        bib['OCLC'] = rec['035']['a']
+            else:
+                bib['OCLC'] = None
+	    bib['PUBLISHER'] = rec.publisher()
+	    bib['PUBLISHER_DATE'] = rec.pubyear()
+            if rec['260']:
+	        bib['PUB_PLACE'] = rec['260']['a']
+            else:
+                bib['PUB_PLACE'] = None
+	    bib['TITLE'] = rec.title()
+    except:
+        tb = traceback.format_exc()
+        return None
+    return bib
+
+
 def _get_z3950_connection(server):
     conn = zoom.Connection(server['SERVER_ADDRESS'], server['SERVER_PORT'])
     conn.databaseName = server['DATABASE_NAME']
     conn.preferredRecordSyntax = server['PREFERRED_RECORD_SYNTAX']
     return conn
 
+def _GetValue(skey, tlist):
+    """Get data for subfield code skey, given the subfields list."""
+    for (subkey, subval) in tlist:
+        if skey == subkey:
+            return subval
+    return None
 
 def _get_gt_holdings(id, query, query_type, bib, lib):
     res = []
@@ -724,7 +819,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
                         'marc856list': res[1], 'marc852': ''},
                     'items': res[2]})
             return dataset
-        if len(bib) > 0:
+        if bib and len(bib) > 0:
             correctbib = ''
             query = None
             for bibid in bib:
@@ -849,7 +944,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
             return dataset
         else:
             res = get_bib_data(id)
-            if len(res) > 0:
+            if res and len(res) > 0:
                 ind = res['LINK'].find('$u')
                 url = res['LINK'][ind + 2:]
                 ind = res['MESSAGE'].find('$z')
@@ -873,7 +968,7 @@ def get_z3950_holdings(id, school, id_type, query_type):
         res = []
         if id_type == 'bib':
             bib = get_gtbib_from_gwbib(id)
-            if len(bib) >= 1:
+            if bib and len(bib) >= 1:
                 if bib[0] is not None:
                     query = zoom.Query('PQF', '@attr 1=12 %s' %
                         bib[0].encode('utf-8'))
@@ -881,11 +976,16 @@ def get_z3950_holdings(id, school, id_type, query_type):
                         bib, school)
                 else:
                     return []
+            elif not bib:
+                query = zoom.Query('PQF', '@attr 1=12 %s' %
+                    str(id).encode('utf-8'))
+                return _get_gt_holdings(id, query, query_type,
+                    id, school)
             else:
-                    query = zoom.Query('PQF', '@attr 1=12 %s' %
-                        str(bib).encode('utf-8'))
-                    return _get_gt_holdings(id, query, query_type,
-                        bib, school)
+                query = zoom.Query('PQF', '@attr 1=12 %s' %
+                    str(bib).encode('utf-8'))
+                return _get_gt_holdings(id, query, query_type,
+                    bib, school)
         elif id_type == 'isbn':
             query = zoom.Query('PQF', '@attr 1=7 %s' % id)
         elif id_type == 'issn':
@@ -902,9 +1002,12 @@ FROM bib_index
 WHERE bib_index.bib_id = %s
 AND bib_index.index_code ='035A'
 AND bib_index.normal_heading=bib_index.display_heading"""
-    cursor = connection.cursor()
-    cursor.execute(query, [bibid])
-    results = _make_dict(cursor)
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query, [bibid])
+        results = _make_dict(cursor)
+    except:
+        return None
     return [row['NORMAL_HEADING'] for row in results]
 
 
@@ -915,9 +1018,12 @@ SELECT LOWER(SUBSTR(bib_index.normal_heading, 0,
 FROM bib_index
 WHERE bib_index.bib_id = %s
 AND bib_index.index_code ='907A'"""
-    cursor = connection.cursor()
-    cursor.execute(query, [bibid])
-    results = _make_dict(cursor)
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query, [bibid])
+        results = _make_dict(cursor)
+    except:
+        return None
     return [row['NORMAL_HEADING'] for row in results]
 
 

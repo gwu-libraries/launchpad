@@ -32,7 +32,7 @@ def _openurl_dict(request):
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
-def item(request, bibid):
+def item(request, bibid, z3950='False', school=None):
     try:
         bib = voyager.get_bib_data(bibid)
         if not bib:
@@ -44,7 +44,7 @@ def item(request, bibid):
             for alt_bib in bib['BIB_ID_LIST']:
                 if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
                     return item(request, alt_bib['BIB_ID'])
-        holdings = voyager.get_holdings(bib)
+        holdings = voyager.get_holdings(bib,lib=school)
         if holdings:
             holdings = strip_bad_holdings(holdings)
             show_aladin_link = True
@@ -61,16 +61,18 @@ def item(request, bibid):
             'title_chars': settings.TITLE_CHARS,
             'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
             'holdings': holdings,
-            'link': bib.get('LINK', '')[9:],
+            'link': bib.get('LINK', [])[9:],
             'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
             'link_resolver': settings.LINK_RESOLVER,
             'enable_humans': settings.ENABLE_HUMANS,
             'audio_tags': settings.STREAMING_AUDIO_TAGS,
             'video_tags': settings.STREAMING_VIDEO_TAGS,
             'max_items': settings.MAX_ITEMS,
-            'show_aladin_link': show_aladin_link
+            'show_aladin_link': show_aladin_link,
+            'non_wrlc_item': bool(z3950)
             })
     except:
+        raise
         return redirect('error503')
 
 
@@ -119,6 +121,8 @@ def gtitem(request, gtbibid):
         bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
         if bibid:
             return redirect('item', bibid=bibid)
+        else:
+            return redirect('item', bibid=gtbibid[1:], z3950='True', school='GT')
         return render(request, '404.html', {'num': gtbibid,
             'num_type': 'Georgetown BIB ID'}, status=404)
     except DatabaseError:
@@ -140,6 +144,8 @@ def gmitem(request, gmbibid):
         bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
         if bibid:
             return redirect('item', bibid=bibid)
+        else:
+            return redirect('item', bibid=gmbibid, z3950='True', school='GM')
         return render(request, '404.html', {'num': gmbibid,
             'num_type': 'George Mason BIB ID'}, status=404)
     except DatabaseError:
