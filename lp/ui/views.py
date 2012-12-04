@@ -72,7 +72,6 @@ def item(request, bibid, z3950='False', school=None):
             'non_wrlc_item': bool(z3950)
             })
     except:
-        raise
         return redirect('error503')
 
 
