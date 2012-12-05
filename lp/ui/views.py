@@ -73,7 +73,6 @@ def item(request, bibid):
             'non_wrlc_item': False
             })
     except:
-        raise
         return redirect('error503')
 
 
@@ -158,7 +157,6 @@ def gtitem(request, gtbibid):
         return render(request, '404.html', {'num': gtbibid,
             'num_type': 'Georgetown BIB ID'}, status=404)
     except DatabaseError:
-        raise
         return redirect('error503')
 
 
