@@ -45,7 +45,7 @@ def item(request, bibid):
             for alt_bib in bib['BIB_ID_LIST']:
                 if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
                     return item(request, alt_bib['BIB_ID'])
-        holdings = voyager.get_holdings(bib,lib=school)
+        holdings = voyager.get_holdings(bib)
         if holdings:
             holdings = strip_bad_holdings(holdings)
             show_aladin_link = True
@@ -70,9 +70,10 @@ def item(request, bibid):
             'video_tags': settings.STREAMING_VIDEO_TAGS,
             'max_items': settings.MAX_ITEMS,
             'show_aladin_link': show_aladin_link,
-            'non_wrlc_item': bool(z3950)
+            'non_wrlc_item': False
             })
     except:
+        raise
         return redirect('error503')
 
 
@@ -157,6 +158,7 @@ def gtitem(request, gtbibid):
         return render(request, '404.html', {'num': gtbibid,
             'num_type': 'Georgetown BIB ID'}, status=404)
     except DatabaseError:
+        raise
         return redirect('error503')
 
 
