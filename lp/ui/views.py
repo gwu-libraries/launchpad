@@ -32,7 +32,8 @@ def _openurl_dict(request):
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
-def item(request, bibid, z3950='False', school=None):
+def item(request, bibid):
+    bib = None
     try:
         bib = voyager.get_bib_data(bibid)
         if not bib:
@@ -80,7 +81,7 @@ def _date_handler(obj):
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
-def item_json(request, bibid):
+def item_json(request, bibid, z3950='False', school=None):
     try:
         bib_data = voyager.get_bib_data(bibid)
         if not bib_data:
@@ -121,7 +122,38 @@ def gtitem(request, gtbibid):
         if bibid:
             return redirect('item', bibid=bibid)
         else:
-            return redirect('item', bibid=gtbibid[1:], z3950='True', school='GT')
+            bib = voyager.get_z3950_bib_data(gtbibid[:-1],'GT')
+            bib['openurl'] = _openurl_dict(request)
+            # Ensure bib data is ours if possible
+            if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
+                for alt_bib in bib['BIB_ID_LIST']:
+                    if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
+                        return item(request, alt_bib['BIB_ID'])
+            holdings = voyager.get_holdings(bib,lib='GT')
+            if holdings:
+                holdings = strip_bad_holdings(holdings)
+                show_aladin_link = False
+                ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
+                holdings = elecsort(availsort(ours)) \
+                    + elecsort(availsort(shared)) \
+                    + libsort(elecsort(availsort(theirs), rev=True))
+            return render(request, 'item.html', {
+                'bibid': bibid,
+                'bib': bib,
+                'debug': settings.DEBUG,
+                'title_chars': settings.TITLE_CHARS,
+                'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
+                'holdings': holdings,
+                'link': bib.get('LINK', [])[9:],
+                'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
+                'link_resolver': settings.LINK_RESOLVER,
+                'enable_humans': settings.ENABLE_HUMANS,
+                'audio_tags': settings.STREAMING_AUDIO_TAGS,
+                'video_tags': settings.STREAMING_VIDEO_TAGS,
+                'max_items': settings.MAX_ITEMS,
+                'show_aladin_link': show_aladin_link,
+                'non_wrlc_item': True
+                })
         return render(request, '404.html', {'num': gtbibid,
             'num_type': 'Georgetown BIB ID'}, status=404)
     except DatabaseError:
@@ -133,6 +165,15 @@ def gtitem_json(request, gtbibid):
         bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
         if bibid:
             return redirect('item_json', bibid=bibid)
+        else:
+            bib_data = voyager.get_z3950_bib_data('b'+gtbibid[:-1],'GT')
+            if not bib_data:
+                return HttpResponse('{}', content_type='application_json',
+                    status_code=404)
+            bib_data['holdings'] = voyager.get_holdings(bib_data, lib = 'GT')
+            bib_data['openurl'] = _openurl_dict(request)
+            return HttpResponse(json.dumps(bib_data, default=_date_handler,
+                indent=2), content_type='application/json')
         raise Http404
     except DatabaseError:
         return redirect('error503')
@@ -144,7 +185,38 @@ def gmitem(request, gmbibid):
         if bibid:
             return redirect('item', bibid=bibid)
         else:
-            return redirect('item', bibid=gmbibid, z3950='True', school='GM')
+            bib = voyager.get_z3950_bib_data(gmbibid,'GM')
+            bib['openurl'] = _openurl_dict(request)
+            # Ensure bib data is ours if possible
+            if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
+                for alt_bib in bib['BIB_ID_LIST']:
+                    if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
+                        return item(request, alt_bib['BIB_ID'])
+            holdings = voyager.get_holdings(bib,lib='GM')
+            if holdings:
+                holdings = strip_bad_holdings(holdings)
+                show_aladin_link = False
+                ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
+                holdings = elecsort(availsort(ours)) \
+                    + elecsort(availsort(shared)) \
+                    + libsort(elecsort(availsort(theirs), rev=True))
+            return render(request, 'item.html', {
+                'bibid': bibid,
+                'bib': bib,
+                'debug': settings.DEBUG,
+                'title_chars': settings.TITLE_CHARS,
+                'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
+                'holdings': holdings,
+                'link': bib.get('LINK', [])[9:],
+                'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
+                'link_resolver': settings.LINK_RESOLVER,
+                'enable_humans': settings.ENABLE_HUMANS,
+                'audio_tags': settings.STREAMING_AUDIO_TAGS,
+                'video_tags': settings.STREAMING_VIDEO_TAGS,
+                'max_items': settings.MAX_ITEMS,
+                'show_aladin_link': show_aladin_link,
+                'non_wrlc_item': True
+                })
         return render(request, '404.html', {'num': gmbibid,
             'num_type': 'George Mason BIB ID'}, status=404)
     except DatabaseError:
@@ -156,6 +228,15 @@ def gmitem_json(request, gmbibid):
         bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
         if bibid:
             return redirect('item_json', bibid=bibid)
+        else:
+            bib_data = voyager.get_z3950_bib_data(gmbibid,'GM')
+            if not bib_data:
+                return HttpResponse('{}', content_type='application_json',
+                    status_code=404)
+            bib_data['holdings'] = voyager.get_holdings(bib_data, lib = 'GM')
+            bib_data['openurl'] = _openurl_dict(request)
+            return HttpResponse(json.dumps(bib_data, default=_date_handler,
+                indent=2), content_type='application/json')
         raise Http404
     except DatabaseError:
         return redirect('error503')

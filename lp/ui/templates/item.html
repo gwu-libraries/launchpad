@@ -18,7 +18,14 @@
 {% block link_extra %}
 {% if bibid %}
     {% if non_wrlc_item %}
-    <link rel='canonical' href='{% url "gtitem" bib.BIB_ID %}' />
+        {%if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
+            <link rel='canonical' href='{% url "gtitem" bib.BIB_ID %}' />
+            <link rel='alternate' type='application/json' href='{% url "gtitem_json" bib.BIB_ID %}' />
+        {%endif%}
+        {%if bib.LIBRARY_NAME == 'GM' %}
+            <link rel='canonical' href='{% url "gmitem" bib.BIB_ID %}' />
+            <link rel='alternate' type='application/json' href='{% url "gmitem_json" bib.BIB_ID %}' />
+        {%endif%}
     {% else %}
     <link rel='canonical' href='{% url "item" bibid %}' />
     <link rel='alternate' type='application/json' href='{% url "item_json" bibid %}' />
@@ -463,8 +470,20 @@ $(document).ready(function() {
 
 <p>
 {% if bibid %}
-View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
-&nbsp;
+    {% if non_wrlc_item %}
+        {%if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
+        View JSON: <a href='{% url "gtitem_json" bib.BIB_ID %}?{{ bib.openurl.query_string|escape }}'>{% url "gtitem_json" bib.BIB_ID %}</a>
+        &nbsp;
+        {%endif%}
+        {%if bib.LIBRARY_NAME == 'GM'%}
+        View JSON: <a href='{% url "gmitem_json" bib.BIB_ID %}?{{ bib.openurl.query_string|escape }}'>{% url "gmitem_json" bib.BIB_ID %}</a>
+        &nbsp;
+        {%endif%}
+
+    {% else %}
+        View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
+        &nbsp;
+    {%endif%}
 {% endif %}
 
 {% if bib.ISBN|clean_isbn %}

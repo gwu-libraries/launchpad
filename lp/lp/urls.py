@@ -7,7 +7,7 @@ handler500 = 'ui.views.error500'
 
 urlpatterns = patterns('ui.views',
     url(r'^$', 'home', name='home'),
-    url(r'^item/(?P<bibid>\d{2,8})/(?P<z3950>[A-Za-z]+)/(?P<school>[A-Za-z]+)/$', 'item', name='item'),
+    url(r'^item/(?P<bibid>\d{2,8})$', 'item', name='item'),
     url(r'^item/(?P<bibid>\d{2,8}).json$', 'item_json', name='item_json'),
     url(r'^item/\.?(?P<gtbibid>b\d{2,8})$', 'gtitem', name='gtitem'),
     url(r'^item/\.?(?P<gtbibid>b\d{2,8}).json$', 'gtitem_json',

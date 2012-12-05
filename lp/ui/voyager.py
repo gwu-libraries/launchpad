@@ -281,9 +281,9 @@ ORDER BY library.library_name"""
     if not lib:
         cursor.execute(query, [])
         holdings = _make_dict(cursor)
-        illiad_link = get_illiad_link(bib_data)
     else:
         holdings = init_z3950_holdings(bib_data['BIB_ID'], lib)
+    illiad_link = get_illiad_link(bib_data)
     eligibility = False
     added_holdings = []
     for holding in holdings:
@@ -336,6 +336,8 @@ ORDER BY library.library_name"""
             for item in holding['ITEMS']:
                 item['ELIGIBLE'] = \
                     is_item_eligible(item, holding.get('LIBRARY_NAME', ''))
+                if lib is not None:
+                    item['ELIGIBLE'] = False
                 item['LIBRARY_FULL_NAME'] = \
                     settings.LIB_LOOKUP[holding['LIBRARY_NAME']]
                 item['TRIMMED_LOCATION_DISPLAY_NAME'] = \
@@ -663,6 +665,7 @@ def get_z3950_bib_data(bibid, lib):
             else:
                 bib['PUB_PLACE'] = None
 	    bib['TITLE'] = rec.title()
+            bib['TITLE_ALL'] = rec.title()
     except:
         tb = traceback.format_exc()
         return None
