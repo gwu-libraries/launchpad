@@ -123,6 +123,9 @@ def gtitem(request, gtbibid):
             return redirect('item', bibid=bibid)
         else:
             bib = voyager.get_z3950_bib_data(gtbibid[:-1],'GT')
+            if bib is None:
+                return render(request, '404.html', {'num': gtbibid,
+                    'num_type': 'BIB ID'}, status=404)
             bib['openurl'] = _openurl_dict(request)
             # Ensure bib data is ours if possible
             if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
@@ -172,7 +175,13 @@ def gtitem_json(request, gtbibid):
                     status_code=404)
             bib_data['holdings'] = voyager.get_holdings(bib_data, lib = 'GT')
             bib_data['openurl'] = _openurl_dict(request)
-            return HttpResponse(json.dumps(bib_data, default=_date_handler,
+            bib_encoded = {}
+            for k, v in bib_data.iteritems():
+                if k in ['TITLE', 'TITLE_ALL', 'AUTHOR']:
+                    bib_encoded[k] = v.decode('cp1252').encode('utf-8')
+                else:
+                    bib_encoded[k] = v
+            return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
                 indent=2), content_type='application/json')
         raise Http404
     except DatabaseError:
@@ -186,6 +195,9 @@ def gmitem(request, gmbibid):
             return redirect('item', bibid=bibid)
         else:
             bib = voyager.get_z3950_bib_data(gmbibid,'GM')
+            if not bib:
+                return render(request, '404.html', {'num': gmbibid,
+                    'num_type': 'BIB ID'}, status=404)
             bib['openurl'] = _openurl_dict(request)
             # Ensure bib data is ours if possible
             if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
@@ -235,7 +247,13 @@ def gmitem_json(request, gmbibid):
                     status_code=404)
             bib_data['holdings'] = voyager.get_holdings(bib_data, lib = 'GM')
             bib_data['openurl'] = _openurl_dict(request)
-            return HttpResponse(json.dumps(bib_data, default=_date_handler,
+            bib_encoded = {}
+            for k, v in bib_data.iteritems():
+                if k in ['TITLE', 'TITLE_ALL', 'AUTHOR']:
+                    bib_encoded[k] = v.decode('cp1252').encode('utf-8')
+                else:
+                    bib_encoded[k] = v
+            return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
                 indent=2), content_type='application/json')
         raise Http404
     except DatabaseError:

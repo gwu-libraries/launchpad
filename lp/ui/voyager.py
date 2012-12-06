@@ -91,12 +91,7 @@ AND bib_master.suppress_in_opac='N'"""
     bib = _make_dict(cursor, first=True)
     # if bib is empty, there's no match -- return immediately
     if not bib:
-        # the following checks is for a record that only have GM or GT holdings
-        # check if a record for a matching bib is not found in wrlc
-        bib = get_z3950_bib_data(bibid,'GM')
-        if bib is None:
-            bib = get_z3950_bib_data('b'+bibid[:-1],'GT')
-        return bib
+        return None
     # ensure the NETWORK_NUMBER is OCLC
     if not bib.get('OCLC', '') or not _is_oclc(bib.get('OCLC', '')):
         bib['OCLC'] = ''
@@ -389,7 +384,7 @@ def init_z3950_holdings(bibid,lib):
     data['LOCATION_DISPLAY_NAME'] = '' 
     data['LOCATION_ID'] = 0
     data['BIB_ID'] = bibid
-    data['DISPLAy_CALL_NO'] = ''
+    data['DISPLAY_CALL_NO'] = ''
     holdings.append(data)
     return holdings
 
@@ -950,8 +945,9 @@ def get_z3950_holdings(id, school, id_type, query_type):
             if res and len(res) > 0:
                 ind = res['LINK'].find('$u')
                 url = res['LINK'][ind + 2:]
-                ind = res['MESSAGE'].find('$z')
-                msg = res['MESSAGE'][ind + 2:]
+                if res['MESSAGE']:
+                    ind = res['MESSAGE'].find('$z')
+                    msg = res['MESSAGE'][ind + 2:]
                 item_status = 1
                 status = 'Not Charged'
                 results.append({'STATUS': '', 'LOCATION': '', 'CALLNO': '',
@@ -1420,12 +1416,12 @@ def get_illiad_link(bib_data):
             if ind != -1:
                 title = bib_data['TITLE'][0:ind]
             else:
-                title = bib_data['TITLE']
-            query_args['rft.btitle'] = title.encode('ascii', 'replace')
+                title = bib_data['TITLE'] 
+            query_args['rft.btitle'] = title.decode('cp1252').encode('utf-8')
             query_args['rfr_id'] = settings.ILLIAD_SID
     str_args = {}
     for k, v in query_args.iteritems():
-        str_args[k] = unicode(v).encode('utf-8')
+        str_args[k] = v.decode('cp1252').encode('utf-8')
     encoded_args = urllib.urlencode(str_args)
     for item in str_args:
         item = item.encode('ascii', 'replace')
