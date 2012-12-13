@@ -1432,11 +1432,18 @@ def get_illiad_link(bib_data):
                 title = bib_data['TITLE'][0:ind]
             else:
                 title = bib_data['TITLE'] 
-            query_args['rft.btitle'] = title.decode('cp1252').encode('utf-8')
+            query_args['rft.btitle'] = ''
+            try:
+                query_args['rft.btitle'] = title.encode('utf-8')
+            except UnicodeDecodeError:
+                query_args['rft.btitle'] = title.decode('iso-8859-1').encode('utf-8') 
             query_args['rfr_id'] = settings.ILLIAD_SID
     str_args = {}
     for k, v in query_args.iteritems():
-        str_args[k] = v.decode('cp1252').encode('utf-8')
+        try:
+            str_args[k] = v.encode('utf-8')
+        except UnicodeDecodeError:
+            str_args[k] = v.decode('iso-8859-1').encode('utf-8')
     encoded_args = urllib.urlencode(str_args)
     for item in str_args:
         item = item.encode('ascii', 'replace')
