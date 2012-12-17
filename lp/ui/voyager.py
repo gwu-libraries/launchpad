@@ -11,6 +11,7 @@ from django.conf import settings
 from django.db import connection
 from django.db.utils import DatabaseError
 
+from ui import apis
 from ui.templatetags.launchpad_extras import cjk_info
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc
 
@@ -70,7 +71,7 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
 
 def get_bib_data(bibid, expand_ids=True):
     query = """
-SELECT bib_text.bib_id, title, author,
+SELECT bib_text.bib_id, title, author, lccn,
        edition, isbn, issn, network_number AS OCLC,
        publisher, pub_place, imprint, bib_format,
        language, library_name, publisher_date,
@@ -89,6 +90,10 @@ AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
     cursor.execute(query, [bibid] * 8)
     bib = _make_dict(cursor, first=True)
+    # reformat LCCN field
+    if bib['LCCN']:
+        bib['LCCN'] = bib['LCCN'].replace('-', '').split()
+        bib['LCCN'] = [n for n in bib['LCCN'] if len(n) == 8][0]
     # if bib is empty, there's no match -- return immediately
     if not bib:
         return None
@@ -373,6 +378,13 @@ ORDER BY library.library_name"""
     else:
         bib_data.update({'ILLIAD_LINK': ''})
     holdings = correct_gt_holding(holdings)
+    # get free electronic book link from open library
+    openlibhold = {}
+    olformat = 'LCCN' if bib_data['LCCN'] else 'ISBN' if bib_data['ISBN'] else ''
+    if olformat:
+        openlibhold = apis.openlibrary(bib_data[olformat], olformat)
+        if openlibhold:
+            holdings.append(openlibhold)
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 def init_z3950_holdings(bibid,lib):
