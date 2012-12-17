@@ -87,7 +87,7 @@ def item_json(request, bibid, z3950='False', school=None):
         bib_data = voyager.get_bib_data(bibid)
         if not bib_data:
             return HttpResponse('{}', content_type='application_json',
-                status_code=404)
+                status=404)
         bib_data['holdings'] = voyager.get_holdings(bib_data)
         bib_data['openurl'] = _openurl_dict(request)
         return HttpResponse(json.dumps(bib_data, default=_date_handler,
@@ -123,7 +123,7 @@ def gtitem(request, gtbibid):
         if bibid:
             return redirect('item', bibid=bibid)
         else:
-            bib = voyager.get_z3950_bib_data(gtbibid[:-1],'GT')
+            bib = voyager.get_z3950_bib_data(gtbibid[:-1], 'GT')
             if bib is None:
                 return render(request, '404.html', {'num': gtbibid,
                     'num_type': 'BIB ID'}, status=404)
@@ -133,7 +133,7 @@ def gtitem(request, gtbibid):
                 for alt_bib in bib['BIB_ID_LIST']:
                     if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
                         return item(request, alt_bib['BIB_ID'])
-            holdings = voyager.get_holdings(bib,lib='GT')
+            holdings = voyager.get_holdings(bib, lib='GT')
             if holdings:
                 holdings = strip_bad_holdings(holdings)
                 show_aladin_link = False
@@ -170,11 +170,11 @@ def gtitem_json(request, gtbibid):
         if bibid:
             return redirect('item_json', bibid=bibid)
         else:
-            bib_data = voyager.get_z3950_bib_data('b'+gtbibid[:-1],'GT')
+            bib_data = voyager.get_z3950_bib_data('b' + gtbibid[:-1], 'GT')
             if not bib_data:
                 return HttpResponse('{}', content_type='application_json',
-                    status_code=404)
-            bib_data['holdings'] = voyager.get_holdings(bib_data, lib = 'GT')
+                    status=404)
+            bib_data['holdings'] = voyager.get_holdings(bib_data, lib='GT')
             bib_data['openurl'] = _openurl_dict(request)
             bib_encoded = {}
             for k, v in bib_data.iteritems():
@@ -195,7 +195,7 @@ def gmitem(request, gmbibid):
         if bibid:
             return redirect('item', bibid=bibid)
         else:
-            bib = voyager.get_z3950_bib_data(gmbibid,'GM')
+            bib = voyager.get_z3950_bib_data(gmbibid, 'GM')
             if not bib:
                 return render(request, '404.html', {'num': gmbibid,
                     'num_type': 'BIB ID'}, status=404)
@@ -205,7 +205,7 @@ def gmitem(request, gmbibid):
                 for alt_bib in bib['BIB_ID_LIST']:
                     if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
                         return item(request, alt_bib['BIB_ID'])
-            holdings = voyager.get_holdings(bib,lib='GM')
+            holdings = voyager.get_holdings(bib, lib='GM')
             if holdings:
                 holdings = strip_bad_holdings(holdings)
                 show_aladin_link = False
@@ -242,11 +242,11 @@ def gmitem_json(request, gmbibid):
         if bibid:
             return redirect('item_json', bibid=bibid)
         else:
-            bib_data = voyager.get_z3950_bib_data(gmbibid,'GM')
+            bib_data = voyager.get_z3950_bib_data(gmbibid, 'GM')
             if not bib_data:
                 return HttpResponse('{}', content_type='application_json',
-                    status_code=404)
-            bib_data['holdings'] = voyager.get_holdings(bib_data, lib = 'GM')
+                    status=404)
+            bib_data['holdings'] = voyager.get_holdings(bib_data, lib='GM')
             bib_data['openurl'] = _openurl_dict(request)
             bib_encoded = {}
             for k, v in bib_data.iteritems():
