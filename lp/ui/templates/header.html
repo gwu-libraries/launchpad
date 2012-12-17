@@ -1,4 +1,5 @@
 {% load url from future %}
+{% load launchpad_extras %}
 
 <header>
 <script language='javascript'>
@@ -6,8 +7,8 @@ function feedback() { var fbform="https://docs.google.com/spreadsheet/viewform?f
 </script>
     <div id="libheader-container">
         <div id="libheader" >
-            <div class="libheader-logo hide-lo"><a href="http://www.gwu.edu" target="_blank" title="GWU website"><img src="{{ STATIC_URL }}img/gwheaderlogo.png" width='309' height='32' alt="logo: The George Washington University" /></a></div>
-            <div class="libheader-liblink"><a href="http://library.gwu.edu" target="_blank" title="GW Libraries website">GW Libraries</a></div>
+            <div class="libheader-logo hide-lo"><a href="{% settings_value 'HOST_INSTITUTION_LINK' %}" target="_blank" title="{% settings_value 'HOST_INSTITUTION_NAME' %} website"><img src="{{ STATIC_URL }}img/gwheaderlogo.png" alt="logo: {% settings_value 'HOST_INSTITUTION_NAME' %}" /></a></div>
+            <div class="libheader-liblink"><a href="{% settings_value 'INSTITUTION_LINK' %}" target="_blank" title="{% settings_value 'INSTITUTION_NAME' %} website">{% settings_value 'INSTITUTION_NAME' %}</a></div>
                 <div class="libheader-link"><a href="{% url 'about' %}" target="_blank" title="about">About</a></div>
                 <div class="libheader-link">&bull;</div>
                 <div class="libheader-link"><a href="{% url 'api' %}" target="_blank" title="">API</a></div>

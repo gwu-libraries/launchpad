@@ -4,19 +4,19 @@
 
 html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
-body { margin: 0; font-size: 100%; font-family: Arial, sans-serif; line-height: 1.231; }
+body { margin: 0; font-size: 100%; font-family: Helvetica, Arial, sans-serif; line-height: 1.231; }
 /* optionally set page background color inside body tag: "background-color: #ccc" etc  */
 
 p, li {
 	line-height: 1.125em; /* 18px; */
 	font-size: .814em; /* 14px; */
-	color: #555;
+	color: #333;
 }
 
 h1, h2 {
 	font-size: 1.25em; /* 20px; */
-	font-family: Georgia, serif;
-	color: #555;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #333;
 	font-weight: normal;
 	line-height: 1.5em; /* 24px; */
 	letter-spacing: -1px;
@@ -25,16 +25,16 @@ h1, h2 {
 
 h3 {
 	font-size: 1em; /* 16px; */
-	font-family: Arial, sans-serif;
-	color: #555;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #333;
 	font-weight: normal;
 	line-height: 1.25em; /* 20px; */
 }
 
 h4 {
 	font-size: .75em; /* 12px; */
-	font-family: Arial, sans-serif;
-	color: #555;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #333;
 	font-weight: bold;
 	line-height: 1em; /* 16px; */
 }
@@ -54,7 +54,7 @@ img, object, embed {
 /* Correct font-size not inheriting in all browsers, Remove margins in FF3/4 S5 Chrome, Define consistent vertical alignment display in all browsers */
 button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
 
-/* This is the new Libraires "blue" submit button */
+/* This is the new Libraries "blue" submit button */
 input[type=submit], button {
     border-color: #4081AF #4081AF #20559A;
     border-style: solid;
@@ -73,8 +73,8 @@ input[type=submit], button {
     background: linear-gradient(#1F65A0, #4282B1); /* the standard */ 
 	-moz-border-radius: .4em;
 	-webkit-border-radius: .4em;
-	border-radius: .4em;
-    display: inline-block;	
+	border-radius: .4em;	
+	display: inline-block;
 }
 
 #libheader-container {
@@ -110,6 +110,8 @@ input[type=submit], button {
 .libheader-logo {float:right; overflow:hidden; height:2em; margin-right:.5em;}
 .libfooter-text {margin: 0 .5em; font-size:.7em; padding-top:.75em; overflow:hidden;}
 
+.bullet {float:left; padding:.6em 0 0 .75em; color:#fff;}
+
 #libfooter-container {
 	width: 100%; 
 	height: 2em; 
@@ -127,12 +129,14 @@ input[type=submit], button {
 	overflow: hidden;
 }
 
-#libfooter a {color:#fff; text-decoration:none;}
+#libfooter a:link {color:#fff; text-decoration:none;}
 #libfooter a:visited {color:#fff;}
 #libfooter a:hover {color:#fff; text-decoration:underline;} 
 
 /* responsive class to drop the gw logo when window is 720px or below (mobile-first)  */
+@media screen and (max-width: 720px) {
   .hide-lo {display:none; visibility:hidden;}
+}
 
 /* this is set at 721 to leave room for links, adjust as needed if your links are shorter/longer */
 @media screen and (min-width: 721px) {
@@ -141,4 +145,3 @@ input[type=submit], button {
 		visibility: visible;  
 	}
 }
-

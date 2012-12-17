@@ -81,6 +81,12 @@ INDEX_CODES = {
 # ex.: 'GW'
 PREF_LIB = ''  
 
+# Institution name, link, etc. to display in HTML header
+INSTITUTION_NAME = 'GW Libraries'
+INSTITUTION_LINK = 'http://library.gwu.edu/'
+HOST_INSTITUTION_NAME = 'The George Washington University'
+HOST_INSTITUTION_LINK = 'http://www.gwu.edu/'
+
 # Libraries that should be put at the bottom of the holdings list
 # Optional, can be empty or used for libraries with restricted access, etc.
 BOTTOM_LIBS = [] 
