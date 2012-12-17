@@ -18,7 +18,7 @@ def libsort(holdings_list):
 
 
 def availsort(holdings_list):
-    top, remainder = [], []
+    top, remainder, bottom = [], [], []
     for holding in holdings_list:
         if holding.get('ITEMS', []):
             topitems, remainderitems = [], []
@@ -30,13 +30,15 @@ def availsort(holdings_list):
                     remainderitems.append(item)
             holding['ITEMS'] = topitems + remainderitems
         try:
-            if (holding.get('AVAILABILITY', {}).get('ITEM_STATUS') == 1):
+            if holding.get('LIBRARY_NAME', '') in settings.INELIGIBLE_LIBRARIES:
+                bottom.append(holding)
+            elif (holding.get('AVAILABILITY', {}).get('ITEM_STATUS') == 1):
                 top.append(holding)
             else:
                 remainder.append(holding)
         except KeyError:
             remainder.append(holding)
-    return top + remainder
+    return top + remainder + bottom
 
 
 def _is_electronic(holding):

@@ -1060,6 +1060,8 @@ AND bib_index.normal_heading = %s"""
 
 
 def is_eligible(holding):
+    if holding.get('LIBRARY_NAME', '') in settings.INELIGIBLE_LIBRARIES:
+        return False
     marc856 = holding.get('MFHD_DATA', {}).get('marc856list', [])
     if not marc856 and not holding.get('ITEMS', None):
         return True
@@ -1075,8 +1077,6 @@ def is_eligible(holding):
     if (holding.get('LIBRARY_NAME', '') == 'GM' and
         'Law Library' in holding.get('AVAILABILITY', {}).get('PERMLOCATION',
         '')):
-        return False
-    if holding.get('LIBRARY_NAME', '') in settings.INELIGIBLE_LIBRARIES:
         return False
     for loc in settings.INELIGIBLE_PERM_LOCS:
         if loc in perm_loc:
@@ -1095,6 +1095,8 @@ def is_eligible(holding):
 
 
 def is_item_eligible(item, library_name):
+    if library_name in settings.INELIGIBLE_LIBRARIES:
+        return False
     perm_loc = item['PERMLOCATION'].upper() if item['PERMLOCATION'] else ''
     temp_loc = item['TEMPLOCATION'].upper() if item['TEMPLOCATION'] else ''
     status = item['ITEM_STATUS_DESC'].upper() if \
