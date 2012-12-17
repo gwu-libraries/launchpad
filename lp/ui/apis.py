@@ -65,3 +65,65 @@ def worldcat(num, num_type, url, key):
     bib['IMPRINT'] = '%s %s' % (bib['PUBLISHER'], bib['PUBLISHER_DATE'])
     bib['BIB_FORMAT'] = 'as' if num_type == 'issn' else 'am'
     return bib
+
+
+def openlibrary(num, num_type, force=False, as_holding=True):
+    assert num_type.upper() in ('ISBN', 'OCLC', 'LCCN', 'OLID')
+    assert num_type.upper() != 'ISBN' or len(num) in (10, 13)
+    params = '%s:%s' % (num_type, num)
+    url = 'http://openlibrary.org/api/books?format=json&jscmd=data' + \
+        '&bibkeys=%s' % params
+    response = urlopen(url)
+    json_data = json.loads(response.read())
+    book = json_data.get(params, {})
+    for ebook in book.get('ebooks', []):
+        if ebook.get('availability', '') == 'full':
+            return make_openlib_holding(book) if as_holding else book
+    if not force:
+        book = json.loads('{}')
+    return make_openlib_holding(book) if as_holding else book
+
+
+def make_openlib_holding(book):
+    holding = {
+        'LIBRARY_NAME': 'IA',
+        'LOCATION_NAME': 'OL',
+        'LOCATION_DISPLAY_NAME': 'OL: Open Library',
+        'MFHD_DATA': {
+            "marc866list": [],
+            "marc856list": [
+                {"3": "",
+                "z": "",
+                "u": ""}],
+            "marc852": ""
+        },
+        'MFHD_ID': None,
+        'ITEMS': [
+            {'ITEM_ENUM': None,
+            'ITEM_STATUS': None,
+            'TEMPLOCATION': None,
+            "ITEM_STATUS_DESC": None,
+            "ITEM_ID": 0,
+            "PERMLOCATION": None,
+            "LIBRARY_FULL_NAME": "Internet Archive",
+            "ELIGIBLE": False,
+            "TRIMMED_LOCATION_DISPLAY_NAME": "Open Library",
+            "CHRON": None,
+            "DISPLAY_CALL_NO": None,
+            "BIB_ID": None},
+        ],
+        'ELIGIBLE': False,
+        'LIBRARY_FULL_NAME': 'Internet Archive',
+        'TRIMMED_LOCATION_DISPLAY_NAME': 'Open Library',
+        'ELECTRONIC_DATA': {},
+        'LIBRARY_HAS': [],
+        'LOCATION_ID': None,
+        'AVAILABILITY': {},
+        'DISPLAY_CALL_NO': None,
+        'BIB_ID': None,
+        }
+    if book.keys():
+        holding['ITEMS'][0]['DISPLAY_CALL_NO'] = \
+            book.get('identifiers', {}).get('openlibrary', [])[0]
+        holding['MFHD_DATA']['marc856list'][0]['u'] = book.get('url', '')
+    return holding

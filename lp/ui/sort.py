@@ -6,7 +6,7 @@ def splitsort(holdings_list):
     for holding in holdings_list:
         if holding['LIBRARY_NAME'] == settings.PREF_LIB:
             ours.append(holding)
-        elif holding['LIBRARY_NAME'] in ('WR', 'E-Resources', 'E-GovDoc'):
+        elif holding['LIBRARY_NAME'] in (settings.SHARED_LIBRARY_NAMES):
             shared.append(holding)
         else:
             theirs.append(holding)
