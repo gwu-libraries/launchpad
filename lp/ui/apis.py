@@ -19,7 +19,7 @@ def googlebooks(num, num_type, url, key):
     url = url % (num_type, num)
     response = urlopen(url)
     json_data = json.loads(response.read())
-    if json_data['totalItems'] == 0:
+    if json_data['totalItems'] == 0 or len(json_data.get('items', [])) == 0:
         return None
     item = json_data['items'][0]
     if not item['volumeInfo']:
