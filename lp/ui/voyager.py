@@ -379,12 +379,16 @@ ORDER BY library.library_name"""
         bib_data.update({'ILLIAD_LINK': ''})
     holdings = correct_gt_holding(holdings)
     # get free electronic book link from open library
-    openlibhold = {}
-    olformat = 'LCCN' if bib_data['LCCN'] else 'ISBN' if bib_data['ISBN'] else ''
-    if olformat:
-        openlibhold = apis.openlibrary(bib_data[olformat], olformat)
-        if openlibhold:
-            holdings.append(openlibhold)
+    for numformat in ('LCCN', 'ISBN', 'OCLC'):
+        if bib_data.get(numformat):
+            if numformat == 'OCLC':
+                num = filter(lambda x: x.isdigit(), bib_data[numformat])
+            else:
+                num = bib_data[numformat]
+            openlibhold = apis.openlibrary(num, numformat)
+            if openlibhold:
+                holdings.append(openlibhold)
+                break
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 def init_z3950_holdings(bibid,lib):
