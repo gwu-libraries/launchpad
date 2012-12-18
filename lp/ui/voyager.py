@@ -90,13 +90,13 @@ AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
     cursor.execute(query, [bibid] * 8)
     bib = _make_dict(cursor, first=True)
-    # reformat LCCN field
-    if bib['LCCN']:
-        bib['LCCN'] = bib['LCCN'].replace('-', '').split()
-        bib['LCCN'] = [n for n in bib['LCCN'] if len(n) == 8][0]
     # if bib is empty, there's no match -- return immediately
     if not bib:
         return None
+    # reformat LCCN field
+    if bib.get('LCCN'):
+        bib['LCCN'] = bib['LCCN'].replace('-', '').split()
+        bib['LCCN'] = [n for n in bib['LCCN'] if len(n) == 8][0]
     # ensure the NETWORK_NUMBER is OCLC
     if not bib.get('OCLC', '') or not _is_oclc(bib.get('OCLC', '')):
         bib['OCLC'] = ''

@@ -102,13 +102,25 @@ def non_wrlc_item(request, num, num_type):
         return render(request, '404.html', {'num': num,
             'num_type': num_type.upper()}, status=404)
     bib['ILLIAD_LINK'] = voyager.get_illiad_link(bib)
+    holdings = []
+    # get free electronic book link from open library
+    for numformat in ('LCCN', 'ISBN', 'OCLC'):
+        if bib.get(numformat):
+            if numformat == 'OCLC':
+                num = filter(lambda x: x.isdigit(), bib[numformat])
+            else:
+                num = bib[numformat]
+            openlibhold = apis.openlibrary(num, numformat, force=True)
+            if openlibhold:
+                holdings.append(openlibhold)
+                break
     return render(request, 'item.html', {
        'bibid': '',
        'bib': bib,
        'debug': settings.DEBUG,
        'title_chars': settings.TITLE_CHARS,
        'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
-       'holdings': [],
+       'holdings': holdings,
        'link': '',
        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
        'link_resolver': settings.LINK_RESOLVER,
@@ -137,7 +149,8 @@ def gtitem(request, gtbibid):
             if holdings:
                 holdings = strip_bad_holdings(holdings)
                 show_aladin_link = False
-                ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
+                ours, theirs, shared = splitsort(callnumsort(enumsort(
+                    holdings)))
                 holdings = elecsort(availsort(ours)) \
                     + elecsort(availsort(shared)) \
                     + libsort(elecsort(availsort(theirs), rev=True))
@@ -209,7 +222,8 @@ def gmitem(request, gmbibid):
             if holdings:
                 holdings = strip_bad_holdings(holdings)
                 show_aladin_link = False
-                ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
+                ours, theirs, shared = splitsort(callnumsort(enumsort(
+                    holdings)))
                 holdings = elecsort(availsort(ours)) \
                     + elecsort(availsort(shared)) \
                     + libsort(elecsort(availsort(theirs), rev=True))
