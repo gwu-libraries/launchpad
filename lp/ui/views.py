@@ -110,7 +110,7 @@ def non_wrlc_item(request, num, num_type):
                 num = filter(lambda x: x.isdigit(), bib[numformat])
             else:
                 num = bib[numformat]
-            openlibhold = apis.openlibrary(num, numformat, force=True)
+            openlibhold = apis.openlibrary(num, numformat)
             if openlibhold:
                 holdings.append(openlibhold)
                 break
