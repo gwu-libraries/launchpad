@@ -80,7 +80,7 @@ def openlibrary(num, num_type, force=False, as_holding=True):
         if ebook.get('availability', '') == 'full':
             return make_openlib_holding(book) if as_holding else book
     if not force:
-        book = json.loads('{}')
+        return {}    
     return make_openlib_holding(book) if as_holding else book
 
 
