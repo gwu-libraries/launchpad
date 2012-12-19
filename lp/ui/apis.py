@@ -1,9 +1,11 @@
-from django.conf import settings
-
-import json
 from urllib2 import urlopen
 
 from pymarc import marcxml
+
+from django.conf import settings
+from django.utils import simplejson as json
+
+from ui.templatetags.launchpad_extras import clean_isbn
 
 
 def get_bib_data(num, num_type):
@@ -68,8 +70,16 @@ def worldcat(num, num_type, url, key):
 
 
 def openlibrary(num, num_type, force=False, as_holding=True):
-    assert num_type.upper() in ('ISBN', 'OCLC', 'LCCN', 'OLID')
-    assert num_type.upper() != 'ISBN' or len(num) in (10, 13)
+    # ensure we're dealing with a proper identifier type and value
+    try:
+        if num_type.upper() not in ('ISBN', 'OCLC', 'LCCN', 'OLID'):
+            raise
+        if num_type.upper() == 'ISBN':
+            num = clean_isbn(num)
+            if len(num) not in (10, 13):
+                raise
+    except:
+        return {}
     params = '%s:%s' % (num_type, num)
     url = 'http://openlibrary.org/api/books?format=json&jscmd=data' + \
         '&bibkeys=%s' % params
@@ -80,7 +90,7 @@ def openlibrary(num, num_type, force=False, as_holding=True):
         if ebook.get('availability', '') == 'full':
             return make_openlib_holding(book) if as_holding else book
     if not force:
-        return {}    
+        return {}
     return make_openlib_holding(book) if as_holding else book
 
 
