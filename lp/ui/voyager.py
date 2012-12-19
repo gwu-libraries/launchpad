@@ -383,6 +383,8 @@ ORDER BY library.library_name"""
         if bib_data.get(numformat):
             if numformat == 'OCLC':
                 num = filter(lambda x: x.isdigit(), bib_data[numformat])
+            elif numformat == 'ISBN':
+                num = bib_data['NORMAL_ISBN_LIST'][0]
             else:
                 num = bib_data[numformat]
             openlibhold = apis.openlibrary(num, numformat)
@@ -1053,9 +1055,11 @@ AND bib_index.index_code ='907A'"""
 def get_wrlcbib_from_gtbib(gtbibid):
     query = """
 SELECT bib_index.bib_id
-FROM bib_index
+FROM bib_index,bib_master
 WHERE bib_index.normal_heading = %s
-AND bib_index.index_code = '907A'"""
+AND bib_index.index_code = '907A'
+AND bib_index.bib_id = bib_master.bib_id
+AND bib_master.library_id IN ('14', '15')"""
     cursor = connection.cursor()
     cursor.execute(query, [gtbibid.upper()])
     results = _make_dict(cursor)
