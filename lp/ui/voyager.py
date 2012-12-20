@@ -3,17 +3,17 @@ import urllib
 
 import pycountry
 from PyZ3950 import zoom
-from PyZ3950 import zmarc
 import pymarc
 import traceback
 
 from django.conf import settings
 from django.db import connection
-from django.db.utils import DatabaseError
 
 from ui import apis
 from ui.templatetags.launchpad_extras import cjk_info
-from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc
+from ui.templatetags.launchpad_extras import clean_isbn
+from ui.templatetags.launchpad_extras import clean_lccn
+from ui.templatetags.launchpad_extras import clean_oclc
 
 GW_LIBRARY_IDS = [7, 11, 18, 21]
 
@@ -38,7 +38,7 @@ def _make_dict(cursor, first=False):
     return mapped
 
 
-def  get_added_authors(bib):
+def get_added_authors(bib):
     """Starting with the main author entry, build up a list of all authors."""
     query = """
 SELECT bib_index.display_heading AS author
@@ -93,10 +93,8 @@ AND bib_master.suppress_in_opac='N'"""
     # if bib is empty, there's no match -- return immediately
     if not bib:
         return None
-    # reformat LCCN field
     if bib.get('LCCN'):
-        bib['LCCN'] = bib['LCCN'].replace('-', '').split()
-        bib['LCCN'] = [n for n in bib['LCCN'] if len(n) == 8][0]
+        bib['LCCN'] = clean_lccn(bib['LCCN'])
     # ensure the NETWORK_NUMBER is OCLC
     if not bib.get('OCLC', '') or not _is_oclc(bib.get('OCLC', '')):
         bib['OCLC'] = ''
@@ -142,6 +140,7 @@ AND bib_master.suppress_in_opac='N'"""
     if bib.get('LINK') and bib.get('MESSAGE', '') == '856:42:$zCONNECT TO FINDING AID':
         bib['FINDING_AID'] = bib['LINK'][9:]
     return bib
+
 
 def _is_oclc(num):
     if num.find('OCoLC') >= 0:
@@ -258,7 +257,7 @@ def _is_valid_issn(num):
     return False
 
 
-def get_holdings(bib_data,lib=None):
+def get_holdings(bib_data, lib=None):
     done = []
     query = """
 SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
@@ -393,13 +392,14 @@ ORDER BY library.library_name"""
                 break
     return [h for h in holdings if not h.get('REMOVE', False)]
 
-def init_z3950_holdings(bibid,lib):
+
+def init_z3950_holdings(bibid, lib):
     holdings = []
     data = {}
     data['MFHD_ID'] = ''
     data['LIBRARY_NAME'] = lib
     data['LOCATION_NAME'] = ''
-    data['LOCATION_DISPLAY_NAME'] = '' 
+    data['LOCATION_DISPLAY_NAME'] = ''
     data['LOCATION_ID'] = 0
     data['BIB_ID'] = bibid
     data['DISPLAY_CALL_NO'] = ''

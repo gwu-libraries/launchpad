@@ -178,8 +178,7 @@ $(document).ready(function() {
                     <span class="isbn-label">ISBN </span>
                     <span class="isbn">
                         {% for isbn in bib.DISPLAY_ISBN_LIST %}
-                            <span itemprop="isbn">{{ isbn }}</span>
-                            {% if not forloop.last %}, {% endif %}
+                            <span itemprop="isbn">{{ isbn }}{% if not forloop.last %}, {% endif %}</span>
                         {% endfor %}
                     </span><br />
                 {% endif %}

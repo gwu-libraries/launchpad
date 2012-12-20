@@ -35,6 +35,31 @@ def clean_oclc(value):
 
 @register.filter
 @stringfilter
+def clean_lccn(value):
+    """Following the logic/examples described at:
+      http://lccn.loc.gov/lccnperm-faq.html#n9
+      http://www.loc.gov/marc/lccn-namespace.html"""
+    # remove all blanks
+    value = value.replace(' ', '')
+    # if there's a forward slash, remove it and all characters to its right
+    if '/' in value:
+        value = value[:value.index('/')]
+    if '-' in value:
+        # remove the hyphen
+        left, sep, right = value.partition('-')
+        # all chars in right should be digits, and len <= 6
+        right = ''.join([c for c in right if c.isdigit()])
+        if len(right) > 6:
+            return ''
+        # left-pad with 0s until len == 6
+        if len(right) < 6:
+            right = '%06d' % int(right)
+        value = '%s%s' % (left, right)
+    return value
+
+
+@register.filter
+@stringfilter
 def cjk_info(value):
     fields = value.split(' // ')
     field_partitions = [f.partition(' ') for f in fields]
