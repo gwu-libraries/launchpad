@@ -1143,7 +1143,7 @@ def get_z3950_availability_data(bib, school, location, status, callno,
     item_status, found=True):
     availability = {}
     catlink = ''
-    if school == 'GT' and len(bib) > 0:
+    if bib and school == 'GT'  :
         catlink = '''Click on the following link to get the information about
 this item from GeorgeTown Catalog <br>
 http://catalog.library.georgetown.edu/record=b%s~S4'''
@@ -1156,7 +1156,7 @@ http://magik.gmu.edu/cgi-bin/Pwebrecon.cgi?BBID=%s'''
 this item from Dahlgren library Catalog <br>
 http://catalog.library.georgetown.edu/record=b%s~S4'''
     if bib:
-        catlink = catlink % bib[0]
+        catlink = catlink % bib
     if found:
         availability = {'BIB_ID': bib,
                      'CHRON': None,
