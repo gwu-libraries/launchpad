@@ -7,3 +7,4 @@ pymarc
 python-memcached
 pytz
 git+https://github.com/asl2/PyZ3950.git
+lxml
