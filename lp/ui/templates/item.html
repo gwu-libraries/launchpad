@@ -278,6 +278,16 @@ $(document).ready(function() {
                             {% endif %}
                         </div>
                         {% endif %}
+                        {% if holding.LinkResolverData %}
+                            <div class="linkresolverdata" style="padding-left:2em; font-size:small; color:gray;">
+                            {% for link in holding.LinkResolverData %}
+                                {% if not forloop.first %}<br/>{% endif %}
+                                from {{link.start}}
+                                to {% if link.end %}{{link.end}}{% else %}present{% endif %}
+                                <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">{{link.dbname}}</a>
+                            {% endfor %}
+                            </div>
+                        {% endif %}
                     </td>
                     <td>
                            {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
