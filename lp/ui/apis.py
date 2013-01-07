@@ -147,8 +147,8 @@ def sersol360link(num, num_type):
     tree = etree.fromstring(response.read())
     output = []
     ns = 'http://xml.serialssolutions.com/ns/openurl/v1.0'
-    openurls = tree.xpath('/sso:openURLResponse/sso:results/sso:result/' + \
-        'sso:linkGroups/sso:linkGroup[@type="holding"]', namespaces={'sso': ns})
+    openurls = tree.xpath('/sso:openURLResponse/sso:results/sso:result/sso' +
+        ':linkGroups/sso:linkGroup[@type="holding"]', namespaces={'sso': ns})
     for openurl in openurls:
         dbid = openurl.xpath('sso:holdingData/sso:databaseId',
             namespaces={'sso': ns})
@@ -174,5 +174,3 @@ def sersol360link(num, num_type):
             data['journal'] = journal[0].text if journal else ''
             output.append(data)
     return output
-
-            
