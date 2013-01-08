@@ -386,18 +386,18 @@ ORDER BY library.library_name"""
             if url.startswith('http://sfx.wrlc.org/gw') or \
                 url.startswith('http://findit.library.gwu.edu/go'):
                 issnindex =  url.lower().find('issn=')
-                if issnindex:
+                if issnindex > -1:
                     num_type = 'issn'
                     num = url[issnindex + 5:]
                     stop = num.find('&')
-                    num = num[:stop] if stop > 0 else num
+                    num = num[:stop] if stop > -1 else num
                 else:
                     isbnindex = url.lower().find('isbn=')
-                    if isbnindex:
+                    if isbnindex > -1:
                         num_type = 'isbn'
                         num = url[isbnindex + 5:]
                         stop = num.find('&')
-                        num = num[:stop] if stop > 0 else num
+                        num = num[:stop] if stop > -1 else num
                 linkdata = apis.sersol360link(num, num_type)
                 for ld in linkdata:
                     holding['LinkResolverData'].append(ld)

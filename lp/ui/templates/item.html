@@ -279,7 +279,7 @@ $(document).ready(function() {
                         </div>
                         {% endif %}
                         {% if holding.LinkResolverData %}
-                            <div class="linkresolverdata" style="padding-left:2em; font-size:small; color:gray;">
+                            <div class="linkresolverdata" style="padding-left:1em; font-size:small; color:gray;">
                             {% for link in holding.LinkResolverData %}
                                 {% if not forloop.first %}<br/>{% endif %}
                                 from {{link.start}}
