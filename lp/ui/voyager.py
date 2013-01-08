@@ -8,6 +8,7 @@ import traceback
 
 from django.conf import settings
 from django.db import connection
+from django.utils.encoding import smart_str
 
 from ui import apis
 from ui.templatetags.launchpad_extras import cjk_info
@@ -491,7 +492,7 @@ def trim_item_temp_location(item):
 
 
 def _in_clause(items):
-    return ','.join(["'" + str(item) + "'" for item in items])
+    return ','.join(["'" + smart_str(item) + "'" for item in items])
 
 
 # deprecated
