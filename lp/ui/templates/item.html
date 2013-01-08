@@ -278,16 +278,6 @@ $(document).ready(function() {
                             {% endif %}
                         </div>
                         {% endif %}
-                        {% if holding.LinkResolverData %}
-                            <div class="linkresolverdata" style="padding-left:1em; font-size:small; color:gray;">
-                            {% for link in holding.LinkResolverData %}
-                                {% if not forloop.first %}<br/>{% endif %}
-                                from {{link.start}}
-                                to {% if link.end %}{{link.end}}{% else %}present{% endif %}
-                                <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">{{link.dbname}}</a>
-                            {% endfor %}
-                            </div>
-                        {% endif %}
                     </td>
                     <td>
                            {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
@@ -377,16 +367,6 @@ $(document).ready(function() {
                         {%endif%}
                 
                         </div>
-                        {% if holding.LinkResolverData %}
-                            <div class="linkresolverdata" style="padding-left:1em; font-size:small; color:gray;">
-                                {% for link in holding.LinkResolverData %}
-                                    {% if not forloop.first %}<br/>{% endif %}
-                                    from {{link.start}}
-                                    to {% if link.end %}{{link.end}}{% else %}present{% endif %}
-                                    <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">{{link.dbname}}</a>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
                     </td>
                     <td>
                         {% if holding.DISPLAY_CALL_NO %}
@@ -455,6 +435,19 @@ $(document).ready(function() {
                     </td>
                 </tr>
           {%endif%}
+            {% if holding.LinkResolverData %}
+            <tr>
+            <td colspan="4">
+                <div class="linkresolverdata" style="padding-left:1em; font-size:small; color:gray;">
+                {% for link in holding.LinkResolverData %}
+                    {% if not forloop.first %}<br/>{% endif %}
+                    from {{link.start}}
+                    to {% if link.end %}{{link.end}}{% else %}present{% endif %}
+                    <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">{{link.dbname}}</a>
+                {% endfor %}
+                </div>
+            <td>
+            {% endif %}
         {% endfor %}
     {% endfor %}
     {%if bib.BIB_FORMAT == 'as'%}
