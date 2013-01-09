@@ -106,10 +106,11 @@ $(document).ready(function() {
             <div id='description'>
                 <span id="titleinfo">
                 <h1 class="title" >
+                {{bib.AUTHORS}}
                 {% if bib.CJK_INFO.TITLE %}
                     <span itemprop="name">{{ bib.CJK_INFO.TITLE }}</span> <br />
                 {% endif %}
-                {%if bib.TITLE_ALL|length <= title_chars or TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH < title_leftover_chars%}
+                {%if bib.TITLE_ALL|length <= title_chars or TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH <= title_leftover_chars%}
                     <span itemprop="name">{{bib.TITLE_ALL}}</span><br/>
                 {%endif%}
                 {%if bib.TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH and  bib.BRIEF_LENGTH > title_leftover_chars%}

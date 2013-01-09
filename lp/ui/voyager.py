@@ -8,7 +8,7 @@ import traceback
 
 from django.conf import settings
 from django.db import connection
-from django.utils.encoding import smart_str
+from django.utils.encoding import smart_str, DjangoUnicodeDecodeError
 
 from ui import apis
 from ui.templatetags.launchpad_extras import cjk_info
@@ -69,28 +69,59 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
     #        authors.remove(author)
     return authors
 
+def get_marc_blob(bibid):
+    query="""
+SELECT wrlcdb.getBibBlob(%s) AS marcblob
+from bib_master"""
+    query = query % bibid
+    cursor = connection.cursor()
+    cursor.execute(query)
+    row = cursor.fetchone()
+    raw_marc = str(row[0])
+    marc = pymarc.record.Record(data=raw_marc)
+    return marc
 
-def get_bib_data(bibid, expand_ids=True):
+def get_bib_data(bibid, expand_ids=True, exclude_names=False):
     query = """
-SELECT bib_text.bib_id, title, author, lccn,
+SELECT bib_text.bib_id, lccn,
        edition, isbn, issn, network_number AS OCLC,
-       publisher, pub_place, imprint, bib_format,
+       pub_place, imprint, bib_format,
        language, library_name, publisher_date,
        RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) AS LINK,
-       RTRIM(wrlcdb.GetMarcField(%s,0,0,'245','','',1)) AS TITLE_ALL,
-       wrlcdb.GetAllBibTag(%s, '880', 1) AS CJK_INFO,
        RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','z',1)) AS MESSAGE,
+       wrlcdb.GetAllBibTag(%s, '880', 1) AS CJK_INFO,
        wrlcdb.GetBibTag(%s, '006') AS MARC006,
        wrlcdb.GetBibTag(%s, '007') AS MARC007,
-       wrlcdb.GetBibTag(%s, '008') AS MARC008
+       wrlcdb.GetBibTag(%s, '008') AS MARC008"""
+    if not exclude_names:
+        query += """
+,title, author, publisher, 
+RTRIM(wrlcdb.GetMarcField(%s,0,0,'245','','',1)) AS TITLE_ALL
+        """
+    query += """ 
 FROM bib_text, bib_master, library
 WHERE bib_text.bib_id=%s
 AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
-    cursor.execute(query, [bibid] * 8)
-    bib = _make_dict(cursor, first=True)
+    paramcount = 8 if not exclude_names else 7
+    query = query % tuple([bibid] * paramcount)    
+    cursor.execute(query)
+    try:
+        bib = _make_dict(cursor, first=True)
+        if exclude_names:
+            marc = get_marc_blob(bibid)
+            bib['TITLE'] = marc.title()
+            bib['AUTHOR'] = marc.author()
+            bib['PUBLISHER'] = marc.publisher()
+            title_fields = marc.get_fields('245')
+            all_title = ''
+            for field in title_fields:
+                all_title += field.value()
+            bib['TITLE_ALL'] = all_title
+    except DjangoUnicodeDecodeError:
+        return get_bib_data(bibid=bibid, expand_ids=expand_ids, exclude_names=True)
     # if bib is empty, there's no match -- return immediately
     if not bib:
         return None
@@ -104,7 +135,8 @@ AND bib_master.suppress_in_opac='N'"""
     # split up the 880 (CJK) fields/values if available
     if bib.get('CJK_INFO', ''):
         bib['CJK_INFO'] = cjk_info(bib['CJK_INFO'])
-    bib['TITLE_ALL'] = clean_title(bib['TITLE_ALL'][7:])
+    if not exclude_names:
+        bib['TITLE_ALL'] = clean_title(bib['TITLE_ALL'][7:])
     if len(bib['TITLE_ALL']) > settings.TITLE_CHARS:
         brief = bib['TITLE_ALL'][:settings.TITLE_CHARS]
         ind = brief.rfind(' ')
