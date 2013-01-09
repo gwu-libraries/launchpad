@@ -145,7 +145,7 @@ def gtitem(request, gtbibid):
                 for alt_bib in bib['BIB_ID_LIST']:
                     if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
                         return item(request, alt_bib['BIB_ID'])
-            holdings = voyager.get_holdings(bib, lib='GT')
+            holdings = voyager.get_holdings(bib, 'GT', False)
             if holdings:
                 holdings = strip_bad_holdings(holdings)
                 show_aladin_link = False
@@ -187,7 +187,7 @@ def gtitem_json(request, gtbibid):
             if not bib_data:
                 return HttpResponse('{}', content_type='application_json',
                     status=404)
-            bib_data['holdings'] = voyager.get_holdings(bib_data, lib='GT')
+            bib_data['holdings'] = voyager.get_holdings(bib_data, 'GT', False)
             bib_data['openurl'] = _openurl_dict(request)
             bib_encoded = {}
             for k, v in bib_data.iteritems():
@@ -218,7 +218,7 @@ def gmitem(request, gmbibid):
                 for alt_bib in bib['BIB_ID_LIST']:
                     if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
                         return item(request, alt_bib['BIB_ID'])
-            holdings = voyager.get_holdings(bib, lib='GM')
+            holdings = voyager.get_holdings(bib, 'GM', False)
             if holdings:
                 holdings = strip_bad_holdings(holdings)
                 show_aladin_link = False
@@ -260,11 +260,11 @@ def gmitem_json(request, gmbibid):
             if not bib_data:
                 return HttpResponse('{}', content_type='application_json',
                     status=404)
-            bib_data['holdings'] = voyager.get_holdings(bib_data, lib='GM')
+            bib_data['holdings'] = voyager.get_holdings(bib_data, 'GM', False)
             bib_data['openurl'] = _openurl_dict(request)
             bib_encoded = {}
             for k, v in bib_data.iteritems():
-                if k in ['TITLE', 'TITLE_ALL', 'AUTHOR']:
+                if v and k in ['TITLE', 'TITLE_ALL', 'AUTHOR']:
                     bib_encoded[k] = v.decode('cp1252').encode('utf-8')
                 else:
                     bib_encoded[k] = v

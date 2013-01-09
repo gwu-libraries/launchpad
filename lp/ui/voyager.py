@@ -29,7 +29,7 @@ def _make_dict(cursor, first=False):
     for d in mapped:
         for k, v in d.items():
             try:
-                d[k] = v.strip()
+                d[k] = smart_str(v.strip())
             except:
                 pass
     if first:
@@ -258,7 +258,7 @@ def _is_valid_issn(num):
     return False
 
 
-def get_holdings(bib_data, lib=None):
+def get_holdings(bib_data, lib=None, translate_bib=True):
     done = []
     query = """
 SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
@@ -281,7 +281,7 @@ ORDER BY library.library_name"""
     if not lib:
         cursor.execute(query, [])
         holdings = _make_dict(cursor)
-    else:
+    if not translate_bib:
         holdings = init_z3950_holdings(bib_data['BIB_ID'], lib)
     illiad_link = get_illiad_link(bib_data)
     eligibility = False
@@ -295,7 +295,7 @@ ORDER BY library.library_name"""
             else:
                 done.append(holding['BIB_ID'])
             result = get_z3950_holdings(holding['BIB_ID'],
-                                        holding['LIBRARY_NAME'], 'bib', '', bib_data)
+                                        holding['LIBRARY_NAME'], 'bib', '', bib_data, translate_bib)
             if len(result) > 0:
                 if (len(result[0]['items']) == 0 and
                     len(result[0]['mfhd']['marc856list']) == 0 and
@@ -804,7 +804,7 @@ def _get_gt_holdings(id, query, query_type, bib, lib, bib_data):
     return dataset
 
 
-def get_z3950_holdings(id, school, id_type, query_type, bib_data):
+def get_z3950_holdings(id, school, id_type, query_type, bib_data, translate_bib=True):
     holding_found = False
     conn = None
     if school == 'GM':
@@ -819,7 +819,10 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data):
         lines = []
         res = []
         dataset = []
-        bib = get_gmbib_from_gwbib(id)
+        if translate_bib:
+            bib = get_gmbib_from_gwbib(id)
+        else:
+            bib = id
         try:
             conn = _get_z3950_connection(settings.Z3950_SERVERS['GM'])
         except:
@@ -836,7 +839,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data):
                         'marc856list': res[1], 'marc852': ''},
                     'items': res[2]})
             return dataset
-        if bib and len(bib) > 0:
+        if bib and isinstance(bib, list):
             correctbib = ''
             query = None
             for bibid in bib:
@@ -845,6 +848,8 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data):
                     continue
                 correctbib = bibid
                 break
+            if not translate_bib:
+                correctbib = bib
             try:
                 query = zoom.Query('PQF', '@attr 1=12 %s' %
                     correctbib.encode('utf-8'))
@@ -992,7 +997,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data):
             return dataset
     elif school == 'GT' or school == 'DA':
         res = []
-        if id_type == 'bib':
+        if id_type == 'bib' and translate_bib:
             bib = get_gtbib_from_gwbib(id)
             if bib and len(bib) >= 1:
                 if bib[0] is not None:
@@ -1002,7 +1007,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data):
                         bib, school, bib_data)
                 else:
                     return []
-            elif not bib:
+            elif not bib or not translate_bib:
                 query = zoom.Query('PQF', '@attr 1=12 %s' %
                     str(id).encode('utf-8'))
                 return _get_gt_holdings(id, query, query_type,
