@@ -382,7 +382,7 @@ ORDER BY library.library_name"""
         holding['LinkResolverData'] = []
         links =  holding.get('MFHD_DATA', {}).get('marc856list', [])
         for link in links:
-            url = link.get('u', '')
+            url = link.get('u', '').lower()
             if url.startswith('http://sfx.wrlc.org/gw') or \
                 url.startswith('http://findit.library.gwu.edu/go'):
                 issnindex =  url.lower().find('issn=')

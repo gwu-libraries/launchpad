@@ -286,6 +286,18 @@ $(document).ready(function() {
                                <br /><a href="{{bib.FINDING_AID}}" target="clswindow">View the Finding Aid</a>
                            {% endif %}
                     </td>
+                      {% if holding.LinkResolverData %}
+                      <td colspan=2>
+                        <div class="linkresolverdata" style="font-size:small; color:gray;">
+                        {% for link in holding.LinkResolverData %}
+                            {% if not forloop.first %}<br/>{% endif %}
+                            from {{link.start}}
+                            to {% if link.end %}{{link.end}}{% else %}present{% endif %}
+                            <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">{{link.dbname}}</a>
+                        {% endfor %}
+                        </div>
+                      </td>
+                      {% else %}
                        <td>
                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list and not bib.FINDING_AID %}
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
@@ -324,6 +336,7 @@ $(document).ready(function() {
                                {%endif%}
                            {%endif%}
                        </td>
+                       {% endif %}
                        <td>
                            {% if item.ELIGIBLE %}
                                <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
@@ -435,6 +448,7 @@ $(document).ready(function() {
                     </td>
                 </tr>
           {%endif%}
+            <!-- Add Link Resolver Data
             {% if holding.LinkResolverData %}
             <tr>
             <td colspan="4">
@@ -448,6 +462,7 @@ $(document).ready(function() {
                 </div>
             <td>
             {% endif %}
+            -->
         {% endfor %}
     {% endfor %}
     {%if bib.BIB_FORMAT == 'as'%}
