@@ -141,7 +141,8 @@ def make_openlib_holding(book):
     return holding
 
 
-def sersol360link(num, num_type):
+def sersol360link(num, num_type, count=0):
+    count += 1
     url = '%s&%s=%s' % (settings.SER_SOL_API_URL, num_type, num)
     response = urlopen(url)
     tree = etree.fromstring(response.read())
@@ -149,6 +150,8 @@ def sersol360link(num, num_type):
     ns = 'http://xml.serialssolutions.com/ns/openurl/v1.0'
     openurls = tree.xpath('/sso:openURLResponse/sso:results/sso:result/sso' +
         ':linkGroups/sso:linkGroup[@type="holding"]', namespaces={'sso': ns})
+    if not openurls and count < settings.SER_SOL_API_MAX_ATTEMPTS:
+        return sersol360link(num, num_type, count)
     for openurl in openurls:
         dbid = openurl.xpath('sso:holdingData/sso:databaseId',
             namespaces={'sso': ns})
