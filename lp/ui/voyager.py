@@ -701,7 +701,9 @@ def get_z3950_bib_data(bibid, lib):
             else:
                 bib['MESSAGE'] = None
             if rec['035']:
-	        bib['OCLC'] = rec['035']['a']
+	        num = rec['035']['a']
+                if _is_oclc(num):
+                    bib['OCLC'] = num
             else:
                 bib['OCLC'] = None
 	    bib['PUBLISHER'] = rec.publisher()
