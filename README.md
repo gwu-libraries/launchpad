@@ -70,6 +70,10 @@ the path according to your installation of oracle.
 
         sudo ldconfig        
 
+8. Install some necessary xml packages
+
+        sudo apt-get install libxml2-dev libxslt-dev
+
 
 - - -
 

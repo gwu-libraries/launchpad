@@ -279,6 +279,23 @@ $(document).ready(function() {
                         </div>
                         {% endif %}
                     </td>
+                      {% if holding.LinkResolverData %}
+                      <td colspan=3>
+                        <div class="linkresolverlist">
+                        {% for link in holding.LinkResolverData %}
+                            <div class="linkresolverresource">
+                                <!-- <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</a>: -->
+                                <button class="smallbuttons" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</button>
+                                <div class="linkresolverdata">
+                                    from <span class="linkresolverdates">{{link.start}}</span>
+                                    to <span class="linkresolverdates">{% if link.end %}{{link.end}}{% else %}present{% endif %}</span><br/>
+                                    <span class="linkresolverdbname">{{link.dbname}}</span><br/>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                      </td>
+                      {% else %}
                     <td>
                            {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
                            {% if item.ITEM_ENUM %} {{ item.ITEM_ENUM }} {% endif %}
@@ -324,6 +341,7 @@ $(document).ready(function() {
                                {%endif%}
                            {%endif%}
                        </td>
+                       {% endif %}
                        <td>
                            {% if item.ELIGIBLE %}
                                <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
@@ -435,6 +453,21 @@ $(document).ready(function() {
                     </td>
                 </tr>
           {%endif%}
+            <!-- Add Link Resolver Data
+            {% if holding.LinkResolverData %}
+            <tr>
+            <td colspan="4">
+                <div class="linkresolverdata" style="padding-left:1em; font-size:small; color:gray;">
+                {% for link in holding.LinkResolverData %}
+                    {% if not forloop.first %}<br/>{% endif %}
+                    from {{link.start}}
+                    to {% if link.end %}{{link.end}}{% else %}present{% endif %}
+                    <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">{{link.dbname}}</a>
+                {% endfor %}
+                </div>
+            <td>
+            {% endif %}
+            -->
         {% endfor %}
     {% endfor %}
     {%if bib.BIB_FORMAT == 'as'%}

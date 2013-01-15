@@ -1,3 +1,5 @@
+from lxml import etree
+
 from urllib2 import urlopen
 
 from pymarc import marcxml
@@ -137,3 +139,41 @@ def make_openlib_holding(book):
             book.get('identifiers', {}).get('openlibrary', [])[0]
         holding['MFHD_DATA']['marc856list'][0]['u'] = book.get('url', '')
     return holding
+
+
+def sersol360link(num, num_type, count=0):
+    count += 1
+    url = '%s&%s=%s' % (settings.SER_SOL_API_URL, num_type, num)
+    response = urlopen(url)
+    tree = etree.fromstring(response.read())
+    output = []
+    ns = 'http://xml.serialssolutions.com/ns/openurl/v1.0'
+    openurls = tree.xpath('/sso:openURLResponse/sso:results/sso:result/sso' +
+        ':linkGroups/sso:linkGroup[@type="holding"]', namespaces={'sso': ns})
+    if not openurls and count < settings.SER_SOL_API_MAX_ATTEMPTS:
+        return sersol360link(num, num_type, count)
+    for openurl in openurls:
+        dbid = openurl.xpath('sso:holdingData/sso:databaseId',
+            namespaces={'sso': ns})
+        if not dbid:
+            continue
+        dbid = dbid[0]
+        if dbid.text != 'TN5':
+            data = {}
+            start = openurl.xpath('sso:holdingData/sso:startDate',
+                namespaces={'sso': ns})
+            data['start'] = start[0].text if start else ''
+            end = openurl.xpath('sso:holdingData/sso:endDate',
+                namespaces={'sso': ns})
+            data['end'] = end[0].text if end else ''
+            dbname = openurl.xpath('sso:holdingData/sso:databaseName',
+                namespaces={'sso': ns})
+            data['dbname'] = dbname[0].text if dbname else ''
+            source = openurl.xpath('sso:url[@type="source"]',
+                namespaces={'sso': ns})
+            data['source'] = source[0].text if source else ''
+            journal = openurl.xpath('sso:url[@type="journal"]',
+                namespaces={'sso': ns})
+            data['journal'] = journal[0].text if journal else ''
+            output.append(data)
+    return output

@@ -410,6 +410,30 @@ ORDER BY library.library_name"""
     else:
         bib_data.update({'ILLIAD_LINK': ''})
     holdings = correct_gt_holding(holdings)
+    # get 360Link API information where possible
+    for holding in holdings:
+        holding['LinkResolverData'] = []
+        links =  holding.get('MFHD_DATA', {}).get('marc856list', [])
+        for link in links:
+            url = link.get('u', '').lower()
+            if url.startswith('http://sfx.wrlc.org/gw') or \
+                url.startswith('http://findit.library.gwu.edu/go'):
+                issnindex =  url.lower().find('issn=')
+                if issnindex > -1:
+                    num_type = 'issn'
+                    num = url[issnindex + 5:]
+                    stop = num.find('&')
+                    num = num[:stop] if stop > -1 else num
+                else:
+                    isbnindex = url.lower().find('isbn=')
+                    if isbnindex > -1:
+                        num_type = 'isbn'
+                        num = url[isbnindex + 5:]
+                        stop = num.find('&')
+                        num = num[:stop] if stop > -1 else num
+                linkdata = apis.sersol360link(num, num_type)
+                for ld in linkdata:
+                    holding['LinkResolverData'].append(ld)
     # get free electronic book link from open library
     for numformat in ('LCCN', 'ISBN', 'OCLC'):
         if bib_data.get(numformat):

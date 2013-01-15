@@ -187,3 +187,6 @@ SITEMAPS_DIR = os.path.join(os.path.dirname(__file__), '../ui/static/sitemaps')
 # Base public URL of links; used by sitemap generator, no trailing slash
 SITEMAPS_BASE_URL = 'http://findit.library.gwu.edu'
 
+SER_SOL_API_URL = 'http://uz4ug4lz9g.openurl.xml.serialssolutions.com/openurlxml?version=1.0'
+
+SER_SOL_API_MAX_ATTEMPTS = 3
