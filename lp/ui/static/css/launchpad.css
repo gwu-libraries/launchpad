@@ -95,6 +95,34 @@ td {
     padding-left: 0em;
 }
 
+.linkresolverlist{
+    /*font-size: small;*/
+    color: gray;
+}
+
+.linkresolverdata{
+    /*float: right;*/
+}
+
+.linkresolverdates{
+    color: black;
+    font-size: medium;
+}
+
+.linkresolverresource{
+    padding-bottom: 0.5em;
+}
+
+.linkresolverdbname{
+    font-size: small;
+}
+
+.smallbuttons{
+    font-size: medium;
+    float: left;
+    margin-right: 0.5em;*
+}
+
 #cover {
     float: left;
     padding: 1.2em 1em .5em 0;

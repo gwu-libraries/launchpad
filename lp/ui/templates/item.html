@@ -279,6 +279,23 @@ $(document).ready(function() {
                         </div>
                         {% endif %}
                     </td>
+                      {% if holding.LinkResolverData %}
+                      <td colspan=3>
+                        <div class="linkresolverlist">
+                        {% for link in holding.LinkResolverData %}
+                            <div class="linkresolverresource">
+                                <!-- <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</a>: -->
+                                <button class="smallbuttons" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</button>
+                                <div class="linkresolverdata">
+                                    from <span class="linkresolverdates">{{link.start}}</span>
+                                    to <span class="linkresolverdates">{% if link.end %}{{link.end}}{% else %}present{% endif %}</span><br/>
+                                    <span class="linkresolverdbname">{{link.dbname}}</span><br/>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                      </td>
+                      {% else %}
                     <td>
                            {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
                            {% if item.ITEM_ENUM %} {{ item.ITEM_ENUM }} {% endif %}
@@ -286,18 +303,6 @@ $(document).ready(function() {
                                <br /><a href="{{bib.FINDING_AID}}" target="clswindow">View the Finding Aid</a>
                            {% endif %}
                     </td>
-                      {% if holding.LinkResolverData %}
-                      <td colspan=2>
-                        <div class="linkresolverdata" style="font-size:small; color:gray;">
-                        {% for link in holding.LinkResolverData %}
-                            {% if not forloop.first %}<br/>{% endif %}
-                            from {{link.start}}
-                            to {% if link.end %}{{link.end}}{% else %}present{% endif %}
-                            <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">{{link.dbname}}</a>
-                        {% endfor %}
-                        </div>
-                      </td>
-                      {% else %}
                        <td>
                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list and not bib.FINDING_AID %}
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
