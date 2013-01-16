@@ -96,6 +96,7 @@ def item_json(request, bibid, z3950='False', school=None):
         return redirect('error503')
 
 
+@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def non_wrlc_item(request, num, num_type):
     bib = apis.get_bib_data(num=num, num_type=num_type)
     if not bib:
@@ -129,6 +130,7 @@ def non_wrlc_item(request, num, num_type):
        })
 
 
+@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gtitem(request, gtbibid):
     try:
         bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
@@ -177,6 +179,7 @@ def gtitem(request, gtbibid):
         return redirect('error503')
 
 
+@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gtitem_json(request, gtbibid):
     try:
         bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
@@ -202,6 +205,7 @@ def gtitem_json(request, gtbibid):
         return redirect('error503')
 
 
+@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gmitem(request, gmbibid):
     try:
         bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
@@ -250,6 +254,7 @@ def gmitem(request, gmbibid):
         return redirect('error503')
 
 
+@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gmitem_json(request, gmbibid):
     try:
         bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
