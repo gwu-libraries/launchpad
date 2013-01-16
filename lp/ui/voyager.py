@@ -205,7 +205,8 @@ FROM bib_index, bib_master, library
 WHERE bib_index.index_code IN (%s)
 AND bib_index.normal_heading = '%s'
 AND bib_index.bib_id=bib_master.bib_id
-AND bib_master.library_id=library.library_id"""
+AND bib_master.library_id=library.library_id
+AND bib_master.suppress_in_opac = 'N'"""
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
     cursor = connection.cursor()
     cursor.execute(query, [])
@@ -268,9 +269,11 @@ def get_related_std_nums(bibid, num_type):
     query = """
 SELECT normal_heading, display_heading
 FROM bib_index
+INNER JOIN bib_master ON bib_index.bib_id = bib_master.bib_id
 WHERE bib_index.index_code IN (%s)
-AND bib_id = %s
+AND bib_index.bib_id = %s
 AND bib_index.normal_heading != 'OCOLC'
+AND bib_master.suppress_in_opac='N'
 ORDER BY bib_index.normal_heading"""
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), bibid)
     cursor = connection.cursor()
@@ -296,7 +299,8 @@ def get_holdings(bib_data, lib=None, translate_bib=True):
 SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
        mfhd_master.display_call_no, location.location_display_name,
        library.library_name, location.location_name
-FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
+FROM bib_mfhd
+INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
      location, library,bib_master
 WHERE mfhd_master.location_id=location.location_id
 AND bib_mfhd.bib_id IN (%s)
