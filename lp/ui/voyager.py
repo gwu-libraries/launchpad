@@ -74,9 +74,8 @@ def get_marc_blob(bibid):
     query = """
 SELECT wrlcdb.getBibBlob(%s) AS marcblob
 from bib_master"""
-    query = query % bibid
     cursor = connection.cursor()
-    cursor.execute(query)
+    cursor.execute(query, [bibid])
     row = cursor.fetchone()
     raw_marc = str(row[0])
     marc = pymarc.record.Record(data=raw_marc)
@@ -108,8 +107,7 @@ AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
     paramcount = 8 if not exclude_names else 7
-    query = query % tuple([bibid] * paramcount)
-    cursor.execute(query)
+    cursor.execute(query, [bibid] * paramcount)
     try:
         bib = _make_dict(cursor, first=True)
         if exclude_names:
@@ -211,9 +209,8 @@ AND bib_index.normal_heading = '%s'
 AND bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac = 'N'"""
-    query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
     cursor = connection.cursor()
-    cursor.execute(query, [])
+    cursor.execute(query, [_in_clause(settings.INDEX_CODES[num_type]), num])
     bibs = _make_dict(cursor)
     for bib in bibs:
         if bib['LIBRARY_NAME'] == settings.PREF_LIB:
