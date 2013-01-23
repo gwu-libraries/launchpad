@@ -340,9 +340,9 @@ ORDER BY library.library_name"""
                     result[0]['mfhd']['marc852'] == ''):
                     continue
                 holding.update({'MFHD_DATA': result[0]['mfhd'],
-                              'ITEMS': result[0]['items'],
-                              'ELECTRONIC_DATA': result[0]['electronic'],
-                              'AVAILABILITY': result[0]['availability']})
+                                'ITEMS': result[0]['items'],
+                                'ELECTRONIC_DATA': result[0]['electronic'],
+                                'AVAILABILITY': result[0]['availability']})
             if len(result) > 1 and holding['LIBRARY_NAME'] == 'GM':
                 for item in get_additional_holdings(result, holding):
                     added_holdings.append(item)
@@ -859,7 +859,8 @@ def _get_gt_holdings(id, query, query_type, bib, lib, bib_data):
     res = get_z3950_mfhd_data(id, lib, results, [], bib_data)
     availability = get_z3950_availability_data(bib, lib, location, status,
         callno, item_status)
-    electronic = get_z3950_electronic_data(lib, url, msg, note)
+    electronic = get_z3950_electronic_data(lib, linkdata['url'],
+                                           linkdata['msg'], note)
     if len(res) > 0:
         dataset.append({'availability': availability,
             'electronic': electronic, 'mfhd': {'marc866list': res[0],
