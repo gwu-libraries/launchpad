@@ -1500,7 +1500,7 @@ def get_illiad_link(bib_data):
             title = bib_data['TITLE']
         if bib_data.get('ISSN', ''):
             query_args['issn'] = bib_data['ISSN']
-        query_args['rft.jtitle'] = title.encode('ascii', 'replace')
+        query_args['rft.jtitle'] = smart_str(title)
         query_args['sid'] = settings.ILLIAD_SID
     else:
         query_args['rft.genre'] = 'book'
