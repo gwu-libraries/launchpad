@@ -1065,22 +1065,24 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
             return dataset
     elif school == 'GT' or school == 'DA':
         res = []
-        if id_type == 'bib' and translate_bib:
-            bib = get_gtbib_from_gwbib(id)
-            if bib and len(bib) >= 1:
-                if bib[0] is not None:
+        if id_type == 'bib':
+            if translate_bib:
+                bib = get_gtbib_from_gwbib(id)
+                if bib:
+                    if bib[0] is not None:
+                        query = zoom.Query('PQF', '@attr 1=12 %s' %
+                            bib[0].encode('utf-8'))
+                        return _get_gt_holdings(id, query, query_type,
+                            bib, school, bib_data)
+                    else:
+                        return []
+                elif not bib or not translate_bib:
                     query = zoom.Query('PQF', '@attr 1=12 %s' %
-                        bib[0].encode('utf-8'))
+                        str(id).encode('utf-8'))
                     return _get_gt_holdings(id, query, query_type,
-                        bib, school, bib_data)
-                else:
-                    return []
-            elif not bib or not translate_bib:
-                query = zoom.Query('PQF', '@attr 1=12 %s' %
-                    str(id).encode('utf-8'))
-                return _get_gt_holdings(id, query, query_type,
-                    id, school, bib_data)
+                        id, school, bib_data)
             else:
+                bib = get_gtbib_from_gwbib(id)
                 query = zoom.Query('PQF', '@attr 1=12 %s' %
                     str(bib).encode('utf-8'))
                 return _get_gt_holdings(id, query, query_type,
