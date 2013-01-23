@@ -1,10 +1,10 @@
 import copy
+import re
 import urllib
 
 import pycountry
 from PyZ3950 import zoom
 import pymarc
-import traceback
 
 from django.conf import settings
 from django.db import connection
@@ -69,17 +69,18 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
     #        authors.remove(author)
     return authors
 
+
 def get_marc_blob(bibid):
-    query="""
+    query = """
 SELECT wrlcdb.getBibBlob(%s) AS marcblob
 from bib_master"""
-    query = query % bibid
     cursor = connection.cursor()
-    cursor.execute(query)
+    cursor.execute(query, [bibid])
     row = cursor.fetchone()
     raw_marc = str(row[0])
     marc = pymarc.record.Record(data=raw_marc)
     return marc
+
 
 def get_bib_data(bibid, expand_ids=True, exclude_names=False):
     query = """
@@ -95,10 +96,10 @@ SELECT bib_text.bib_id, lccn,
        wrlcdb.GetBibTag(%s, '008') AS MARC008"""
     if not exclude_names:
         query += """
-,title, author, publisher, 
+,title, author, publisher,
 RTRIM(wrlcdb.GetMarcField(%s,0,0,'245','','',1)) AS TITLE_ALL
         """
-    query += """ 
+    query += """
 FROM bib_text, bib_master, library
 WHERE bib_text.bib_id=%s
 AND bib_text.bib_id=bib_master.bib_id
@@ -106,8 +107,7 @@ AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
     paramcount = 8 if not exclude_names else 7
-    query = query % tuple([bibid] * paramcount)    
-    cursor.execute(query)
+    cursor.execute(query, [bibid] * paramcount)
     try:
         bib = _make_dict(cursor, first=True)
         if exclude_names:
@@ -121,7 +121,8 @@ AND bib_master.suppress_in_opac='N'"""
                 all_title += field.value()
             bib['TITLE_ALL'] = all_title
     except DjangoUnicodeDecodeError:
-        return get_bib_data(bibid=bibid, expand_ids=expand_ids, exclude_names=True)
+        return get_bib_data(bibid=bibid, expand_ids=expand_ids,
+                exclude_names=True)
     # if bib is empty, there's no match -- return immediately
     if not bib:
         return None
@@ -170,7 +171,8 @@ AND bib_master.suppress_in_opac='N'"""
         bib['BIB_ID_LIST'] = list(bibids)
     # parse fields for microdata
     bib['MICRODATA_TYPE'] = get_microdata_type(bib)
-    if bib.get('LINK') and bib.get('MESSAGE', '') == '856:42:$zCONNECT TO FINDING AID':
+    if bib.get('LINK') \
+            and bib.get('MESSAGE', '') == '856:42:$zCONNECT TO FINDING AID':
         bib['FINDING_AID'] = bib['LINK'][9:]
     return bib
 
@@ -205,10 +207,10 @@ FROM bib_index, bib_master, library
 WHERE bib_index.index_code IN (%s)
 AND bib_index.normal_heading = '%s'
 AND bib_index.bib_id=bib_master.bib_id
-AND bib_master.library_id=library.library_id"""
-    query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
+AND bib_master.library_id=library.library_id
+AND bib_master.suppress_in_opac = 'N'"""
     cursor = connection.cursor()
-    cursor.execute(query, [])
+    cursor.execute(query, [_in_clause(settings.INDEX_CODES[num_type]), num])
     bibs = _make_dict(cursor)
     for bib in bibs:
         if bib['LIBRARY_NAME'] == settings.PREF_LIB:
@@ -268,9 +270,11 @@ def get_related_std_nums(bibid, num_type):
     query = """
 SELECT normal_heading, display_heading
 FROM bib_index
+INNER JOIN bib_master ON bib_index.bib_id = bib_master.bib_id
 WHERE bib_index.index_code IN (%s)
-AND bib_id = %s
+AND bib_index.bib_id = %s
 AND bib_index.normal_heading != 'OCOLC'
+AND bib_master.suppress_in_opac='N'
 ORDER BY bib_index.normal_heading"""
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), bibid)
     cursor = connection.cursor()
@@ -284,7 +288,6 @@ ORDER BY bib_index.normal_heading"""
 
 
 def _is_valid_issn(num):
-    import re
     if re.match('\d{4}[ -]\d{3}[0-9xX]', num):
         return True
     return False
@@ -296,7 +299,8 @@ def get_holdings(bib_data, lib=None, translate_bib=True):
 SELECT bib_mfhd.bib_id, mfhd_master.mfhd_id, mfhd_master.location_id,
        mfhd_master.display_call_no, location.location_display_name,
        library.library_name, location.location_name
-FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
+FROM bib_mfhd
+INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
      location, library,bib_master
 WHERE mfhd_master.location_id=location.location_id
 AND bib_mfhd.bib_id IN (%s)
@@ -327,7 +331,8 @@ ORDER BY library.library_name"""
             else:
                 done.append(holding['BIB_ID'])
             result = get_z3950_holdings(holding['BIB_ID'],
-                                        holding['LIBRARY_NAME'], 'bib', '', bib_data, translate_bib)
+                                        holding['LIBRARY_NAME'], 'bib',
+                                        '', bib_data, translate_bib)
             if len(result) > 0:
                 if (len(result[0]['items']) == 0 and
                     len(result[0]['mfhd']['marc856list']) == 0 and
@@ -335,9 +340,9 @@ ORDER BY library.library_name"""
                     result[0]['mfhd']['marc852'] == ''):
                     continue
                 holding.update({'MFHD_DATA': result[0]['mfhd'],
-                              'ITEMS': result[0]['items'],
-                              'ELECTRONIC_DATA': result[0]['electronic'],
-                              'AVAILABILITY': result[0]['availability']})
+                                'ITEMS': result[0]['items'],
+                                'ELECTRONIC_DATA': result[0]['electronic'],
+                                'AVAILABILITY': result[0]['availability']})
             if len(result) > 1 and holding['LIBRARY_NAME'] == 'GM':
                 for item in get_additional_holdings(result, holding):
                     added_holdings.append(item)
@@ -390,7 +395,9 @@ ORDER BY library.library_name"""
         if (holding['LIBRARY_NAME'] == 'HS' and
             holding['LOCATION_NAME'] == 'hs link'):
             holding['REMOVE'] = True
-        if (holding['TRIMMED_LOCATION_DISPLAY_NAME'] == ' Online'  and holding['ELECTRONIC_DATA']['LINK856U'] is None and len(holding['ITEMS'])==0):
+        if holding['TRIMMED_LOCATION_DISPLAY_NAME'] == ' Online' \
+                and holding['ELECTRONIC_DATA']['LINK856U'] is None \
+                and len(holding['ITEMS']) == 0:
             holding['REMOVE'] = True
     for item in added_holdings:
         holdings.append(item)
@@ -413,12 +420,12 @@ ORDER BY library.library_name"""
     # get 360Link API information where possible
     for holding in holdings:
         holding['LinkResolverData'] = []
-        links =  holding.get('MFHD_DATA', {}).get('marc856list', [])
+        links = holding.get('MFHD_DATA', {}).get('marc856list', [])
         for link in links:
             url = link.get('u', '').lower()
             if url.startswith('http://sfx.wrlc.org/gw') or \
                 url.startswith('http://findit.library.gwu.edu/go'):
-                issnindex =  url.lower().find('issn=')
+                issnindex = url.lower().find('issn=')
                 if issnindex > -1:
                     num_type = 'issn'
                     num = url[issnindex + 5:]
@@ -678,8 +685,7 @@ ORDER BY PermLocation, TempLocation, item_status_date desc"""
 def get_z3950_bib_data(bibid, lib):
     conn = None
     res = []
-    authors = []
-    id_list=[]
+    id_list = []
     bib = None
     try:
         conn = _get_z3950_connection(settings.Z3950_SERVERS[lib])
@@ -693,53 +699,52 @@ def get_z3950_bib_data(bibid, lib):
             bib = {}
             rec = pymarc.record.Record(r.data.bibliographicRecord.encoding[1])
             bib['LIBRARY_NAME'] = lib
-	    bib['AUTHOR'] = rec.author()
-	    bib['BIB_ID'] = bibid
-	    bib['BIB_FORMAT'] = rec['000']
-            id_list.append({'BIB_ID':bibid, 'LIBRARY_NAME':lib})
-	    bib['BIB_ID_LIST'] = id_list
+            bib['AUTHOR'] = rec.author()
+            bib['BIB_ID'] = bibid
+            bib['BIB_FORMAT'] = rec['000']
+            id_list.append({'BIB_ID': bibid, 'LIBRARY_NAME': lib})
+            bib['BIB_ID_LIST'] = id_list
             if rec['250']:
-	        bib['EDITION'] = rec['250']['a']
+                bib['EDITION'] = rec['250']['a']
             else:
                 bib['EDITION'] = None
-	    bib['IMPRINT'] = rec['260'].value()
-	    bib['LANGUAGE'] = rec['008'].value()[35:38]
+            bib['IMPRINT'] = rec['260'].value()
+            bib['LANGUAGE'] = rec['008'].value()[35:38]
             if rec['856']:
-	        bib['LINK'] = rec['856']['u']
+                bib['LINK'] = rec['856']['u']
             else:
                 bib['LINK'] = []
             if rec['006']:
-	        bib['MARC006'] = rec['006'].value()
+                bib['MARC006'] = rec['006'].value()
             else:
                 bib['MARC006'] = None
             if rec['007']:
-	        bib['MARC007'] = rec['007'].value()
+                bib['MARC007'] = rec['007'].value()
             else:
                 bib['MARC007'] = None
             if rec['008']:
-	        bib['MARC008'] = rec['008'].value()
+                bib['MARC008'] = rec['008'].value()
             else:
-                 bib['MARC008'] = None
+                bib['MARC008'] = None
             if rec['MESSAGE']:
-	        bib['MESSAGE'] = rec['856']['z']
+                bib['MESSAGE'] = rec['856']['z']
             else:
                 bib['MESSAGE'] = None
             if rec['035']:
-	        num = rec['035']['a']
+                num = rec['035']['a']
                 if _is_oclc(num):
                     bib['OCLC'] = num
             else:
                 bib['OCLC'] = None
-	    bib['PUBLISHER'] = rec.publisher()
-	    bib['PUBLISHER_DATE'] = rec.pubyear()
+            bib['PUBLISHER'] = rec.publisher()
+            bib['PUBLISHER_DATE'] = rec.pubyear()
             if rec['260']:
-	        bib['PUB_PLACE'] = rec['260']['a']
+                bib['PUB_PLACE'] = rec['260']['a']
             else:
                 bib['PUB_PLACE'] = None
-	    bib['TITLE'] = rec.title()
+            bib['TITLE'] = rec.title()
             bib['TITLE_ALL'] = rec.title()
     except:
-        tb = traceback.format_exc()
         return None
     return bib
 
@@ -750,12 +755,14 @@ def _get_z3950_connection(server):
     conn.preferredRecordSyntax = server['PREFERRED_RECORD_SYNTAX']
     return conn
 
+
 def _GetValue(skey, tlist):
     """Get data for subfield code skey, given the subfields list."""
     for (subkey, subval) in tlist:
         if skey == subkey:
             return subval
     return None
+
 
 def _get_gt_holdings(id, query, query_type, bib, lib, bib_data):
     res = []
@@ -776,7 +783,7 @@ def _get_gt_holdings(id, query, query_type, bib, lib, bib_data):
         arow = {'STATUS': status, 'LOCATION': location,
             'CALLNO': callno, 'LINK': url, 'MESSAGE': msg, 'NOTE': note}
         results.append(arow)
-        res = get_z3950_mfhd_data(id, lib, results, [],bib_data)
+        res = get_z3950_mfhd_data(id, lib, results, [], bib_data)
         if len(res) > 0:
             dataset.append({'availability': availability,
                 'electronic': electronic,
@@ -794,7 +801,7 @@ def _get_gt_holdings(id, query, query_type, bib, lib, bib_data):
         arow = {'STATUS': status, 'LOCATION': location, 'CALLNO': callno,
             'LINK': url, 'MESSAGE': msg, 'NOTE': note}
         results.append(arow)
-        res = get_z3950_mfhd_data(id, lib, results, [],bib_data)
+        res = get_z3950_mfhd_data(id, lib, results, [], bib_data)
         if len(res) > 0:
             dataset.append({'availability': availability,
                 'electronic': electronic,
@@ -849,10 +856,11 @@ def _get_gt_holdings(id, query, query_type, bib, lib, bib_data):
                 'NOTE': note}
             results.append(arow)
     conn.close()
-    res = get_z3950_mfhd_data(id, lib, results, [],bib_data)
+    res = get_z3950_mfhd_data(id, lib, results, [], bib_data)
     availability = get_z3950_availability_data(bib, lib, location, status,
         callno, item_status)
-    electronic = get_z3950_electronic_data(lib, url, msg, note)
+    electronic = get_z3950_electronic_data(lib, linkdata['url'],
+                                           linkdata['msg'], note)
     if len(res) > 0:
         dataset.append({'availability': availability,
             'electronic': electronic, 'mfhd': {'marc866list': res[0],
@@ -862,7 +870,8 @@ def _get_gt_holdings(id, query, query_type, bib, lib, bib_data):
     return dataset
 
 
-def get_z3950_holdings(id, school, id_type, query_type, bib_data, translate_bib=True):
+def get_z3950_holdings(id, school, id_type, query_type, bib_data,
+        translate_bib=True):
     holding_found = False
     conn = None
     if school == 'GM':
@@ -890,7 +899,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data, translate_bib=
             arow = {'STATUS': status, 'LOCATION': location,
                 'CALLNO': callno, 'LINK': url, 'MESSAGE': msg, 'NOTE': note}
             results.append(arow)
-            res = get_z3950_mfhd_data(id, school, results, [],bib_data)
+            res = get_z3950_mfhd_data(id, school, results, [], bib_data)
             if len(res) > 0:
                 dataset.append({'availability': availability,
                     'electronic': electronic, 'mfhd': {'marc866list': res[0],
@@ -920,7 +929,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data, translate_bib=
                     'CALLNO': callno, 'LINK': url, 'MESSAGE': msg,
                     'NOTE': note}
                 results.append(arow)
-                res = get_z3950_mfhd_data(id, school, results, [],bib_data)
+                res = get_z3950_mfhd_data(id, school, results, [], bib_data)
                 if len(res) > 0:
                     dataset.append({'availability': availability,
                         'electronic': electronic,
@@ -1014,7 +1023,8 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data, translate_bib=
                         'marc852': res[3]},
                     'items': res[2]})
             if len(internet_items) > 0:
-                res = get_z3950_mfhd_data(id, school, internet_items, [], bib_data)
+                res = get_z3950_mfhd_data(id, school, internet_items, [],
+                        bib_data)
                 dataset.append({'availability': availability,
                     'electronic': electronic,
                     'mfhd': {'marc866list': res[0],
@@ -1037,10 +1047,10 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data, translate_bib=
             availability = get_z3950_availability_data(bib, 'GM', location,
                 status, callno, item_status)
             electronic = get_z3950_electronic_data('GM', url, msg, note)
-            res = get_z3950_mfhd_data(id, school, results, [],bib_data)
+            res = get_z3950_mfhd_data(id, school, results, [], bib_data)
             marc856list = marc866list = items = []
             if res:
-                if 0 < len(res): 
+                if 0 < len(res):
                     marc866list = res[0]
                 if 1 < len(res):
                     marc856list = res[1]
@@ -1055,33 +1065,36 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data, translate_bib=
             return dataset
     elif school == 'GT' or school == 'DA':
         res = []
-        if id_type == 'bib' and translate_bib:
-            bib = get_gtbib_from_gwbib(id)
-            if bib and len(bib) >= 1:
-                if bib[0] is not None:
+        if id_type == 'bib':
+            if translate_bib:
+                bib = get_gtbib_from_gwbib(id)
+                if bib:
+                    if bib[0] is not None:
+                        query = zoom.Query('PQF', '@attr 1=12 %s' %
+                            bib[0].encode('utf-8'))
+                        return _get_gt_holdings(id, query, query_type,
+                            bib, school, bib_data)
+                    else:
+                        return []
+                elif not bib or not translate_bib:
                     query = zoom.Query('PQF', '@attr 1=12 %s' %
-                        bib[0].encode('utf-8'))
+                        str(id).encode('utf-8'))
                     return _get_gt_holdings(id, query, query_type,
-                        bib, school, bib_data)
-                else:
-                    return []
-            elif not bib or not translate_bib:
-                query = zoom.Query('PQF', '@attr 1=12 %s' %
-                    str(id).encode('utf-8'))
-                return _get_gt_holdings(id, query, query_type,
-                    id, school,bib_data)
+                        id, school, bib_data)
             else:
+                bib = get_gtbib_from_gwbib(id)
                 query = zoom.Query('PQF', '@attr 1=12 %s' %
                     str(bib).encode('utf-8'))
                 return _get_gt_holdings(id, query, query_type,
-                    bib, school,bib_data)
+                    bib, school, bib_data)
         elif id_type == 'isbn':
             query = zoom.Query('PQF', '@attr 1=7 %s' % id)
         elif id_type == 'issn':
             query = zoom.Query('PQF', '@attr 1=8 %s' % id)
         elif id_type == 'oclc':
             query = zoom.Query('PQF', '@attr 1=1007 %s' % id)
-        return _get_gt_holdings(id, query, query_type, bib, school,bib_data)
+        return _get_gt_holdings(id, query, query_type, bib, school,
+                bib_data)
 
 
 def get_gmbib_from_gwbib(bibid):
@@ -1207,7 +1220,7 @@ def get_z3950_availability_data(bib, school, location, status, callno,
     item_status, found=True):
     availability = {}
     catlink = ''
-    if bib and school == 'GT'  :
+    if bib and school == 'GT':
         catlink = '''Click on the following link to get the information about
 this item from GeorgeTown Catalog <br>
 http://catalog.library.georgetown.edu/record=b%s~S4'''
@@ -1311,9 +1324,24 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
     res = []
     if len(links) == 0:
         if bib_data['LINK']:
-            val = {'3': '', 'z': bib_data['LIBRARY_NAME']+' Electronic Resource', 'u': bib_data['LINK']}
+            val = {'3': '',
+                    'z': bib_data['LIBRARY_NAME'] + ' Electronic Resource',
+                    'u': bib_data['LINK']}
             m856list.append(val)
-            item = {'ITEM_ENUM': None, 'ELIGIBLE': False, 'ITEM_STATUS': 1, 'ITEM_STATUS_DATE': '', 'TEMPLOCATION': None, 'ITEM_STATUS_DESC': '', 'BIB_ID': bib_data['BIB_ID'],'ITEM_ID': '', 'LIBRARY_FULL_NAME': settings.LIB_LOOKUP[bib_data['LIBRARY_NAME']], 'PERMLOCATION': bib_data['LIBRARY_NAME']+': Online', 'TRIMMED_LOCATION_DISPLAY_NAME': 'ONLINE', 'DISPLAY_CALL_NO': bib_data['LIBRARY_NAME']+ ' Electronic Resource', 'CHRON': None}
+            library_full_name = settings.LIB_LOOKUP[bib_data['LIBRARY_NAME']]
+            display_call_no = bib_data['LIBRARY_NAME'] + \
+                ' Electronic Resource'
+            item = {
+                'ITEM_ENUM': None, 'ELIGIBLE': False,
+                'ITEM_STATUS': 1, 'ITEM_STATUS_DATE': '',
+                'TEMPLOCATION': None, 'ITEM_STATUS_DESC': '',
+                'BIB_ID': bib_data['BIB_ID'], 'ITEM_ID': '',
+                'LIBRARY_FULL_NAME': library_full_name,
+                'PERMLOCATION': bib_data['LIBRARY_NAME'] + ': Online',
+                'TRIMMED_LOCATION_DISPLAY_NAME': 'ONLINE',
+                'DISPLAY_CALL_NO': display_call_no,
+                'CHRON': None
+            }
             items.append(item)
         else:
             return []
@@ -1474,7 +1502,7 @@ def get_illiad_link(bib_data):
             title = bib_data['TITLE']
         if bib_data.get('ISSN', ''):
             query_args['issn'] = bib_data['ISSN']
-        query_args['rft.jtitle'] = title.encode('ascii', 'replace')
+        query_args['rft.jtitle'] = smart_str(title)
         query_args['sid'] = settings.ILLIAD_SID
     else:
         query_args['rft.genre'] = 'book'
@@ -1517,12 +1545,13 @@ def get_illiad_link(bib_data):
             if ind != -1:
                 title = bib_data['TITLE'][0:ind]
             else:
-                title = bib_data['TITLE'] 
+                title = bib_data['TITLE']
             query_args['rft.btitle'] = ''
             try:
                 query_args['rft.btitle'] = title.encode('utf-8')
             except UnicodeDecodeError:
-                query_args['rft.btitle'] = title.decode('iso-8859-1').encode('utf-8') 
+                query_args['rft.btitle'] = \
+                        title.decode('iso-8859-1').encode('utf-8')
             query_args['rfr_id'] = settings.ILLIAD_SID
     str_args = {}
     for k, v in query_args.iteritems():

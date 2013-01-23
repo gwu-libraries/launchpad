@@ -17,7 +17,8 @@ only been tested on ubuntu 10.04 LTS.
 
 1. Install Apache and other dependencies:
 
-        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev
+        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev libxml2-dev libxslt-dev
+
 
 2. Install git 
 
@@ -69,10 +70,6 @@ the path according to your installation of oracle.
     Now run
 
         sudo ldconfig        
-
-8. Install some necessary xml packages
-
-        sudo apt-get install libxml2-dev libxslt-dev
 
 
 - - -
