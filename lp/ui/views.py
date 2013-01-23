@@ -7,7 +7,7 @@ from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
 from ui import voyager, apis
-from ui.sort import libsort, availsort, elecsort, \
+from ui.sort import libsort, availsort, elecsort, templocsort, \
     splitsort, enumsort, callnumsort, strip_bad_holdings
 
 
@@ -50,9 +50,9 @@ def item(request, bibid):
             holdings = strip_bad_holdings(holdings)
             show_aladin_link = True
             ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
-            holdings = elecsort(availsort(ours)) \
-                + elecsort(availsort(shared)) \
-                + libsort(elecsort(availsort(theirs), rev=True))
+            holdings = elecsort(templocsort(availsort(ours))) \
+                + elecsort(templocsort(availsort(shared))) \
+                + libsort(elecsort(templocsort(availsort(theirs)), rev=True))
         else:
             show_aladin_link = False
         return render(request, 'item.html', {

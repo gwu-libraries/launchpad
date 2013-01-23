@@ -78,6 +78,14 @@ def callnumsort(holdings_list):
     return holdings_list
 
 
+def templocsort(holdings_list):
+    for holding in holdings_list:
+        if holding.get('ITEMS', None):
+            holding['ITEMS'] = sorted(holding['ITEMS'],
+                key=lambda item: item.get('TEMPLOCATION', ''))
+    return holdings_list
+
+
 def elecsort(holdings_list, rev=False):
     elec, rest = [], []
     for holding in holdings_list:
