@@ -269,7 +269,7 @@ def gmitem_json(request, gmbibid):
             bib_data['openurl'] = _openurl_dict(request)
             bib_encoded = {}
             for k, v in bib_data.iteritems():
-                if v and k in ['TITLE', 'TITLE_ALL', 'AUTHOR']:
+                if v and k in ['TITLE', 'TITLE_ALL', 'AUTHOR'] and v is not None:
                     bib_encoded[k] = v.decode('cp1252').encode('utf-8')
                 else:
                     bib_encoded[k] = v
