@@ -73,8 +73,7 @@ def item(request, bibid):
             'non_wrlc_item': False
             })
     except:
-        #return redirect('error503')
-        raise
+        return redirect('error503')
 
 
 def _date_handler(obj):

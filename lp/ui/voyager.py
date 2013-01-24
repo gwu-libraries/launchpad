@@ -1164,9 +1164,11 @@ AND bib_master.library_id IN ('14', '15')"""
 def get_wrlcbib_from_gmbib(gmbibid):
     query = """
 SELECT bib_index.bib_id
-FROM bib_index
+FROM bib_index, bib_master
 WHERE bib_index.index_code = '035A'
+AND bib_index.bib_id=bib_master.bib_id
 AND bib_index.normal_heading=bib_index.display_heading
+AND bib_master.library_id = '6'
 AND bib_index.normal_heading = %s"""
     cursor = connection.cursor()
     cursor.execute(query, [gmbibid])
