@@ -42,7 +42,7 @@ def item(request, bibid, expand=True):
     #TODO: add sorting
     return render(request, 'item.html', {
         'bibid': bibid,
-        'bib': bib,
+        'recordset': recordset,
         'debug': settings.DEBUG,
         'title_chars': settings.TITLE_CHARS,
         'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,

@@ -1,3 +1,4 @@
+from itertools import chain
 import pymarc
 
 from django.conf import settings
@@ -24,10 +25,10 @@ META_TEMPLATE_BIB = {
 }
 
 
-class Bib():
+class Bib(object):
 
     def __init__(self, metadata={}, marc=None, holdings=[]):
-        assert isinstance(marc, pymarc.record.Record), \
+        assert isinstance(marc, pymarc.record.Record) or marc is None, \
             'marc must be a pymarc Record object'
         assert isinstance(holdings, list), \
             'holdings must be a list of Holding objects'
@@ -56,12 +57,20 @@ class Bib():
                     isinstance(META_TEMPLATE_BIB[key], list):
                     if not isinstance(new_meta[key], list):
                         raise AssertionError('%s must be a list' % key)
-                elif not isinstance(new_meta[key], str):
-                    raise AssertionError('%s must be a string' % key)
+                elif not isinstance(new_meta[key], str) and \
+                    not isinstance(new_meta[key], unicode) and \
+                    not isinstance(new_meta[key], int) and \
+                    new_meta[key] is not None:
+                    raise AssertionError('%s must be a string, not %s.' % (key,
+                        type(new_meta[key])))
         # wipe out existing values first
         del self.metadata
         for key in new_meta:
-            self._metadata[key] = new_meta[key]
+            if new_meta[key] is not None:
+                if isinstance(new_meta[key], int):
+                    self._metadata[key] = str(new_meta[key])
+                else:
+                    self._metadata[key] = new_meta[key]
 
     @metadata.deleter
     def metadata(self):
@@ -98,7 +107,7 @@ class Bib():
         self._holdings = []
 
     def items(self):
-        return [h.items for h in self.holdings]
+        return list(chain.from_iterable(h.items for h in self.holdings))
 
     def altmeta(self):
         alts = {}
@@ -165,7 +174,7 @@ class Bib():
         return self.metadata['oclc']
 
     def subjects(self):
-        return self.marc.subjects() is self.marc else []
+        return self.marc.subjects() if self.marc else []
 
     def uniformtitle(self):
         return self.marc.uniformtitle() if self.marc else ''

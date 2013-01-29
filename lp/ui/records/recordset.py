@@ -1,10 +1,11 @@
+from itertools import chain
 from ui.records.bib import Bib
 
-class RecordSet():
+class RecordSet(object):
 
     def __init__(self, bibs=[]):
         assert isinstance(bibs, list), 'bibs must be a list'
-        assert all(isinstance(b, Bib), for b in bibs), \
+        assert all(isinstance(b, Bib) for b in bibs), \
             'each element in bibs must be a Bib object'
         super(RecordSet, self).__init__()
         self._bibs = []
@@ -17,11 +18,11 @@ class RecordSet():
     @bibs.setter
     def bibs(self, new_bibs):
         assert isinstance(new_bibs, list), 'bibs must be a list'
-        assert all(isinstance(b, Bib), for b in new_bibs), \
+        assert all(isinstance(b, Bib) for b in new_bibs), \
             'each element in bibs must be a Bib object'
-        self._bibs = bibs
+        self._bibs = new_bibs
 
-    @bib.deleter
+    @bibs.deleter
     def bibs(self):
         self._bibs = []
 
@@ -32,10 +33,10 @@ class RecordSet():
         return [bib for bib in self.bibs if bib.libcode in settings.GMCODES]
 
     def holdings(self):
-        return [bib.holdings for bib in self.bibs]
+        return list(chain.from_iterable([bib.holdings for bib in self.bibs]))
 
     def items(self):
-        return [bib.items() for bib in self.bibs]
+        return list(chain.from_iterable([bib.items() for bib in self.bibs]))
 
     def marc(self):
         return self.bibs[0].marc if self.bibs else None

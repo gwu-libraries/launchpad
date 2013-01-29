@@ -14,7 +14,7 @@ META_TEMPLATE_HOLD = {
 }
 
 
-class Holding():
+class Holding(object):
 
     def __init__(self, metadata={}, marc=None, items=[]):
         assert isinstance(marc, pymarc.record.Record), \
@@ -44,12 +44,20 @@ class Holding():
                     isinstance(META_TEMPLATE_HOLD[key], list):
                     if not isinstance(new_meta[key], list):
                         raise AssertionError('%s must be a list' % key)
-                elif not isinstance(new_meta[key], str):
-                    raise AssertionError('%s must be a string' % key)
+                elif not isinstance(new_meta[key], str) and \
+                    not isinstance(new_meta[key], unicode) and \
+                    not isinstance(new_meta[key], int) and \
+                    new_meta[key] is not None:
+                    raise AssertionError('%s must be a string, not %s: %s' % 
+                        (key, type(new_mtea[key]), new_meta[key]))
         # wipe out existing values first
         del self.metadata
         for key in new_meta:
-            self._metadata[key] = new_meta[key]
+            if new_meta[key] is not None:
+                if isinstance(new_meta[key], int):
+                    self._metadata[key] = str(new_meta[key])
+                else:
+                    self._metadata[key] = new_meta[key]
 
     @metadata.deleter
     def metadata(self):

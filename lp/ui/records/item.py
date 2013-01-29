@@ -18,7 +18,7 @@ META_TEMPLATE_ITEM = {
 }
 
 
-class Item():
+class Item(object):
 
     def __init__(self, metadata={}):
         assert isinstance(metadata, dict), 'metadata must be a dictionary'
@@ -34,12 +34,14 @@ class Item():
     @metadata.setter
     def metadata(self, new_meta):
         assert isinstance(new_meta, dict), 'metadata must be a dictionary'
-        assert all(isinstance(new_meta[k], str) for k in new_meta), \
-            'all metadata values must be strings'
         # wipe out existing values first
         del self.metadata
         for key in new_meta:
-            self._metadata[key] = new_meta[key]
+            if new_meta[key] is not None:
+                if isinstance(new_meta[key], int):
+                    self._metadata[key] = str(new_meta[key])
+                else:
+                    self._metadata[key] = new_meta[key]
 
     @metadata.deleter
     def metadata(self):
@@ -91,18 +93,18 @@ class Item():
     def eligible(self):
         if self.metadata.get('eligible', None):
             return self.metadata['eligible']
-        if self.libcode in settings.INELIGIBLE_LIBRARIES:
+        if self.libcode() in settings.INELIGIBLE_LIBRARIES:
             return False
         for loc in settings.FORCE_ELIGIBLE_LOCS:
-            if loc in self.permloc or loc in self.temploc:
+            if loc in self.permloc() or loc in self.temploc():
                 return True
         for loc in settings.INELIGIBLE_PERM_LOCS:
-            if loc in self.permloc:
+            if loc in self.permloc():
                 return False
         for loc in settings.INELIGIBLE_TEMP_LOCS:
-            if loc in self.temploc:
+            if loc in self.temploc():
                 return False
         for status in settings.INELIGIBLE_STATUS:
-            if status == self.status[:len(status)]:
+            if status == self.status()[:len(status)]:
                 return False
         return True

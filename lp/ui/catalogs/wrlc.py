@@ -27,16 +27,17 @@ class WRLC():
         if expand:
             rsn = self.related_stdnums(bibid)
             bibids = self.related_bibids(rsn)
-            recordset = RecordSet([self.bib(b) for b in bibids])
+            recordset = RecordSet([self.bib(b['bibid']) for b in bibids])
         else:
             recordset = RecordSet([self.bib(bibid)])
-        for bib in recordset.bibs():
-            bib.holdings = self.holdings(bib.bibid())
+        for bib in recordset.bibs:
+            bib.holdings = self.holdings([bib.bibid()])
         for holding in recordset.holdings():
             holding.items = self.items(holding.mfhdid())
         return recordset
 
     def bib(self, bibid):
+        bibid = str(bibid)
         assert re.match(r'^\d{2,8}$', bibid), '%s is not a proper bibid' % bibid
         '''
         Primary function for retrieving a record from the Voyager DB using the
@@ -64,8 +65,13 @@ class WRLC():
     AND bib_master.library_id=library.library_id
     AND bib_master.suppress_in_opac='N'"""
         data = self._ask_oracle(query, params=[bibid, bibid], first=True)
-        raw_marc = str(data.pop('marcblob'))
-        marc = pymarc.record.Record(data=raw_marc)
+        try:
+            raw_marc = str(data.pop('marcblob'))
+            marc = pymarc.record.Record(data=raw_marc)
+        except IndexError:
+            """Some MARC records cause string index error in PyMarc.
+            Skip them for now."""
+            marc = None
         bib = Bib(metadata=data, marc=marc)
         return bib
 
@@ -138,13 +144,15 @@ class WRLC():
 
 
     def _is_valid_issn(self, num):
-        assert isinstance(num, str), 'num must be a string'
+        assert isinstance(num, str) or isinstance(num, unicode), \
+            'num must be a string, not %s: %s' % (type(num), num)
         if re.match('\d{4}[ -]\d{3}[0-9xX]', num):
             return True
         return False
 
     def _is_oclc(self, num):
-        assert isinstance(num, str), 'num must be a string'
+        assert isinstance(num, str) or isinstance(num, unicode), \
+            'num must be a string, not %s: %s' % (type(num), num)
         if num.find('OCoLC') >= 0:
             return True
         if num.find('ocn') >= 0:
@@ -155,10 +163,8 @@ class WRLC():
 
     def related_bibids(self, stdnums):
         assert isinstance(stdnums, dict), 'stdnums must be a dictionary'
-        assert all(key in ('oclc', 'issn', 'bib') for key in stdnums), \
-            'stdnum types can only be (isbn, issn, oclc)'
-        assert all(isinstance(stdnums[k], str) for k in stdnums), \
-            'each num in stdnums must be a string'
+        assert all(key in ('oclc', 'issn', 'isbn') for key in stdnums), \
+            'stdnum types can only be (isbn, issn, oclc): %s' % stdnums
         # pop off any empty values to reduce number of DB queries
         for key in stdnums.keys():
             if not stdnums[key]:
@@ -187,11 +193,11 @@ class WRLC():
         )
     ORDER BY bib_index.bib_id"""
             codes = settings.INDEX_CODES[numtype]
-            nums = set([n['norm'] for n in stdnums[numtype]])
-            query = query % (_in_clause(codes),
-                             _in_clause(codes),
-                             _in_clause(codes),
-                             _in_clause(nums))
+            nums = list(set([n['norm'] for n in stdnums[numtype]]))
+            query = query % (self._in_clause(codes),
+                             self._in_clause(codes),
+                             self._in_clause(codes),
+                             self._in_clause(nums))
             results = self._ask_oracle(query)
             if numtype == 'oclc':
                 results = [row for row in results if self._is_oclc(row['disp'])]
@@ -202,8 +208,9 @@ class WRLC():
             return bibids
 
     def holdings(self, bibids):
-        assert isinstance(bibids, list), 'bibids must be a list'
-        assert all(re.match(r'^\d{2,8}$', bibid), for bibid in bibids), \
+        assert isinstance(bibids, list), 'bibids must be a list not %s: %s' % \
+            (type(bibids), bibids)
+        assert all(re.match(r'^\d{2,8}$', bibid) for bibid in bibids), \
             '%s is not a proper bibid' % bibid
         query = """
     SELECT bib_mfhd.bib_id AS bibid,
@@ -303,7 +310,8 @@ class WRLC():
         return cursor.fetchone()
 
     def _ask_oracle(self, query, params=[], first=False):
-        assert isinstance(query, str), 'query must be a string'
+        assert isinstance(query, str) or isinstance(query, unicode), \
+            'query must be a string, not %s: %s' % (type(query), query)
         assert isinstance(params, list), 'params must be a list'
         assert isinstance(first, bool), 'first must be a boolean'
         cursor = connection.cursor()
@@ -344,6 +352,6 @@ class WRLC():
         return num
 
     def _in_clause(self, items):
-        assert isinstance(items, list), 'items must be a list'
-        assert all(isinstance(i, str), for i in items), 'items must be strings'
+        assert isinstance(items, list), 'items must be a list, not %s: %s' % \
+            (type(items), items)
         return '(%s)' % ','.join(["'%s'" % item for item in items])
