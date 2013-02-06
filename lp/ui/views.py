@@ -89,7 +89,7 @@ def item_json(request, bibid, z3950='False', school=None):
                 status=404)
         bib_data['holdings'] = voyager.get_holdings(bib_data)
         bib_data['openurl'] = _openurl_dict(request)
-        bib_encoded = encode_data(bib_data)
+        bib_encoded = unicode_data(bib_data)
         return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
             indent=2), content_type='application/json')
     except DatabaseError:
@@ -192,7 +192,7 @@ def gtitem_json(request, gtbibid):
                     status=404)
             bib_data['holdings'] = voyager.get_holdings(bib_data, 'GT', False)
             bib_data['openurl'] = _openurl_dict(request)
-            bib_encoded = encode_data(bib_data)
+            bib_encoded = unicode_data(bib_data)
             return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
                 indent=2), content_type='application/json')
         raise Http404
@@ -200,16 +200,30 @@ def gtitem_json(request, gtbibid):
         return redirect('error503')
 
 
-def encode_data(bib_data):
+def unicode_data(bib_data):
     bib_encoded = {}
     for k, v in bib_data.iteritems():
-        try:
-            if v and isinstance(v, str):
-                bib_encoded[k] = v.encode('utf-8')
+        if isinstance(v, basestring):
+            if not isinstance(v, unicode):
+                bib_encoded[k] = unicode(v, 'iso-8859-1')
             else:
                 bib_encoded[k] = v
-        except UnicodeDecodeError:
-            bib_encoded[k] = v.decode('iso-8859-1').encode('utf-8')
+        elif isinstance(v, dict):
+            bib_encoded[k] = unicode_data(v)
+        elif isinstance(v, list):
+            rows = []
+            for item in v:
+                if isinstance(item, dict):
+                    row = unicode_data(item)
+                elif isinstance(item, basestring):
+                    if not isinstance(item, unicode):
+                        row = unicode(item, 'iso-8859-1')
+                    else:
+                        row = item
+                rows.append(row)
+            bib_encoded[k] = rows
+        else:
+            bib_encoded[k] = v
     return bib_encoded
 
 
@@ -275,7 +289,7 @@ def gmitem_json(request, gmbibid):
                     status=404)
             bib_data['holdings'] = voyager.get_holdings(bib_data, 'GM', False)
             bib_data['openurl'] = _openurl_dict(request)
-            bib_encoded = encode_data(bib_data)
+            bib_encoded = unicode_data(bib_data)
             return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
                 indent=2), content_type='application/json')
         raise Http404
