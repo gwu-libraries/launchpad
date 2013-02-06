@@ -210,7 +210,8 @@ AND bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac = 'N'"""
     cursor = connection.cursor()
-    cursor.execute(query, [_in_clause(settings.INDEX_CODES[num_type]), num])
+    query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
+    cursor.execute(query, [])
     bibs = _make_dict(cursor)
     for bib in bibs:
         if bib['LIBRARY_NAME'] == settings.PREF_LIB:
@@ -229,7 +230,8 @@ def _normalize_num(num, num_type):
 
 
 def get_related_bibids(num_list, num_type):
-    query = """
+    query = [None] * 7
+    query[0] = """
 SELECT DISTINCT bib_index.bib_id,
        bib_index.display_heading,
        library.library_name
@@ -238,25 +240,39 @@ WHERE bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'
 AND bib_index.index_code IN (%s)
-AND bib_index.normal_heading != 'OCOLC'
+AND bib_index.normal_heading != 'OCOLC'"""
+    query[1] = """
+AND UPPER(bib_index.display_heading) NOT LIKE %s"""
+    query[2] = """
 AND bib_index.normal_heading IN (
     SELECT bib_index.normal_heading
     FROM bib_index
-    WHERE bib_index.index_code IN (%s)
+    WHERE bib_index.index_code IN (%s)"""
+    query[3] = """
+    AND UPPER(bib_index.display_heading) NOT LIKE %s"""
+    query[4] = """
     AND bib_id IN (
         SELECT DISTINCT bib_index.bib_id
         FROM bib_index
         WHERE bib_index.index_code IN (%s)
         AND bib_index.normal_heading IN (%s)
-        AND bib_index.normal_heading != 'OCOLC'
+        AND bib_index.normal_heading != 'OCOLC'"""
+    query[5] = """
+        AND UPPER(bib_index.display_heading) NOT LIKE %s"""
+    query[6] = """
         )
     )
 ORDER BY bib_index.bib_id"""
     indexclause = _in_clause(settings.INDEX_CODES[num_type])
     numclause = _in_clause(num_list)
-    query = query % (indexclause, indexclause, indexclause, numclause)
+    likeclause = '%' + 'SET' + '%'
+    query[0] = query[0] % indexclause
+    query[2] = query[2] % indexclause
+    query[4] = query[4] % (indexclause, numclause)
+    query = ''.join(query)
+    args = [likeclause] * 3
     cursor = connection.cursor()
-    cursor.execute(query, [])
+    cursor.execute(query, args)
     results = _make_dict(cursor)
     output_keys = ('BIB_ID', 'LIBRARY_NAME')
     if num_type == 'oclc':
@@ -280,6 +296,8 @@ ORDER BY bib_index.normal_heading"""
     cursor = connection.cursor()
     cursor.execute(query, [])
     results = cursor.fetchall()
+    # cull out ISBNs for sets of books
+    results = [pair for pair in results if 'SET' not in pair[0].upper()]
     if num_type == 'oclc':
         return [pair for pair in results if _is_oclc(pair[1])]
     if num_type == 'issn':
@@ -1150,9 +1168,11 @@ AND bib_master.library_id IN ('14', '15')"""
 def get_wrlcbib_from_gmbib(gmbibid):
     query = """
 SELECT bib_index.bib_id
-FROM bib_index
+FROM bib_index, bib_master
 WHERE bib_index.index_code = '035A'
+AND bib_index.bib_id=bib_master.bib_id
 AND bib_index.normal_heading=bib_index.display_heading
+AND bib_master.library_id = '6'
 AND bib_index.normal_heading = %s"""
     cursor = connection.cursor()
     cursor.execute(query, [gmbibid])
