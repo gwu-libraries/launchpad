@@ -848,13 +848,17 @@ def _get_gt_holdings(id, query, query_type, bib, lib, bib_data):
                     'MESSAGE': linkdata['msg'], 'NOTE': note}
                 if location == 'GT: INTERNET':
                     internet_items.append(arow)
-                results.append(arow)
+                if status != '' or location != '' or callno != '' or \
+                linkdata['url'] != '' or linkdata['msg'] != '' or note != '':
+                    results.append(arow)
         if 'Rec: USMARCnonstrict MARC:' in lines[0]:
             linkdata = get_gt_link(lines)
             arow = {'STATUS': status, 'LOCATION': location, 'CALLNO': callno,
                 'LINK': linkdata['url'], 'MESSAGE': linkdata['msg'],
                 'NOTE': note}
-            results.append(arow)
+            if status != '' or location != '' or callno != '' or \
+            linkdata['url'] != '' or linkdata['msg'] != '' or note != '':
+                results.append(arow)
     conn.close()
     res = get_z3950_mfhd_data(id, lib, results, [], bib_data)
     availability = get_z3950_availability_data(bib, lib, location, status,
@@ -1324,6 +1328,9 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
     res = []
     if len(links) == 0:
         if bib_data['LINK']:
+            if '$u' in bib_data['LINK']:
+                ind = bib_data['LINK'].find('$u')
+                bib_data['LINK'] = bib_data['LINK'][ind + 2:]
             val = {'3': '',
                     'z': bib_data['LIBRARY_NAME'] + ' Electronic Resource',
                     'u': bib_data['LINK']}
