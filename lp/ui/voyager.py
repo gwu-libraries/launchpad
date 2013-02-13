@@ -116,10 +116,9 @@ AND bib_master.suppress_in_opac='N'"""
             bib['AUTHOR'] = marc.author()
             bib['PUBLISHER'] = marc.publisher()
             title_fields = marc.get_fields('245')
-            all_title = ''
-            for field in title_fields:
-                all_title += field.value()
-            bib['TITLE_ALL'] = all_title
+            bib['TITLE_ALL'] = ''
+            for title in title_fields:
+                bib['TITLE_ALL'] += title.format_field().decode('iso-8859-1').encode('utf-8')
     except DjangoUnicodeDecodeError:
         return get_bib_data(bibid=bibid, expand_ids=expand_ids,
                 exclude_names=True)
