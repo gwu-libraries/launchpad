@@ -868,7 +868,7 @@ def _get_gt_holdings(id, query, query_type, bib, lib, bib_data):
                 if status != '' or location != '' or callno != '' or \
                 linkdata['url'] != '' or linkdata['msg'] != '' or note != '':
                     results.append(arow)
-        if 'Rec: USMARCnonstrict MARC:' in lines[0]:
+        if 'Rec: USMARCnonstrict MARC:' in lines[0] or 'Rec: OPAC Bibliographic MARC:' in lines[0]:
             linkdata = get_gt_link(lines)
             arow = {'STATUS': status, 'LOCATION': location, 'CALLNO': callno,
                 'LINK': linkdata['url'], 'MESSAGE': linkdata['msg'],
@@ -1424,6 +1424,15 @@ def get_gt_link(lines):
     url = msg = ''
     for line in lines:
         ind = line.find('856 40')
+        if ind != -1:
+            ind = line.find('$u')
+            ind1 = line.find(' ', ind)
+            url = line[ind + 2:]
+            ind = line.find('$z')
+            ind1 = line.find('$u', ind)
+            msg = line[ind + 2: ind1]
+            break
+        ind = line.find('856 41')
         if ind != -1:
             ind = line.find('$u')
             ind1 = line.find(' ', ind)
