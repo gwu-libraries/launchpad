@@ -4,397 +4,215 @@
 
 
 {% block title %}
-    {% if bib.altscripts.title %}
-        {{ bib.altscripts.title }}
-    {% else %}
-        {% if bib.title|length <= 254 %}
-            {{ bib.title }}
-        {% else %}
-            {{ bib.title|truncatewords:-1 }}
-        {% endif %}
-    {% endif %}
+  {% if recordset.alttitle %}
+    {{ recordset.alttitle }}
+  {% else %}
+    {{ recordset.trunctitle }}
+  {% endif %}
 {% endblock title %}
 
+
 {% block link_extra %}
-{% if bib.bibid %}
-    <link rel='canonical' href='{% url "item" bib.bibid %}' />
-    <link rel='alternate' type='application/json' href='{% url "item_json" bib.bibid %}' />
-{% endif %}
+  {% if recordset.bibid %}
+    <link rel='canonical' href='{% url "item" recordset.bibid %}' />
+    <link rel='alternate' type='application/json' href='{% url "item_json" recordset.bibid %}' />
+  {% endif %}
 {% endblock link_extra %}
 
-{% block javascript_extra %}
-<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
-<script type='text/javascript'>
-// hide missing cover images' surrounding <div>
-$(document).ready(function() {
-    $('#cover-image').load(function() {
-        if ($('#cover-image').width() == 1) {
-            $('#cover').toggle(200);
-        };
-        });
-
-    });
-// show txt/email button
-var newwindow;
-function sms(url) {
-    newwindow = window.open(url, 'name', 'height=590,width=400,toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0');
-    if (window.focus) {
-        newwindow.focus();
-    };
-};
-
-//function to expand/collapse title if its bigger than a threshold
-function showmore(id)
-	{
-		var objt = document.getElementById("toggle-"+id);
-		var objb = document.getElementById("brief-"+id);
-		var objf = document.getElementById("full-"+id);
-		if(objf.style.display == 'block') 
-                {
-			objf.style.display='none';
-			objb.style.display='block';
-			objt.innerHTML="<a href=javascript:showmore('1');>More...</a>";
-
-		}
-                else 
-                {
-			objf.style.display='block';
-			objb.style.display='none';
-			objt.innerHTML="<a href=javascript:showmore('1');>Less</a>";
-		}		
-
-	};
-
-</script>
-{% endblock javascript_extra %}
 
 {% block content %}
 
-<div itemscope itemtype="{{bib.microdata_type}}">
-
-<table border='0' style='width:100%;'>
-    <tr>
-        <td>
-            {% if bib.isbn|clean_isbn %}
-            <div id='cover'>
-                <img itemprop="image" id='cover-image' src='http://covers.openlibrary.org/b/isbn/{{ bib.isbn|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
-            </div>
-            {% endif %}
-            <div id='description'>
-                <span id="titleinfo">
-                <h1 class="title" >
-                {% if bib.altscripts.title %}
-                    <span itemprop="name">{{ bib.altscripts.title }}</span> <br />
-                {% endif %}
-                {%if bib.title|length <= title_chars%}
-                    <span itemprop="name">{{bib.title}}</span><br/>
-                {%else%}
-                    <div id="brief-1" style="display:block">
-                        {{bib.brief_title}}
-                    </div>
-                    <div id="full-1" style="display:none">
-                        <span itemprop="name">{{bib.title}}</span>
-                    </div>
-                    <div id="toggle-1"> 
-                        <a href='javascript:showmore("1")';>More...</a>
-                    </div>
-                {% endif %}
-                </h1>
-                </span>
-                {% if bib.openurl.query_string %}
-                    {% include "openurl.html" %}
-                {% endif %}
-                {% if bib.author or bib.altscripts.author or bib.addedentries %}
-                    <span class="author">
-                    {% if bib.altscripts.author %}
-                        <span itemprop="author">{{ bib.altscripts.author }}</span> <br />
-                    {% endif %}
-                    {% if bib.authors %}
-                        {% for contributor in bib.authors %}
-                            {% if forloop.first %}
-                                <span itemprop="author">{{contributor}}</span>
-                            {% else %}
-                                <span itemprop="contributor">{{contributor}}</span>
-                            {% endif %}
-                            {% if not forloop.last %}; {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        {% if bib.author %}
-                            <span itemprop="author">{{ bib.author }}</span>
-                        {% endif %}
-                    {% endif %}
-                    </span><br />
-                {% endif %}
-
-                {% if bib.edition %}
-                    <span class="edition">{{ bib.edition }}.</span>
-                {% endif %}
-                <span class="imprint">
-                    {% if bib.altscripts.publisher %}
-                        <span itemprop="publisher">{{ bib.altscripts.publisher }}</span>
-                        {% if bib.altscript.publisher and bib.altscripts.pubdate %}, {% endif %}
-                    {% endif %}
-                    {% if bib.altscripts.pubdate %}
-                        <span itemprop="pubdate">{{ bib.altscripts.pubdate }}</span><br />
-                    {% endif %}
-                    {% if bib.publisher %}
-                        <span itemprop="publisher">{{ bib.publisher }}</span>
-                        {% if bib.publisher and bib.pubdate %}, {% endif %}
-                    {% endif %}
-                    {% if bib.pubdate %}
-                        <span itemprop="pubdate">{{ bib.pubdate }}</span>
-                    {% endif %}
-                </span>
-
-                {% if bib.language %}
-                    In <span itemprop="inLanguage" class="language">{{ bib.language }}.</span>
-                {% endif %}
-                <br />
-
-                {% if bib.isbns %}
-                    <span class="isbn-label">ISBN </span>
-                    <span class="isbn">
-                        {% for isbn in bib.isbns %}
-                            <span itemprop="isbn">{{ isbn }}</span>
-                            {% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </span><br />
-                {% endif %}
-                {% if bib.issns%}
-                    <span class="isbn-label">ISSN </span>
-                    <span class="issn">{{ bib.issns|join:", " }}</span><br/>
-                {% endif %}
-                <p>
-                    <span class="catlink" >
-                    {% if bib.bibid %}
-                        View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.bibid }}' target='newwin'>Aladin Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                    {% endif %}
-                    </span>
-                    </p>
-                    {%if bib.illiad_link and bib.formatcode != 'as'%}
-                     <p>
-                     <span class = "catlink"> 
-                      Request this title through  <a href= {{bib.illiad_link}} target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
-                    </span></p>
-                   {%endif%}
-                   
-            </div>
-        </td>
-    </tr>
-</table>
-
-</div>
-
-
-{% if bib.holdings %}
-    {% regroup bib.holdings by library as library_list %}
-<table WIDTH='100%'> 
-    <thead>
-        <tr>
-            <th width='40%'>Location</th>
-            <th width='25%'>Call Number</th>
-            <th width='20%'>Status</th>
-            <th width='15%'>Consortium Loan</th>
-        </tr>
-    </thead>
-    <tbody>		
-    {% for library in library_list %}
-        {% if library.grouper %}
-        <tr>
-            <td class='library-group-header'>
-            {{ library.grouper }}
-            </td>
-        </tr>
+<div itemscope itemtype="{{recordset.microdata_type}}" class="container-fluid">
+  <div class="row-fluid">
+    <div class="hero-unit"><!-- Bibliographic data showcased in the "hero-unit" -->
+      <div id="cover">
+        <img itemprop="image" id="cover-image" src="http://covers.openlibrary.org/b/isbn/{{ recordset.isbn|clean_isbn }}-M.jpg" title="cover image from Open Library" alt="cover image" />
+      </div>
+      <!-- title block -->
+      <h1>
+        {% if recordset.alttitle %}
+          <span itemprop="name">{{recordset.alttitle}}</span><br />
         {% endif %}
-        {% for holding in library.list %}
-            {% if holding.items %}
-                {% for item in holding.items %}
-            <tr >
-                <td>
-                    <div class="itemrow">
-                    {% if item.loc %}
-                        {{ item.loc|noscream }}
-                        <br />
-                    {% else %}
-                        {{ item.loc|noscream }}
-                    {% endif %}
-                    {% if holding.textual and forloop.first_ %}
-                        {% for line in holding.textual %}
-                            <br />
-                            <span class="library-has">{{ line }}</span>
-                        {% endfor %}
-                    {% endif %}
-                    {% if holding.pubnote and forloop.first %}
-                        <br />
-                        <span class="note">{{ holding.pubnote }}</span>
-                    {% endif %}
-                    {#{% if holding.LIBRARY_HAS %}#}
-                        {#{% for line in holding.LIBRARY_HAS %}#}
-                            <!--<br />
-                            <span class="library-has">{{ line }}</span>-->
-                        {#{% endfor %}#}
-                    {#{% endif %}#}
-                    </div>
-                </td>
-                <td>
-                    {{ holding.callnum }} {{ item.enum }}
-                </td>
-                <td>
-                    {% if holding.links %}
-                        {% for link in holding.links %}
-                            {% if link.material %}
-                                <span class="link-volumes">[{{ link.material }}]</span>
-                            {% endif %}
-                            {% if holding.libcode != 'GW' and holding.library != 'WRLC' %}
-                                <a href="{{link.url}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                                <br />
-                                <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
-                                {{holding.library}} only
-                            {% else %}
-                                <button onclick="window.open('{{link.u}}')" > Full text online </button>
-                            {% endif %}
-                            {% if not forloop.last %}<hr />{% endif %}
-                        {% endfor %}
-                    {% else %}
-                        {%if item.status = 'Not Charged'%}
-                            <span style='color: green'>Available</span>
-                            <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if holding.callnum %}call={{ holding.callnum|urlencode }}{% endif %}&amp;{% if item.loc %}loc={{ item.loc|noscream|urlencode }}{% endif %}&amp;title={{ bib.title|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
-                        {%else%}
-                            {% if item.temploc == 'WRLC Center'%}
-                                <span class='off-site'>Off-site </span>
-                                <br />
-                                <span class='off-site-explanation'>(Available by request)</span>
-                            {% else %}
-                                {{ item.status }}
-                            {% endif %}
-                        {%endif%}
-                    {% endif %}
-                </td>
-                <td>
-                    {% if item.eligible %}
-                        <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.bibid }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                    {% endif %}
-                </td>
-            </tr>
-                {% endfor %}
-            <!--  If no item data use old template -->
-            {% elif "Click" not in holding.loc %}
-                <tr>
-                    <td>
-                        <div class="itemrow">
-                        {% if holding.loc %}
-                            {{ holding.loc|noscream }}
-                            <br />
-                            <span class='temp-loc-label'>Temporarily held</span>
-                        {% else %}
-                            {{ holding.loc|noscream }}
-                        {% endif %}
-                        {% if holding.textual %}
-                            {% for line in holding.textual %}
-                                <br />
-                                <span class="library-has">{{ line }}</span>
-                            {% endfor %}
-                        {% endif %}
-                        </div>
-                    </td>
-                    <td>
-                        {% if holding.callnum %}
-                            {{ holding.callnum|noscream }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if holding.links %}
-                            {% for link in holding.links %}
-                                {% if link.material %}
-                                    <span class="link-volumes">[{{ link.material }}]</span>
-                                {% endif %}
-                                {% if holding.libcode != 'GW' and holding.library != 'WRLC' %}
-                                    <a href="{{link.url}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                                    <br />
-                                    <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img>
-                                    {{holding.library}} only
-                                {% else %}
-                                    <a href="{{link.url}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                                {% endif %}
-                            {% endfor %}
-                        {% elif not holding.items and holding.loc == 'WRLC Center' %}
-                            <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
-                        {% elif holding.status == 'Not Charged' %}
-                            <span style='color: green'>Available</span>
-                        {% elif holding.temploc == 'WRLC Center'%}
-                            <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
-                        {% else %}
-                            {{ holding.status }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if holding.eligible %}
-                            <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.bibid }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endif %}
+        <span itemprop="name">{{recordset.title}}</span>
+      </h1>
+      <!-- TODO: add openurl -->
+      <!-- authors -->
+      {% if recordset.altauthor %}
+        <span itemprop="author">{{recordset.altauthor}}</span><br />
+      {% endif %}
+      {% if recordset.author %}
+        <span itemprop="author">{{recordset.author}}</span><br />
+      {% endif %}
+      {% if recordset.altaddedentries %}
+        {% for contributor in recordset.altaddedentries %}
+          <span itemprop="contributor">{{contributor}}</span>{% if not forloop.last %}; {% endif %}
         {% endfor %}
-    {% endfor %}
-    {%if bib.formatcode == 'as'%}
-         <tr>
-             <td class='library-group-header'>
-              InterLibrary Loan
-             </td>
-          </tr>
-          <tr>
-               <td>
-                    <div class="itemrow">
-                    Available through ILL
-                    </div>
-               </td>
-               <td>                   </td>
-               <td> 
-                {%if bib.openurl.query_string%}  
-<a href= {{bib.illiad_link|add:bib.openurl.query_string|escape }} target='newwin'> Request </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>    
-                {%else%}
-<a href= {{bib.illiad_link }} target='newwin'> Request </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
-               {%endif%}
-                </td>
-               <td> </td>
-           </tr>
-       {%endif%}
-    </tbody>
-</table> 
-{% endif %}
+        <br />
+      {% endif %}
+      {% if recordset.addedentries %}
+        {% for contributor in recordset.addedentries %}
+          <span itemprop="contributor">{{contributor}}</span>{% if not forloop.last %}; {%endif %}
+        {% endfor %}
+        <br />
+      {% endif %}
+      <!-- TODO: add edition -->
+      <!-- Imprint -->
+      {% if recordset.altmeta.publisher %}
+        <span itemprop="publisher">{{recordset.altmeta.publisher}}</span>{% if recordset.altmeta.pubplace or recordset.altmeta.pubyear %},{% else %}.<br />{% endif %}
+      {% endif %}
+      {% if recordset.altmeta.pubyear %}
+        {{recordset.altmeta.pubyear}}.{% if recordset.publisher or recordset.pubyear %}<br />{% endif %}
+      {% endif %}
+      {% if recordset.publisher %}
+        <span itemprop="publisher">{{recordset.publisher}}</span>{% if recordset.pubyear or recordset.pubplace %},{% else %}.{% endif %}
+      {% endif %}
+      {% if recordset.pubplace %}
+        {{recordset.pubplace}}{% if recordset.pubyear %},{% else %}.{% endif %}
+      {% endif %}
+      {% if recordset.pubyear %}
+        {{recordset.pubyear}}.
+      {% endif %}
 
-{% if debug %}
-<h3>Debugging info</h3>
+      <!-- language -->
+      {% if recordset.language %}
+        In <span itemprop="inLanguage">{{recordset.language}}</span>.
+      {% endif %}
+      <br />
 
-<p>
-{% if bib.bibid %}
-View JSON: <a href='{% url "item_json" bib.bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bib.bibid %}</a>
-&nbsp;
-{% endif %}
+      <!-- Standard IDs -->
+      {% if recordset.isbns %}
+        ISBN
+        {% for isbn in recordset.isbns %}
+          {{isbn}}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        <br />
+      {% endif %}
+      {% if recordset.issns %}
+        ISSN
+        {% for issn in recordset.issns %}
+          {{issn}}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        <br />
+      {% endif %}
+      <!-- TODO: add catalog link and illiad link -->
+    </div>
+  </div>
+  <ul class="nav nav-tabs">
+    <li><a href="#holdings-tab" data-toggle="tab">Consortium Holdings</a></li>
+    <li><a href="#bibmarc-tab" data-toggle="tab">MARC</a></li>
+  </ul>
+  <div class="tab-content">
+  {% if recordset.holdings %}
+    <div class="tab-pane active" id="holdings-tab">
+    {% regroup recordset.holdings by library as liblist %}
+      {% for library in liblist %}
+        <div class="row-fluid">
+          <div class="span12">
+            {% if library.grouper %}
+              <h2>{{library.grouper}}</h2>
+            {% endif %}
 
-{% if bib.isbn|clean_isbn %}
-ISBN: <a href='{% url "isbn" bib.isbn|clean_isbn %}'>{% url "isbn" bib.isbn|clean_isbn %}</a>
-&nbsp;
-    {% if link_resolver.base_url and link_resolver.name %}
-    (<a href='{{ link_resolver.base_url }}?isbn={{ bib.isbn|clean_isbn }}&{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
-&nbsp;
-    {% endif %}
-{% endif %}
-{% if bib.issn|clean_issn %}
-ISSN: <a href='{% url "issn" bib.issn|clean_issn %}?{{ bib.openurl.query_string|escape }}'>{% url "issn" bib.issn|clean_issn %}</a>
-&nbsp;
-    {% if link_resolver.base_url and link_resolver.name %}
-    (<a href='{{ link_resolver.base_url }}?issn={{ bib.issn|clean_issn }}&amp;{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
-&nbsp;
-    {% endif %}
-{% endif %}
-{% if bib.oclc|clean_oclc %}
-OCLC: <a href='{% url "oclc" bib.oclc|clean_oclc %}?{{ bib.openurl.query_string|escape }}'>{% url "oclc" bib.oclc|clean_oclc %}</a>
-&nbsp;
-{% endif %}
-</p>
 
-
-{% endif %}
+            {% for holding in library.list %}
+              <div class="row-fluid">
+                <div class="span12">
+                  <h3>{{holding.location}}</h3>
+                  {% if holding.pubnote %}
+                    <div class="alert alert-info">{{holding.pubnote}}</div>
+                  {% endif %}
+                    <ul class="nav nav-tabs" id="tabset-{{holding.mfhdid}}">
+                      <li class="active"><a href="#{{holding.mfhdid}}-items" data-toggle="tab">Items List</a></li>
+                      {% if holding.textual %}
+                      <li><a href="#{{holding.mfhdid}}-textual" data-toggle="tab">Holdings List</a></li>
+                      {% endif %}
+                      {% if holding.marc %}
+                      <li><a href="#{{holding.mfhdid}}-marcholds" data-toggle="tab">MARC Holdings</a></li>
+                      {% endif %}
+                    </ul>
+                    <div class="tab-content">
+                      <div class="tab-pane active" id="{{holding.mfhdid}}-items">
+                        {% if holding.items|length > 1 %}
+                        <div class="accordion" id="accordion-{{holding.mfhdid}}">
+                          <div class="accordion-group">
+                            <div class="accordion-heading">
+                              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{holding.mfhdid}}" href="#collapseTwo-{{holding.mfhdid}}">
+                                Collapse/Expand Item Listing
+                              </a>
+                            </div>
+                            <div id="collapseTwo-{{holding.mfhdid}}" class="accordion-body collapse in">
+                              <div class="accordion-inner">
+                        {% endif %}
+                                  <table class="table table-striped">
+                                    <tr>
+                                      <th>Location</th>
+                                      <th>Call Number</th>
+                                      <th>Status</th>
+                                      <th>Eligible</th>
+                                    </tr>
+                                    {% if holding.items %}
+                                      {% for item in holding.items %}
+                                        <tr>
+                                          <td>
+                                            {% if item.temploc and item.temploc != holding.location %}
+                                              <span class="text-warning">{{item.temploc}}</span>
+                                            {% else %}
+                                              {{item.location}}
+                                            {% endif %}
+                                          </td>
+                                          <td>{{holding.callnum}} {{item.enum}}</td>
+                                          <td>{{item.status}}</td>
+                                          <td>{{item.eligible}}</td>
+                                        </tr>
+                                      {% endfor %}
+                                    {% else %}
+                                      <tr>
+                                        <td>{% if holding.temploc %}{{holding.temploc}}{% endif %}</td>
+                                        <td>{{holding.callnum}}</td>
+                                        <td>{{holding.status}}</td>
+                                        <td>{{holding.eligible}}</td>
+                                      </tr>
+                                    {% endif %}
+                                  </table>
+                        {% if holding.items|length > 1 %}
+                              </div>
+                            </div>
+                          </div><!-- close accordion group -->
+                        </div><!-- close accordion -->
+                        {% endif %}
+                      </div><!-- close items tab-pane -->
+                      {% if holding.textual %}
+                      <div class="tab-pane" id="{{holding.mfhdid}}-textual">
+                        <p class="muted">The library has the following volumes and issues</p>
+                        {% for line in holding.textual %}
+                        {{line}}<br />
+                        {% endfor %}
+                      </div>
+                      {% endif %}
+                      {% if holding.marc %}
+                      <div class="tab-pane" id="{{holding.mfhdid}}-marcholds">
+                        <pre>{{holding.marc}}</pre>
+                      </div>
+                      {% endif %}
+                    </div><!-- close tab-content
+                    <script>
+                      $(function () {
+                        $("#tabset-{{holding.mfhdid}} a:last").tab("show");
+                      })
+                    </script> -->
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div><!-- close holdings tab -->
+  {% endif %}
+  {% if recordset.marc %}
+    <div class="tab-pane" id="bibmarc-tab">
+      <pre>{{recordset.marc}}</pre>
+    </div>
+  {% endif %}
+  </div><!-- end tab group -->
+</div>
 
 {% endblock content %}

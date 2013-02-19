@@ -1,13 +1,35 @@
 {% load url from future %}
 
-<header>
-    <div id="libheader-container">
-        <div id="libheader" >
-            <div class="libheader-logo hide-lo"><a href="http://www.gwu.edu" target="_blank" title="GWU website"><img src="{{ STATIC_URL }}img/gwheaderlogo.png" width='309' height='32' alt="logo: The George Washington University" /></a></div>
-            <div class="libheader-liblink"><a href="http://library.gwu.edu" target="_blank" title="GW Libraries website">GW Libraries</a></div>
-                <div class="libheader-link"><a href="{% url 'about' %}" target="_blank" title="about">About</a></div>
-                <div class="libheader-link">&bull;</div>
-                <div class="libheader-link"><a href="{% url 'api' %}" target="_blank" title="">API</a></div>
-        </div>
+<style type="text/css">
+  body {
+    padding-top: 60px;
+    padding-bottom: 40px;
+  }
+  .sidebar-nav {
+    padding: 9px 0;
+  }
+</style>
+
+<header class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" href="{{settings.LIBRARY_URL}}">{{settings.LIBRARY_NAME}}</a>
+      <div class="nav-collapse collapse">
+        <p class="navbar-text pull-right">
+          <a href="{{settings.SCHOOL_URL}}" class="navbar-link">
+            <img src="{{settings.STATIC_URL}}/img/{{settings.SCHOOL_LOGO}}" />
+          </a>
+        </p>
+        <ul class="nav">
+          <li><a href="#">About</a></li>
+          <li><a href="#">API</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
     </div>
+  </div>
 </header>

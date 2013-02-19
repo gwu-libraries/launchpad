@@ -13,7 +13,6 @@ from ui.records.item import Item
 
 class WRLC():
 
-
     def build_record_set(self, num, num_type='bibid', expand=True):
         assert isinstance(num_type, str), 'num_type must be a string'
         assert num_type in ('bibid', 'gtbibid', 'gmbibid', 'isbn', 'issn',
@@ -36,9 +35,9 @@ class WRLC():
             holding.items = self.items(holding.mfhdid())
         return recordset
 
-    def bib(self, bibid):
+    def bib(self, bibid, raw=False):
         bibid = str(bibid)
-        assert re.match(r'^\d{2,8}$', bibid), '%s is not a proper bibid' % bibid
+        assert re.match(r'^\d{2,8}$', bibid), '%s not a proper bibid' % bibid
         '''
         Primary function for retrieving a record from the Voyager DB using the
         Bib object type
@@ -65,12 +64,15 @@ class WRLC():
     AND bib_master.library_id=library.library_id
     AND bib_master.suppress_in_opac='N'"""
         data = self._ask_oracle(query, params=[bibid, bibid], first=True)
+        if raw:
+            return data
         try:
             raw_marc = str(data.pop('marcblob'))
             marc = pymarc.record.Record(data=raw_marc)
         except IndexError:
             """Some MARC records cause string index error in PyMarc.
-            Skip them for now."""
+            Skip them for now.
+            TODO: handle this error in a better manner"""
             marc = None
         bib = Bib(metadata=data, marc=marc)
         return bib
@@ -113,7 +115,7 @@ class WRLC():
             return None
 
     def related_stdnums(self, bibid):
-        assert re.match(r'^\d{2,8}$', bibid), '%s is not a proper bibid' % bibid
+        assert re.match(r'^\d{2,8}$', bibid), '%s not a proper bibid' % bibid
         output = {'isbn': [], 'issn': [], 'oclc': []}
         query = '''
     SELECT normal_heading,
@@ -141,7 +143,6 @@ class WRLC():
                 if self._is_oclc(item['display_heading']):
                     output['oclc'].append(dictionary)
         return output
-
 
     def _is_valid_issn(self, num):
         assert isinstance(num, str) or isinstance(num, unicode), \
@@ -200,7 +201,7 @@ class WRLC():
                              self._in_clause(nums))
             results = self._ask_oracle(query)
             if numtype == 'oclc':
-                results = [row for row in results if self._is_oclc(row['disp'])]
+                results = [ro for ro in results if self._is_oclc(ro['disp'])]
             for row in results:
                 if not bibids or row['bibid'] != bibids[-1]['bibid']:
                     bibids.append({'bibid': row['bibid'],
@@ -220,11 +221,12 @@ class WRLC():
            location.location_display_name AS loc,
            library.library_name AS libcode,
            mfhdblob_vw.marc_record AS marcblob
-    FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
-         location,
+    FROM location,
          library,
          bib_master,
-         mfhdblob_vw
+         mfhdblob_vw,
+         bib_mfhd INNER JOIN
+             mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id
     WHERE mfhd_master.location_id=location.location_id
     AND mfhdblob_vw.mfhd_id=mfhd_master.mfhd_id
     AND bib_mfhd.bib_id IN %s
@@ -255,7 +257,9 @@ class WRLC():
            item_status_date AS statusdate,
            bib_master.bib_id AS bibid,
            mfhd_item.mfhd_id AS mfhdid,
-           library.library_id AS libcode
+           library.library_id AS libcode,
+           mfhd_item.item_enum as enum,
+           mfhd_item.chron as chron
     FROM bib_master
     JOIN library ON library.library_id = bib_master.library_id
     JOIN bib_text ON bib_text.bib_id = bib_master.bib_id
@@ -277,8 +281,8 @@ class WRLC():
             item = Item(metadata=record)
             items.append(item)
             # now deduplicate
-            # (sometimes when an item has a temploc change there are two items with
-            # different statuses. We'll use the most recent change)
+            # (sometimes when an item has a temploc change there are two items
+            # with different statuses. We'll use the most recent change)
             if items and item.itemid == items[-1].itemid:
                 if item.statusdate > items[-1].statusdate:
                     items[-1] = item
@@ -288,7 +292,7 @@ class WRLC():
 
     def bibblob(self, bibid):
         assert isinstance(bibid, str), 'bibid must be a string'
-        assert re.match(r'^\d{2,8}$', bibid), '%s is not a proper bibid' % bibid
+        assert re.match(r'^\d{2,8}$', bibid), '%s not a proper bibid' % bibid
         query = """
     SELECT wrlcdb.getBibBlob(%s) AS bibblob
     FROM bib_text

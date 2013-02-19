@@ -1,5 +1,7 @@
 from itertools import chain
+from django.conf import settings
 from ui.records.bib import Bib
+
 
 class RecordSet(object):
 
@@ -75,13 +77,23 @@ class RecordSet(object):
         return self.bibs[0].isbn() if self.bibs else ''
 
     def isbns(self):
-        return self.bibs[0].isbns() if self.bibs else []
+        if self.bibs:
+            isbns = set()
+            for bib in self.bibs:
+                isbns.update(bib.isbns())
+            return list(isbns)
+        return []
 
     def issn(self):
         return self.bibs[0].issn() if self.bibs else ''
 
     def issns(self):
-        return self.bibs[0].issns() if self.bibs else []
+        if self.bibs:
+            issns = set()
+            for bib in self.bibs:
+                issns.update(bib.issns())
+            return list(issns)
+        return []
 
     def oclc(self):
         return self.bibs[0].oclc() if self.bibs else ''
@@ -127,3 +139,17 @@ class RecordSet(object):
 
     def microdatatype(self):
         return self.bibs[0].microdatatype() if self.bibs else ''
+
+    '''Sorting Methods'''
+    def schoolsort(self):
+        ours, shared, theirs, bottom = [], [], [], []
+        for bib in self.bibs:
+            if bib.libcode() in settings.PREF_LIBCODES:
+                ours.append(bib)
+            elif bib.libcode() in settings.SHARED_LIBCODES:
+                shared.append(bib)
+            elif bib.libcode() in settings.BOTTOM_LIBCODES:
+                bottom.append(bib)
+            else:
+                theirs.append(bib)
+        self.bibs = ours + shared + theirs + bottom

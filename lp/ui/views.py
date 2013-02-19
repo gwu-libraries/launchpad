@@ -8,14 +8,14 @@ from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
 from ui import voyager, apis, models
-from ui.catalogs import wrlc
-from ui.sort import libsort, availsort, elecsort, splitsort
+from ui.catalogs.wrlc import WRLC
+#from ui.sort import libsort, availsort, elecsort, splitsort
 
 
 def home(request):
     return render(request, 'home.html', {
         'title': 'launchpad home',
-        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
+        'settings': settings,
         })
 
 
@@ -34,20 +34,17 @@ def _openurl_dict(params):
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid, expand=True):
     wrlc = WRLC()
-    recordset = wrlc.build_record_set(bibid)
+    recordset = wrlc.build_record_set(str(bibid))
     if not recordset:
         return render(request, '404.html', {'num': bibid,
             'num_type': 'BIB ID'}, status=404)
-    recordset.openurl = _openurl_dict(request.GET)
-    #TODO: add sorting
+    #recordset.openurl = _openurl_dict(request.GET)
+    #TODO: flesh out sorting sorting
+    recordset.schoolsort()
     return render(request, 'item.html', {
         'bibid': bibid,
         'recordset': recordset,
-        'debug': settings.DEBUG,
-        'title_chars': settings.TITLE_CHARS,
-        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-        'link_resolver': settings.LINK_RESOLVER,
-        'enable_humans': settings.ENABLE_HUMANS,
+        'settings': settings,
         })
 
 

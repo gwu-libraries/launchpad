@@ -1,4 +1,6 @@
+from copy import deepcopy
 from itertools import chain
+import pycountry
 import pymarc
 
 from django.conf import settings
@@ -39,7 +41,7 @@ class Bib(object):
         super(Bib, self).__init__()
         self._marc = marc
         self._holdings = holdings
-        self._metadata = META_TEMPLATE_BIB
+        self._metadata = deepcopy(META_TEMPLATE_BIB)
         self.metadata = metadata
         self._altmeta = self.altmeta()
 
@@ -75,7 +77,7 @@ class Bib(object):
     @metadata.deleter
     def metadata(self):
         # wipe out values but leave keys
-        self._metadata = META_TEMPLATE_BIB
+        self._metadata = deepcopy(META_TEMPLATE_BIB)
 
     @property
     def marc(self):
@@ -137,7 +139,7 @@ class Bib(object):
         return self.marc.title() if self.marc else self.metadata['title']
 
     def trunctitle(self):
-        trunc = self.title()[:252]
+        brief = self.title()[:252]
         while brief[-1] != ' ':
             brief = brief[:-1]
         return '%s...' % brief
@@ -152,8 +154,10 @@ class Bib(object):
         return self._altmeta.get('author', '')
 
     def addedentries(self):
-        return self.marc.addedentries() if self.marc \
-            else self.metadata['addedentries']
+        if self.marc:
+            return [ae['a'] for ae in self.marc.addedentries()]
+        else:
+            return self.metadata['addedentries']
 
     def altaddedentries(self):
         return self._altmeta.get('addedentries', '')
@@ -162,13 +166,23 @@ class Bib(object):
         return self.marc.isbn() if self.marc else self.metadata['isbn']
 
     def isbns(self):
-        return self.metadata['isbns']
+        if self.marc:
+            fields = self.marc.get_fields('020')
+            return [f['a'] for f in fields if f['a']]
+        elif self.isbn():
+            return [self.isbn()]
+        return []
 
     def issn(self):
         return self.marc['022']['a'] if self.marc else self.metadata['issn']
 
     def issns(self):
-        return self.metadata['issns']
+        if self.marc:
+            fields = self.marc.get_fields('022')
+            return [f['a'] for f in fields if f['a']]
+        elif self.issn():
+            return [self.issn()]
+        return []
 
     def oclc(self):
         return self.metadata['oclc']
@@ -180,22 +194,25 @@ class Bib(object):
         return self.marc.uniformtitle() if self.marc else ''
 
     def publisher(self):
-        return self.marc.publisher() if self.marc else self.metadata['publisher']
+        return self.marc.publisher().rstrip(',. ') if self.marc \
+            else self.metadata['publisher']
 
     def altpublisher(self):
-        return self._altmeta.get('publisher', '')
+        return self._altmeta.get('publisher', '').rstrip(',. ')
 
     def pubyear(self):
-        return self.marc.pubyear() if self.marc else self.metadata['pubyear']
+        return self.marc.pubyear().rstrip('. ') if self.marc \
+            else self.metadata['pubyear']
 
     def altpubyear(self):
-        return self._altmeta.get('pubyear', '')
+        return self._altmeta.get('pubyear', '').rstrip(',. ')
 
     def pubplace(self):
-        return self.marc['260']['a'] if self.marc else self.metadata['pubplace']
+        return self.marc['260']['a'].strip('[]: ') if self.marc \
+            else self.metadata['pubplace']
 
     def altpubplace(self):
-        return self._altmeta.get('pubplace', '')
+        return self._altmeta.get('pubplace', '').rstrip(',. ')
 
     def formatcode(self):
         return self.metadata['formatcode']
@@ -208,7 +225,7 @@ class Bib(object):
             language = pycountry.languages.get(bibliographic=self.langcode())
             return language.name
         except:
-            return self.langcode
+            return self.langcode()
 
     def libcode(self):
         return self.metadata['libcode']

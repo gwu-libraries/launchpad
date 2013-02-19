@@ -1,3 +1,4 @@
+from copy import deepcopy
 import pymarc
 
 from django.conf import settings
@@ -23,7 +24,7 @@ class Item(object):
     def __init__(self, metadata={}):
         assert isinstance(metadata, dict), 'metadata must be a dictionary'
         super(Item, self).__init__()
-        self._metadata = META_TEMPLATE_ITEM
+        self._metadata = deepcopy(META_TEMPLATE_ITEM)
         self.metadata = metadata
         self.metadata['eligible'] = self.eligible()
 
@@ -46,7 +47,7 @@ class Item(object):
     @metadata.deleter
     def metadata(self):
         # wipe out values but leave keys
-        self._metadata = META_TEMPLATE_ITEM
+        self._metadata = deepcopy(META_TEMPLATE_ITEM)
 
     def itemid(self):
         return self.metadata['itemid']
@@ -76,7 +77,7 @@ class Item(object):
         return self.metadata['permloc']
 
     def location(self):
-        loc = self.temploc if self.temploc else self.permloc
+        loc = self.temploc() if self.temploc() else self.permloc()
         if loc and loc[2] == ':':
             loc = loc[3:].strip()
         return loc

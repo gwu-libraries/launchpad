@@ -1,3 +1,4 @@
+from copy import deepcopy
 import pymarc
 
 from django.conf import settings
@@ -27,7 +28,7 @@ class Holding(object):
 
         super(Holding, self).__init__()
         self._marc = marc
-        self._metadata = META_TEMPLATE_HOLD
+        self._metadata = deepcopy(META_TEMPLATE_HOLD)
         self.metadata = metadata
 
     @property
@@ -62,7 +63,7 @@ class Holding(object):
     @metadata.deleter
     def metadata(self):
         # wipe out values but leave keys
-        self._metadata = META_TEMPLATE_HOLD
+        self._metadata = deepcopy(META_TEMPLATE_HOLD)
 
     @property
     def marc(self):
@@ -124,7 +125,11 @@ class Holding(object):
         return self.metadata['locid']
 
     def location(self):
-        return self.metadata('loc')
+        if self.metadata['loc'][2] == ':':
+            loc = self.metadata['loc'][3:]
+        else:
+            loc = self.metadata['loc']
+        return loc.strip()
 
     def callnum(self):
         return self.metadata['callnum']

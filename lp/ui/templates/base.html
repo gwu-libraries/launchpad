@@ -1,80 +1,61 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>{% block title %}{% endblock title %} - GWU Libraries</title>
-<link rel="icon" href="{{ STATIC_URL}}img/favicon.ico" type="image/x-icon" />
+  <head>
+    <title>{% block title %}{% endblock title %}</title>
+    <link rel="icon" href="{{STATIC_URL}}img/favicon.ico" type="image/x-icon" />
+    
+    {% block styles %}
+      <link rel="stylesheet" href="{{STATIC_URL}}css/bootstrap.min.css" media="screen" />
+    {% endblock styles %}
 
-<!-- 'viewport' helps mobile devices scale appropriately -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+    {% block styles_extra %}
+    {% endblock styles_extra %}
 
-{% block styles %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/libheader7_lite.css" type="text/css" media="screen" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/launchpad.css" type="text/css" media="screen" />
-    <!--[if lt IE 9]>
-<link rel="stylesheet" href="{{ STATIC_URL }}css/libheader7_lite_ie.css" type="text/css" media="screen" />
-<![endif]-->
+    {% block javascript %}
+      <script src="http://code.jquery.com/jquery-latest.js"></script>
+      <script src="{{STATIC_URL}}js/bootstrap.min.js"></script>
+    {% endblock javascript %}
 
-<style type="text/css"> </style>
-{% endblock styles %}
+    {% block javascript_extra %}
+    {% endblock javascript_extra %}
 
-{% block styles_extra %}
-{% endblock styles_extra %}
+    {% block link_extra %}
+    {% endblock link_extra %}
 
-{% block javascript %}
-{% endblock javascript %}
+    {% block analytics_bug %}
+      {% if settings.GOOGLE_ANALYTICS_UA %}
+        <script type="text/javascript">
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', '{{ settings.GOOGLE_ANALYTICS_UA }}']);
+          _gaq.push(['_trackPageview']);
 
-{% block javascript_extra %}
-{% endblock javascript_extra %}
+          (function() {
+            var ga = document.createElement('script'); 
+            ga.type = 'text/javascript'; 
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; 
+            s.parentNode.insertBefore(ga, s);
+          })();
+        </script>
+      {% endif %}
+    {% endblock analytics_bug %}
 
-{% block link_extra %}
-{% endblock link_extra %}
-
-{% block analytics_bug %}
-    {% if google_analytics_ua %}
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', '{{ google_analytics_ua }}']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-        var ga = document.createElement('script'); 
-        ga.type = 'text/javascript'; 
-        ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; 
-        s.parentNode.insertBefore(ga, s);
-    })();
-    </script>
+    {% if enable_humans %}
+      <link type="text/plain" rel="author" href="{% url humans %}" />
     {% endif %}
-{% endblock analytics_bug %}
-{% if enable_humans %}
-    <link type="text/plain" rel="author" href="{% url humans %}" />
-{% endif %}
-</head>
-<body>
+  </head>
+  
+  <body>
 
-{% block header %}
-{% include "header.html" %}
-{% endblock header %}
+    {% block header %}
+      {% include "header.html" %}
+    {% endblock header %}
 
-<div id="content-container" style="max-width:940px; margin:0 auto 0;">
-    <div id="content" style="margin: 0 .5em;">
-{% block content %}
-        <h2>Example Page</h2>
-        <p>This is just an example of how the header might look in a simple page.  The code for this page (page.html) has comments and examples of how to call the css files or embed the css in the page.</p>
-        <p>The header is responsive (gw logo drops out under 700px)</p>
-        <p>Files you will need:</p>
-        <ul>
-        <li>libheader7_lite.html</li>
-        <li>libfooter7_lite.html</li>
-        <li>libheader7_lite.css (includes the main Libraries site styling for content)</li>
-        <li>libheader7_lite_ie.css (ie fix for responsive: min-width 700px)</li>
-        </ul>
-        <p>If you have to include the css in the &lt;head&gt; or inline as as 'style=' give #libheader and #libfooter a min-width of 700px.</p>
-{% endblock content %}
-    </div>
-</div>
+    {% block content %}
+    {% endblock content %}
 
-{% include "footer.html" %}
-</body>
+    {% include "footer.html" %}
+
+  </body>
 </html>
