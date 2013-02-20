@@ -1,5 +1,7 @@
 from itertools import chain
+import json
 from django.conf import settings
+from ui import utils
 from ui.records.bib import Bib
 
 
@@ -60,6 +62,9 @@ class RecordSet(object):
 
     def alttitle(self):
         return self.bibs[0].alttitle() if self.bibs else ''
+
+    def edition(self):
+        return self.bibs[0].edition() if self.bibs else ''
 
     def author(self):
         return self.bibs[0].author() if self.bibs else ''
@@ -122,6 +127,9 @@ class RecordSet(object):
     def altpubplace(self):
         return self.bibs[0].altpubplace() if self.bibs else ''
 
+    def imprint(self):
+        return self.bibs[0].imprint() if self.bibs else ''
+
     def formatcode(self):
         return self.bibs[0].formatcode() if self.bibs else ''
 
@@ -139,6 +147,22 @@ class RecordSet(object):
 
     def microdatatype(self):
         return self.bibs[0].microdatatype() if self.bibs else ''
+
+    def dump_dict(self, include=True):
+        data = {}
+        if self.bibs:
+            atts = self.bibs[0].dump_dict(include=False).keys()
+            excludeatts = ['bibid', 'marc']
+            for key in atts:
+                if key not in excludeatts:
+                    data[key] = getattr(self, key)()
+            if include:
+                data['bibs'] = [b.dump_dict() for b in self.bibs]
+        return data
+
+    def dump_json(self, include=True):
+        return json.dumps(self.dump_dict(include=include),
+            default=utils.date_handler, indent=2)
 
     '''Sorting Methods'''
     def schoolsort(self):

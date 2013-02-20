@@ -1,7 +1,9 @@
 from copy import deepcopy
+import json
 import pymarc
 
 from django.conf import settings
+from ui import utils
 from ui.records.item import Item
 
 
@@ -10,7 +12,7 @@ META_TEMPLATE_HOLD = {
     'mfhdid': '',
     'libcode': '',
     'locid': '',
-    'loc': '',
+    'location': '',
     'callnum': ''
 }
 
@@ -71,7 +73,7 @@ class Holding(object):
 
     @marc.setter
     def marc(self, new_marc):
-        assert isinstance(marc, pymarc.record.Record), \
+        assert isinstance(new_marc, pymarc.record.Record), \
             'new_marc must be a pymarc Record object'
         self._marc = new_marc
 
@@ -125,11 +127,28 @@ class Holding(object):
         return self.metadata['locid']
 
     def location(self):
-        if self.metadata['loc'][2] == ':':
-            loc = self.metadata['loc'][3:]
+        if self.metadata['location'][2] == ':':
+            loc = self.metadata['location'][3:]
         else:
-            loc = self.metadata['loc']
+            loc = self.metadata['location']
         return loc.strip()
 
     def callnum(self):
         return self.metadata['callnum']
+
+    def dump_dict(self, include=True):
+        data = {}
+        for k in self.metadata.keys():
+            data[k] = getattr(self, k)()
+        atts = ['pubnote', 'links', 'textual', 'library']
+        for k in atts:
+            data[k] = getattr(self, k)()
+        if self.marc:
+            data['marc'] = self.marc.as_dict()
+        if include:
+            data['items'] = [i.dump_dict() for i in self.items]
+        return data
+
+    def dump_json(self, include=True):
+        return json.dumps(self.dump_dict(include=include),
+            default=utils.date_handler, indent=2)

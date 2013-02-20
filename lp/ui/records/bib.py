@@ -1,9 +1,11 @@
 from copy import deepcopy
 from itertools import chain
+import json
 import pycountry
 import pymarc
 
 from django.conf import settings
+from ui import utils
 from ui.records.holding import Holding
 
 
@@ -85,7 +87,7 @@ class Bib(object):
 
     @marc.setter
     def marc(self, new_marc):
-        assert isinstance(marc, pymarc.record.Record), \
+        assert isinstance(new_marc, pymarc.record.Record), \
             'marc must be a pymarc Record object'
         self._marc = new_marc
 
@@ -136,7 +138,15 @@ class Bib(object):
         return self.metadata['bibid']
 
     def title(self):
-        return self.marc.title() if self.marc else self.metadata['title']
+        if self.marc and self.marc['245']:
+            a = self.marc['245']['a']
+            b = self.marc['245']['b']
+            if a:
+                if b:
+                    return '%s %s' % (a.strip(), b.strip())
+                return a.strip()
+        else:
+            return self.metadata['title']
 
     def trunctitle(self):
         brief = self.title()[:252]
@@ -147,8 +157,21 @@ class Bib(object):
     def alttitle(self):
         return self._altmeta.get('title', '')
 
+    def edition(self):
+        if self.marc and self.marc['250']:
+            a = self.marc['250']['a']
+            b = self.marc['250']['b']
+            if a:
+                if b:
+                    return '% %' % (a.strip(), b.strip())
+                return a
+        return self.metadata.get('edition', '')
+
     def author(self):
-        return self.marc.author() if self.marc else self.metadata['author']
+        if self.marc and self.marc.author():
+            return self.marc.author()
+        else:
+            self.metadata['author']
 
     def altauthor(self):
         return self._altmeta.get('author', '')
@@ -163,7 +186,10 @@ class Bib(object):
         return self._altmeta.get('addedentries', '')
 
     def isbn(self):
-        return self.marc.isbn() if self.marc else self.metadata['isbn']
+        if self.marc and self.marc.isbn():
+            return self.marc.isbn()
+        else:
+            return self.metadata['isbn']
 
     def isbns(self):
         if self.marc:
@@ -188,21 +214,25 @@ class Bib(object):
         return self.metadata['oclc']
 
     def subjects(self):
-        return self.marc.subjects() if self.marc else []
+        return [s.value() for s in self.marc.subjects()] if self.marc else []
 
     def uniformtitle(self):
         return self.marc.uniformtitle() if self.marc else ''
 
     def publisher(self):
-        return self.marc.publisher().rstrip(',. ') if self.marc \
-            else self.metadata['publisher']
+        if self.marc and self.marc.publisher():
+            return self.marc.publisher().rstrip(',. ')
+        else:
+            return self.metadata['publisher']
 
     def altpublisher(self):
         return self._altmeta.get('publisher', '').rstrip(',. ')
 
     def pubyear(self):
-        return self.marc.pubyear().rstrip('. ') if self.marc \
-            else self.metadata['pubyear']
+        if self.marc and self.marc.pubyear():
+            return self.marc.pubyear().rstrip('. ')
+        else:
+            self.metadata['pubyear']
 
     def altpubyear(self):
         return self._altmeta.get('pubyear', '').rstrip(',. ')
@@ -213,6 +243,9 @@ class Bib(object):
 
     def altpubplace(self):
         return self._altmeta.get('pubplace', '').rstrip(',. ')
+
+    def imprint(self):
+        return self.metadata.get('imprint', '')
 
     def formatcode(self):
         return self.metadata['formatcode']
@@ -239,3 +272,21 @@ class Bib(object):
             return output % 'Book'
         else:
             return output % 'CreativeWork'
+
+    def dump_dict(self, include=True):
+        data = {}
+        for key in self.metadata.keys():
+            data[key] = getattr(self, key)()
+        atts = ['trunctitle', 'altmeta', 'isbns', 'issns', 'subjects',
+            'uniformtitle', 'language', 'library', 'microdatatype']
+        for key in atts:
+            data[key] = getattr(self, key)()
+        if self.marc:
+            data['marc'] = self.marc.as_dict()
+        if include:
+            data['holdings'] = [h.dump_dict() for h in self.holdings]
+        return data
+
+    def dump_json(self, include=True):
+        return json.dumps(self.dump_dict(include=include),
+            default=utils.date_handler, indent=2)

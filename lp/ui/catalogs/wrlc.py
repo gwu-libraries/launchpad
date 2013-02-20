@@ -218,7 +218,7 @@ class WRLC():
            mfhd_master.mfhd_id AS mfhdid,
            mfhd_master.location_id AS locid,
            mfhd_master.display_call_no AS callnum,
-           location.location_display_name AS loc,
+           location.location_display_name AS location,
            library.library_name AS libcode,
            mfhdblob_vw.marc_record AS marcblob
     FROM location,

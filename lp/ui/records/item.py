@@ -1,13 +1,15 @@
 from copy import deepcopy
-import pymarc
+import json
 
 from django.conf import settings
+from ui import utils
 
 
 META_TEMPLATE_ITEM = {
     'itemid': '',
     'mfhdid': '',
     'bibid': '',
+    'callnum': '',
     'enum': '',
     'status': '',
     'statuscode': '',
@@ -58,6 +60,9 @@ class Item(object):
     def bibid(self):
         return self.metadata['bibid']
 
+    def callnum(self):
+        return self.metadata['callnum']
+
     def enum(self):
         return self.metadata['enum']
 
@@ -86,7 +91,10 @@ class Item(object):
         return self.metadata['libcode']
 
     def library(self):
-        return settings.LIBRARIES[self.libcode()]
+        try:
+            return settings.LIBRARIES[self.libcode()]
+        except KeyError:
+            return ''
 
     def chron(self):
         return self.metadata['chron']
@@ -109,3 +117,16 @@ class Item(object):
             if status == self.status()[:len(status)]:
                 return False
         return True
+
+    def dump_dict(self):
+        data = {}
+        for key in self.metadata.keys():
+            data[key] = getattr(self, key)()
+        atts = ['location', 'library', 'eligible']
+        for key in atts:
+            data[key] = getattr(self, key)()
+        return data
+
+    def dump_json(self):
+        return json.dumps(self.dump_dict(), default=utils.date_handler,
+            indent=2)
