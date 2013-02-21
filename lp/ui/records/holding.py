@@ -3,6 +3,7 @@ import json
 import pymarc
 
 from django.conf import settings
+from ui import linkresolvers
 from ui import utils
 from ui.records.item import Item
 
@@ -32,6 +33,7 @@ class Holding(object):
         self._marc = marc
         self._metadata = deepcopy(META_TEMPLATE_HOLD)
         self.metadata = metadata
+        self._fulltext = self._getfulltext() if self.marc else None
 
     @property
     def metadata(self):
@@ -51,7 +53,7 @@ class Holding(object):
                     not isinstance(new_meta[key], unicode) and \
                     not isinstance(new_meta[key], int) and \
                     new_meta[key] is not None:
-                    raise AssertionError('%s must be a string, not %s: %s' % 
+                    raise AssertionError('%s must be a string, not %s: %s' %
                         (key, type(new_mtea[key]), new_meta[key]))
         # wipe out existing values first
         del self.metadata
@@ -140,7 +142,7 @@ class Holding(object):
         data = {}
         for k in self.metadata.keys():
             data[k] = getattr(self, k)()
-        atts = ['pubnote', 'links', 'textual', 'library']
+        atts = ['pubnote', 'links', 'textual', 'library', 'fulltext']
         for k in atts:
             data[k] = getattr(self, k)()
         if self.marc:
@@ -152,3 +154,24 @@ class Holding(object):
     def dump_json(self, include=True):
         return json.dumps(self.dump_dict(include=include),
             default=utils.date_handler, indent=2)
+
+    def _getfulltext(self):
+        api = linkresolvers.get_resolver()
+        fields = self.marc.get_fields('856') if self.marc else []
+        fulltext = []
+        try:
+            for field in fields:
+                if field['u']:
+                    url = field['u'].lower()
+                    fulltext.extend(api.links(url))
+        except:
+            pass
+        return fulltext
+
+    def fulltext(self):
+        '''
+        Returns a list of full text link dictionaries from a Link Resolver API
+        '''
+        if self._fulltext is None:
+            self._fulltext = self._getfulltext()
+        return self._fulltext

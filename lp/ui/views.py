@@ -1,15 +1,11 @@
-import urllib
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
-from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
-from ui import voyager, apis, models
-from ui.catalogs.wrlc import WRLC
-#from ui.sort import libsort, availsort, elecsort, splitsort
+from ui import utils, voyager, apis
+from ui.catalogs import wrlc
 
 
 def home(request):
@@ -19,49 +15,29 @@ def home(request):
         })
 
 
-def _openurl_dict(params):
-    """Split openurl params into a useful structure"""
-    p = {}
-    for k, v in dict(params).items():
-        p[k] = ','.join(v)
-    d = {'params':  p}
-    d['query_string'] = '&'.join(['%s=%s' % (k, v) for k, v
-        in params.items()])
-    d['query_string_encoded'] = urllib.urlencode(params)
-    return d
-
-
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid, expand=True):
-    wrlc = WRLC()
-    recordset = wrlc.build_record_set(str(bibid))
-    if not recordset:
+    recset = wrlc.build_record_set(bibid,
+        openurl=utils.openurl_dict(request.GET))
+    if not recset:
         return render(request, '404.html', {'num': bibid,
             'num_type': 'BIB ID'}, status=404)
-    #recordset.openurl = _openurl_dict(request.GET)
-    #TODO: flesh out sorting sorting
-    recordset.schoolsort()
+    recset.schoolsort()
     return render(request, 'item.html', {
         'bibid': bibid,
-        'recordset': recordset,
+        'recordset': recset,
         'settings': settings,
         })
 
 
-def _date_handler(obj):
-    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
-
-
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item_json(request, bibid):
-    wrlc = WRLC()
-    recordset = wrlc.build_record_set(bibid)
-    if not recordset:
+    recset = wrlc.build_record_set(bibid,
+        openurl=utils.openurl_dict(request.GET))
+    if not recset:
         return HttpResponse('{}', content_type='application_json',
             status_code=404)
-    recordset.openurl = _openurl_dict(request.GET)
-    return HttpResponse(json.dumps(bib_data, default=_date_handler,
-        indent=2), content_type='application/json')
+    return HttpResponse(recset.dump_json(), content_type='application/json')
 
 
 def non_wrlc_item(request, num, num_type):
@@ -113,9 +89,9 @@ def gmitem_json(request, gmbibid):
 
 
 def isbn(request, isbn):
-    bibid = voyager.get_primary_bibid(num=isbn, num_type='isbn')
-    openurl = _openurl_dict(request.GET)
+    bibid = wrlc.bibid(num=isbn, num_type='isbn')
     if bibid:
+        openurl = utils.openurl_dict(request.GET)
         url = '%s?%s' % (reverse('item', args=[bibid]),
             openurl['query_string_encoded'])
         return redirect(url)
@@ -123,9 +99,9 @@ def isbn(request, isbn):
 
 
 def issn(request, issn):
-    bibid = voyager.get_primary_bibid(num=issn, num_type='issn')
-    openurl = _openurl_dict(request.GET)
+    bibid = wrlc.bibid(num=issn, num_type='issn')
     if bibid:
+        openurl = utils.openurl_dict(request.GET)
         url = '%s?%s' % (reverse('item', args=[bibid]),
             openurl['query_string_encoded'])
         return redirect(url)
@@ -133,9 +109,9 @@ def issn(request, issn):
 
 
 def oclc(request, oclc):
-    bibid = voyager.get_primary_bibid(num=oclc, num_type='oclc')
-    openurl = _openurl_dict(request.GET)
+    bibid = wrlc.bibid(num=oclc, num_type='oclc')
     if bibid:
+        openurl = utils.openurl_dict(request.GET)
         url = '%s?%s' % (reverse('item', args=[bibid]),
             openurl['query_string_encoded'])
         return redirect(url)

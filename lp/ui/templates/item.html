@@ -111,8 +111,7 @@
             {% if library.grouper %}
               <h2>{{library.grouper}}</h2>
             {% endif %}
-
-
+            <!-- Loop through Holdings -->
             {% for holding in library.list %}
               <div class="row-fluid">
                 <div class="span12">
@@ -121,7 +120,7 @@
                     <div class="alert alert-info">{{holding.pubnote}}</div>
                   {% endif %}
                     <ul class="nav nav-tabs" id="tabset-{{holding.mfhdid}}">
-                      <li class="active"><a href="#{{holding.mfhdid}}-items" data-toggle="tab">Items List</a></li>
+                      <li class="active"><a href="#{{holding.mfhdid}}-items" data-toggle="tab">Items List/Full Text Links</a></li>
                       {% if holding.textual %}
                       <li><a href="#{{holding.mfhdid}}-textual" data-toggle="tab">Holdings List</a></li>
                       {% endif %}
@@ -131,17 +130,77 @@
                     </ul>
                     <div class="tab-content">
                       <div class="tab-pane active" id="{{holding.mfhdid}}-items">
-                        {% if holding.items|length > 1 %}
-                        <div class="accordion" id="accordion-{{holding.mfhdid}}">
+                        {% if holding.fulltext or holding.links %}
+                          {% if holding.fulltext|length > 1 or holding.links|length > 1 %}
+                            <div class="accordion" id="accordion-{{holding.mfhdid}}-fulltext">
+                              <div class="accordion-group">
+                                <div class="accordion-heading">
+                                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{holding.mfhdid}}-fulltext" href="#collapseFulltext-{{holding.mfhdid}}">
+                                    Collapse/Expand Full Text Links
+                                  </a>
+                                </div>
+                                <div id="collapseFulltext-{{holding.mfhdid}}" class="accordion-body collapse in">
+                                  <div class="accordion-inner">
+                          {% endif %}
+                                    <table class="table table-striped">
+                                      <tr>
+                                        <th>Access</th>
+                                        <th>Coverage Begins</th>
+                                        <th>Coverage Ends</th>
+                                        <th>Database</th>
+                                      </tr>
+                                    {% if holding.fulltext %}
+                                      {% for link in holding.fulltext %}
+                                      <tr>
+                                        <td>
+                                        {% if holding.libcode in settings.PREF_LIBCODES %}
+                                          <button class="btn btn-success" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</button>
+                                        {% else %}
+                                          <button class="btn btn-danger" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</button>
+                                        {% endif %}
+                                        </td>
+                                        <td>{{link.start}}</td>
+                                        <td>{% if link.end %}{{link.end}}{% else %}Current{% endif %}</td>
+                                        <td>{{link.dbname}}</td>
+                                      </tr>
+                                      {% endfor %}
+                                    {% else %}
+                                      {% for link in holding.links %}
+                                        <tr>
+                                          <td>
+                                          {% if holding.libcode in settings.PREF_LIBCODES %}
+                                          <button class="btn btn-success" onclick="window.open('{{link.url}}')" title="{{link.url}}">Full Text Online</button>
+                                          {% else %}
+                                          <button class="btn btn-danger" onclick="window.open('{{link.url}}')" title="{{link.url}}">Full Text Online</button>
+                                          <span class="text-error">{{holding.libcode}} campus only</span>
+                                          {% endif %}
+                                          </td>
+                                          <td></td>
+                                          <td></td>
+                                          <td></td>
+                                        </tr>
+                                      {% endfor %}
+                                    {% endif %}
+                                    </table>
+                          {% if holding.fulltext|length > 1 or holding.links|length > 1 %}
+                                </div>
+                              </div>
+                            </div><!-- close accordion group -->
+                          </div><!-- close accordion -->
+                          {% endif %}
+                        {% endif %}
+                        {% if not holding.fulltext and not holding.links and holding.items|length > 1 %}
+                        <div class="accordion" id="accordion-{{holding.mfhdid}}-items">
                           <div class="accordion-group">
                             <div class="accordion-heading">
-                              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{holding.mfhdid}}" href="#collapseTwo-{{holding.mfhdid}}">
+                              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-{{holding.mfhdid}}-items" href="#collapseThree-{{holding.mfhdid}}">
                                 Collapse/Expand Item Listing
                               </a>
                             </div>
-                            <div id="collapseTwo-{{holding.mfhdid}}" class="accordion-body collapse in">
+                            <div id="collapseThree-{{holding.mfhdid}}" class="accordion-body collapse in">
                               <div class="accordion-inner">
                         {% endif %}
+                        {% if not holding.fulltext and not holding.links or holding.items|length > 1 %}
                                   <table class="table table-striped">
                                     <tr>
                                       <th>Location</th>
@@ -166,14 +225,20 @@
                                       {% endfor %}
                                     {% else %}
                                       <tr>
-                                        <td>{% if holding.temploc %}{{holding.temploc}}{% endif %}</td>
+                                        <td>
+                                          {% if holding.temploc and holding.temploc != holding.location %}
+                                            <span class="text-warning">{{holding.temploc}}</span>
+                                          {% else %}{{holding.location}}
+                                          {% endif %}
+                                        </td>
                                         <td>{{holding.callnum}}</td>
                                         <td>{{holding.status}}</td>
                                         <td>{{holding.eligible}}</td>
                                       </tr>
                                     {% endif %}
                                   </table>
-                        {% if holding.items|length > 1 %}
+                        {% endif %}
+                        {% if not holding.fulltext and not holding.links and holding.items|length > 1 %}
                               </div>
                             </div>
                           </div><!-- close accordion group -->

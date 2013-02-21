@@ -200,7 +200,10 @@ class Bib(object):
         return []
 
     def issn(self):
-        return self.marc['022']['a'] if self.marc else self.metadata['issn']
+        if self.marc and self.marc['022']:
+            return self.marc['022']['a']
+        else:
+            return self.metadata['issn']
 
     def issns(self):
         if self.marc:
@@ -272,6 +275,18 @@ class Bib(object):
             return output % 'Book'
         else:
             return output % 'CreativeWork'
+
+    def links(self):
+        out = []
+        for holding in self.holdings:
+            out.extend(holding.links())
+        return out
+
+    def fulltext(self):
+        out = []
+        for holding in self.holdings:
+            out.extend(holding.fulltext())
+        return out
 
     def dump_dict(self, include=True):
         data = {}

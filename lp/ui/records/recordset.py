@@ -7,13 +7,14 @@ from ui.records.bib import Bib
 
 class RecordSet(object):
 
-    def __init__(self, bibs=[]):
+    def __init__(self, bibs=[], openurl=''):
         assert isinstance(bibs, list), 'bibs must be a list'
         assert all(isinstance(b, Bib) for b in bibs), \
             'each element in bibs must be a Bib object'
         super(RecordSet, self).__init__()
         self._bibs = []
         self.bibs = bibs
+        self.openurl = openurl
 
     @property
     def bibs(self):
@@ -148,8 +149,20 @@ class RecordSet(object):
     def microdatatype(self):
         return self.bibs[0].microdatatype() if self.bibs else ''
 
+    def links(self):
+        out = []
+        for bib in self.bibs:
+            out.extend(bib.links())
+        return out
+
+    def fulltext(self):
+        out = []
+        for bib in self.bibs:
+            out.extend(bib.fulltext())
+        return out
+
     def dump_dict(self, include=True):
-        data = {}
+        data = {'openurl': self.openurl}
         if self.bibs:
             atts = self.bibs[0].dump_dict(include=False).keys()
             excludeatts = ['bibid', 'marc']
