@@ -21,7 +21,7 @@ META_TEMPLATE_HOLD = {
 class Holding(object):
 
     def __init__(self, metadata={}, marc=None, items=[]):
-        assert isinstance(marc, pymarc.record.Record), \
+        assert marc is None or isinstance(marc, pymarc.record.Record), \
             'marc must be a pymarc Record object'
         assert isinstance(items, list), \
             'items must be a list of Item objects'
