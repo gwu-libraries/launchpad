@@ -1,5 +1,5 @@
 cx_Oracle
-django
+django==1.4
 django-nose
 ply
 pycountry
