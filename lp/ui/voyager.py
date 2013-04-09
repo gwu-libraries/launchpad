@@ -1498,7 +1498,7 @@ def get_illiad_link(bib_data):
     ind = 0
     query_args = {}
     url = settings.ILLIAD_URL
-    if bib_data.get('BIB_FORMAT') == 'as':
+    if bib_data.get('BIB_FORMAT')[1:] == 's':
         query_args['genre'] = 'journal'
         query_args['rft.genre'] = 'journal'
         if bib_data.get('AUTHOR', ''):
@@ -1540,7 +1540,10 @@ def get_illiad_link(bib_data):
         if bib_data.get('ISSN', ''):
             query_args['issn'] = bib_data['ISSN']
         query_args['rft.jtitle'] = smart_str(title)
-        query_args['sid'] = settings.ILLIAD_SID
+        if bib_data['openurl']['params'].get('sid'):
+            query_args['sid'] = bib_data['openurl']['params']['sid'] + ':' + settings.ILLIAD_SID
+        else:
+            query_args['sid'] = settings.ILLIAD_SID
     else:
         query_args['rft.genre'] = 'book'
         if bib_data.get('AUTHOR', ''):
@@ -1586,7 +1589,10 @@ def get_illiad_link(bib_data):
             except UnicodeDecodeError:
                 query_args['rft.btitle'] = \
                         title.decode('iso-8859-1').encode('utf-8')
-            query_args['rfr_id'] = settings.ILLIAD_SID
+            if bib_data['openurl']['params'].get('rfr_id'):
+                query_args['rfr_id'] = bib_data['openurl']['params']['rfr_id'] + ':' + settings.ILLIAD_SID
+            else:
+                query_args['rfr_id'] = settings.ILLIAD_SID
     str_args = {}
     for k, v in query_args.iteritems():
         try:

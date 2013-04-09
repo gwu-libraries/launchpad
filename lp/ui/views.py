@@ -73,7 +73,8 @@ def item(request, bibid):
             'non_wrlc_item': False
             })
     except:
-        return redirect('error503')
+        raise
+        #return redirect('error503')
 
 
 def _date_handler(obj):
@@ -87,6 +88,7 @@ def item_json(request, bibid, z3950='False', school=None):
         if not bib_data:
             return HttpResponse('{}', content_type='application_json',
                 status=404)
+        bib_data['openurl'] = _openurl_dict(request)
         bib_data['holdings'] = voyager.get_holdings(bib_data)
         bib_data['openurl'] = _openurl_dict(request)
         bib_encoded = unicode_data(bib_data)
