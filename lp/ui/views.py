@@ -118,6 +118,7 @@ def non_wrlc_item(request, num, num_type):
     return render(request, 'item.html', {
        'bibid': '',
        'bib': bib,
+       'non_gw': True,
        'debug': settings.DEBUG,
        'title_chars': settings.TITLE_CHARS,
        'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,

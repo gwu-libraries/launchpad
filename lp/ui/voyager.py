@@ -1535,6 +1535,8 @@ def get_illiad_link(bib_data):
             title = bib_data['TITLE'][0:ind]
         else:
             title = bib_data['TITLE']
+        if bib_data.get('OCLC',''):
+            query_args['rft.oclcnum'] = bib_data['OCLC']
         if bib_data.get('ISSN', ''):
             query_args['issn'] = bib_data['ISSN']
         query_args['rft.jtitle'] = smart_str(title)
@@ -1568,11 +1570,8 @@ def get_illiad_link(bib_data):
             query_args['rft.isbn'] = bib_data['ISBN']
         if bib_data.get('PUB_PLACE', ''):
             query_args['rft.place'] = bib_data['PUB_PLACE']
-        if bib_data.get('OCLC', ''):
-            ind = bib_data['OCLC'].find(')')
-            if ind != -1:
-                oclc = bib_data['OCLC'][ind + 1:]
-            query_args['rft.oclcnum'] = oclc
+        if bib_data.get('OCLC',''):
+            query_args['rft.oclcnum'] = bib_data['OCLC']
         if bib_data.get('PUBLISHER_DATE', ''):
             query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:]
         if bib_data.get('TITLE', ''):
