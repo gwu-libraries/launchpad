@@ -1498,7 +1498,7 @@ def get_illiad_link(bib_data):
     ind = 0
     query_args = {}
     url = settings.ILLIAD_URL
-    if bib_data.get('BIB_FORMAT') == 'as':
+    if bib_data.get('BIB_FORMAT')[1:] == 's':
         query_args['genre'] = 'journal'
         query_args['rft.genre'] = 'journal'
         if bib_data.get('AUTHOR', ''):
@@ -1535,10 +1535,17 @@ def get_illiad_link(bib_data):
             title = bib_data['TITLE'][0:ind]
         else:
             title = bib_data['TITLE']
+        if bib_data.get('OCLC',''):
+            query_args['rft.oclcnum'] = bib_data['OCLC']
         if bib_data.get('ISSN', ''):
             query_args['issn'] = bib_data['ISSN']
         query_args['rft.jtitle'] = smart_str(title)
-        query_args['sid'] = settings.ILLIAD_SID
+        if bib_data['openurl']['params'].get('sid'):
+            query_args['sid'] = bib_data['openurl']['params']['sid'] + ':' + settings.ILLIAD_SID
+        elif bib_data['openurl']['params'].get('rfr_id'):
+            query_args['rfr_id'] = bib_data['openurl']['params']['rfr_id'] + ':' + settings.ILLIAD_SID
+        else:
+            query_args['sid'] = settings.ILLIAD_SID
     else:
         query_args['rft.genre'] = 'book'
         if bib_data.get('AUTHOR', ''):
@@ -1568,11 +1575,8 @@ def get_illiad_link(bib_data):
             query_args['rft.isbn'] = bib_data['ISBN']
         if bib_data.get('PUB_PLACE', ''):
             query_args['rft.place'] = bib_data['PUB_PLACE']
-        if bib_data.get('OCLC', ''):
-            ind = bib_data['OCLC'].find(')')
-            if ind != -1:
-                oclc = bib_data['OCLC'][ind + 1:]
-            query_args['rft.oclcnum'] = oclc
+        if bib_data.get('OCLC',''):
+            query_args['rft.oclcnum'] = bib_data['OCLC']
         if bib_data.get('PUBLISHER_DATE', ''):
             query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:]
         if bib_data.get('TITLE', ''):
@@ -1587,7 +1591,12 @@ def get_illiad_link(bib_data):
             except UnicodeDecodeError:
                 query_args['rft.btitle'] = \
                         title.decode('iso-8859-1').encode('utf-8')
-            query_args['rfr_id'] = settings.ILLIAD_SID
+            if bib_data['openurl']['params'].get('rfr_id'):
+                query_args['rfr_id'] = bib_data['openurl']['params']['rfr_id'] + ':' + settings.ILLIAD_SID
+            elif bib_data['openurl']['params'].get('sid'):
+                query_args['sid'] = bib_data['openurl']['params']['sid'] + ':' + settings.ILLIAD_SID
+            else:
+                query_args['rfr_id'] = settings.ILLIAD_SID
     str_args = {}
     for k, v in query_args.iteritems():
         try:
