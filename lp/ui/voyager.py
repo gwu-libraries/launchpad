@@ -1542,6 +1542,8 @@ def get_illiad_link(bib_data):
         query_args['rft.jtitle'] = smart_str(title)
         if bib_data['openurl']['params'].get('sid'):
             query_args['sid'] = bib_data['openurl']['params']['sid'] + ':' + settings.ILLIAD_SID
+        elif bib_data['openurl']['params'].get('rfr_id'):
+            query_args['rfr_id'] = bib_data['openurl']['params']['rfr_id'] + ':' + settings.ILLIAD_SID
         else:
             query_args['sid'] = settings.ILLIAD_SID
     else:
@@ -1591,6 +1593,8 @@ def get_illiad_link(bib_data):
                         title.decode('iso-8859-1').encode('utf-8')
             if bib_data['openurl']['params'].get('rfr_id'):
                 query_args['rfr_id'] = bib_data['openurl']['params']['rfr_id'] + ':' + settings.ILLIAD_SID
+            elif bib_data['openurl']['params'].get('sid'):
+                query_args['sid'] = bib_data['openurl']['params']['sid'] + ':' + settings.ILLIAD_SID
             else:
                 query_args['rfr_id'] = settings.ILLIAD_SID
     str_args = {}
