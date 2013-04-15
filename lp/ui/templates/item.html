@@ -292,11 +292,13 @@ $(document).ready(function() {
                             <div class="linkresolverresource">
                                 <!-- <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</a>: -->
                                 <button class="smallbuttons" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</button>
-                                <div class="linkresolverdata">
-                                    from <span class="linkresolverdates">{{link.start}}</span>
-                                    to <span class="linkresolverdates">{% if link.end %}{{link.end}}{% else %}present{% endif %}</span><br/>
-                                    <span class="linkresolverdbname">{{link.dbname}}</span><br/>
-                                </div>
+                                {% if link.start %}
+                                    <div class="linkresolverdata">
+                                        from <span class="linkresolverdates">{{link.start}}</span>
+                                        to <span class="linkresolverdates">{% if link.end %}{{link.end}}{% else %}present{% endif %}</span><br/>
+                                        <span class="linkresolverdbname">{{link.dbname}}</span><br/>
+                                    </div>
+                                {% endif %}
                             </div>
                         {% endfor %}
                         </div>
