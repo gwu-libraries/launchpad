@@ -105,6 +105,7 @@ def non_wrlc_item(request, num, num_type):
         return render(request, '404.html', {'num': num,
             'num_type': num_type.upper()}, status=404)
     bib['ILLIAD_LINK'] = voyager.get_illiad_link(bib)
+    bib['MICRODATA_TYPE'] = voyager.get_microdata_type(bib)
     holdings = []
     # get free electronic book link from open library
     for numformat in ('LCCN', 'ISBN', 'OCLC'):

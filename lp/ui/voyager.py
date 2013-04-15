@@ -1591,9 +1591,9 @@ def get_illiad_link(bib_data):
             except UnicodeDecodeError:
                 query_args['rft.btitle'] = \
                         title.decode('iso-8859-1').encode('utf-8')
-            if bib_data['openurl']['params'].get('rfr_id'):
+            if bib_data.get('openurl', {}).get('params', {}).get('rfr_id'):
                 query_args['rfr_id'] = bib_data['openurl']['params']['rfr_id'] + ':' + settings.ILLIAD_SID
-            elif bib_data['openurl']['params'].get('sid'):
+            elif bib_data.get('openurl', {}).get('params', {}).get('sid'):
                 query_args['sid'] = bib_data['openurl']['params']['sid'] + ':' + settings.ILLIAD_SID
             else:
                 query_args['rfr_id'] = settings.ILLIAD_SID
