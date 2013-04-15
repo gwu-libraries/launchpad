@@ -330,7 +330,7 @@ $(document).ready(function() {
                                            <button onclick="window.open('{{link.u}}')" > Watch online </button>
                                        {%endif%}
                                        {%if item.DISPLAY_CALL_NO not in audio_tags and item.DISPLAY_CALL_NO not in video_tags%}
-                                           <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
+                                           <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
                                        {%endif%}
                                    {% endif %}
                                    {% if not forloop.last %}<hr />{% endif %}
