@@ -17,6 +17,11 @@ def libsort(holdings_list):
     return sorted(holdings_list, key=lambda holding: holding['LIBRARY_NAME'])
 
 
+def holdsort(holdings_list):
+    return sorted(holdings_list,
+        key=lambda holding: holding.get('LOCATION_NAME', ''))
+
+
 def availsort(holdings_list):
     top, remainder, bottom = [], [], []
     for holding in holdings_list:
