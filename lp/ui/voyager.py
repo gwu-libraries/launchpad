@@ -1499,8 +1499,8 @@ def get_illiad_link(bib_data):
     query_args = {}
     url = settings.ILLIAD_URL
     if bib_data.get('BIB_FORMAT')[1:] == 's':
-        query_args['genre'] = 'journal'
         query_args['rft.genre'] = 'journal'
+        query_args['rft_genre'] = 'journal'
         if bib_data.get('AUTHOR', ''):
             ind = bib_data['AUTHOR'].find(',')
             if ind != -1:
@@ -1518,13 +1518,13 @@ def get_illiad_link(bib_data):
                 auinit = bib_data['AUTHORS'][0][ind + 1: 1]
                 aufirst = bib_data['AUTHORS'][0][0:ind]
                 aulast = bib_data['AUTHORS'][0][ind + 2:]
-                query_args['aufirst'] = aufirst
-                query_args['aulast'] = aulast
-                query_args['auinitm'] = auinit
+                query_args['rft.aufirst'] = aufirst
+                query_args['rft.aulast'] = aulast
+                query_args['rft.auinitm'] = auinit
         if bib_data.get('PUBLISHER', ''):
             query_args['rft.pub'] = bib_data['PUBLISHER']
         if bib_data.get('ISBN', ''):
-            query_args['isbn'] = bib_data['ISBN']
+            query_args['rft.isbn'] = bib_data['ISBN']
         if bib_data.get('PUB_PLACE', ''):
             query_args['rft.place'] = bib_data['PUB_PLACE']
         if bib_data.get('PUBLISHER_DATE', ''):
@@ -1536,16 +1536,16 @@ def get_illiad_link(bib_data):
         else:
             title = bib_data['TITLE']
         if bib_data.get('OCLC',''):
-            query_args['rft.oclcnum'] = bib_data['OCLC']
+            query_args['rft_id'] = 'info:oclcnum/'+bib_data['OCLC']
         if bib_data.get('ISSN', ''):
-            query_args['issn'] = bib_data['ISSN']
+            query_args['rft.issn'] = bib_data['ISSN']
         query_args['rft.jtitle'] = smart_str(title)
         if bib_data['openurl']['params'].get('sid'):
-            query_args['sid'] = bib_data['openurl']['params']['sid'] + ':' + settings.ILLIAD_SID
+            query_args['rfr_id'] = bib_data['openurl']['params']['sid'] + ':' + settings.ILLIAD_SID
         elif bib_data['openurl']['params'].get('rfr_id'):
             query_args['rfr_id'] = bib_data['openurl']['params']['rfr_id'] + ':' + settings.ILLIAD_SID
         else:
-            query_args['sid'] = settings.ILLIAD_SID
+            query_args['rfr_id'] = settings.ILLIAD_SID
     else:
         query_args['rft.genre'] = 'book'
         if bib_data.get('AUTHOR', ''):
@@ -1576,7 +1576,7 @@ def get_illiad_link(bib_data):
         if bib_data.get('PUB_PLACE', ''):
             query_args['rft.place'] = bib_data['PUB_PLACE']
         if bib_data.get('OCLC',''):
-            query_args['rft.oclcnum'] = bib_data['OCLC']
+            query_args['rft_id'] = 'info:oclcnum/'+bib_data['OCLC']
         if bib_data.get('PUBLISHER_DATE', ''):
             query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:]
         if bib_data.get('TITLE', ''):
@@ -1594,7 +1594,7 @@ def get_illiad_link(bib_data):
             if bib_data.get('openurl', {}).get('params', {}).get('rfr_id'):
                 query_args['rfr_id'] = bib_data['openurl']['params']['rfr_id'] + ':' + settings.ILLIAD_SID
             elif bib_data.get('openurl', {}).get('params', {}).get('sid'):
-                query_args['sid'] = bib_data['openurl']['params']['sid'] + ':' + settings.ILLIAD_SID
+                query_args['rfr_id'] = bib_data['openurl']['params']['sid'] + ':' + settings.ILLIAD_SID
             else:
                 query_args['rfr_id'] = settings.ILLIAD_SID
     str_args = {}
