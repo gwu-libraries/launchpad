@@ -8,7 +8,7 @@ from django.views.decorators.cache import cache_page
 
 from ui import voyager, apis
 from ui.sort import libsort, availsort, elecsort, templocsort, \
-    splitsort, enumsort, callnumsort, strip_bad_holdings
+    splitsort, enumsort, callnumsort, strip_bad_holdings, holdsort
 
 
 def home(request):
@@ -50,9 +50,10 @@ def item(request, bibid):
             holdings = strip_bad_holdings(holdings)
             show_aladin_link = True
             ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
-            holdings = elecsort(templocsort(availsort(ours))) \
-                + elecsort(templocsort(availsort(shared))) \
-                + libsort(elecsort(templocsort(availsort(theirs)), rev=True))
+            holdings = elecsort(holdsort(templocsort(availsort(ours)))) \
+                + elecsort(holdsort(templocsort(availsort(shared)))) \
+                + libsort(elecsort(holdsort(templocsort(availsort(theirs))),
+                    rev=True))
         else:
             show_aladin_link = False
         return render(request, 'item.html', {
