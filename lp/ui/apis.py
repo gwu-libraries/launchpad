@@ -21,8 +21,11 @@ def get_bib_data(num, num_type):
 
 def googlebooks(num, num_type, url, key):
     url = url % (num_type, num)
-    response = urlopen(url)
-    json_data = json.loads(response.read())
+    try:
+        response = urlopen(url)
+        json_data = json.loads(response.read())
+    except:
+        return None
     if json_data['totalItems'] == 0 or len(json_data.get('items', [])) == 0:
         return None
     item = json_data['items'][0]
@@ -50,10 +53,13 @@ def googlebooks(num, num_type, url, key):
 
 def worldcat(num, num_type, url, key):
     url = url % (num_type, num, key)
-    records = marcxml.parse_xml_to_array(urlopen(url))
-    if not records:
+    try:
+        records = marcxml.parse_xml_to_array(urlopen(url))
+        if not records:
+            return None
+        record = records[0]
+    except:
         return None
-    record = records[0]
     bib = {}
     bib[num_type.upper()] = num
     bib['TITLE'] = record.uniformtitle()
@@ -85,15 +91,18 @@ def openlibrary(num, num_type, force=False, as_holding=True):
     params = '%s:%s' % (num_type, num)
     url = 'http://openlibrary.org/api/books?format=json&jscmd=data' + \
         '&bibkeys=%s' % params
-    response = urlopen(url)
-    json_data = json.loads(response.read())
-    book = json_data.get(params, {})
-    for ebook in book.get('ebooks', []):
-        if ebook.get('availability', '') == 'full':
-            return make_openlib_holding(book) if as_holding else book
-    if not force:
+    try:
+        response = urlopen(url)
+        json_data = json.loads(response.read())
+        book = json_data.get(params, {})
+        for ebook in book.get('ebooks', []):
+            if ebook.get('availability', '') == 'full':
+                return make_openlib_holding(book) if as_holding else book
+        if not force:
+            return {}
+        return make_openlib_holding(book) if as_holding else book
+    except:
         return {}
-    return make_openlib_holding(book) if as_holding else book
 
 
 def make_openlib_holding(book):
@@ -142,10 +151,13 @@ def make_openlib_holding(book):
 
 
 def sersol360link(num, num_type, count=0):
-    count += 1
-    url = '%s&%s=%s' % (settings.SER_SOL_API_URL, num_type, num)
-    response = urlopen(url)
-    tree = etree.fromstring(response.read())
+    try:
+        count += 1
+        url = '%s&%s=%s' % (settings.SER_SOL_API_URL, num_type, num)
+        response = urlopen(url)
+        tree = etree.fromstring(response.read())
+    except:
+        return []
     output = []
     ns = 'http://xml.serialssolutions.com/ns/openurl/v1.0'
     openurls = tree.xpath('/sso:openURLResponse/sso:results/sso:result/sso' +
