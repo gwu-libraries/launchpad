@@ -241,7 +241,7 @@ $(document).ready(function() {
                         {%if forloop.first and not holding.MFHD_DATA.marc856list%}
                         <tr>
                         <td >
-                        <div style="width:320px;overflow:hidden;" >
+                        <div>
                             {% if item.TEMPLOCATION %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
@@ -286,19 +286,19 @@ $(document).ready(function() {
                         {% endif %}
                     </td>
                       {% if holding.LinkResolverData %}
-                      <td colspan=3>
+                      <td colspan=3">
                         <div class="linkresolverlist">
                         {% for link in holding.LinkResolverData %}
                             <div class="linkresolverresource">
                                 <!-- <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</a>: -->
                                 <button class="smallbuttons" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</button>
-                                {% if link.start %}
                                     <div class="linkresolverdata">
+                                        {% if link.start %}
                                         from <span class="linkresolverdates">{{link.start}}</span>
                                         to <span class="linkresolverdates">{% if link.end %}{{link.end}}{% else %}present{% endif %}</span><br/>
+                                        {% endif %}
                                         <span class="linkresolverdbname">{{link.dbname}}</span><br/>
                                     </div>
-                                {% endif %}
                             </div>
                         {% endfor %}
                         </div>
@@ -311,12 +311,11 @@ $(document).ready(function() {
                                <br /><a href="{{bib.FINDING_AID}}" target="clswindow">View the Finding Aid</a>
                            {% endif %}
                     </td>
-                       <td>
+                       <td {%if holding.MFHD_DATA.marc856list|remove_empty_links|length > 0 and not item.eligible %} colspan="2" {% endif %}>
                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list and not bib.FINDING_AID %}
+                             <div class="marc856list">
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
-                                   {% if link.3 %}
-                                       <span class="link-volumes">[{{ link.3 }}]</span>
-                                   {% endif %}
+                                 <div class="marc856resource">
                                    {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' %}
                                        <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                        <br />
@@ -333,8 +332,12 @@ $(document).ready(function() {
                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
                                        {%endif%}
                                    {% endif %}
-                                   {% if not forloop.last %}<hr />{% endif %}
+                                   {% if link.3 %}
+                                       <span class="link-volumes">[{{ link.3 }}]</span>
+                                   {% endif %}
+                                 </div>
                                {% endfor %}
+                             </div>
                            {% else %}
                                {%if item.ITEM_STATUS_DESC == 'Not Charged' and not bib.FINDING_AID %}
                                    <span style='color: green'>Available</span>
