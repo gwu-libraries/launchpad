@@ -111,11 +111,38 @@ td {
 
 .linkresolverresource{
     padding-bottom: 0.5em;
+    clear:left;
+    min-height: 2em;
 }
 
 .linkresolverdbname{
     font-size: small;
 }
+
+.marc856list{
+    /*font-size: small;*/
+    color: gray;
+}
+
+.marc856data{
+    /*float: right;*/
+}
+
+.marc856dates{
+    color: black;
+    font-size: medium;
+}
+
+.marc856resource{
+    padding-bottom: 0.5em;
+    clear:left;
+    min-height: 2em;
+}
+
+.marc856dbname{
+    font-size: small;
+}
+
 
 .smallbuttons{
     font-size: medium;
