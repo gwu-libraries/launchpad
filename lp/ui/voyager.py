@@ -1538,7 +1538,7 @@ def get_illiad_link(bib_data):
         query_args['rft.genre'] = 'journal'
         query_args['rft_genre'] = 'journal'
         if bib_data.get('AUTHOR', ''):
-            query_args['rft.au'] = bib_data['AUTHORS']
+            query_args['rft.au'] = bib_data['AUTHOR']
         elif bib_data.get('AUTHORS', []):
             query_args['rft.au'] = bib_data['AUTHORS'][0]
         if bib_data.get('PUBLISHER', ''):
@@ -1556,7 +1556,7 @@ def get_illiad_link(bib_data):
         else:
             title = bib_data['TITLE']
         if bib_data.get('OCLC', ''):
-            query_args['rft_id'] = 'info:oclcnum/' + bib_data['OCLC']
+            query_args['rft_id'] = clean_oclc(bib_data['OCLC'])
         if bib_data.get('ISSN', ''):
             query_args['rft.issn'] = bib_data['ISSN']
         query_args['rft.jtitle'] = smart_str(title)
@@ -1571,7 +1571,7 @@ def get_illiad_link(bib_data):
     else:
         query_args['rft.genre'] = 'book'
         if bib_data.get('AUTHOR', ''):
-            query_args['rft.au'] = bib_data['AUTHORS']
+            query_args['rft.au'] = bib_data['AUTHOR']
         elif len(bib_data.get('AUTHORS', [])) > 0:
             query_args['rft.au'] = bib_data['AUTHORS'][0]
         if bib_data.get('PUBLISHER', ''):
@@ -1581,7 +1581,7 @@ def get_illiad_link(bib_data):
         if bib_data.get('PUB_PLACE', ''):
             query_args['rft.place'] = bib_data['PUB_PLACE']
         if bib_data.get('OCLC', ''):
-            query_args['rft_id'] = 'info:oclcnum/' + bib_data['OCLC']
+            query_args['rft_id'] = clean_oclc(bib_data['OCLC'])
         if bib_data.get('PUBLISHER_DATE', ''):
             query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:]
         if bib_data.get('TITLE', ''):
