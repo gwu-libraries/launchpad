@@ -495,11 +495,7 @@ $(document).ready(function() {
                </td>
                <td>                   </td>
                <td> 
-                {%if bib.openurl.query_string%}  
-<a href= {{bib.ILLIAD_LINK|add:bib.openurl.query_string|escape }} target='newwin'> Request a copy from another library </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>    
-                {%else%}
 <a href= {{bib.ILLIAD_LINK }} target='newwin'> Request a copy from another library </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
-               {%endif%}
                 </td>
                <td> </td>
            </tr>
