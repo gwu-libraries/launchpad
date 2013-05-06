@@ -1534,7 +1534,7 @@ def get_illiad_link(bib_data):
     ind = 0
     query_args = {}
     url = settings.ILLIAD_URL
-    if bib_data.get('BIB_FORMAT')[1:] == 's':
+    if bib_data.get('BIB_FORMAT') and bib_data.get('BIB_FORMAT')[1:] == 's':
         query_args['rft.genre'] = 'journal'
         query_args['rft_genre'] = 'journal'
         if bib_data.get('AUTHOR', ''):
