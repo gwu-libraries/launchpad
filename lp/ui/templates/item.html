@@ -196,12 +196,12 @@ $(document).ready(function() {
                     {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID %}
                      <p>
                      <span class = "catlink"> 
-                      Request this title through  <a href= {{bib.ILLIAD_LINK}} target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
+                      Request this title through  <a href= "{{bib.ILLIAD_LINK}}" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
                   </span></p>
                   {%elif bib.ILLIAD_LINK and bib.BIB_FORMAT == 'as' and not bib.FINDING_AID and non_gw%}
                   <p>
                     <span class = "catlink">
-                    Request this title through  <a href= {{bib.ILLIAD_LINK}} target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                    Request this title through  <a href= "{{bib.ILLIAD_LINK}}" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     </span></p>
 
                    {%endif%}
@@ -495,7 +495,7 @@ $(document).ready(function() {
                </td>
                <td>                   </td>
                <td> 
-<a href= {{bib.ILLIAD_LINK }} target='newwin'> Request a copy from another library </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
+<a href= "{{bib.ILLIAD_LINK }}" target='newwin'> Request a copy from another library </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
                 </td>
                <td> </td>
            </tr>
