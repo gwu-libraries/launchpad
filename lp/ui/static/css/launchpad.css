@@ -1,6 +1,8 @@
-#libheader-container {
+/*#libheader-container {
     background-image: url(/static/img/bg-local-nav-bottom.png);
-}
+}*/
+
+.libheader-container {margin-top:35px;}
 
 body {
     font-family: Helvetica, Arial, sans-serif;
@@ -55,7 +57,7 @@ td {
 .library-group-header{
     padding-top: 1em;
     font-size: large;
-    font-family: Georgia, serif;
+    /*font-family: Georgia, serif;*/
     font-weight: normal;
     color: #444;
     line-height: 1.3em;
