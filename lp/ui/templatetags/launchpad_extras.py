@@ -28,8 +28,6 @@ def clean_issn(value):
 @register.filter
 @stringfilter
 def clean_oclc(value):
-    if len(value) < 8:
-        return ''
     return ''.join([c for c in value if c.isdigit()])
 
 

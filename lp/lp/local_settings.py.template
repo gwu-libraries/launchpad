@@ -73,7 +73,7 @@ Z3950_SERVERS = {
 INDEX_CODES = {
     'isbn': ['020N', '020A', 'ISB3'],
     'issn': ['022A', '022Z'],
-    'oclc': ['0350'],
+    'oclc': ['035A'],
     }
 
 
