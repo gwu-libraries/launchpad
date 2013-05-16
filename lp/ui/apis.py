@@ -170,7 +170,7 @@ def sersol360link(num, num_type, count=0):
         if not dbid:
             continue
         dbid = dbid[0]
-        if dbid.text != 'TN5':
+        if dbid.text != settings.SER_SOL_DBID_TEXT:
             data = {}
             start = openurl.xpath('sso:holdingData/sso:startDate',
                 namespaces={'sso': ns})
