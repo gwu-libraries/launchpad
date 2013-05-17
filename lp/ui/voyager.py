@@ -388,6 +388,8 @@ ORDER BY library.library_name"""
         if holding.get('ITEMS', []):
             i = 0
             for item in holding['ITEMS']:
+                if item['ITEM_STATUS_DESC'] == 'Charged':
+                    item['ITEM_STATUS_DESC'] = 'Checked Out'
                 item['ELIGIBLE'] = \
                     is_item_eligible(item, holding.get('LIBRARY_NAME', ''))
                 if lib is not None:
@@ -420,6 +422,10 @@ ORDER BY library.library_name"""
         holdings.append(item)
     for holding in holdings:
         i = 0
+        if holding.get('AVAILABILITY'):
+            if holding['AVAILABILITY'].get('ITEM_STATUS_DESC'):
+                if holding['AVAILABILITY']['ITEM_STATUS_DESC'] == 'Charged':
+                    holding['AVAILABILITY']['ITEM_STATUS_DESC'] = 'Checked Out'
         for item in holding.get('ITEMS', []):
             if item['ELIGIBLE'] is True:
                 eligibility = True
