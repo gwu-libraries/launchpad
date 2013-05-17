@@ -73,7 +73,7 @@ Z3950_SERVERS = {
 INDEX_CODES = {
     'isbn': ['020N', '020A', 'ISB3'],
     'issn': ['022A', '022Z'],
-    'oclc': ['0350'],
+    'oclc': ['035A'],
     }
 
 
@@ -190,3 +190,5 @@ SITEMAPS_BASE_URL = 'http://findit.library.gwu.edu'
 SER_SOL_API_URL = 'http://uz4ug4lz9g.openurl.xml.serialssolutions.com/openurlxml?version=1.0'
 
 SER_SOL_API_MAX_ATTEMPTS = 3
+
+SER_SOL_DBID_TEXT = 'TN5'

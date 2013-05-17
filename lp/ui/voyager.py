@@ -198,10 +198,9 @@ def get_microdata_type(bib):
 
 def get_primary_bibid(num, num_type):
     num = _normalize_num(num, num_type)
-    if num_type == 'oclc':
-        num = 'OCOLC %s' % num
     query = """
-SELECT bib_index.bib_id, bib_master.library_id, library.library_name
+SELECT bib_index.bib_id, bib_master.library_id, library.library_name,
+    bib_index.normal_heading, bib_index.display_heading
 FROM bib_index, bib_master, library
 WHERE bib_index.index_code IN (%s)
 AND bib_index.normal_heading = '%s'
@@ -212,6 +211,8 @@ AND bib_master.suppress_in_opac = 'N'"""
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
     cursor.execute(query, [])
     bibs = _make_dict(cursor)
+    if num_type == 'oclc':
+        bibs = [b for b in bibs if b['NORMAL_HEADING'] != b['DISPLAY_HEADING']]
     for bib in bibs:
         if bib['LIBRARY_NAME'] == settings.PREF_LIB:
             return bib['BIB_ID']
