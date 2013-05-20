@@ -169,3 +169,12 @@ td {
 footer {
     margin-top: 3em;
 }
+
+#citation_data {
+    font-size: small;
+}
+
+#citation_data dt {
+    color: gray;
+    font-weight: normal;
+}

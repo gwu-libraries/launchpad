@@ -6,6 +6,8 @@ from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
+import bibjsontools
+
 from ui import voyager, apis
 from ui.sort import libsort, availsort, elecsort, templocsort, \
     splitsort, enumsort, callnumsort, strip_bad_holdings, holdsort
@@ -31,6 +33,11 @@ def _openurl_dict(request):
     return d
 
 
+def citation_json(request):
+    url = request.META.get('QUERY_STRING', '')
+    return bibjsontools.from_openurl(url) if url else None
+
+
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid):
     bib = None
@@ -40,6 +47,7 @@ def item(request, bibid):
             return render(request, '404.html', {'num': bibid,
                 'num_type': 'BIB ID'}, status=404)
         bib['openurl'] = _openurl_dict(request)
+        bib['citation_json'] = citation_json(request)
         # Ensure bib data is ours if possible
         if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
             for alt_bib in bib['BIB_ID_LIST']:
@@ -92,6 +100,7 @@ def item_json(request, bibid, z3950='False', school=None):
         bib_data['openurl'] = _openurl_dict(request)
         bib_data['holdings'] = voyager.get_holdings(bib_data)
         bib_data['openurl'] = _openurl_dict(request)
+        bib_data['citation_json'] = citation_json(request)
         bib_encoded = unicode_data(bib_data)
         return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
             indent=2), content_type='application/json')
@@ -106,6 +115,7 @@ def non_wrlc_item(request, num, num_type):
         return render(request, '404.html', {'num': num,
             'num_type': num_type.upper()}, status=404)
     bib['openurl'] = _openurl_dict(request)
+    bib['citation_json'] = citation_json(request)
     bib['ILLIAD_LINK'] = voyager.get_illiad_link(bib)
     bib['MICRODATA_TYPE'] = voyager.get_microdata_type(bib)
     holdings = []
@@ -148,6 +158,7 @@ def gtitem(request, gtbibid):
                 return render(request, '404.html', {'num': gtbibid,
                     'num_type': 'BIB ID'}, status=404)
             bib['openurl'] = _openurl_dict(request)
+            bib['citation_json'] = citation_json(request)
             # Ensure bib data is ours if possible
             if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
                 for alt_bib in bib['BIB_ID_LIST']:
@@ -198,6 +209,7 @@ def gtitem_json(request, gtbibid):
                     status=404)
             bib_data['holdings'] = voyager.get_holdings(bib_data, 'GT', False)
             bib_data['openurl'] = _openurl_dict(request)
+            bib_data['citation_json'] = citation_json(request)
             bib_encoded = unicode_data(bib_data)
             return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
                 indent=2), content_type='application/json')
@@ -245,6 +257,7 @@ def gmitem(request, gmbibid):
                 return render(request, '404.html', {'num': gmbibid,
                     'num_type': 'BIB ID'}, status=404)
             bib['openurl'] = _openurl_dict(request)
+            bib['citation_json'] = citation_json(request)
             # Ensure bib data is ours if possible
             if not bib['LIBRARY_NAME'] == settings.PREF_LIB:
                 for alt_bib in bib['BIB_ID_LIST']:
@@ -295,6 +308,7 @@ def gmitem_json(request, gmbibid):
                     status=404)
             bib_data['holdings'] = voyager.get_holdings(bib_data, 'GM', False)
             bib_data['openurl'] = _openurl_dict(request)
+            bib_data['citation_json'] = citation_json(request)
             bib_encoded = unicode_data(bib_data)
             return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
                 indent=2), content_type='application/json')

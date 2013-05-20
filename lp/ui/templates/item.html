@@ -35,6 +35,7 @@
 
 {% block javascript_extra %}
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
+<!--<script src="http://code.jquery.com/jquery-1.9.1.js"></script>-->
 <script type='text/javascript'>
 function toggle_visibility(tbid,lnkid)
 {
@@ -75,6 +76,14 @@ function sms(url) {
 </script>
 
 <script type='text/javascript'>
+function cittogtxt(elemid) {
+    if ($(elemid).text() == 'Hide'){
+        $(elemid).text('Show');}
+    else {
+        $(elemid).text('Hide');}
+};
+
+
 $(document).ready(function() {
     $('#cover-image').load(function() {
         if ($('#cover-image').width() == 1) {
@@ -86,9 +95,14 @@ $(document).ready(function() {
         });
 
     });
-
-
+    $("#citation_toggle").click(function() {
+        $("#citation_data").toggle('fast', function(){
+        });
+        cittogtxt("#citation_toggle");
+    });
+});
 </script>
+
 {% endblock javascript_extra %}
 
 {% block content %}
@@ -188,6 +202,27 @@ $(document).ready(function() {
                 {% if bib.DISPLAY_ISSN_LIST%}
                     <span class="isbn-label">ISSN </span>
                     <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
+                {% endif %}
+                {% if bib.citation_json %}
+                <p>You are looking for
+                {% if bib.citation_json.volume %}volume:
+                    <span style="font-weight: bold">
+                        {{ bib.citation_json.volume }}</span>
+                {% endif %}
+                {% if bib.citation_json.issue %}issue:
+                    <span style="font-weight: bold">
+                        {{ bib.citation_json.issue }}</span>
+                {% endif %}
+                {% if bib.citation_json.year %}year:
+                    <span style="font-weight: bold">
+                        {{ bib.citation_json.year }}</span>
+                {% endif %}
+                    <br/>Full citation data available:
+                    <a href="#" id="citation_toggle">Show</a>
+                </p>
+                <div id="citation_data" style="display: none">
+                    {{ bib.citation_json|citationlist|safe }}
+                </div>
                 {% endif %}
                 <p>
                     <span class="catlink" >
