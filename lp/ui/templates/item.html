@@ -142,9 +142,6 @@ $(document).ready(function() {
                 {% endif %}
                 </h1>
                 </span>
-                {% if bib.openurl.query_string %}
-                    {% include "openurl.html" %}
-                {% endif %}
                 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
                     <span class="author">
                     {% if bib.CJK_INFO.AUTHOR %}

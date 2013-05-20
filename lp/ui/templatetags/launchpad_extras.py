@@ -116,4 +116,6 @@ def listelement(key, citation_json):
         value = ', '.join([a['name'] for a in value])
     elif key == 'identifier':
         value = '; '.join(['%s: %s' % (i['type'], i['id']) for i in value])
+    elif 'page' in key:
+        value = value.replace('EOA', '')
     return '<dt>%s</dt><dd>%s</dd>' % (key.replace('_', ' '), value)
