@@ -767,7 +767,7 @@ def get_z3950_bib_data(bibid, lib):
             else:
                 bib['PUB_PLACE'] = None
             bib['TITLE'] = rec.title()
-            bib['TITLE_ALL'] = rec.title()
+            bib['TITLE_ALL'] = rec.title().decode('iso-8859-1').encode('utf8')
     except:
         return None
     return bib
