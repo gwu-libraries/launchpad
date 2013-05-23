@@ -1,8 +1,10 @@
+import pymarc
+
 from django.conf import settings
 from django.test import TestCase
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_lccn
-from ui.models import Item
+from ui.models import Item, Holding
 
 
 class CleanIsbnTest(TestCase):
@@ -106,3 +108,56 @@ class ItemModelTestCase(TestCase):
         #test eligible by default
         self.item._metadata['status'] = ''
         self.assertTrue(self.item.eligible(refresh=True))
+
+
+class HoldingItemTestCase(TestCase):
+
+    def setUp(self):
+        self.metadata = {
+            'bibid': '2262190',
+            'mfhdid': '8475265',
+            'libcode': 'GW',
+            'locid': '817',
+            'location': 'GW: Online',
+            'callnum': 'GW: Electronic Journal'}
+        self.hold = Holding(metadata=self.metadata)
+        self.marcstring = '''00449cx  a22000974  4500001000800000004000800008005001700016008003300033852013100066856015400197\x1e8475265\x1e2262190\x1e20130121191709.0\x1e0805154u    8   1001uu   0901128\x1e8 \x1fbgwg ej\x1fhGW: Electronic Journal\x1fzOff-campus access restricted to current George Washington University members - Login required.\x1e4 \x1fuhttp://sfx.wrlc.org/gw/OpenURL?sid=sfx:e_collection&issn=0001-0782&pid=serviceType=getFullTxt\x1fzClick here to access available issues of this journal.\x1e\x1d'''
+        self.marc = pymarc.record.Record(data=self.marcstring)
+
+    def tearDown(self):
+        pass
+
+    def testmetadata(self):
+        for key in self.metadata.keys():
+            if key != 'location':
+                self.assertEqual(self.metadata[key], getattr(self.hold,
+                    key)())
+        del self.hold.metadata
+        self.hold.metadata = self.metadata
+        for key in self.metadata.keys():
+            if key != 'location':
+                self.assertEqual(self.metadata[key], getattr(self.hold,
+                    key)())
+
+    def testlocation(self):
+        self.assertEqual('Online', self.hold.location())
+
+    def testmarc(self):
+        self.assertEqual(self.hold.pubnote(), '')
+        self.assertEqual(self.hold.links(), [])
+        self.assertEqual(self.hold.textual(), [])
+        #test setter
+        self.hold.marc = self.marc
+        self.assertEqual(self.hold.marc.as_marc(), self.marcstring)
+        #test pubnote
+        self.assertEqual(self.hold.pubnote(), 'Off-campus access restricted' +
+            ' to current George Washington University members - Login ' +
+            'required.')
+        #test links
+        self.assertEqual(self.hold.links(), [
+            {'url': 'http://sfx.wrlc.org/gw/OpenURL?sid=sfx:e_collection&' +
+                'issn=0001-0782&pid=serviceType=getFullTxt',
+            'note': 'Click here to access available issues of this journal.',
+            'material': None}])
+        #test textual
+        self.assertEqual(self.hold.textual(), [])

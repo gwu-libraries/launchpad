@@ -426,9 +426,12 @@ class Holding(object):
         return self.metadata['locid']
 
     def location(self):
-        if self.metadata['location'][2] == ':':
-            loc = self.metadata['location'][3:]
-        else:
+        try:
+            if self.metadata['location'][2] == ':':
+                loc = self.metadata['location'][3:]
+            else:
+                loc = self.metadata['location']
+        except:
             loc = self.metadata['location']
         return loc.strip()
 
