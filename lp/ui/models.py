@@ -27,7 +27,7 @@ class Bib(object):
         'isbns': [],
         'issn': '',
         'issns': [],
-        'oclc': '',
+        'oclc': ''
     }
 
     def __init__(self, metadata={}, marc=None, holdings=[]):
@@ -56,8 +56,8 @@ class Bib(object):
         #all values should be strings except for lists set in the template
         if __debug__:
             for key in new_meta:
-                if self.__class__.META_TEMPLATE_BIB.get(key) and \
-                    isinstance(self.__class__.META_TEMPLATE_BIB[key], list):
+                if isinstance(self.__class__.META_TEMPLATE_BIB.get(key, None),
+                    list):
                     if not isinstance(new_meta[key], list):
                         raise AssertionError('%s must be a list' % key)
                 elif not isinstance(new_meta[key], str) and \
@@ -117,6 +117,8 @@ class Bib(object):
         if self.marc:
             fields = self.marc.get_fields('880')
             for field in fields:
+                if field['6'] is None:
+                    continue
                 reltag = field['6'][:3]
                 if reltag == '245':
                     alts['title'] = ' '.join(field.get_subfields('a', 'b'))
@@ -151,7 +153,7 @@ class Bib(object):
         brief = self.title()[:252]
         while brief[-1] != ' ':
             brief = brief[:-1]
-        return '%s...' % brief
+        return '%s...' % brief[:-1]
 
     def alttitle(self):
         return self._altmeta.get('title', '')
@@ -170,14 +172,14 @@ class Bib(object):
         if self.marc and self.marc.author():
             return self.marc.author()
         else:
-            self.metadata['author']
+            return self.metadata['author']
 
     def altauthor(self):
         return self._altmeta.get('author', '')
 
     def addedentries(self):
         if self.marc:
-            return [ae['a'] for ae in self.marc.addedentries()]
+            return [ae['a'].strip(' .') for ae in self.marc.addedentries()]
         else:
             return self.metadata['addedentries']
 
@@ -213,6 +215,11 @@ class Bib(object):
         return []
 
     def oclc(self):
+        if self.marc:
+            fields = self.marc.get_fields('035')
+            for field in fields:
+                if field['a'] and field['a'].startswith('(OCoLC)'):
+                    return field['a']
         return self.metadata['oclc']
 
     def subjects(self):
@@ -234,7 +241,7 @@ class Bib(object):
         if self.marc and self.marc.pubyear():
             return self.marc.pubyear().rstrip('. ')
         else:
-            self.metadata['pubyear']
+            return self.metadata['pubyear']
 
     def altpubyear(self):
         return self._altmeta.get('pubyear', '').rstrip(',. ')
@@ -342,8 +349,8 @@ class Holding(object):
         #all values should be strings except for lists set in the template
         if __debug__:
             for key in new_meta:
-                if self.__class__.META_TEMPLATE_HOLD.get(key) and \
-                    isinstance(self.__class__.META_TEMPLATE_HOLD[key], list):
+                if isinstance(self.__class__.META_TEMPLATE_HOLD.get(key, None),
+                    list):
                     if not isinstance(new_meta[key], list):
                         raise AssertionError('%s must be a list' % key)
                 elif not isinstance(new_meta[key], str) and \
