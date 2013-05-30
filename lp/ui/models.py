@@ -46,6 +46,9 @@ class Bib(object):
         self.metadata = metadata
         self._altmeta = self.altmeta()
 
+    def __str__(self):
+        return '<Bib %s>' % self.bibid() if self.bibid() else '<Bib no ID>'
+
     @property
     def metadata(self):
         return self._metadata
@@ -339,6 +342,10 @@ class Holding(object):
         self.metadata = metadata
         self._fulltext = self._getfulltext() if self.marc else None
 
+    def __str__(self):
+        id = self.mfhdid() if self.mfhdid() else 'no ID'
+        return '<Holding %s>' % id
+
     @property
     def metadata(self):
         return self._metadata
@@ -508,6 +515,10 @@ class Item(object):
         self.metadata = metadata
         self.metadata['eligible'] = self.eligible()
 
+    def __str__(self):
+        id = self.itemid() if self.itemid() else 'no ID'
+        return '<Item %s>' % id
+
     @property
     def metadata(self):
         return self._metadata
@@ -624,6 +635,10 @@ class RecordSet(object):
         self._bibs = []
         self.bibs = bibs
         self.openurl = openurl
+
+    def __str__(self):
+        t = self.title() if self.title() else 'no title'
+        return '<RecordSet %s>' % t
 
     @property
     def bibs(self):
