@@ -123,22 +123,7 @@ class HoldingModelTestCase(TestCase):
             'locid': '817',
             'location': 'GW: Online',
             'callnum': 'GW: Electronic Journal'}
-        item1 = Item(metadata={'itemid': '2939749', 'status': u'Not Charged',
-            'callnum': '','chron': '',
-            'enum': u'v.41:no.7 (1998:Jan.)-v.41:no.12 (1998:June)',
-            'bibid': '2262190', 'libcode': '7', 'mfhdid': '2611147',
-            'temploc': '',
-            'statusdate': datetime.datetime(1999, 2, 1, 19, 33, 30),
-            'eligible': True, 'permloc': u'GW: GELMAN Periodicals',
-            'statuscode': '1'})
-        item2 = Item(metadata={'itemid': '3914827', 'status': u'Not Charged',
-            'callnum': '', 'chron': '', 'enum': u'Current Periodicals',
-            'bibid': '2262190', 'libcode': '7', 'mfhdid': '2611147',
-            'temploc': '',
-            'statusdate': datetime.datetime(2004, 4, 23, 16, 22, 31),
-            'eligible': True, 'permloc': u'GW: GELMAN Periodicals',
-            'statuscode': '1'})
-        self.hold = Holding(metadata=self.metadata, items=[item1, item2])
+        self.hold = Holding(metadata=self.metadata, items=[Item(), Item()])
         self.marcstring = '''00449cx  a22000974  4500001000800000004000800008005001700016008003300033852013100066856015400197\x1e8475265\x1e2262190\x1e20130121191709.0\x1e0805154u    8   1001uu   0901128\x1e8 \x1fbgwg ej\x1fhGW: Electronic Journal\x1fzOff-campus access restricted to current George Washington University members - Login required.\x1e4 \x1fuhttp://sfx.wrlc.org/gw/OpenURL?sid=sfx:e_collection&issn=0001-0782&pid=serviceType=getFullTxt\x1fzClick here to access available issues of this journal.\x1e\x1d'''
         self.marc = pymarc.record.Record(data=self.marcstring)
 
