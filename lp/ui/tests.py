@@ -198,7 +198,8 @@ class BibModelTestCase(TestCase):
         h2 = '''00453cy  a22000973  4500001000800000004000800008005001700016008003300033852013900066856015000205\x1e3355691\x1e2927175\x1e20121017100132.0\x1e9807134p    8   2   bbeng       \x1e8 \x1fbmrym ej\x1fhMU Electronic journal\x1fzRemote access restricted to Marymount University authorized users.\x1fxbds. Print subscription cancelled.\x1e41\x1fuhttp://gx4bz5eq8d.search.serialssolutions.com/?V=1.0&N=250&L=GX4BZ5EQ8D&S=I_M&C=0001-0782\x1fzCLICK HERE TO ACCESS AVAILABLE ISSUES OF THIS JOURNAL.\x1e\x1d'''
         h3 = '''00431ny  a2200097m  4500001000900000004000800009005001700017008003300034852014300067856012300210\x1e10314549\x1e8973648\x1e20110819180206.0\x1e1108190u||||8|||0001uu|||0000000\x1e  \x1fbdcvn ssej\x1fhDC: Electronic Journal\x1fzOff-campus access restricted to current University of the District of Columbia members - Login required\x1e40\x1fzClick here for full text\x1fuhttp://NC3YX2EP8C.search.serialssolutions.com/?V=1.0&L=NC3YX2EP8C&S=JCs&C=COMMOFTHEAC&T=marc\x1e\x1d'''
         holds = [h1, h2, h3]
-        holdings = [Holding(marc=pymarc.record.Record(data=h)) for h in holds]
+        holdings = [Holding(marc=pymarc.record.Record(data=h),
+            items=[Item(), Item()]) for h in holds]
         self.bib = Bib(metadata=self.metadata, holdings=holdings)
 
     def tearDown(self):
@@ -258,7 +259,8 @@ class BibModelTestCase(TestCase):
         self.assertEqual(self.bib.links(), expected_links)
 
     def testitems(self):
-        pass
+        self.assertEqual(len(self.bib.items()), 6)
+        self.assertTrue(all([isinstance(i, Item) for i in self.bib.items()]))
 
     def testaltmeta(self):
         self.bib = Bib(marc=pymarc.record.Record(data=self.marc2))
