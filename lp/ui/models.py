@@ -341,6 +341,7 @@ class Holding(object):
         self._metadata = deepcopy(self.__class__.META_TEMPLATE_HOLD)
         self.metadata = metadata
         self._fulltext = self._getfulltext() if self.marc else None
+        self._items = items
 
     def __str__(self):
         id = self.mfhdid() if self.mfhdid() else 'no ID'
@@ -393,6 +394,21 @@ class Holding(object):
     @marc.deleter
     def marc(self):
         self._marc = None
+
+    @property
+    def items(self):
+        return self._items
+
+    @items.setter
+    def items(self, items):
+        assert isinstance(items, list), 'items must be a list of Item objects'
+        assert all(isinstance(i, Item) for i in items), \
+            'holdings must be a list of Item objects'
+        self._items = items
+
+    @items.deleter
+    def items(self):
+        self._items = []
 
     def pubnote(self):
         '''
