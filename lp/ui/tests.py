@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.utils.unittest import skipIf
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_lccn
-from ui.models import Item, Holding, Bib
+from ui.models import Item, Holding, Bib, RecordSet
 from ui.datasources.linkresolvers.linkresolvers import get_resolver
 
 
@@ -273,3 +273,102 @@ class BibModelTestCase(TestCase):
             '\xd9\x87\xd8\xa7\xd9\x8a\xd8\xa9 \xd9\x81\xd9\x8a \xd8\xa7\xd9' +
             '\x84\xd8\xaa\xd8\xa7\xd8\xb1\xd9\x8a\xd8\xae.')
 
+
+class RecordSetTestCase(TestCase):
+
+    def setUp(self):
+        bib1meta = {
+            'addedentries': [],
+            'author': '',
+            'bibid': '402190',
+            'edition': '',
+            'formatcode': u'as',
+            'imprint':
+                u'[New York] : Association for Computing Machinery, 1959-',
+            'isbn': '',
+            'isbns': [],
+            'issn': u'0001-0782',
+            'issns': [],
+            'langcode': u'eng',
+            'libcode': u'AU',
+            'oclc': u'(OCoLC)ocm01514517',
+            'publisher': u'Association for Computing Machinery,',
+            'pubplace': u'[New York] :',
+            'pubyear': u'1959-',
+            'title': u'Communications of the ACM.'}
+        bib1marc = '''02457cas a2200601 a 4500001000700000005001700007008004100024010003100065035002300096040021100119012002100330016002000351016001800371016001800389019001200407022003900419030001100458032001700469035003500486042001400521050001600535060001800551082001800569049000900587210001600596222003000612245003100642246006200673246003300735260006200768300002500830310001200855362003200867530004400899530002400943650002800967650003200995650002801027710004101055770007401096776008501170776006501255776006501320780009601385850009501481856005201576891004701628891004101675891003801716891005101754891003801805994001201843\x1e402190\x1e20120821142139.0\x1e750806c19599999nyumr p       0   a0eng c\x1e  \x1fa   61065941 \x1fzsc 76000456 \x1e  \x1fa(OCoLC)ocm01514517\x1e  \x1faMUL\x1fcMUL\x1fdNSD\x1fdDLC\x1fdNSD\x1fdOCL\x1fdDLC\x1fdNST\x1fdDLC\x1fdRCS\x1fdNST\x1fdDLC\x1fdAIP\x1fdDLC\x1fdAIP\x1fdNSD\x1fdAIP\x1fdNST\x1fdNSD\x1fdNST\x1fdNSD\x1fdNST\x1fdDLC\x1fdGUA\x1fdIUL\x1fdMYG\x1fdOCL\x1fdSYS\x1fdLYU\x1fdOCLCQ\x1fdWAU\x1fdNSD\x1fdCDS\x1fdLVB\x1fdCUS\x1fdCIT\x1fdOCLCQ\x1fdUKMGB\x1fdTUU\x1fdTULIB\x1e  \x1fa3\x1fb3\x1fen\x1fj2\x1fk1\x1fm1\x1e7 \x1faC32640000\x1f2DNLM\x1e7 \x1fa012401138\x1f2Uk\x1e7 \x1fa011234768\x1f2Uk\x1e  \x1fa2446101\x1e0 \x1fa0001-0782\x1fl0001-0782\x1fz0588-8069\x1f21\x1e  \x1faCACMA2\x1e  \x1fa126160\x1fbUSPS\x1e  \x1fa(OCoLC)1514517\x1fz(OCoLC)2446101\x1e  \x1fansdp\x1fapcc\x1e00\x1faQA76\x1fb.A772\x1e0 \x1faZ 699.A1 C734\x1e04\x1fa001.64/05\x1f219\x1e  \x1faEAUU\x1e0 \x1faCommun. ACM\x1e 0\x1faCommunications of the ACM\x1e00\x1faCommunications of the ACM.\x1e3 \x1faCommunications of the Association for Computing Machinery\x1e30\x1faCommunications of the A.C.M.\x1e  \x1fa[New York] :\x1fbAssociation for Computing Machinery,\x1fc1959-\x1e  \x1fav. :\x1fbill. ;\x1fc28 cm.\x1e  \x1faMonthly\x1e0 \x1faVol. 2, no. 11 (Nov. 1959)-\x1e  \x1faAlso issued in microformats and online.\x1e  \x1faAlso issued online.\x1e 0\x1faComputers\x1fvPeriodicals.\x1e 6\x1faOrdinateurs\x1fvPe\xcc\x81riodiques.\x1e 4\x1faComputers\x1fxPeriodicals.\x1e2 \x1faAssociation for Computing Machinery.\x1e0 \x1ftACMemberNet\x1fgJuly 1990-\x1fx1059-1192\x1fw(DLC)   96643236\x1fw(OCoLC)23369844\x1e1 \x1ftCommunications of the ACM (Online)\x1fx1557-7317\x1fw(DLC)sn 99034011\x1fw(OCoLC)38436103\x1e08\x1fiOnline version:\x1ftCommunications of the ACM\x1fw(OCoLC)564464960\x1e08\x1fiOnline version:\x1ftCommunications of the ACM\x1fw(OCoLC)605189967\x1e00\x1ftCommunications of the Association for Computing Machinery\x1fw(DLC)sf 84001031\x1fw(OCoLC)2103367\x1e  \x1faAzTeS\x1faCCC\x1faCaBVa\x1faCaOTM\x1faDLC\x1faFU\x1faGU\x1faICL\x1faINS\x1faInU\x1faMH-SD\x1faMMeT\x1faMWelC\x1faMoKU\x1faNSyU\x1faPPiD\x1e41\x1fxhttp://www.acm.org/pubs/contents/journals/cacm/\x1e30\x1f9853\x1f81\x1fav.\x1fbno.\x1fu12\x1fvr\x1fi(year)\x1fj(month)\x1fwm\x1e40\x1f9863\x1f81.1\x1fa<1>-\x1fi<1958>-\x1fxprovisional\x1e41\x1f9863\x1f81.2\x1fa<43>\x1fb<1>\x1fi<2000>\x1fj<01>\x1e20\x1f9853\x1f82\x1fav.\x1fbno.\x1fu12\x1fvr\x1fi(year)\x1fj(month)\x1fwm\x1fx01\x1e41\x1f9863\x1f82.1\x1fa<48>\x1fb<1>\x1fi<2005>\x1fj<01>\x1e  \x1faC0\x1fbEAU\x1e\x1d'''
+        bib1h1marc = '''00432cx  a22001093  4500001000800000004000700008005001700015008003300032852010000065856013600165866002100301\x1e4800665\x1e402190\x1e20120821142139.0\x1e0101264u    8   1001uu   0901128\x1e8 \x1fbauin\x1fhAU Electronic journals\x1fzRemote access restricted to American University authorized users.\x1e4 \x1fuhttp://vg5ly4ql7e.search.serialssolutions.com/?V=1.0&N=250&L=VG5LY4QL7E&S=I_M&C=0001-0782\x1fzClick here to access the journal online.\x1e31\x1f80\x1fav.27 (1984) -\x1e\x1d'''
+        bib1h2marc = '''00313cy  a22001213  4500001000800000004000700008005001700015008003300032014001500065014001400080852007800094866001900172\x1e8782951\x1e402190\x1e20090519073317.0\x1e0905194p    8   |000||eng1000000\x1e1 \x1faBHA8925001\x1e0 \x1fa003641501\x1e 1\x1fbwrlc stnc\x1fzHeld at WRLC Center; available for delivery (Library use only)\x1e31\x1f80\x1fav.2 (1959)-\x1e\x1d'''
+        bib1h3marc = ''''00262cx  a22000854  4500001000800000004000700008005001700015008003300032852011100065\x1e8782952\x1e402190\x1e20090519073334.0\x1e0905194u    8   1001uu   0901128\x1e 1\x1fbaup\x1fzRecent issues in current periodicals stacks, older issues available via Consortium Loan Service (CLS)\x1e\x1d'''
+        bib1 = Bib(
+            metadata=bib1meta,
+            marc=pymarc.record.Record(data=bib1marc),
+            holdings=[
+                Holding(marc=pymarc.record.Record(data=bib1h1marc),
+                    items=[Item()]),
+                Holding(marc=pymarc.record.Record(data=bib1h2marc),
+                    items=[Item(), Item()])]
+            )
+        bib2meta = {'addedentries': [],
+            'author': '',
+            'bibid': '404641',
+            'edition': '',
+            'formatcode': u'as',
+            'imprint':
+                u'[Baltimore] : Association for Computing Machinery, -1959.',
+            'isbn': '',
+            'isbns': [],
+            'issn': u'0001-0782',
+            'issns': [],
+            'langcode': u'eng',
+            'libcode': u'AU',
+            'oclc': u'(OCoLC)02103367',
+            'publisher': u'Association for Computing Machinery,',
+            'pubplace': u'[Baltimore] :',
+            'pubyear': u'-1959.',
+            'title':
+                u'Communications of the Association for Computing Machinery.'}
+        bib2marc = '''02457cas a2200601 a 4500001000700000005001700007008004100024010003100065035002300096040021100119012002100330016002000351016001800371016001800389019001200407022003900419030001100458032001700469035003500486042001400521050001600535060001800551082001800569049000900587210001600596222003000612245003100642246006200673246003300735260006200768300002500830310001200855362003200867530004400899530002400943650002800967650003200995650002801027710004101055770007401096776008501170776006501255776006501320780009601385850009501481856005201576891004701628891004101675891003801716891005101754891003801805994001201843\x1e402190\x1e20120821142139.0\x1e750806c19599999nyumr p       0   a0eng c\x1e  \x1fa   61065941 \x1fzsc 76000456 \x1e  \x1fa(OCoLC)ocm01514517\x1e  \x1faMUL\x1fcMUL\x1fdNSD\x1fdDLC\x1fdNSD\x1fdOCL\x1fdDLC\x1fdNST\x1fdDLC\x1fdRCS\x1fdNST\x1fdDLC\x1fdAIP\x1fdDLC\x1fdAIP\x1fdNSD\x1fdAIP\x1fdNST\x1fdNSD\x1fdNST\x1fdNSD\x1fdNST\x1fdDLC\x1fdGUA\x1fdIUL\x1fdMYG\x1fdOCL\x1fdSYS\x1fdLYU\x1fdOCLCQ\x1fdWAU\x1fdNSD\x1fdCDS\x1fdLVB\x1fdCUS\x1fdCIT\x1fdOCLCQ\x1fdUKMGB\x1fdTUU\x1fdTULIB\x1e  \x1fa3\x1fb3\x1fen\x1fj2\x1fk1\x1fm1\x1e7 \x1faC32640000\x1f2DNLM\x1e7 \x1fa012401138\x1f2Uk\x1e7 \x1fa011234768\x1f2Uk\x1e  \x1fa2446101\x1e0 \x1fa0001-0782\x1fl0001-0782\x1fz0588-8069\x1f21\x1e  \x1faCACMA2\x1e  \x1fa126160\x1fbUSPS\x1e  \x1fa(OCoLC)1514517\x1fz(OCoLC)2446101\x1e  \x1fansdp\x1fapcc\x1e00\x1faQA76\x1fb.A772\x1e0 \x1faZ 699.A1 C734\x1e04\x1fa001.64/05\x1f219\x1e  \x1faEAUU\x1e0 \x1faCommun. ACM\x1e 0\x1faCommunications of the ACM\x1e00\x1faCommunications of the ACM.\x1e3 \x1faCommunications of the Association for Computing Machinery\x1e30\x1faCommunications of the A.C.M.\x1e  \x1fa[New York] :\x1fbAssociation for Computing Machinery,\x1fc1959-\x1e  \x1fav. :\x1fbill. ;\x1fc28 cm.\x1e  \x1faMonthly\x1e0 \x1faVol. 2, no. 11 (Nov. 1959)-\x1e  \x1faAlso issued in microformats and online.\x1e  \x1faAlso issued online.\x1e 0\x1faComputers\x1fvPeriodicals.\x1e 6\x1faOrdinateurs\x1fvPe\xcc\x81riodiques.\x1e 4\x1faComputers\x1fxPeriodicals.\x1e2 \x1faAssociation for Computing Machinery.\x1e0 \x1ftACMemberNet\x1fgJuly 1990-\x1fx1059-1192\x1fw(DLC)   96643236\x1fw(OCoLC)23369844\x1e1 \x1ftCommunications of the ACM (Online)\x1fx1557-7317\x1fw(DLC)sn 99034011\x1fw(OCoLC)38436103\x1e08\x1fiOnline version:\x1ftCommunications of the ACM\x1fw(OCoLC)564464960\x1e08\x1fiOnline version:\x1ftCommunications of the ACM\x1fw(OCoLC)605189967\x1e00\x1ftCommunications of the Association for Computing Machinery\x1fw(DLC)sf 84001031\x1fw(OCoLC)2103367\x1e  \x1faAzTeS\x1faCCC\x1faCaBVa\x1faCaOTM\x1faDLC\x1faFU\x1faGU\x1faICL\x1faINS\x1faInU\x1faMH-SD\x1faMMeT\x1faMWelC\x1faMoKU\x1faNSyU\x1faPPiD\x1e41\x1fxhttp://www.acm.org/pubs/contents/journals/cacm/\x1e30\x1f9853\x1f81\x1fav.\x1fbno.\x1fu12\x1fvr\x1fi(year)\x1fj(month)\x1fwm\x1e40\x1f9863\x1f81.1\x1fa<1>-\x1fi<1958>-\x1fxprovisional\x1e41\x1f9863\x1f81.2\x1fa<43>\x1fb<1>\x1fi<2000>\x1fj<01>\x1e20\x1f9853\x1f82\x1fav.\x1fbno.\x1fu12\x1fvr\x1fi(year)\x1fj(month)\x1fwm\x1fx01\x1e41\x1f9863\x1f82.1\x1fa<48>\x1fb<1>\x1fi<2005>\x1fj<01>\x1e  \x1faC0\x1fbEAU\x1e\x1d'''
+        bib2h1marc = '''00432cx  a22001093  4500001000800000004000700008005001700015008003300032852010000065856013600165866002100301\x1e4800665\x1e402190\x1e20120821142139.0\x1e0101264u    8   1001uu   0901128\x1e8 \x1fbauin\x1fhAU Electronic journals\x1fzRemote access restricted to American University authorized users.\x1e4 \x1fuhttp://vg5ly4ql7e.search.serialssolutions.com/?V=1.0&N=250&L=VG5LY4QL7E&S=I_M&C=0001-0782\x1fzClick here to access the journal online.\x1e31\x1f80\x1fav.27 (1984) -\x1e\x1d'''
+        bib2h2marc = '''00313cy  a22001213  4500001000800000004000700008005001700015008003300032014001500065014001400080852007800094866001900172\x1e8782951\x1e402190\x1e20090519073317.0\x1e0905194p    8   |000||eng1000000\x1e1 \x1faBHA8925001\x1e0 \x1fa003641501\x1e 1\x1fbwrlc stnc\x1fzHeld at WRLC Center; available for delivery (Library use only)\x1e31\x1f80\x1fav.2 (1959)-\x1e\x1d'''
+        bib2 = Bib(
+            metadata=bib2meta,
+            marc=pymarc.record.Record(data=bib2marc),
+            holdings=[
+                Holding(marc=pymarc.record.Record(data=bib2h1marc),
+                    items=[Item()]),
+                Holding(marc=pymarc.record.Record(data=bib2h2marc),
+                    items=[Item(), Item()])]
+            )
+        self.rset = RecordSet(bibs=[bib1, bib2])
+
+    def testbibs(self):
+        self.assertEqual(len(self.rset.bibs), 2)
+        self.assertTrue(all([isinstance(b, Bib) for b in self.rset.bibs]))
+
+    def testholds(self):
+        self.assertEqual(len(self.rset.holdings()), 4)
+        self.assertTrue(all([isinstance(h, Holding) for h in
+            self.rset.holdings()]))
+
+    def testitems(self):
+        self.assertEqual(len(self.rset.items()), 6)
+        self.assertTrue(all([isinstance(i, Item) for i in self.rset.items()]))
+
+    def testmarc(self):
+        self.assertEqual(self.rset.marc(), self.rset.bibs[0].marc)
+
+    def testbibids(self):
+        self.assertEqual(self.rset.bibids(), ['402190', '404641'])
+
+    def testtitle(self):
+        self.assertEqual(self.rset.title(), 'Communications of the ACM.')
+
+    def testauthor(self):
+        self.assertEqual(self.rset.author(), '')
+
+    def testisbns(self):
+        self.assertEqual(self.rset.isbns(), [])
+
+    def testissns(self):
+        self.assertEqual(self.rset.issns(), ['0001-0782'])
