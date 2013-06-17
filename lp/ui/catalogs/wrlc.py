@@ -1,13 +1,51 @@
 import re
+<<<<<<< HEAD
+=======
+import pymarc
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 
 from django.conf import settings
 from django.db import connection
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc
+<<<<<<< HEAD
 from ui.models import Bib, Holding, Item
 
 
 def bib(bibid, expand=True):
+=======
+from ui.records.recordset import RecordSet
+from ui.records.bib import Bib
+from ui.records.holding import Holding
+from ui.records.item import Item
+
+
+def build_record_set(num, num_type='bibid', openurl='', expand=True):
+    assert isinstance(num_type, str), 'num_type must be a string'
+    assert num_type in ('bibid', 'gtbibid', 'gmbibid', 'isbn', 'issn',
+        'oclc'), 'num_type must be one of (bibid, gtbibid, gmbibid, ' + \
+        'isbn, issn, oclc)'
+    if num_type == 'bibid':
+        bibid = num
+    else:
+        bibid = bibid(num=num, num_type=num_type)
+    if expand:
+        rsn = related_stdnums(bibid)
+        bibids = related_bibids(rsn)
+        recordset = RecordSet([bib(b['bibid']) for b in bibids])
+    else:
+        recordset = RecordSet([bib(bibid)])
+    for b in recordset.bibs:
+        b.holdings = holdings([b.bibid()])
+    for holding in recordset.holdings():
+        holding.items = items(holding.mfhdid())
+    return recordset
+
+
+def bib(bibid, raw=False):
+    bibid = str(bibid)
+    assert re.match(r'^\d{2,8}$', bibid), '%s not a proper bibid' % bibid
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     '''
     Primary function for retrieving a record from the Voyager DB using the
     Bib object type
@@ -27,15 +65,34 @@ SELECT bib_text.bib_id AS bibid,
        language AS langcode,
        library_name AS libcode,
        network_number AS oclc,
+<<<<<<< HEAD
+=======
+       wrlcdb.GetAllBibTag(%s, '880', 1) AS cjk,
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
        wrlcdb.getBibBlob(%s) AS marcblob
 FROM bib_text, bib_master, library
 WHERE bib_text.bib_id=%s
 AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
+<<<<<<< HEAD
     data = _ask_oracle(query, params=[bibid, bibid], first=True)
     raw_marc = str(data.pop('marcblob'))
     bib = Bib(metadata=data, raw_marc=raw_marc)
+=======
+    data = _ask_oracle(query, params=[bibid, bibid, bibid], first=True)
+    if raw:
+        return data
+    try:
+        raw_marc = str(data.pop('marcblob'))
+        marc = pymarc.record.Record(data=raw_marc)
+    except IndexError:
+        """Some MARC records cause string index error in PyMarc.
+        Skip them for now.
+        TODO: handle this error in a better manner"""
+        marc = None
+    bib = Bib(metadata=data, marc=marc)
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     return bib
 
 
@@ -46,6 +103,12 @@ def bibid(num, num_type):
     multiple bibids it gives preference to the preferred library (as
     specified in the settings file).
     '''
+<<<<<<< HEAD
+=======
+    assert isinstance(num_type, str), 'num_type must be a string'
+    assert num_type in ('gtbibid', 'gmbibid', 'isbn', 'issn', 'oclc'), \
+        'num_type must be one of (gtbibid, gmbibid, isbn, issn, oclc)'
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     num = _normalize_num(num, num_type)
     query = """
 SELECT bib_index.bib_id AS  bibid,
@@ -66,7 +129,11 @@ AND bib_master.library_id=library.library_id"""
     bibs = _ask_oracle(query)
     if bibs:
         for bib in bibs:
+<<<<<<< HEAD
             if bib['library_code'] == settings.PREF_LIB:
+=======
+            if bib['library_code'] in settings.PREF_LIBCODES:
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                 return bib['bibid']
         return bibs[0]['bibid']
     else:
@@ -74,6 +141,10 @@ AND bib_master.library_id=library.library_id"""
 
 
 def related_stdnums(bibid):
+<<<<<<< HEAD
+=======
+    assert re.match(r'^\d{2,8}$', bibid), '%s not a proper bibid' % bibid
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     output = {'isbn': [], 'issn': [], 'oclc': []}
     query = '''
 SELECT normal_heading,
@@ -104,12 +175,22 @@ ORDER BY normal_heading'''
 
 
 def _is_valid_issn(num):
+<<<<<<< HEAD
+=======
+    assert isinstance(num, str) or isinstance(num, unicode), \
+        'num must be a string, not %s: %s' % (type(num), num)
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     if re.match('\d{4}[ -]\d{3}[0-9xX]', num):
         return True
     return False
 
 
 def _is_oclc(num):
+<<<<<<< HEAD
+=======
+    assert isinstance(num, str) or isinstance(num, unicode), \
+        'num must be a string, not %s: %s' % (type(num), num)
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     if num.find('OCoLC') >= 0:
         return True
     if num.find('ocn') >= 0:
@@ -120,6 +201,13 @@ def _is_oclc(num):
 
 
 def related_bibids(stdnums):
+<<<<<<< HEAD
+=======
+    assert isinstance(stdnums, dict), 'stdnums must be a dictionary'
+    assert all(key in ('oclc', 'issn', 'isbn') for key in stdnums), \
+        'stdnum types can only be (isbn, issn, oclc): %s' % stdnums
+    # pop off any empty values to reduce number of DB queries
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     for key in stdnums.keys():
         if not stdnums[key]:
             stdnums.pop(key)
@@ -147,14 +235,22 @@ AND bib_index.normal_heading IN (
     )
 ORDER BY bib_index.bib_id"""
         codes = settings.INDEX_CODES[numtype]
+<<<<<<< HEAD
         nums = set([n['norm'] for n in stdnums[numtype]])
+=======
+        nums = list(set([n['norm'] for n in stdnums[numtype]]))
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
         query = query % (_in_clause(codes),
                          _in_clause(codes),
                          _in_clause(codes),
                          _in_clause(nums))
         results = _ask_oracle(query)
         if numtype == 'oclc':
+<<<<<<< HEAD
             results = [row for row in results if _is_oclc(row['disp'])]
+=======
+            results = [ro for ro in results if _is_oclc(ro['disp'])]
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
         for row in results:
             if not bibids or row['bibid'] != bibids[-1]['bibid']:
                 bibids.append({'bibid': row['bibid'],
@@ -163,11 +259,19 @@ ORDER BY bib_index.bib_id"""
 
 
 def holdings(bibids):
+<<<<<<< HEAD
+=======
+    assert isinstance(bibids, list), 'bibids must be a list not %s: %s' % \
+        (type(bibids), bibids)
+    assert all(re.match(r'^\d{2,8}$', bibid) for bibid in bibids), \
+        '%s is not a proper bibid' % bibid
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     query = """
 SELECT bib_mfhd.bib_id AS bibid,
        mfhd_master.mfhd_id AS mfhdid,
        mfhd_master.location_id AS locid,
        mfhd_master.display_call_no AS callnum,
+<<<<<<< HEAD
        location.location_display_name AS loc,
        library.library_name AS libcode,
        mfhdblob_vw.marc_record AS marcblob
@@ -176,6 +280,17 @@ FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
      library,
      bib_master,
      mfhdblob_vw
+=======
+       location.location_display_name AS location,
+       library.library_name AS libcode,
+       mfhdblob_vw.marc_record AS marcblob
+FROM location,
+     library,
+     bib_master,
+     mfhdblob_vw,
+     bib_mfhd INNER JOIN
+         mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 WHERE mfhd_master.location_id=location.location_id
 AND mfhdblob_vw.mfhd_id=mfhd_master.mfhd_id
 AND bib_mfhd.bib_id IN %s
@@ -188,11 +303,22 @@ ORDER BY library.library_name"""
     holdings = []
     for record in results:
         marcblob = str(record.pop('marcblob'))
+<<<<<<< HEAD
         holdings.append(Holding(metadata=record, raw_marc=marcblob))
+=======
+        marc = pymarc.record.Record(data=marcblob)
+        holdings.append(Holding(metadata=record, marc=marc))
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     return holdings
 
 
 def items(mfhdid):
+<<<<<<< HEAD
+=======
+    assert isinstance(mfhdid, str), 'mfhdid must be a string'
+    assert re.match(r'^\d{2,16}$', mfhdid), \
+        '%s is not a proper mfhdid' % mfhdid
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     query = '''
 SELECT DISTINCT display_call_no AS callnum,
        item_status_desc AS status,
@@ -203,7 +329,13 @@ SELECT DISTINCT display_call_no AS callnum,
        item_status_date AS statusdate,
        bib_master.bib_id AS bibid,
        mfhd_item.mfhd_id AS mfhdid,
+<<<<<<< HEAD
        library.library_id AS libcode
+=======
+       library.library_id AS libcode,
+       mfhd_item.item_enum as enum,
+       mfhd_item.chron as chron
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 FROM bib_master
 JOIN library ON library.library_id = bib_master.library_id
 JOIN bib_text ON bib_text.bib_id = bib_master.bib_id
@@ -225,8 +357,13 @@ ORDER BY itemid'''
         item = Item(metadata=record)
         items.append(item)
         # now deduplicate
+<<<<<<< HEAD
         # (sometimes when an item has a temploc change there are two items with
         # different statuses. We'll use the most recent change)
+=======
+        # (sometimes when an item has a temploc change there are two items
+        # with different statuses. We'll use the most recent change)
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
         if items and item.itemid == items[-1].itemid:
             if item.statusdate > items[-1].statusdate:
                 items[-1] = item
@@ -236,6 +373,11 @@ ORDER BY itemid'''
 
 
 def bibblob(bibid):
+<<<<<<< HEAD
+=======
+    assert isinstance(bibid, str), 'bibid must be a string'
+    assert re.match(r'^\d{2,8}$', bibid), '%s not a proper bibid' % bibid
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     query = """
 SELECT wrlcdb.getBibBlob(%s) AS bibblob
 FROM bib_text
@@ -246,6 +388,12 @@ WHERE bib_text.bib_id = %s"""
 
 
 def mfhdblob(mfhdid):
+<<<<<<< HEAD
+=======
+    assert isinstance(mfhdid, str), 'mfhdid must be a string'
+    assert re.match(r'^\d{2,16}$', mfhdid), \
+        '%s is not a proper mfhdid' % mfhdid
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     query = """
 SELECT wrlcdb.getMFHDBlob(%s) AS mfhdblob
 FROM mfhd_master
@@ -256,12 +404,24 @@ WHERE mfhd_id = %s"""
 
 
 def _ask_oracle(query, params=[], first=False):
+<<<<<<< HEAD
+=======
+    assert isinstance(query, str) or isinstance(query, unicode), \
+        'query must be a string, not %s: %s' % (type(query), query)
+    assert isinstance(params, list), 'params must be a list'
+    assert isinstance(first, bool), 'first must be a boolean'
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     cursor = connection.cursor()
     cursor.execute(query, params)
     return _make_dict(cursor, first)
 
 
 def _make_dict(cursor, first=False):
+<<<<<<< HEAD
+=======
+    #TODO, assert cursor type
+    assert isinstance(first, bool), 'first must be a boolean'
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     desc = cursor.description
     mapped = [
         dict(zip([col[0].lower() for col in desc], row))
@@ -282,6 +442,11 @@ def _make_dict(cursor, first=False):
 
 
 def _normalize_num(num, num_type):
+<<<<<<< HEAD
+=======
+    assert num_type in ('isbn', 'issn', 'oclc'), \
+        'num_type must be one of (isbn, issn, oclc)'
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     if num_type == 'isbn':
         return clean_isbn(num)
     elif num_type == 'issn':
@@ -292,4 +457,9 @@ def _normalize_num(num, num_type):
 
 
 def _in_clause(items):
+<<<<<<< HEAD
+=======
+    assert isinstance(items, list), 'items must be a list, not %s: %s' % \
+        (type(items), items)
+>>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     return '(%s)' % ','.join(["'%s'" % item for item in items])

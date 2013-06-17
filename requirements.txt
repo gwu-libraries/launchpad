@@ -1,5 +1,5 @@
 cx_Oracle
-django
+django==1.4
 django-nose
 ply
 pycountry
@@ -7,3 +7,5 @@ pymarc
 python-memcached
 pytz
 git+https://github.com/asl2/PyZ3950.git
+lxml
+git+https://github.com/lawlesst/bibjsontools.git

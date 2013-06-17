@@ -1,4 +1,4 @@
-import os.path
+import os
 import sys
 
 DEBUG = True
@@ -35,18 +35,16 @@ TEMPLATE_DIRS = (
 
 
 LIB_LOOKUP = {
-    'AU': 'American',
     'AL': 'Washington Law (American)',
+    'AU': 'American',
     'CU': 'Catholic',
-    'LI': 'Catholic',
+    'DA': 'Dahlgren Medical (Georgetown)',
     'DC': 'UDC',
     'E-GovDoc': 'WRLC',
     'E-Resources': 'WRLC',
     'GA': 'Gallaudet',
     'GM': 'George Mason',
-    'LL': 'George Mason',
     'GT': 'Georgetown',
-    'DA': 'Dahlgren Medical (Georgetown)',
     'GW': 'George Washington',
     # HD is Himmelfarb-Dahlgren items jointly held in storage
     'HD': 'Himmelfarb-Dahlgren',
@@ -55,7 +53,8 @@ LIB_LOOKUP = {
     'HS': 'Howard Health Sciences',
     'HU': 'Howard',
     'JB': 'Jacob Burns Law (George Washington)',
-    'LL': 'Catholic',
+    'LI': 'Catholic',
+    'LL': 'George Mason Law Library',
     'MU': 'Marymount',
     'TR': 'Trinity',
     'WR': 'WRLC',
@@ -71,14 +70,22 @@ Z3950_SERVERS = {
     }
 }
 
-INDEX_CODES = {'isbn': ['020N', '020A', 'ISB3'],
-               'issn': ['022A', '022Z', '022Y'],
-               'oclc': ['035A']}
+INDEX_CODES = {
+    'isbn': ['020N', '020A', 'ISB3'],
+    'issn': ['022A', '022Z'],
+    'oclc': ['035A'],
+    }
 
 
 # Preferred library for bib record and top of the holdings list
 # ex.: 'GW'
 PREF_LIB = ''  
+
+# Institution name, link, etc. to display in HTML header
+INSTITUTION_NAME = 'GW Libraries'
+INSTITUTION_LINK = 'http://library.gwu.edu/'
+HOST_INSTITUTION_NAME = 'The George Washington University'
+HOST_INSTITUTION_LINK = 'http://www.gwu.edu/'
 
 # Libraries that should be put at the bottom of the holdings list
 # Optional, can be empty or used for libraries with restricted access, etc.
@@ -88,45 +95,57 @@ BOTTOM_LIBS = []
 
 INELIGIBLE_LIBRARIES = ['JB', 'HL', 'HS', 'AL']
 
+SHARED_LIBRARY_NAMES = ['WR', 'E-Resources', 'E-GovDoc',
+    'Internet Archive', 'IA']
 
 INELIGIBLE_PERM_LOCS = ['REFERENCE', 'REF', 'RESERVE', 'NON-CIRC', 
     'RESTRICTED', 'ONLY', 'IN LIBRARY', 'MICRO', 'ARCHIVES', 'KIEV', 'SPEC',
     'IBT', 'AUDIOTAPES', 'CD-ROM', 'DISCS', 'RECORDS', 'RUSH', 'VIDEOTAPES',
     'VIDEODISCS', 'MEDIA VIDEOS', 'DEAF DVD', 'DEAF VHS', 'IN PROCESS',
-    'AU: LAW', 'GT: QATAR STACKS', 'CAMPUS USE']
+    'AU: LAW', 'QATAR', 'TURKEY', 'CAMPUS USE']
 
 # Add electronic locations
 INELIGIBLE_PERM_LOCS += ['SHARED', 'ONLINE', 'ELECTRONIC', 'INTERNET',
-    'STREAMING']
+    'STREAMING', 'EREADER']
 
 INELIGIBLE_TEMP_LOCS = ['RESERVE', 'BINDERY']
 
 INELIGIBLE_STATUS = ['RENEWED', 'MISSING', 'LOST', 'OVERDUE', 'TRANSIT',
-    'HOLD', 'DUE' 'CHARGED', 'UNAVAILABLE', 'WITHDRAWN', 'DAMAGED',
-    'LIB USE ONLY']
+    'HOLD', 'DUE', 'CHARGED', 'UNAVAILABLE', 'WITHDRAWN', 'DAMAGED',
+    'LIB USE ONLY', 'CHECKED OUT']
                      
 SCREAMING_LOCATIONS = [
-    ('GELMAN', 'Gelman'),
-    ('LAU', 'Lauinger'),
     # NOTE: 'LAU' must preceed 'AU'
+    ('LAU', 'Lauinger'),
     ('AU', 'American'),
-    ('VAN NESS', 'Van Ness'),
-    ('MARYMOUNT', 'Marymount'),    
+    ('FLOOR', 'floor'),
+    ('GELMAN', 'Gelman'),
+    ('GROUND', 'ground'),    
     ('LOWER LEVEL', 'lower level'),
-    ('UNBOUND', 'unbound'),
+    ('MARYMOUNT', 'Marymount'),    
     ('MT VERNON CAMPUS', 'Mt. Vernon campus'),
     ('SCIENCE', 'Science'),    
-    ('FLOOR', 'floor'),
-    ('GROUND', 'ground'),    
     ('Stacks', 'stacks'),
+    ('UNBOUND', 'unbound'),
+    ('VAN NESS', 'Van Ness'),
     ]
+
+MAX_ITEMS = 6
+
+ILLIAD_URL = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
 
 ILLIAD_SID = 'GWfindit'
 
 TITLE_CHARS = 255
 
-MARC_245_SUBFIELDS=['$a','$b','$c','$f','$g','$h','$k','$n','$p','$s','$6','$8']
+TITLE_LEFTOVER_CHARS = 5
 
+MARC_245_SUBFIELDS = ['$a', '$b', '$c', '$f', '$g', '$h', '$k', '$n',
+    '$p', '$s', '$6', '$8']
+
+STREAMING_AUDIO_TAGS = ['GW: Streaming Audio', 'GW Streaming Audio']
+
+STREAMING_VIDEO_TAGS = ['GW: Streaming Video', 'GW Streaming Video']
 
 CACHES = {
     'default': {
@@ -168,4 +187,8 @@ SITEMAPS_DIR = os.path.join(os.path.dirname(__file__), '../ui/static/sitemaps')
 # Base public URL of links; used by sitemap generator, no trailing slash
 SITEMAPS_BASE_URL = 'http://findit.library.gwu.edu'
 
-ILLIAD_URL = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
+SER_SOL_API_URL = 'http://uz4ug4lz9g.openurl.xml.serialssolutions.com/openurlxml?version=1.0'
+
+SER_SOL_API_MAX_ATTEMPTS = 3
+
+SER_SOL_DBID_TEXT = 'TN5'

@@ -17,7 +17,8 @@ only been tested on ubuntu 10.04 LTS.
 
 1. Install Apache and other dependencies:
 
-        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev
+        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev libxml2-dev libxslt-dev
+
 
 2. Install git 
 
@@ -87,7 +88,12 @@ the path according to your installation of oracle.
 
 3. Pull down the project from github
 
+        (GW staff only)
         git clone git@github.com:gwu-libraries/launchpad.git
+
+        (everyone else)
+        git clone https://github.com/gwu-libraries/launchpad.git
+
 
 4. Create virtual Python environment for the project
 

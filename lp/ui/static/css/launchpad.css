@@ -1,6 +1,8 @@
-#libheader-container {
+/*#libheader-container {
     background-image: url(/static/img/bg-local-nav-bottom.png);
-}
+}*/
+
+.libheader-container {margin-top:35px;}
 
 body {
     font-family: Helvetica, Arial, sans-serif;
@@ -9,6 +11,25 @@ body {
 .library-has {
     color: gray;
     font-size: small;
+    overflow:hidden;
+}
+
+.item_list {
+	margin: 0px auto;
+	padding: 0px;
+	width: 383px;
+	height:311px;
+}
+.item_head {
+	padding: 5px 10px;
+	cursor: pointer;
+	position: relative;
+	background-color:#FFCCCC;
+	margin:1px;
+}
+.item_body {
+	padding: 5px 10px 15px;
+	background-color:#F4F4F8;
 }
 
 table {
@@ -29,12 +50,14 @@ td {
     border-bottom: 1px solid #e6e6e6;
     padding-top: .4em;
     padding-bottom: .4em;
+    MARGIN: 0px;
+    COLOR: #000000;
 }
 
 .library-group-header{
     padding-top: 1em;
     font-size: large;
-    font-family: Georgia, serif;
+    /*font-family: Georgia, serif;*/
     font-weight: normal;
     color: #444;
     line-height: 1.3em;
@@ -71,7 +94,62 @@ td {
 }
 
 .itemrow{
-    padding-left: 1em;
+    padding-left: 0em;
+}
+
+.linkresolverlist{
+    /*font-size: small;*/
+    color: gray;
+}
+
+.linkresolverdata{
+    /*float: right;*/
+}
+
+.linkresolverdates{
+    color: black;
+    font-size: medium;
+}
+
+.linkresolverresource{
+    padding-bottom: 0.5em;
+    clear:left;
+    min-height: 2em;
+}
+
+.linkresolverdbname{
+    font-size: small;
+}
+
+.marc856list{
+    /*font-size: small;*/
+    color: gray;
+}
+
+.marc856data{
+    /*float: right;*/
+}
+
+.marc856dates{
+    color: black;
+    font-size: medium;
+}
+
+.marc856resource{
+    padding-bottom: 0.5em;
+    clear:left;
+    min-height: 2em;
+}
+
+.marc856dbname{
+    font-size: small;
+}
+
+
+.smallbuttons{
+    font-size: medium;
+    float: left;
+    margin-right: 0.5em;*
 }
 
 #cover {
@@ -90,4 +168,13 @@ td {
 
 footer {
     margin-top: 3em;
+}
+
+#citation_data {
+    font-size: small;
+}
+
+#citation_data dt {
+    color: gray;
+    font-weight: normal;
 }
