@@ -440,3 +440,27 @@ class LiveWrlcTestCase(unittest.TestCase):
         oclcs = [oclc['norm'] for oclc in res['oclc']]
         for oclc in expected:
             self.assertTrue(oclc in oclcs)
+
+    def test_related_bibids_isbn(self):
+        stdnums = {
+            'isbn': [
+                {'disp': u'0814727255 (cloth : alk. paper)',
+                 'norm': u'0814727255'},
+                {'disp': u'0814727255 (cloth : alk. paper)',
+                 'norm': u'0814727255 CLOTH ALK PAPER'},
+                {'disp': u'0814727263 (pbk. : alk. paper)',
+                 'norm': u'0814727263'},
+                {'disp': u'0814727263 (pbk. : alk. paper)',
+                 'norm': u'0814727263 PBK ALK PAPER'},
+                {'disp': u'0814727255 (cloth : alk. paper)',
+                 'norm': u'9780814727256'},
+                {'disp': u'0814727263 (pbk. : alk. paper)',
+                 'norm': u'9780814727263'}],
+            'issn': [],
+            'oclc': [{'disp': u'(OCoLC)ocm51755964', 'norm': u'51755964'}]
+        }
+        res = wrlc.related_bibids(stdnums)
+        bibids = [b['bibid'] for b in res]
+        expected = [5720976, 4197727, 5719215, 6138933, 6264989, 8134867,
+            9690844, 12233682]
+        self.assertEqual(sorted(expected), sorted(bibids))

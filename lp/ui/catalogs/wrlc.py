@@ -184,33 +184,36 @@ FROM bib_index, library, bib_master
 WHERE bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'
-AND bib_index.index_code IN %s
+AND bib_index.index_code IN codesclause
+AND bib_index.normal_heading != 'OCOLC'
+AND UPPER(bib_index.display_heading) NOT LIKE %s
 AND bib_index.normal_heading IN (
     SELECT bib_index.normal_heading
     FROM bib_index
-    WHERE index_code IN %s
+    WHERE index_code IN codesclause
+    AND UPPER(bib_index.display_heading) NOT LIKE %s
     AND bib_id IN (
         SELECT DISTINCT bib_index.bib_id
         FROM bib_index
-        WHERE bib_index.index_code IN %s
-        AND bib_index.normal_heading IN %s
+        WHERE bib_index.index_code IN codesclause
+        AND bib_index.normal_heading IN numclause
+        AND UPPER(bib_index.display_heading) NOT LIKE %s
         )
     )
 ORDER BY bib_index.bib_id"""
         codes = settings.INDEX_CODES[numtype]
         nums = list(set([n['norm'] for n in stdnums[numtype]]))
-        query = query % (_in_clause(codes),
-                         _in_clause(codes),
-                         _in_clause(codes),
-                         _in_clause(nums))
-        results = _ask_oracle(query)
+        notlikeset = '%SET%'
+        query = query.replace('codesclause', _in_clause(codes))
+        query = query.replace('numclause', _in_clause(nums))
+        results = _ask_oracle(query, [notlikeset] * 3)
         if numtype == 'oclc':
             results = [ro for ro in results if _is_oclc(ro['disp'])]
         for row in results:
-            if not bibids or row['bibid'] != bibids[-1]['bibid']:
+            if not bibids or row['bibid'] not in [b['bibid'] for b in bibids]:
                 bibids.append({'bibid': row['bibid'],
                     'libcode': row['libcode']})
-        return bibids
+    return bibids
 
 
 def holdings(bibids):
