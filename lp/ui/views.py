@@ -6,9 +6,6 @@ from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
-from ui import voyager, apis, models
-from ui.catalogs import wrlc
-from ui.sort import libsort, availsort, elecsort, splitsort
 import bibjsontools
 
 from ui import voyager, apis
@@ -35,43 +32,6 @@ def _openurl_dict(request):
     d['query_string_encoded'] = request.META.get('QUERY_STRING', '')
     return d
 
-
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
-def item(request, bibid, expand=True):
-    bib = wrlc.bib(bibid)
-    if not bib:
-        return render(request, '404.html', {'num': bibid,
-            'num_type': 'BIB ID'}, status=404)
-    bib.openurl = _openurl_dict(request.GET)
-    if expand:
-        bib.related_stdnums = wrlc.related_stdnums(bib.bibid)
-        related_bibids = wrlc.related_bibids(bib.related_stdnums)
-        if related_bibids:
-            bib.related_bibids = [b['bibid'] for b in related_bibids]
-        #replace MARC with ours
-        if bib.libcode != settings.PREF_LIB:
-            if related_bibids is not None:
-                for b in related_bibids:
-                    if b['libcode'] == settings.PREF_LIB:
-                        bib.marc = str(wrlc.bibblob(b['bibid']))
-                        break
-    bib.holdings = wrlc.holdings(bib.bibids)
-    for holding in bib.holdings:
-        if holding.libcode in settings.Z3950_SERVERS:
-            continue
-            #TODO: add z39.50 item lookup 
-        else:
-            holding.items = wrlc.items(holding.mfhdid)
-    #TODO: add sorting
-    return render(request, 'item.html', {
-        'bibid': bibid,
-        'bib': bib,
-        'debug': settings.DEBUG,
-        'title_chars': settings.TITLE_CHARS,
-        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-        'link_resolver': settings.LINK_RESOLVER,
-        'enable_humans': settings.ENABLE_HUMANS,
-        })
 
 def citation_json(request):
     url = request.META.get('QUERY_STRING', '')

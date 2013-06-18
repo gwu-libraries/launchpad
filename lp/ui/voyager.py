@@ -341,7 +341,9 @@ ORDER BY library.library_name"""
     eligibility = False
     added_holdings = []
     for holding in holdings:
-        if holding['LIBRARY_NAME'] in settings.Z3950_SCHOOLS:
+        if (holding['LIBRARY_NAME'] == 'GM' or
+            holding['LIBRARY_NAME'] == 'GT' or
+            holding['LIBRARY_NAME'] == 'DA'):
             if holding['BIB_ID'] in done:
                 continue
             else:

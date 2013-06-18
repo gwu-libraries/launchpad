@@ -5,10 +5,6 @@ from django.conf import settings
 from django.db import connection
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc
-from ui.models import Bib, Holding, Item
-
-
-def bib(bibid, expand=True):
 from ui.records.recordset import RecordSet
 from ui.records.bib import Bib
 from ui.records.holding import Holding
@@ -66,10 +62,6 @@ WHERE bib_text.bib_id=%s
 AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
-<<<<<<< HEAD
-    data = _ask_oracle(query, params=[bibid, bibid], first=True)
-    raw_marc = str(data.pop('marcblob'))
-    bib = Bib(metadata=data, raw_marc=raw_marc)
     data = _ask_oracle(query, params=[bibid, bibid, bibid], first=True)
     if raw:
         return data
@@ -115,7 +107,6 @@ AND bib_master.library_id=library.library_id"""
     bibs = _ask_oracle(query)
     if bibs:
         for bib in bibs:
-            if bib['library_code'] == settings.PREF_LIB:
             if bib['library_code'] in settings.PREF_LIBCODES:
                 return bib['bibid']
         return bibs[0]['bibid']
@@ -206,7 +197,6 @@ AND bib_index.normal_heading IN (
     )
 ORDER BY bib_index.bib_id"""
         codes = settings.INDEX_CODES[numtype]
-        nums = set([n['norm'] for n in stdnums[numtype]])
         nums = list(set([n['norm'] for n in stdnums[numtype]]))
         query = query % (_in_clause(codes),
                          _in_clause(codes),
@@ -214,7 +204,6 @@ ORDER BY bib_index.bib_id"""
                          _in_clause(nums))
         results = _ask_oracle(query)
         if numtype == 'oclc':
-            results = [row for row in results if _is_oclc(row['disp'])]
             results = [ro for ro in results if _is_oclc(ro['disp'])]
         for row in results:
             if not bibids or row['bibid'] != bibids[-1]['bibid']:
@@ -233,14 +222,6 @@ SELECT bib_mfhd.bib_id AS bibid,
        mfhd_master.mfhd_id AS mfhdid,
        mfhd_master.location_id AS locid,
        mfhd_master.display_call_no AS callnum,
-       location.location_display_name AS loc,
-       library.library_name AS libcode,
-       mfhdblob_vw.marc_record AS marcblob
-FROM bib_mfhd INNER JOIN mfhd_master ON bib_mfhd.mfhd_id = mfhd_master.mfhd_id,
-     location,
-     library,
-     bib_master,
-     mfhdblob_vw
        location.location_display_name AS location,
        library.library_name AS libcode,
        mfhdblob_vw.marc_record AS marcblob
@@ -262,7 +243,6 @@ ORDER BY library.library_name"""
     holdings = []
     for record in results:
         marcblob = str(record.pop('marcblob'))
-        holdings.append(Holding(metadata=record, raw_marc=marcblob))
         marc = pymarc.record.Record(data=marcblob)
         holdings.append(Holding(metadata=record, marc=marc))
     return holdings
@@ -282,7 +262,6 @@ SELECT DISTINCT display_call_no AS callnum,
        item_status_date AS statusdate,
        bib_master.bib_id AS bibid,
        mfhd_item.mfhd_id AS mfhdid,
-       library.library_id AS libcode
        library.library_id AS libcode,
        mfhd_item.item_enum as enum,
        mfhd_item.chron as chron
@@ -307,8 +286,6 @@ ORDER BY itemid'''
         item = Item(metadata=record)
         items.append(item)
         # now deduplicate
-        # (sometimes when an item has a temploc change there are two items with
-        # different statuses. We'll use the most recent change)
         # (sometimes when an item has a temploc change there are two items
         # with different statuses. We'll use the most recent change)
         if items and item.itemid == items[-1].itemid:

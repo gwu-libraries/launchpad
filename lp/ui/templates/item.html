@@ -4,23 +4,18 @@
 
 
 {% block title %}
-    {% if bib.altscripts.title %}
-        {{ bib.altscripts.title }}
+    {% if bib.CJK_INFO.TITLE %}
+        {{ bib.CJK_INFO.TITLE }}
     {% else %}
-        {% if bib.title|length <= 254 %}
-            {{ bib.title }}
+        {% if bib.TITLE|length <= 254 %}
+            {{ bib.TITLE }}
         {% else %}
-            {{ bib.title|truncatewords:-1 }}
+            {{ bib.TITLE|truncatewords:-1 }}
         {% endif %}
     {% endif %}
 {% endblock title %}
 
 {% block link_extra %}
-<<<<<<< HEAD
-{% if bib.bibid %}
-    <link rel='canonical' href='{% url "item" bib.bibid %}' />
-    <link rel='alternate' type='application/json' href='{% url "item_json" bib.bibid %}' />
-=======
 {% if bibid %}
     {% if non_wrlc_item %}
         {%if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
@@ -35,7 +30,6 @@
     <link rel='canonical' href='{% url "item" bibid %}' />
     <link rel='alternate' type='application/json' href='{% url "item_json" bibid %}' />
     {% endif %}
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 {% endif %}
 {% endblock link_extra %}
 
@@ -113,44 +107,34 @@ $(document).ready(function() {
 
 {% block content %}
 
-<<<<<<< HEAD
-<div itemscope itemtype="{{bib.microdata_type}}">
-=======
 <article class="libsite-container container" >
 <div class="row-fluid">
     <div class="span12">
 <div itemscope itemtype="{{bib.MICRODATA_TYPE}}">
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 
 <table border='0' style='width:100%;'>
     <tr>
         <td>
-            {% if bib.isbn|clean_isbn %}
+            {% if bib.ISBN|clean_isbn %}
             <div id='cover'>
-                <img itemprop="image" id='cover-image' src='http://covers.openlibrary.org/b/isbn/{{ bib.isbn|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
+                <img itemprop="image" id='cover-image' src='http://covers.openlibrary.org/b/isbn/{{ bib.ISBN|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
             </div>
             {% endif %}
             <div id='description'>
                 <span id="titleinfo">
                 <h1 class="title" >
-                {% if bib.altscripts.title %}
-                    <span itemprop="name">{{ bib.altscripts.title }}</span> <br />
+                {% if bib.CJK_INFO.TITLE %}
+                    <span itemprop="name">{{ bib.CJK_INFO.TITLE }}</span> <br />
                 {% endif %}
-<<<<<<< HEAD
-                {%if bib.title|length <= title_chars%}
-                    <span itemprop="name">{{bib.title}}</span><br/>
-                {%else%}
-=======
                 {%if bib.TITLE_ALL|length <= title_chars or TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH <= title_leftover_chars%}
                     <span itemprop="name">{{bib.TITLE_ALL}}</span><br/>
                 {%endif%}
                 {%if bib.TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH and  bib.BRIEF_LENGTH > title_leftover_chars%}
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                     <div id="brief-1" style="display:block">
-                        {{bib.brief_title}}
+                        {{bib.TITLE_BRIEF}}
                     </div>
                     <div id="full-1" style="display:none">
-                        <span itemprop="name">{{bib.title}}</span>
+                        <span itemprop="name">{{bib.TITLE_ALL}}</span>
                     </div>
                     <div id="toggle-1"> 
                         <a href='javascript:showmore("1")';>[+] Show</a>
@@ -158,20 +142,13 @@ $(document).ready(function() {
                 {% endif %}
                 </h1>
                 </span>
-<<<<<<< HEAD
-                {% if bib.openurl.query_string %}
-                    {% include "openurl.html" %}
-                {% endif %}
-                {% if bib.author or bib.altscripts.author or bib.addedentries %}
-=======
                 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                     <span class="author">
-                    {% if bib.altscripts.author %}
-                        <span itemprop="author">{{ bib.altscripts.author }}</span> <br />
+                    {% if bib.CJK_INFO.AUTHOR %}
+                        <span itemprop="author">{{ bib.CJK_INFO.AUTHOR }}</span> <br />
                     {% endif %}
-                    {% if bib.authors %}
-                        {% for contributor in bib.authors %}
+                    {% if bib.AUTHORS %}
+                        {% for contributor in bib.AUTHORS %}
                             {% if forloop.first %}
                                 <span itemprop="author">{{contributor}}</span>
                             {% else %}
@@ -180,55 +157,48 @@ $(document).ready(function() {
                             {% if not forloop.last %}; {% endif %}
                         {% endfor %}
                     {% else %}
-                        {% if bib.author %}
-                            <span itemprop="author">{{ bib.author }}</span>
+                        {% if bib.AUTHOR %}
+                            <span itemprop="author">{{ bib.AUTHOR }}</span>
                         {% endif %}
                     {% endif %}
                     </span><br />
                 {% endif %}
 
-                {% if bib.edition %}
-                    <span class="edition">{{ bib.edition }}.</span>
+                {% if bib.EDITION %}
+                    <span class="edition">{{ bib.EDITION }}.</span>
                 {% endif %}
                 <span class="imprint">
-                    {% if bib.altscripts.publisher %}
-                        <span itemprop="publisher">{{ bib.altscripts.publisher }}</span>
-                        {% if bib.altscript.publisher and bib.altscripts.pubdate %}, {% endif %}
+                    {% if bib.CJK_INFO.IMPRINT %}
+                        <span itemprop="publisher">
+                        {{ bib.CJK_INFO.IMPRINT }}
+                        </span><br />
                     {% endif %}
-                    {% if bib.altscripts.pubdate %}
-                        <span itemprop="pubdate">{{ bib.altscripts.pubdate }}</span><br />
-                    {% endif %}
-                    {% if bib.publisher %}
-                        <span itemprop="publisher">{{ bib.publisher }}</span>
-                        {% if bib.publisher and bib.pubdate %}, {% endif %}
-                    {% endif %}
-                    {% if bib.pubdate %}
-                        <span itemprop="pubdate">{{ bib.pubdate }}</span>
+                    {% if bib.IMPRINT %}
+                        <span itemprop="publisher">
+                        {{ bib.IMPRINT }}
+                        </span>
+                        {% if bib.IMPRINT|slice:"-1:" == '.' or bib_IMPRINT|slice:"-2:" == '. ' %}
+                        {% else %}.
+                        {% endif %}
                     {% endif %}
                 </span>
 
-                {% if bib.language %}
-                    In <span itemprop="inLanguage" class="language">{{ bib.language }}.</span>
+                {% if bib.LANGUAGE_DISPLAY %}
+                    In <span itemprop="inLanguage" class="language">{{ bib.LANGUAGE_DISPLAY }}.</span>
                 {% endif %}
                 <br />
 
-                {% if bib.isbns %}
+                {% if bib.DISPLAY_ISBN_LIST %}
                     <span class="isbn-label">ISBN </span>
                     <span class="isbn">
-<<<<<<< HEAD
-                        {% for isbn in bib.isbns %}
-                            <span itemprop="isbn">{{ isbn }}</span>
-                            {% if not forloop.last %}, {% endif %}
-=======
                         {% for isbn in bib.DISPLAY_ISBN_LIST %}
                             <span itemprop="isbn">{{ isbn }}{% if not forloop.last %}, {% endif %}</span>
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                         {% endfor %}
                     </span><br />
                 {% endif %}
-                {% if bib.issns%}
+                {% if bib.DISPLAY_ISSN_LIST%}
                     <span class="isbn-label">ISSN </span>
-                    <span class="issn">{{ bib.issns|join:", " }}</span><br/>
+                    <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
                 {% endif %}
                 {% if bib.citation_json %}
                 <p>You are looking for
@@ -253,17 +223,6 @@ $(document).ready(function() {
                 {% endif %}
                 <p>
                     <span class="catlink" >
-<<<<<<< HEAD
-                    {% if bib.bibid %}
-                        View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.bibid }}' target='newwin'>Aladin Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                    {% endif %}
-                    </span>
-                    </p>
-                    {%if bib.illiad_link and bib.formatcode != 'as'%}
-                     <p>
-                     <span class = "catlink"> 
-                      Request this title through  <a href= {{bib.illiad_link}} target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
-=======
                     {% if bib.BIB_ID and show_aladin_link %}
                         View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>Aladin Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     {% endif %}
@@ -278,7 +237,6 @@ $(document).ready(function() {
                   <p>
                     <span class = "catlink">
                     Request this title through  <a href= "{{bib.ILLIAD_LINK}}" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                     </span></p>
 
                    {%endif%}
@@ -291,15 +249,9 @@ $(document).ready(function() {
 </div>
 
 
-<<<<<<< HEAD
-{% if bib.holdings %}
-    {% regroup bib.holdings by library as library_list %}
-<table WIDTH='100%'> 
-=======
 {% if holdings %}
     {% regroup holdings by LIBRARY_FULL_NAME as library_list %}
 <table WIDTH='100%' > 
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
     <thead>
         <tr>
             <th width='40%'>Location</th>
@@ -318,51 +270,6 @@ $(document).ready(function() {
         </tr>
         {% endif %}
         {% for holding in library.list %}
-<<<<<<< HEAD
-            {% if holding.items %}
-                {% for item in holding.items %}
-            <tr >
-                <td>
-                    <div class="itemrow">
-                    {% if item.loc %}
-                        {{ item.loc|noscream }}
-                        <br />
-                    {% else %}
-                        {{ item.loc|noscream }}
-                    {% endif %}
-                    {% if holding.textual and forloop.first_ %}
-                        {% for line in holding.textual %}
-                            <br />
-                            <span class="library-has">{{ line }}</span>
-                        {% endfor %}
-                    {% endif %}
-                    {% if holding.pubnote and forloop.first %}
-                        <br />
-                        <span class="note">{{ holding.pubnote }}</span>
-                    {% endif %}
-                    {#{% if holding.LIBRARY_HAS %}#}
-                        {#{% for line in holding.LIBRARY_HAS %}#}
-                            <!--<br />
-                            <span class="library-has">{{ line }}</span>-->
-                        {#{% endfor %}#}
-                    {#{% endif %}#}
-                    </div>
-                </td>
-                <td>
-                    {{ holding.callnum }} {{ item.enum }}
-                </td>
-                <td>
-                    {% if holding.links %}
-                        {% for link in holding.links %}
-                            {% if link.material %}
-                                <span class="link-volumes">[{{ link.material }}]</span>
-                            {% endif %}
-                            {% if holding.libcode != 'GW' and holding.library != 'WRLC' %}
-                                <a href="{{link.url}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                                <br />
-                                <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
-                                {{holding.library}} only
-=======
             {% if holding.ITEMS %}
                 {% for item in holding.ITEMS %}
                     {%if holding.MFHD_DATA.marc866list or holding.MFHD_DATA.marc852%}
@@ -373,7 +280,6 @@ $(document).ready(function() {
                             {% if item.TEMPLOCATION %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                             {% else %}
                                 {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                                 <br />
@@ -384,41 +290,14 @@ $(document).ready(function() {
                                     <br />
                                 {% endfor %}
                             {% endif %}
-<<<<<<< HEAD
-                            {% if not forloop.last %}<hr />{% endif %}
-                        {% endfor %}
-                    {% else %}
-                        {%if item.status = 'Not Charged'%}
-                            <span style='color: green'>Available</span>
-                            <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if holding.callnum %}call={{ holding.callnum|urlencode }}{% endif %}&amp;{% if item.loc %}loc={{ item.loc|noscream|urlencode }}{% endif %}&amp;title={{ bib.title|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
-                        {%else%}
-                            {% if item.temploc == 'WRLC Center'%}
-                                <span class='off-site'>Off-site </span>
-                                <br />
-                                <span class='off-site-explanation'>(Available by request)</span>
-                            {% else %}
-                                {{ item.status }}
-=======
                             {% if holding.MFHD_DATA.marc852 %}
                                 <span class="note-label" >{{holding.MFHD_DATA.marc852}}</span>
                                 <br />
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                             {% endif %}
                         </div>
                         </td>
                         </tr>
                         {%endif%}
-<<<<<<< HEAD
-                    {% endif %}
-                </td>
-                <td>
-                    {% if item.eligible %}
-                        <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.bibid }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                    {% endif %}
-                </td>
-            </tr>
-                {% endfor %}
-=======
                     {%endif%}
                     <tr>
                     <td>
@@ -528,21 +407,20 @@ $(document).ready(function() {
                                </td>
                            {%endif%}
                        {% endfor %}
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
             <!--  If no item data use old template -->
-            {% elif "Click" not in holding.loc %}
+            {% elif "Click" not in holding.TRIMMED_LOCATION_DISPLAY_NAME %}
                 <tr>
                     <td>
                         <div class="itemrow">
-                        {% if holding.loc %}
-                            {{ holding.loc|noscream }}
+                        {% if holding.AVAILABILITY.TEMPLOCATION %}
+                            {{ holding.AVAILABILITY.TEMPLOCATION|noscream }}
                             <br />
                             <span class='temp-loc-label'>Temporarily held</span>
                         {% else %}
-                            {{ holding.loc|noscream }}
+                            {{ holding.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                         {% endif %}
-                        {% if holding.textual %}
-                            {% for line in holding.textual %}
+                        {% if holding.LIBRARY_HAS %}
+                            {% for line in holding.LIBRARY_HAS %}
                                 <br />
                                 <span class="library-has">{{ line }}</span>
                             {% endfor %}
@@ -555,33 +433,11 @@ $(document).ready(function() {
                         </div>
                     </td>
                     <td>
-                        {% if holding.callnum %}
-                            {{ holding.callnum|noscream }}
+                        {% if holding.DISPLAY_CALL_NO %}
+                            {{ holding.DISPLAY_CALL_NO|noscream }}
                         {% endif %}
                     </td>
                     <td>
-<<<<<<< HEAD
-                        {% if holding.links %}
-                            {% for link in holding.links %}
-                                {% if link.material %}
-                                    <span class="link-volumes">[{{ link.material }}]</span>
-                                {% endif %}
-                                {% if holding.libcode != 'GW' and holding.library != 'WRLC' %}
-                                    <a href="{{link.url}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                                    <br />
-                                    <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img>
-                                    {{holding.library}} only
-                                {% else %}
-                                    <a href="{{link.url}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                                {% endif %}
-                            {% endfor %}
-                        {% elif not holding.items and holding.loc == 'WRLC Center' %}
-                            <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
-                        {% elif holding.status == 'Not Charged' %}
-                            <span style='color: green'>Available</span>
-                        {% elif holding.temploc == 'WRLC Center'%}
-                            <span class='off-site'>Off-site </span><br /><span class='off-site-explanation'>(Available by request)</span>
-=======
                         {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U  %}
                             {% if holding.ELECTRONIC_DATA.LINK8563 %}
                                 <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
@@ -632,14 +488,13 @@ $(document).ready(function() {
 
                         {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
                             <span class='off-site'>Off-site </span>
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                         {% else %}
-                            {{ holding.status }}
+                            {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
                         {% endif %}
                     </td>
                     <td>
-                        {% if holding.eligible %}
-                            <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.bibid }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                        {% if holding.ELIGIBLE %}
+                            <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                         {% endif %}
                     </td>
                 </tr>
@@ -661,7 +516,7 @@ $(document).ready(function() {
             -->
         {% endfor %}
     {% endfor %}
-    {%if bib.formatcode == 'as'%}
+    {%if bib.BIB_FORMAT == 'as'%}
          <tr>
              <td class='library-group-header'>
               InterLibrary Loan
@@ -675,15 +530,7 @@ $(document).ready(function() {
                </td>
                <td>                   </td>
                <td> 
-<<<<<<< HEAD
-                {%if bib.openurl.query_string%}  
-<a href= {{bib.illiad_link|add:bib.openurl.query_string|escape }} target='newwin'> Request </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>    
-                {%else%}
-<a href= {{bib.illiad_link }} target='newwin'> Request </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
-               {%endif%}
-=======
 <a href= "{{bib.ILLIAD_LINK }}" target='newwin'> Request a copy from another library </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                 </td>
                <td> </td>
            </tr>
@@ -696,11 +543,6 @@ $(document).ready(function() {
 <h3>Debugging info</h3>
 
 <p>
-<<<<<<< HEAD
-{% if bib.bibid %}
-View JSON: <a href='{% url "item_json" bib.bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bib.bibid %}</a>
-&nbsp;
-=======
 {% if bibid %}
     {% if non_wrlc_item %}
         {%if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
@@ -716,31 +558,26 @@ View JSON: <a href='{% url "item_json" bib.bibid %}?{{ bib.openurl.query_string|
         View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
         &nbsp;
     {%endif%}
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 {% endif %}
 
-{% if bib.isbn|clean_isbn %}
-ISBN: <a href='{% url "isbn" bib.isbn|clean_isbn %}'>{% url "isbn" bib.isbn|clean_isbn %}</a>
+{% if bib.ISBN|clean_isbn %}
+ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a>
 &nbsp;
     {% if link_resolver.base_url and link_resolver.name %}
-<<<<<<< HEAD
-    (<a href='{{ link_resolver.base_url }}?isbn={{ bib.isbn|clean_isbn }}&{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
-=======
     (<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}&amp;{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 &nbsp;
     {% endif %}
 {% endif %}
-{% if bib.issn|clean_issn %}
-ISSN: <a href='{% url "issn" bib.issn|clean_issn %}?{{ bib.openurl.query_string|escape }}'>{% url "issn" bib.issn|clean_issn %}</a>
+{% if bib.ISSN|clean_issn %}
+ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}?{{ bib.openurl.query_string|escape }}'>{% url "issn" bib.ISSN|clean_issn %}</a>
 &nbsp;
     {% if link_resolver.base_url and link_resolver.name %}
-    (<a href='{{ link_resolver.base_url }}?issn={{ bib.issn|clean_issn }}&amp;{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
+    (<a href='{{ link_resolver.base_url }}?issn={{ bib.ISSN|clean_issn }}&amp;{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
 &nbsp;
     {% endif %}
 {% endif %}
-{% if bib.oclc|clean_oclc %}
-OCLC: <a href='{% url "oclc" bib.oclc|clean_oclc %}?{{ bib.openurl.query_string|escape }}'>{% url "oclc" bib.oclc|clean_oclc %}</a>
+{% if bib.NETWORK_NUMBER|clean_oclc %}
+OCLC: <a href='{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}?{{ bib.openurl.query_string|escape }}'>{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}</a>
 &nbsp;
 {% endif %}
 </p>
