@@ -416,3 +416,27 @@ class LiveWrlcTestCase(unittest.TestCase):
         self.assertEqual(bibid, 5844028)
         bibid = wrlc.bibid('2490943', 'gmbibid')
         self.assertEqual(bibid, 10983248)
+
+    def test_related_stdnums_isbn(self):
+        res = wrlc.related_stdnums('5720976')
+        expected = ["0814727255", "9780814727256", "0814727263",
+            "0814727255 CLOTH ALK PAPER", "0814727263 PBK ALK PAPER",
+            "9780814727263"]
+        isbns = [isbn['norm'] for isbn in res['isbn']]
+        for isbn in expected:
+            self.assertTrue(isbn in isbns)
+
+    def test_related_stdnums_issn(self):
+        res = wrlc.related_stdnums('2221482')
+        print res
+        expected = ['0038 5557', '0202 1870']
+        issns = [issn['norm'] for issn in res['issn']]
+        for issn in expected:
+            self.assertTrue(issn in issns)
+
+    def test_related_stdnums_oclc(self):
+        res = wrlc.related_stdnums('62580')
+        expected = ['2005', '00002005']
+        oclcs = [oclc['norm'] for oclc in res['oclc']]
+        for oclc in expected:
+            self.assertTrue(oclc in oclcs)
