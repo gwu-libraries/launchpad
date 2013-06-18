@@ -1,10 +1,8 @@
-<<<<<<< HEAD
 import pycountry
 
 from django.conf import settings
 
 import pymarc
-=======
 from copy import deepcopy
 from itertools import chain
 import json
@@ -14,12 +12,10 @@ import pymarc
 from django.conf import settings
 from ui import utils
 from ui.datasources.linkresolvers import linkresolvers
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 
 
 class Bib(object):
 
-<<<<<<< HEAD
     def __init__(self, metadata={}, raw_marc='', holdings=[]):
 
         super(Bib, self).__setattr__('metadata', {})
@@ -222,7 +218,6 @@ class Bib(object):
             return self.libcode
 
     def get_altscripts(self, as_list=True):
-=======
     META_TEMPLATE_BIB = {
         'bibid': '',
         'title': '',
@@ -328,16 +323,12 @@ class Bib(object):
         return list(chain.from_iterable(h.items for h in self.holdings))
 
     def altmeta(self):
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
         alts = {}
         if self.marc:
             fields = self.marc.get_fields('880')
             for field in fields:
-<<<<<<< HEAD
-=======
                 if field['6'] is None:
                     continue
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                 reltag = field['6'][:3]
                 if reltag == '245':
                     alts['title'] = ' '.join(field.get_subfields('a', 'b'))
@@ -352,7 +343,6 @@ class Bib(object):
                     if not alts.get('addedentries', []):
                         alts['addedentries'] = []
                     alts['addedentries'].append(field['a'])
-<<<<<<< HEAD
         if not as_list:
             return [alts[key] for key in alts]
         return alts
@@ -450,7 +440,6 @@ class Holding(object):
             links = []
             for field in self.marc.get_fields('856'):
                 # each subfield is repeatable, but unlikely, so using 1st hit
-=======
         return alts
 
     def bibid(self):
@@ -740,12 +729,10 @@ class Holding(object):
         links = []
         if self.marc:
             for field in self.marc.get_fields('856'):
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
                 link = {'url': field['u'],
                         'note': field['z'],
                         'material': field['3']}
                 links.append(link)
-<<<<<<< HEAD
             return links
         except:
             return []
@@ -763,7 +750,6 @@ class Holding(object):
             return settings.LIB_LOOKUP[self.libcode]
         except:
             return self.libcode
-=======
         return links
 
     def textual(self):
@@ -840,12 +826,10 @@ class Holding(object):
         if self._fulltext is None:
             self._fulltext = self._getfulltext()
         return self._fulltext
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 
 
 class Item(object):
 
-<<<<<<< HEAD
     def __init__(self, metadata={}):
 
         super(Item, self).__setattr__('metadata', {})
@@ -897,7 +881,6 @@ class Item(object):
 
     def get_loc(self):
         loc = self.temploc if self.temploc else self.permloc
-=======
     META_TEMPLATE_ITEM = {
         'itemid': '',
         'mfhdid': '',
@@ -977,12 +960,10 @@ class Item(object):
 
     def location(self):
         loc = self.temploc() if self.temploc() else self.permloc()
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
         if loc and loc[2] == ':':
             loc = loc[3:].strip()
         return loc
 
-<<<<<<< HEAD
     def get_eligible(self):
         if self.metadata.get('eligible', None):
             return self.metadata['metadata']
@@ -1001,7 +982,7 @@ class Item(object):
             if status == self.status[:len(status)]:
                 return False
         return True
-=======
+    
     def libcode(self):
         return self.metadata['libcode']
 
@@ -1240,4 +1221,3 @@ class RecordSet(object):
             else:
                 theirs.append(bib)
         self.bibs = ours + shared + theirs + bottom
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
