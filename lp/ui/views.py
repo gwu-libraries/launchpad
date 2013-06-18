@@ -6,17 +6,14 @@ from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
-<<<<<<< HEAD
 from ui import voyager, apis, models
 from ui.catalogs import wrlc
 from ui.sort import libsort, availsort, elecsort, splitsort
-=======
 import bibjsontools
 
 from ui import voyager, apis
 from ui.sort import libsort, availsort, elecsort, templocsort, \
     splitsort, enumsort, callnumsort, strip_bad_holdings, holdsort
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 
 
 def home(request):
@@ -39,7 +36,6 @@ def _openurl_dict(request):
     return d
 
 
-<<<<<<< HEAD
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid, expand=True):
     bib = wrlc.bib(bibid)
@@ -76,11 +72,10 @@ def item(request, bibid, expand=True):
         'link_resolver': settings.LINK_RESOLVER,
         'enable_humans': settings.ENABLE_HUMANS,
         })
-=======
+
 def citation_json(request):
     url = request.META.get('QUERY_STRING', '')
     return bibjsontools.from_openurl(url) if url else None
->>>>>>> 187ad145b6e26ad7db9c3347a5903f2ec61d2c57
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
