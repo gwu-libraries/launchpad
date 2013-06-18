@@ -1,0 +1,18 @@
+language: python
+python:
+  - "2.6"
+env:
+  - DJANGO_VERSION=1.4
+#Command to install dependencies
+install: "pip install -r requirements.txt"
+#Command to run tests
+script:
+  - python manage.py test
+branches:
+  only:
+    - master
+    - refactor
+# Email notifications
+notifications:
+    email:
+      - darshan@email.gwu.edu
