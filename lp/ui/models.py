@@ -6,7 +6,7 @@ import pymarc
 
 from django.conf import settings
 from ui import utils
-from ui.datasources.linkresolvers import linkresolvers
+from ui import linkresolvers
 
 
 class Bib(object):
