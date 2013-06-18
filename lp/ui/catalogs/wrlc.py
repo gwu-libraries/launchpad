@@ -5,10 +5,7 @@ from django.conf import settings
 from django.db import connection
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_oclc
-from ui.records.recordset import RecordSet
-from ui.records.bib import Bib
-from ui.records.holding import Holding
-from ui.records.item import Item
+from ui.models import RecordSet, Bib, Holding, Item
 
 
 def build_record_set(num, num_type='bibid', openurl='', expand=True):
@@ -87,9 +84,10 @@ def bibid(num, num_type):
     assert isinstance(num_type, str), 'num_type must be a string'
     assert num_type in ('gtbibid', 'gmbibid', 'isbn', 'issn', 'oclc'), \
         'num_type must be one of (gtbibid, gmbibid, isbn, issn, oclc)'
-    num = _normalize_num(num, num_type)
+    if num_type in ('isbn', 'issn', 'oclc'):
+        num = _normalize_num(num, num_type)
     query = """
-SELECT bib_index.bib_id AS  bibid,
+SELECT bib_index.bib_id AS bibid,
        library.library_name AS library_code
 FROM bib_index, bib_master, library
 WHERE bib_index.index_code IN %s
@@ -98,9 +96,12 @@ AND bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id"""
     if num_type == 'gtbibid':
         index_codes = "('907A')"
+        num = num.upper()
+        query += "\nAND bib_master.library_id IN ('14', '15')"
     elif num_type == 'gmbibid':
         index_codes = "('035A')"
         query += "\nAND bib_index.normal_heading=bib_index.display_heading"
+        query += "\nAND bib_master.library_id = '6'"
     else:
         index_codes = _in_clause(settings.INDEX_CODES[num_type])
     query = query % (index_codes, num)

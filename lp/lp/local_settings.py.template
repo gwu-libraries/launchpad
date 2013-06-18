@@ -16,6 +16,7 @@ if 'test' in sys.argv:
             'NAME': 'test',
         }
     }
+
 else:
     DATABASES = {
         'default': {
@@ -33,6 +34,7 @@ TEMPLATE_DIRS = (
     os.path.join(os.path.dirname(__file__), 'templates'),
 )
 
+TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), '../../test-data')
 
 LIB_LOOKUP = {
     'AL': 'Washington Law (American)',
@@ -192,3 +194,4 @@ SER_SOL_API_URL = 'http://uz4ug4lz9g.openurl.xml.serialssolutions.com/openurlxml
 SER_SOL_API_MAX_ATTEMPTS = 3
 
 SER_SOL_DBID_TEXT = 'TN5'
+

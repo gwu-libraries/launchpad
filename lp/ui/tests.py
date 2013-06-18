@@ -1,5 +1,6 @@
-import datetime
+import os
 import pymarc
+import unittest
 
 from django.conf import settings
 from django.test import TestCase
@@ -7,7 +8,7 @@ from django.utils.unittest import skipIf
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_lccn
 from ui.models import Item, Holding, Bib, RecordSet
-from ui.datasources.linkresolvers.linkresolvers import get_resolver
+from ui.catalogs import wrlc
 
 
 class CleanIsbnTest(TestCase):
@@ -124,7 +125,9 @@ class HoldingModelTestCase(TestCase):
             'location': 'GW: Online',
             'callnum': 'GW: Electronic Journal'}
         self.hold = Holding(metadata=self.metadata, items=[Item(), Item()])
-        self.marcstring = '''00449cx  a22000974  4500001000800000004000800008005001700016008003300033852013100066856015400197\x1e8475265\x1e2262190\x1e20130121191709.0\x1e0805154u    8   1001uu   0901128\x1e8 \x1fbgwg ej\x1fhGW: Electronic Journal\x1fzOff-campus access restricted to current George Washington University members - Login required.\x1e4 \x1fuhttp://sfx.wrlc.org/gw/OpenURL?sid=sfx:e_collection&issn=0001-0782&pid=serviceType=getFullTxt\x1fzClick here to access available issues of this journal.\x1e\x1d'''
+        hold_file = open(os.path.join(settings.TEST_DATA_DIR,
+            'holding1.mrc'), 'r')
+        self.marcstring = hold_file.read()
         self.marc = pymarc.record.Record(data=self.marcstring)
 
     def tearDown(self):
@@ -190,13 +193,16 @@ class BibModelTestCase(TestCase):
             'issn': '0001-0782',
             'issns': ['0001-0782'],
             'oclc': '(OCoLC)ocm01514517'}
-
-        self.marc1 = '''01683cas a2200433 a 4500001000800000005001700008006001900025007001500044008004100059010003100100035002300131040018500154016002000339019001200359022001400371030001100385032001700396050001600413060001800429082001800447049000900465210001600474222003000490245003100520246006200551246003300613260006200646300002500708310001200733362003200745530004100777650002800818710004100846770007400887776008500961780009601046850009501142994001201237\x1e2262190\x1e20130121191705.0\x1em        d        \x1ecr cn ---aaaaa\x1e750806c19599999nyumr p       0   a0eng d\x1e  \x1fa   61065941 \x1fzsc 76000456 \x1e  \x1fa(OCoLC)ocm01514517\x1e  \x1faMUL\x1fcMUL\x1fdNSD\x1fdDLC\x1fdNSD\x1fdOCL\x1fdDLC\x1fdNST\x1fdDLC\x1fdRCS\x1fdNST\x1fdDLC\x1fdAIP\x1fdDLC\x1fdAIP\x1fdNSD\x1fdAIP\x1fdNST\x1fdNSD\x1fdNST\x1fdNSD\x1fdNST\x1fdDLC\x1fdGUA\x1fdIUL\x1fdMYG\x1fdOCL\x1fdSYS\x1fdLYU\x1fdOCLCQ\x1fdWAU\x1fdNSD\x1fdCDS\x1fdLVB\x1fdCUS\x1fdDGW\x1e7 \x1faC32640000\x1f2DNLM\x1e  \x1fa2446101\x1e0 \x1fa0001-0782\x1e  \x1faCACMA2\x1e  \x1fa126160\x1fbUSPS\x1e00\x1faQA76\x1fb.A772\x1e0 \x1faZ 699.A1 C734\x1e0 \x1fa001.64/05\x1f219\x1e  \x1faDGWW\x1e0 \x1faCommun. ACM\x1e 0\x1faCommunications of the ACM\x1e00\x1faCommunications of the ACM.\x1e3 \x1faCommunications of the Association for Computing Machinery\x1e30\x1faCommunications of the A.C.M.\x1e  \x1fa[New York] :\x1fbAssociation for Computing Machinery,\x1fc1959-\x1e  \x1fav. :\x1fbill. ;\x1fc28 cm.\x1e  \x1faMonthly\x1e0 \x1faVol. 2, no. 11 (Nov. 1959)-\x1e  \x1faAlso available in an online version.\x1e 0\x1faComputers\x1fvPeriodicals.\x1e2 \x1faAssociation for Computing Machinery.\x1e0 \x1ftACMemberNet\x1fgJuly 1990-\x1fx1059-1192\x1fw(DLC)   96643236\x1fw(OCoLC)23369844\x1e1 \x1ftCommunications of the ACM (Online)\x1fx1557-7317\x1fw(DLC)sn 99034011\x1fw(OCoLC)38436103\x1e00\x1ftCommunications of the Association for Computing Machinery\x1fw(DLC)sf 84001031\x1fw(OCoLC)2103367\x1e  \x1faAzTeS\x1faCCC\x1faCaBVa\x1faCaOTM\x1faDLC\x1faFU\x1faGU\x1faICL\x1faINS\x1faInU\x1faMH-SD\x1faMMeT\x1faMWelC\x1faMoKU\x1faNSyU\x1faPPiD\x1e  \x1faC0\x1fbDGW\x1e\x1d'''
+        self.marc1 = file(os.path.join(settings.TEST_DATA_DIR, 'bib1.mrc'),
+            'r').read()
 
         self.marc2 = '''02314cam a2200517K  4500001000800000005001700008008004100025035002300066035001200089040002500101035002000126090001300146049000900159100006700168245006100235260004700296300001800343500030000361530014000661500007700801650004100878650004500919651005200964880006001016880004201076880006701118880003001185994001201215948003301227948003201260948003201292948003201324948003301356948003201389948003301421948003201454948003201486948003201518948003201550948003201582948003301614948003301647998003301680996003601713998004701749\x1e7590110\x1e20121003163637.0\x1e870707m19329999ua            000 0 ara d\x1e  \x1fa(OCoLC)ocm16137999\x1e  \x1fa7590110\x1e  \x1faWAU\x1fcWAU\x1fdOCLCG\x1fdDGW\x1e  \x1fa(OCoLC)16137999\x1e  \x1faD20\x1fb.I2\x1e  \x1faDGWW\x1e1 \x1f6880-01\x1faIbn Kathi\xcc\x84r, Isma\xcc\x84\xca\xbbi\xcc\x84l ibn \xca\xbbUmar,\x1fdca. 1301-1373.\x1e13\x1f6880-02\x1faal-Bida\xcc\x84yah wa-al-niha\xcc\x84yah fi\xcc\x84 al-ta\xcc\x84ri\xcc\x84kh.\x1e  \x1fa[Cairo]\x1fbMat\xcc\xa3ba\xca\xbbat al-Sa\xca\xbba\xcc\x84dah,\x1fc1932-\x1e  \x1fa14 v.\x1fc29 cm.\x1e  \x1faThis book is from the rare book collection originally held in the George Camp Keiser Library of the Middle East Institute (MEI), Washington DC. This collection, acquired in 2008 by the Gelman Library of The George Washington University, now forms part of the Special Collections Research Center.\x1e  \x1faAlso available online via GWU Cultural Imaginings Digitization Project (funded by the Institute for Museum and Library Services (IMLS))\x1e  \x1faNote in blue ink on t.p. of each v. except v. 8: Baghdad purchase  1954.\x1e 0\x1faIslam\x1fxHistory\x1fvEarly works to 1800.\x1e 0\x1faCaliphate\x1fxHistory\x1fvEarly works to 1800.\x1e 0\x1faDamascus (Syria)\x1fxHistory\x1fvEarly works to 1800.\x1e1 \x1f6100-01/r\x1fa\xd8\xa7\xd8\xa8\xd9\x86 \xd9\x83\xd8\xab\xd9\x8a\xd8\xb1\xd8\x8c \xd8\xa5\xd8\xb3\xd9\x85\xd8\xa7\xd8\xb9\xd9\x8a\xd9\x84 \xd8\xa8\xd9\x86 \xd8\xb9\xd9\x85\xd8\xb1.\x1e10\x1f6240-00/r\x1fa\xd8\xa8\xd8\xaf\xd8\xa7\xd9\x8a\xd8\xa9 \xd9\x88\xd8\xa7\xd9\x84\xd9\x86\xd9\x87\xd8\xa7\xd9\x8a\xd8\xa9\x1e12\x1f6245-02/r\x1fa\xd8\xa7\xd9\x84\xd8\xa8\xd8\xaf\xd8\xa7\xd9\x8a\xd8\xa9 \xd9\x88\xd8\xa7\xd9\x84\xd9\x86\xd9\x87\xd8\xa7\xd9\x8a\xd8\xa9 \xd9\x81\xd9\x8a \xd8\xa7\xd9\x84\xd8\xaa\xd8\xa7\xd8\xb1\xd9\x8a\xd8\xae.\x1e  \x1f6250-00/r\x1fa\xd8\xa7\xd9\x84\xd8\xb7\xd8\xa8\xd8\xb9\xd8\xa9 1.\x1e  \x1faC0\x1fbDGW\x1e  \x1faKirtas\x1fp32882019306656\x1ftv.13\x1e  \x1faKirtas\x1fp32882019307472\x1ftv.5\x1e  \x1faKirtas\x1fp32882019307456\x1ftv.3\x1e  \x1faKirtas\x1fp32882019307480\x1ftv.6\x1e  \x1faKirtas\x1fp32882019307498\x1ftv.10\x1e  \x1faKirtas\x1fp32882019307464\x1ftv.4\x1e  \x1faKirtas\x1fp32882019307621\x1ftv.12\x1e  \x1faKirtas\x1fp32882019307654\x1ftv.8\x1e  \x1faKirtas\x1fp32882019307662\x1ftv.7\x1e  \x1faKirtas\x1fp32882019306680\x1ftv.1\x1e  \x1faKirtas\x1fp32882019307639\x1ftv.9\x1e  \x1faKirtas\x1fp32882019070658\x1ftv.2\x1e  \x1faKirtas\x1fp32882019306649\x1ftv.14\x1e  \x1faKirtas\x1fp32882019307670\x1ftv.11\x1e  \x1fcKirtas ; gwjshieh 2010-03-17\x1e  \x1faAdd copy, elec ver ; 2012-06-20\x1e  \x1fcdSpace AWK url added ; gwjshieh 2012-06-20\x1e\x1d'''
-        h1 = '''00449cx  a22000974  4500001000800000004000800008005001700016008003300033852013100066856015400197\x1e8475265\x1e2262190\x1e20130121191709.0\x1e0805154u    8   1001uu   0901128\x1e8 \x1fbgwg ej\x1fhGW: Electronic Journal\x1fzOff-campus access restricted to current George Washington University members - Login required.\x1e4 \x1fuhttp://sfx.wrlc.org/gw/OpenURL?sid=sfx:e_collection&issn=0001-0782&pid=serviceType=getFullTxt\x1fzClick here to access available issues of this journal.\x1e\x1d'''
-        h2 = '''00453cy  a22000973  4500001000800000004000800008005001700016008003300033852013900066856015000205\x1e3355691\x1e2927175\x1e20121017100132.0\x1e9807134p    8   2   bbeng       \x1e8 \x1fbmrym ej\x1fhMU Electronic journal\x1fzRemote access restricted to Marymount University authorized users.\x1fxbds. Print subscription cancelled.\x1e41\x1fuhttp://gx4bz5eq8d.search.serialssolutions.com/?V=1.0&N=250&L=GX4BZ5EQ8D&S=I_M&C=0001-0782\x1fzCLICK HERE TO ACCESS AVAILABLE ISSUES OF THIS JOURNAL.\x1e\x1d'''
-        h3 = '''00431ny  a2200097m  4500001000900000004000800009005001700017008003300034852014300067856012300210\x1e10314549\x1e8973648\x1e20110819180206.0\x1e1108190u||||8|||0001uu|||0000000\x1e  \x1fbdcvn ssej\x1fhDC: Electronic Journal\x1fzOff-campus access restricted to current University of the District of Columbia members - Login required\x1e40\x1fzClick here for full text\x1fuhttp://NC3YX2EP8C.search.serialssolutions.com/?V=1.0&L=NC3YX2EP8C&S=JCs&C=COMMOFTHEAC&T=marc\x1e\x1d'''
+        h1 = file(os.path.join(settings.TEST_DATA_DIR, 'holding1.mrc'),
+            'r').read()
+        h2 = file(os.path.join(settings.TEST_DATA_DIR, 'holding2.mrc'),
+            'r').read()
+        h3 = file(os.path.join(settings.TEST_DATA_DIR, 'holding3.mrc'),
+            'r').read()
         holds = [h1, h2, h3]
         holdings = [Holding(marc=pymarc.record.Record(data=h),
             items=[Item(), Item()]) for h in holds]
@@ -296,10 +302,14 @@ class RecordSetTestCase(TestCase):
             'pubplace': u'[New York] :',
             'pubyear': u'1959-',
             'title': u'Communications of the ACM.'}
-        bib1marc = '''02457cas a2200601 a 4500001000700000005001700007008004100024010003100065035002300096040021100119012002100330016002000351016001800371016001800389019001200407022003900419030001100458032001700469035003500486042001400521050001600535060001800551082001800569049000900587210001600596222003000612245003100642246006200673246003300735260006200768300002500830310001200855362003200867530004400899530002400943650002800967650003200995650002801027710004101055770007401096776008501170776006501255776006501320780009601385850009501481856005201576891004701628891004101675891003801716891005101754891003801805994001201843\x1e402190\x1e20120821142139.0\x1e750806c19599999nyumr p       0   a0eng c\x1e  \x1fa   61065941 \x1fzsc 76000456 \x1e  \x1fa(OCoLC)ocm01514517\x1e  \x1faMUL\x1fcMUL\x1fdNSD\x1fdDLC\x1fdNSD\x1fdOCL\x1fdDLC\x1fdNST\x1fdDLC\x1fdRCS\x1fdNST\x1fdDLC\x1fdAIP\x1fdDLC\x1fdAIP\x1fdNSD\x1fdAIP\x1fdNST\x1fdNSD\x1fdNST\x1fdNSD\x1fdNST\x1fdDLC\x1fdGUA\x1fdIUL\x1fdMYG\x1fdOCL\x1fdSYS\x1fdLYU\x1fdOCLCQ\x1fdWAU\x1fdNSD\x1fdCDS\x1fdLVB\x1fdCUS\x1fdCIT\x1fdOCLCQ\x1fdUKMGB\x1fdTUU\x1fdTULIB\x1e  \x1fa3\x1fb3\x1fen\x1fj2\x1fk1\x1fm1\x1e7 \x1faC32640000\x1f2DNLM\x1e7 \x1fa012401138\x1f2Uk\x1e7 \x1fa011234768\x1f2Uk\x1e  \x1fa2446101\x1e0 \x1fa0001-0782\x1fl0001-0782\x1fz0588-8069\x1f21\x1e  \x1faCACMA2\x1e  \x1fa126160\x1fbUSPS\x1e  \x1fa(OCoLC)1514517\x1fz(OCoLC)2446101\x1e  \x1fansdp\x1fapcc\x1e00\x1faQA76\x1fb.A772\x1e0 \x1faZ 699.A1 C734\x1e04\x1fa001.64/05\x1f219\x1e  \x1faEAUU\x1e0 \x1faCommun. ACM\x1e 0\x1faCommunications of the ACM\x1e00\x1faCommunications of the ACM.\x1e3 \x1faCommunications of the Association for Computing Machinery\x1e30\x1faCommunications of the A.C.M.\x1e  \x1fa[New York] :\x1fbAssociation for Computing Machinery,\x1fc1959-\x1e  \x1fav. :\x1fbill. ;\x1fc28 cm.\x1e  \x1faMonthly\x1e0 \x1faVol. 2, no. 11 (Nov. 1959)-\x1e  \x1faAlso issued in microformats and online.\x1e  \x1faAlso issued online.\x1e 0\x1faComputers\x1fvPeriodicals.\x1e 6\x1faOrdinateurs\x1fvPe\xcc\x81riodiques.\x1e 4\x1faComputers\x1fxPeriodicals.\x1e2 \x1faAssociation for Computing Machinery.\x1e0 \x1ftACMemberNet\x1fgJuly 1990-\x1fx1059-1192\x1fw(DLC)   96643236\x1fw(OCoLC)23369844\x1e1 \x1ftCommunications of the ACM (Online)\x1fx1557-7317\x1fw(DLC)sn 99034011\x1fw(OCoLC)38436103\x1e08\x1fiOnline version:\x1ftCommunications of the ACM\x1fw(OCoLC)564464960\x1e08\x1fiOnline version:\x1ftCommunications of the ACM\x1fw(OCoLC)605189967\x1e00\x1ftCommunications of the Association for Computing Machinery\x1fw(DLC)sf 84001031\x1fw(OCoLC)2103367\x1e  \x1faAzTeS\x1faCCC\x1faCaBVa\x1faCaOTM\x1faDLC\x1faFU\x1faGU\x1faICL\x1faINS\x1faInU\x1faMH-SD\x1faMMeT\x1faMWelC\x1faMoKU\x1faNSyU\x1faPPiD\x1e41\x1fxhttp://www.acm.org/pubs/contents/journals/cacm/\x1e30\x1f9853\x1f81\x1fav.\x1fbno.\x1fu12\x1fvr\x1fi(year)\x1fj(month)\x1fwm\x1e40\x1f9863\x1f81.1\x1fa<1>-\x1fi<1958>-\x1fxprovisional\x1e41\x1f9863\x1f81.2\x1fa<43>\x1fb<1>\x1fi<2000>\x1fj<01>\x1e20\x1f9853\x1f82\x1fav.\x1fbno.\x1fu12\x1fvr\x1fi(year)\x1fj(month)\x1fwm\x1fx01\x1e41\x1f9863\x1f82.1\x1fa<48>\x1fb<1>\x1fi<2005>\x1fj<01>\x1e  \x1faC0\x1fbEAU\x1e\x1d'''
-        bib1h1marc = '''00432cx  a22001093  4500001000800000004000700008005001700015008003300032852010000065856013600165866002100301\x1e4800665\x1e402190\x1e20120821142139.0\x1e0101264u    8   1001uu   0901128\x1e8 \x1fbauin\x1fhAU Electronic journals\x1fzRemote access restricted to American University authorized users.\x1e4 \x1fuhttp://vg5ly4ql7e.search.serialssolutions.com/?V=1.0&N=250&L=VG5LY4QL7E&S=I_M&C=0001-0782\x1fzClick here to access the journal online.\x1e31\x1f80\x1fav.27 (1984) -\x1e\x1d'''
-        bib1h2marc = '''00313cy  a22001213  4500001000800000004000700008005001700015008003300032014001500065014001400080852007800094866001900172\x1e8782951\x1e402190\x1e20090519073317.0\x1e0905194p    8   |000||eng1000000\x1e1 \x1faBHA8925001\x1e0 \x1fa003641501\x1e 1\x1fbwrlc stnc\x1fzHeld at WRLC Center; available for delivery (Library use only)\x1e31\x1f80\x1fav.2 (1959)-\x1e\x1d'''
-        bib1h3marc = ''''00262cx  a22000854  4500001000800000004000700008005001700015008003300032852011100065\x1e8782952\x1e402190\x1e20090519073334.0\x1e0905194u    8   1001uu   0901128\x1e 1\x1fbaup\x1fzRecent issues in current periodicals stacks, older issues available via Consortium Loan Service (CLS)\x1e\x1d'''
+        bib1marc = file(os.path.join(settings.TEST_DATA_DIR, 'bib1.mrc'),
+            'r').read()
+        bib1h1marc = file(os.path.join(settings.TEST_DATA_DIR, 'holding4.mrc'),
+            'r').read()
+        bib1h2marc = file(os.path.join(settings.TEST_DATA_DIR, 'holding5.mrc'),
+            'r').read()
+        bib1h3marc = file(os.path.join(settings.TEST_DATA_DIR, 'holding6.mrc'),
+            'r').read()
         bib1 = Bib(
             metadata=bib1meta,
             marc=pymarc.record.Record(data=bib1marc),
@@ -372,3 +382,37 @@ class RecordSetTestCase(TestCase):
 
     def testissns(self):
         self.assertEqual(self.rset.issns(), ['0001-0782'])
+
+
+@skipIf(settings.DATABASES['default']['ENGINE'] != \
+    'django.db.backends.oracle', 'These tests intended for live DB only')
+class LiveWrlcTestCase(unittest.TestCase):
+    #These tests are intended for WRLC's live Voyager database
+
+    def test_bibid_isbn(self):
+        bibid = wrlc.bibid('9780195188271', 'isbn')
+        self.assertEqual(bibid, 6492855)
+        bibid = wrlc.bibid('0195188357', 'isbn')
+        self.assertEqual(bibid, 6492855)
+
+    def test_bibid_issn(self):
+        bibid = wrlc.bibid('0001 0782', 'issn')
+        self.assertEqual(bibid, 2262190)
+
+    def test_bibid_oclc(self):
+        bibid = wrlc.bibid('57414805', 'oclc')
+        self.assertEqual(bibid, 6492855)
+        bibid = wrlc.bibid('01514517', 'oclc')
+        self.assertEqual(bibid, 2262190)
+
+    def test_bibid_gtbibid(self):
+        bibid = wrlc.bibid('b1255201x', 'gtbibid')
+        self.assertEqual(bibid, 4454725)
+        bibid = wrlc.bibid('b31321483', 'gtbibid')
+        self.assertEqual(bibid, 6935858)
+
+    def test_bibid_gmbibid(self):
+        bibid = wrlc.bibid('1184329', 'gmbibid')
+        self.assertEqual(bibid, 5844028)
+        bibid = wrlc.bibid('2490943', 'gmbibid')
+        self.assertEqual(bibid, 10983248)
