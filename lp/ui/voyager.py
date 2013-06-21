@@ -11,6 +11,7 @@ from django.db import connection
 from django.utils.encoding import smart_str, DjangoUnicodeDecodeError
 
 from ui import apis
+from ui import z3950
 from ui.templatetags.launchpad_extras import cjk_info
 from ui.templatetags.launchpad_extras import clean_isbn
 from ui.templatetags.launchpad_extras import clean_lccn
@@ -352,15 +353,15 @@ ORDER BY library.library_name"""
                                         holding['LIBRARY_NAME'], 'bib',
                                         '', bib_data, translate_bib)
             if len(result) > 0:
-                if (len(result[0]['items']) == 0 and
-                    len(result[0]['mfhd']['marc856list']) == 0 and
-                    len(result[0]['mfhd']['marc866list']) == 0 and
-                    result[0]['mfhd']['marc852'] == ''):
+                if (len(result[1]['items']) == 0 and
+                    len(result[1]['mfhd']['marc856list']) == 0 and
+                    len(result[1]['mfhd']['marc866list']) == 0 and
+                    result[1]['mfhd']['marc852'] == ''):
                     continue
-                holding.update({'MFHD_DATA': result[0]['mfhd'],
-                                'ITEMS': result[0]['items'],
-                                'ELECTRONIC_DATA': result[0]['electronic'],
-                                'AVAILABILITY': result[0]['availability']})
+                holding.update({'MFHD_DATA': result[1]['mfhd'],
+                                'ITEMS': result[1]['items'],
+                                'ELECTRONIC_DATA': result[1]['electronic'],
+                                'AVAILABILITY': result[1]['availability']})
             if len(result) > 1 and holding['LIBRARY_NAME'] == 'GM':
                 for item in get_additional_holdings(result, holding):
                     added_holdings.append(item)
@@ -774,9 +775,9 @@ def get_z3950_bib_data(bibid, lib):
 
 
 def _get_z3950_connection(server):
-    conn = zoom.Connection(server['SERVER_ADDRESS'], server['SERVER_PORT'])
-    conn.databaseName = server['DATABASE_NAME']
-    conn.preferredRecordSyntax = server['PREFERRED_RECORD_SYNTAX']
+    conn = zoom.Connection(server['IP'], server['PORT'])
+    conn.databaseName = server['DB']
+    conn.preferredRecordSyntax = server['SYNTAX']
     return conn
 
 
@@ -902,28 +903,23 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
         translate_bib=True):
     holding_found = False
     conn = None
+    zoomrecord = None
     if school == 'GM':
-        results = []
-        availability = {}
-        electronic = {}
-        internet_items = []
+        results = lines = res = dataset = []
+        availability = electronic = arow = {}
         item_status = 0
         values = status = location = callno = url = msg = note = ''
         alt_callno = None
-        arow = {}
-        lines = []
-        res = []
-        dataset = []
         if translate_bib:
             bib = get_gmbib_from_gwbib(id)
         else:
             bib = id
         try:
-            conn = _get_z3950_connection(settings.Z3950_SERVERS['GM'])
+            conn = z3950.Z3950Catalog(settings.Z3950[school]['IP'], settings.Z3950[school]['PORT'], settings.Z3950[school]['DB'], settings.Z3950[school]['SYNTAX'])
         except:
-            availability = get_z3950_availability_data(bib, 'GM', '', '', '',
+            availability = get_z3950_availability_data(bib, school, '', '', '',
                 item_status, False)
-            electronic = get_z3950_electronic_data('GM', '', '', note, False)
+            electronic = get_z3950_electronic_data(school, '', '', note, False)
             arow = {'STATUS': status, 'LOCATION': location,
                 'CALLNO': callno, 'LINK': url, 'MESSAGE': msg, 'NOTE': note}
             results.append(arow)
@@ -946,8 +942,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
             if not translate_bib:
                 correctbib = bib
             try:
-                query = zoom.Query('PQF', '@attr 1=12 %s' %
-                    correctbib.encode('utf-8'))
+                zoomrecord = conn.zoom_record(correctbib)
             except:
                 availability = get_z3950_availability_data(bib, 'GM', '', '',
                     '', item_status, False)
@@ -965,83 +960,20 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
                             'marc856list': res[1], 'marc852': ''},
                         'items': res[2]})
                 return dataset
-            res = conn.search(query)
-            for r in res:
-                values = str(r)
-                lines = values.split('\n')
-                for line in lines:
-                    if alt_callno is None:
-                        alt_callno = get_callno(line)
-                    ind = line.find('852')
-                    if ind != -1:
-                        ind = line.find('$u')
-                        if ind != -1:
-                            note = line[ind + 2]
-                    ind = line.find('publicNote')
-                    if ind != -1:
-                        ind = line.find(':')
-                        note = line[ind + 2:].strip("""\\x00.'""")
-                    ind = line.find('availableNow')
-                    if ind != -1:
-                        ind = line.find(':')
-                        status = line[ind + 2:]
-                        if status == 'True':
-                            status = 'Not Charged'
-                            item_status = 1
-                        elif status == 'False':
-                            status = 'Charged'
-                            item_status = 0
-                    ind = line.find('callNumber')
-                    if ind != -1:
-                        ind = line.find(':')
-                        ind1 = line.find('\\')
-                        callno = line[ind + 3:ind1]
-                    ind = line.find('localLocation')
-                    if ind != -1:
-                        ind = line.find('Electronic Subscription')
-                        ind1 = line.find('Online')
-                        if ind == -1 and ind1 == -1:
-                            holding_found = True
-                        else:
-                            holding_found = False
-                            continue
-                        ind = line.find(':')
-                        ind1 = line.find('\\')
-                        location = 'GM: ' + line[ind + 3:ind1].strip(' -.')
-                        #ind = location.find('Electronic Subscription')
-                        #if ind == -1:
-                            #holding_found = True
-                    if holding_found:
-                        arow = {'STATUS': status, 'LOCATION': location,
-                            'CALLNO': callno, 'LINK': url, 'MESSAGE': msg,
-                            'NOTE': note}
-                        results.append(arow)
-                    holding_found = False
-                found = False
-                i = 0
-                for line in lines:
-                    if '856 40$' in line:
-                        found = True
-                        break
-                    else:
-                        i = i + 1
-                if found:
-                    linkdata = get_gm_link(lines, lines[i])
-                    #if len(linkdata['internet_items'])> 0:
-                    for item in linkdata['internet_items']:
-                        arow = {'STATUS': item['STATUS'],
-                            'LOCATION': item['LOCATION'],
-                            'CALLNO': '', 'LINK': '', 'MESSAGE': '',
-                            'NOTE': ''}
-                        internet_items.append(arow)
-                    arow = {'STATUS': '', 'LOCATION': '', 'CALLNO': '',
-                        'LINK': linkdata['url'], 'MESSAGE': linkdata['msg'],
-                        'NOTE': ''}
-                    internet_items.append(arow)
-            conn.close()
-            availability = get_z3950_availability_data(bib, 'GM', location,
+            hold = conn.get_holding(bibid=correctbib,zoom_record=zoomrecord)
+            for h in hold:
+                status = h['status']
+                url = h['url']
+                location = h['location']
+                callno = h['callnum']
+                item_status = h['item_status']
+                arow = {'STATUS': h['status'], 'LOCATION': h['location'],
+                        'CALLNO': h['callNumber'], 'LINK': h['url'], 'MESSAGE': msg,
+                        'NOTE': note}
+                results.append(arow)
+            availability = get_z3950_availability_data(bib, school, location,
                 status, callno, item_status)
-            electronic = get_z3950_electronic_data('GM', url, msg, note)
+            electronic = get_z3950_electronic_data(school, url, msg, note)
             res = get_z3950_mfhd_data(id, school, results, [], bib_data)
             if len(res) > 0:
                 dataset.append({'availability': availability,
@@ -1049,15 +981,6 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
                     'mfhd': {'marc866list': res[0],
                         'marc856list': res[1],
                         'marc852': res[3]},
-                    'items': res[2]})
-            if len(internet_items) > 0:
-                res = get_z3950_mfhd_data(id, school, internet_items, [],
-                        bib_data)
-                dataset.append({'availability': availability,
-                    'electronic': electronic,
-                    'mfhd': {'marc866list': res[0],
-                        'marc856list': res[1],
-                        'marc852': ''},
                     'items': res[2]})
             return dataset
         else:
@@ -1091,7 +1014,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
                     'marc852': ''},
                     'items': items})
             return dataset
-    elif school == 'GT' or school == 'DA':
+    '''elif school == 'GT' or school == 'DA':
         res = []
         if id_type == 'bib':
             if translate_bib:
@@ -1122,7 +1045,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
         elif id_type == 'oclc':
             query = zoom.Query('PQF', '@attr 1=1007 %s' % id)
         return _get_gt_holdings(id, query, query_type, bib, school,
-                bib_data)
+                bib_data)'''
 
 
 def get_gmbib_from_gwbib(bibid):
@@ -1385,7 +1308,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
             val = {'3': '', 'z': link['MESSAGE'], 'u': link['LINK']}
             m856list.append(val)
             continue
-            for item in internet_items:
+            for item in links:
                 val = {'ITEM_ENUM': None,
                    'ELIGIBLE': '',
                    'ITEM_STATUS': 0,
