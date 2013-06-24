@@ -54,4 +54,5 @@ class Z3950Catalog():
             if marc['856']:
                 holdmeta['url'] = marc['856']['u'] 
             holdings.append(holdmeta)
+        print holdings
         return holdings
