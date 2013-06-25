@@ -35,6 +35,7 @@ class Z3950Catalog():
             holdmeta['callNumber'] = ''
             holdmeta['status'] = ''
             holdmeta['url'] = ''
+            holdmeta['msg'] = ''
             if hasattr(rec[1], 'callNumber'):
                 holdmeta['callnum'] = rec[1].callNumber.rstrip('\x00')
             else:
@@ -53,5 +54,6 @@ class Z3950Catalog():
             marc = pymarc.record.Record(zoom_record.data.bibliographicRecord.encoding[1])
             if marc['856']:
                 holdmeta['url'] = marc['856']['u'] 
+                holdmeta['msg'] = marc['856']['z']
             holdings.append(holdmeta)
         return holdings

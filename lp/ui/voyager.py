@@ -87,7 +87,7 @@ def get_bib_data(bibid, expand_ids=True, exclude_names=False):
     query = """
 SELECT bib_text.bib_id, lccn,
        edition, isbn, issn, network_number AS OCLC,
-       pub_place, imprint, bib_format,
+       pub_place, imPrint, bib_format,
        language, library_name, publisher_date,
        RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','u',1)) AS LINK,
        RTRIM(wrlcdb.GetMarcField(%s,0,0,'856','','z',1)) AS MESSAGE,
@@ -353,15 +353,15 @@ ORDER BY library.library_name"""
                                         holding['LIBRARY_NAME'], 'bib',
                                         '', bib_data, translate_bib)
             if len(result) > 0:
-                if (len(result[1]['items']) == 0 and
-                    len(result[1]['mfhd']['marc856list']) == 0 and
-                    len(result[1]['mfhd']['marc866list']) == 0 and
-                    result[1]['mfhd']['marc852'] == ''):
+                if (len(result[0]['items']) == 0 and
+                    len(result[0]['mfhd']['marc856list']) == 0 and
+                    len(result[0]['mfhd']['marc866list']) == 0 and
+                    result[0]['mfhd']['marc852'] == ''):
                     continue
-                holding.update({'MFHD_DATA': result[1]['mfhd'],
-                                'ITEMS': result[1]['items'],
-                                'ELECTRONIC_DATA': result[1]['electronic'],
-                                'AVAILABILITY': result[1]['availability']})
+                holding.update({'MFHD_DATA': result[0]['mfhd'],
+                                'ITEMS': result[0]['items'],
+                                'ELECTRONIC_DATA': result[0]['electronic'],
+                                'AVAILABILITY': result[0]['availability']})
             if len(result) > 1 and holding['LIBRARY_NAME'] == 'GM':
                 for item in get_additional_holdings(result, holding):
                     added_holdings.append(item)
@@ -907,7 +907,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
     results = lines = res = dataset = []
     availability = electronic = arow = {}
     item_status = 0
-    values = status = location = callno = url = msg = note = ''
+    correctbib = values = status = location = callno = url = msg = note = ''
     alt_callno = None
     if translate_bib:
         bib = get_nongwbib_from_gwbib(id, school)
@@ -929,22 +929,18 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
                     'marc856list': res[1], 'marc852': ''},
                 'items': res[2]})
         return dataset
-    if bib and isinstance(bib, list):
-        correctbib = get_correct_gm_bib(bib)
-        if not translate_bib:
-            correctbib = bib
     try:
         if school in ['GT', 'DA'] and isinstance(bib, list):
             zoomrecord = conn.zoom_record(bib[0])
-            print get_z3950_holding_data(zoomrecord, conn, bib[0], school, bib_data)
             return get_z3950_holding_data(zoomrecord, conn, bib[0], school, bib_data)
         elif school in ['GT', 'DA'] and not isinstance(bib, list):
             zoomrecord = conn.zoom_record(str(id))
-            print get_z3950_holding_data(zoomrecord, conn, bib[0], school, bib_data)
             return get_z3950_holding_data(zoomrecord, conn, str(id), school, bib_data)
         elif school == 'GM' and isinstance(bib, list):
+            correctbib = get_correct_gm_bib(bib)
+            if not translate_bib:
+                correctbib = bib
             zoomrecord = conn.zoom_record(correctbib)
-            print get_z3950_holding_data(zoomrecord, conn, bib[0], school, bib_data)
             return get_z3950_holding_data(zoomrecord, conn, correctbib, school, bib_data)
     except:
         availability = get_z3950_availability_data(bib, 'GM', '', '',
@@ -1333,7 +1329,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
     for link in links:
         if link['STATUS'] == 'MISSING':
             link['STATUS'] = 'Missing'
-        if link['LINK']:
+        '''if link['LINK']:
             val = {'3': '', 'z': link['MESSAGE'], 'u': link['LINK']}
             m856list.append(val)
             continue
@@ -1350,7 +1346,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
                    'TRIMMED_LOCATION_DISPLAY_NAME': '',
                    'DISPLAY_CALL_NO': item['CALLNO'],
                    'CHRON': None}
-            items.append(val)
+            items.append(val)'''
         if links:
             if (link['STATUS'] not in ['Charged', 'Not Charged', 'Missing',
                 'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and
