@@ -914,7 +914,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
     else:
         bib = id
     try:
-        conn = z3950.Z3950Catalog(settings.Z3950[school]['IP'], settings.Z3950[school]['PORT'], settings.Z3950[school]['DB'], settings.Z3950[school]['SYNTAX'])
+        conn = z3950.Z3950Catalog(settings.Z3950_SERVERS[school]['IP'], settings.Z3950_SERVERS[school]['PORT'], settings.Z3950_SERVERS[school]['DB'], settings.Z3950_SERVERS[school]['SYNTAX'])
     except:
         availability = get_z3950_availability_data(bib, school, '', '', '',
             item_status, False)
@@ -936,13 +936,16 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
     try:
         if school in ['GT', 'DA'] and isinstance(bib, list):
             zoomrecord = conn.zoom_record(bib[0])
-            return get_z3950_holding_data(zoomrecord)
+            print get_z3950_holding_data(zoomrecord, conn, bib[0], school, bib_data)
+            return get_z3950_holding_data(zoomrecord, conn, bib[0], school, bib_data)
         elif school in ['GT', 'DA'] and not isinstance(bib, list):
             zoomrecord = conn.zoom_record(str(id))
-            return get_z3950_holding_data(zoomrecord)
+            print get_z3950_holding_data(zoomrecord, conn, bib[0], school, bib_data)
+            return get_z3950_holding_data(zoomrecord, conn, str(id), school, bib_data)
         elif school == 'GM' and isinstance(bib, list):
             zoomrecord = conn.zoom_record(correctbib)
-            return get_z3950_holding_data(zoomrecord)
+            print get_z3950_holding_data(zoomrecord, conn, bib[0], school, bib_data)
+            return get_z3950_holding_data(zoomrecord, conn, correctbib, school, bib_data)
     except:
         availability = get_z3950_availability_data(bib, 'GM', '', '',
             '', item_status, False)
@@ -1027,7 +1030,7 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
 
 def get_correct_gm_bib(bib_list):
     correctbib = ''
-    for bibid in bib:
+    for bibid in bib_list:
         ind = bibid.find(' ')
         if ind != -1:
             continue
@@ -1036,9 +1039,13 @@ def get_correct_gm_bib(bib_list):
     return correctbib
 
 
-def get_z3950_holding_data(zoomrecord):
+def get_z3950_holding_data(zoomrecord, conn, correctbib, school, bib_data):
     hold = conn.get_holding(bibid=correctbib,zoom_record=zoomrecord)
+    results = []
+    dataset = []
     for h in hold:
+        msg = ''
+        note = ''
         status = h['status']
         url = h['url']
         location = h['location']
@@ -1048,10 +1055,10 @@ def get_z3950_holding_data(zoomrecord):
                 'CALLNO': h['callNumber'], 'LINK': h['url'], 'MESSAGE': msg,
                 'NOTE': note}
         results.append(arow)
-    availability = get_z3950_availability_data(bib, school, location,
+    availability = get_z3950_availability_data(correctbib, school, location,
         status, callno, item_status)
     electronic = get_z3950_electronic_data(school, url, msg, note)
-    res = get_z3950_mfhd_data(id, school, results, [], bib_data)
+    res = get_z3950_mfhd_data(correctbib, school, results, [], bib_data)
     if len(res) > 0:
         dataset.append({'availability': availability,
             'electronic': electronic,
