@@ -63,10 +63,10 @@ LIB_LOOKUP = {
 
 Z3950_SERVERS = {
     'LIBRARY_ID': {
-        'SERVER_ADDRESS': '',
-        'SERVER_PORT': '',
-        'DATABASE_NAME': '',
-        'PREFERRED_RECORD_SYNTAX': '',
+        'IP': '',
+        'PORT': '',
+        'DB': '',
+        'SYNTAX': '',
     }
 }
 
