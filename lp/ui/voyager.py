@@ -1,6 +1,7 @@
 import copy
 import re
 import urllib
+import traceback
 
 import pycountry
 from PyZ3950 import zoom
@@ -1036,20 +1037,20 @@ def get_correct_gm_bib(bib_list):
 
 
 def get_z3950_holding_data(zoomrecord, conn, correctbib, school, bib_data):
-    hold = conn.get_holding(bibid=correctbib,zoom_record=zoomrecord)
+    hold = conn.get_holding(bibid=correctbib,zoom_record=zoomrecord, school=school)
     results = []
     dataset = []
     for h in hold:
-        msg = ''
-        note = ''
+        msg = h['msg']
+        note = h['note']
         status = h['status']
         url = h['url']
         location = h['location']
         callno = h['callnum']
         item_status = h['item_status']
         arow = {'STATUS': h['status'], 'LOCATION': h['location'],
-                'CALLNO': h['callNumber'], 'LINK': h['url'], 'MESSAGE': msg,
-                'NOTE': note}
+                'CALLNO': h['callnum'], 'LINK': h['url'], 'MESSAGE': h['msg'],
+                'NOTE': h['note']}
         results.append(arow)
     availability = get_z3950_availability_data(correctbib, school, location,
         status, callno, item_status)
@@ -1349,7 +1350,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
             items.append(val)'''
         if links:
             if (link['STATUS'] not in ['Charged', 'Not Charged', 'Missing',
-                'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and
+                'LIB USE ONLY'] and link['STATUS']!= 'DUE' and
                 'INTERNET' not in link['LOCATION'] and
                 'Online' not in link['LOCATION'] and link['STATUS'] != ''):
                 m866list.append(link['STATUS'])

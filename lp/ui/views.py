@@ -1,3 +1,5 @@
+import traceback
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.utils import DatabaseError
@@ -229,6 +231,7 @@ def unicode_data(bib_data):
             bib_encoded[k] = unicode_data(v)
         elif isinstance(v, list):
             rows = []
+            row = None
             for item in v:
                 if isinstance(item, dict):
                     row = unicode_data(item)
