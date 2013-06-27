@@ -29,11 +29,11 @@ class Z3950Catalog():
         if bibid and not zoom_record:
             zoom_record = self.zoom_record(bibid)
         holdings = []
+        holdmeta = {}
         if hasattr(zoom_record.data, 'holdingsData'):
             for rec in zoom_record.data.holdingsData:
-                holdmeta = {}
                 holdmeta['item_status'] = 0
-                holdmeta['callNumber'] = ''
+                holdmeta['callnum'] = ''
                 holdmeta['status'] = ''
                 holdmeta['url'] = ''
                 holdmeta['note'] = ''
@@ -49,10 +49,10 @@ class Z3950Catalog():
                     holdmeta['note'] = rec[1].publicNote.rstrip('\x00')
                 if hasattr(rec[1], 'circulationData'):
                     holdmeta['status'] = rec[1].circulationData[0].availableNow
-                if holdmeta['status'] == 'True' or holdmeta['status'] == ' AVAILABLE': 
+                if holdmeta['status'] == True or holdmeta['status'] == ' AVAILABLE': 
                     holdmeta['status'] = 'Not Charged'
                     holdmeta['item_status'] = 1
-                elif holdmeta['status'] == 'False' or holdmeta['status'] == ' DUE':
+                elif holdmeta['status'] == False or holdmeta['status'] == ' DUE':
                     holdmeta['status'] = 'Charged'
                     holdmeta['item_status'] = 0
                 marc = pymarc.record.Record(zoom_record.data.bibliographicRecord.encoding[1])
@@ -61,5 +61,19 @@ class Z3950Catalog():
                     holdmeta['msg'] = marc['856']['z']
                 holdings.append(holdmeta)
             return holdings
-        else:
-            return [{'item_status':0, 'location':'', 'callnum':'', 'status':'', 'url':'','note':'', 'msg':''}]
+        if hasattr(zoom_record, 'data'):
+            marc = pymarc.record.Record(zoom_record.data)
+            if marc['856']:
+                holdmeta['url'] = marc['856']['u'] 
+                holdmeta['msg'] = marc['856']['z']
+                holdmeta['callnum'] = ''
+                holdmeta['status'] = ''
+                holdmeta['note'] = ''
+                holdmeta['item_status'] = 0
+                holdmeta['location'] = ''
+                holdings.append(holdmeta)
+                return holdings
+            else:
+                return [{'item_status':0, 'location':'', 'callnum':'', 'status':'', 'url':'','note':'', 'msg':''}]
+
+        return [{'item_status':0, 'location':'', 'callnum':'', 'status':'', 'url':'','note':'', 'msg':''}]

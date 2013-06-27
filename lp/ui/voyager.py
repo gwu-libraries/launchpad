@@ -1040,6 +1040,8 @@ def get_z3950_holding_data(zoomrecord, conn, correctbib, school, bib_data):
     hold = conn.get_holding(bibid=correctbib,zoom_record=zoomrecord, school=school)
     results = []
     dataset = []
+    msg = note = status = location = url = callno = ''
+    item_status = 0
     for h in hold:
         msg = h['msg']
         note = h['note']
@@ -1330,7 +1332,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
     for link in links:
         if link['STATUS'] == 'MISSING':
             link['STATUS'] = 'Missing'
-        '''if link['LINK']:
+        if link['LINK']:
             val = {'3': '', 'z': link['MESSAGE'], 'u': link['LINK']}
             m856list.append(val)
             continue
@@ -1347,7 +1349,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
                    'TRIMMED_LOCATION_DISPLAY_NAME': '',
                    'DISPLAY_CALL_NO': item['CALLNO'],
                    'CHRON': None}
-            items.append(val)'''
+            items.append(val)
         if links:
             if (link['STATUS'] not in ['Charged', 'Not Charged', 'Missing',
                 'LIB USE ONLY'] and link['STATUS']!= 'DUE' and
