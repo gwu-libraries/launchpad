@@ -30,7 +30,7 @@ class Z3950Catalog():
             zoom_record = self.zoom_record(bibid)
         holdings = []
         holdmeta = {}
-        if hasattr(zoom_record.data, 'holdingsData'):
+        if hasattr(zoom_record, 'data') and hasattr(zoom_record.data, 'holdingsData'):
             for rec in zoom_record.data.holdingsData:
                 holdmeta['item_status'] = 0
                 holdmeta['callnum'] = ''

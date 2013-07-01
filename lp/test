@@ -1,0 +1,565 @@
+------------------------------------------------------
+('holdingsAndCirc', Struct: PyZ3950.asn1.HoldingsAndCircData [
+'circulationData' [Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.30:no.1-5 (1987)'
+'itemId' '1714039'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.30:no.6-12 (1987)'
+'itemId' '1714042'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.31:no.1-6 (1988)'
+'itemId' '1714046'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.31:no.7-12 (1988)'
+'itemId' '1714049'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.32:no.1-6 (1989)'
+'itemId' '1714052'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.32:no.7-12 (1989)'
+'itemId' '1714055'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.33:no.1-6 (1990)'
+'itemId' '1714058'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.33:no.7-12 (1990)'
+'itemId' '1714061'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.34:no.1-6 (1991)'
+'itemId' '1714064'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.34:no.7-12 (1991)'
+'itemId' '1714066'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.35:no.1-6 (1992)'
+'itemId' '1714071'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.35:no.7-12 (1992)'
+'itemId' '1714077'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.36:no.1-6 (1993)'
+'itemId' '1714092'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.36:no.7-12 (1993)'
+'itemId' '1714094'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.37:no.1-6 (1994)'
+'itemId' '1714096'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.37:no.8-12 (1994)'
+'itemId' '1714101'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.38:no.1-6 (1995)'
+'itemId' '1714107'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.38:no.7-12 (1995)'
+'itemId' '1714110'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.39:no.2-5,7-12 (1996)'
+'itemId' '1714124'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.40:no.1-6 (1997)'
+'itemId' '1714126'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.40:no.7-12 (1997)'
+'itemId' '1714127'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.41:no.1-6 and Suppl. (1998)'
+'itemId' '1714130'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.41:no.7-12 (1998)'
+'itemId' '1714131'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.42:no.1-6 and Suppl. (1999)'
+'itemId' '1714132'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.42:no.7-12 and Suppl. (1999)'
+'itemId' '1714133'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.43:no.1-6 (2000)'
+'itemId' '1714326'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.43:no.7-12 (2000)'
+'itemId' '1714329'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.44:no.1-6 (2001)'
+'itemId' '1714339'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.44:no.7-12 (2001)'
+'itemId' '1714340'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.45:no.1-6 (2002)'
+'itemId' '1714341'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.45:no.7-12 (2002)'
+'itemId' '1714342'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.46:no.1-6 (2003)'
+'itemId' '1714343'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.46:no.7-12 (2003)'
+'itemId' '1714344'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.47:no.1-6 (2004)'
+'itemId' '1714345'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.47:no.7-12 (2004)'
+'itemId' '1714346'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.48:no.1-6 (2005)'
+'itemId' '1714348'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.48:no.7-12 (2005)'
+'itemId' '1714349'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.49:no.1-6 (2006)'
+'itemId' '1714353'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.49:no.7-12 (2006)'
+'itemId' '1714355'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.50:no.1-6 (2007)'
+'itemId' '1714358'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.50:no.7-12 (2007)'
+'itemId' '1714361'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.51:no.1-6 (2008)'
+'itemId' '1714364'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.51:no.7-12 (2008)'
+'itemId' '1714367'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.52:no.1-6 (2009)'
+'itemId' '1714370'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+, Struct: PyZ3950.asn1.CircRecord [
+'availableNow' False
+'availablityDate' '2382-12-31 23:59:00'
+'enumAndChron' 'v.52:no.7-12 (2009)'
+'itemId' '1714373'
+'onHold' False
+'renewable' False
+'temporaryLocation' 'WRLC Center - Library Use Only']
+]
+'completeness' ' '
+'dateOfReport' '      '
+'encodingLevel' '1'
+'generalRetention' ' '
+'localLocation' '.Fenwick Periodicals - Print Collection\x00'
+'nucCode' 'fper\x00'
+'publicNote' 'v.3-v.21, v.26-v.29 (1960-1978, 1983-1986) volumes located off-site (WRLC Center). To request, submit a Consortium Loan Request. Circulation restrictions apply.\x00'
+'receiptAcqStatus' ' '
+'typeOfRecord' 'y'
+'volumes' [Struct: PyZ3950.asn1.Volume [
+'chronology' '(1987)'
+'enumAndChron' 'v.30:no.1-5 (1987)'
+'enumeration' 'v.30:no.1-5']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1987)'
+'enumAndChron' 'v.30:no.6-12 (1987)'
+'enumeration' 'v.30:no.6-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1988)'
+'enumAndChron' 'v.31:no.1-6 (1988)'
+'enumeration' 'v.31:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1988)'
+'enumAndChron' 'v.31:no.7-12 (1988)'
+'enumeration' 'v.31:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1989)'
+'enumAndChron' 'v.32:no.1-6 (1989)'
+'enumeration' 'v.32:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1989)'
+'enumAndChron' 'v.32:no.7-12 (1989)'
+'enumeration' 'v.32:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1990)'
+'enumAndChron' 'v.33:no.1-6 (1990)'
+'enumeration' 'v.33:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1990)'
+'enumAndChron' 'v.33:no.7-12 (1990)'
+'enumeration' 'v.33:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1991)'
+'enumAndChron' 'v.34:no.1-6 (1991)'
+'enumeration' 'v.34:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1991)'
+'enumAndChron' 'v.34:no.7-12 (1991)'
+'enumeration' 'v.34:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1992)'
+'enumAndChron' 'v.35:no.1-6 (1992)'
+'enumeration' 'v.35:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1992)'
+'enumAndChron' 'v.35:no.7-12 (1992)'
+'enumeration' 'v.35:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1993)'
+'enumAndChron' 'v.36:no.1-6 (1993)'
+'enumeration' 'v.36:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1993)'
+'enumAndChron' 'v.36:no.7-12 (1993)'
+'enumeration' 'v.36:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1994)'
+'enumAndChron' 'v.37:no.1-6 (1994)'
+'enumeration' 'v.37:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1994)'
+'enumAndChron' 'v.37:no.8-12 (1994)'
+'enumeration' 'v.37:no.8-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1995)'
+'enumAndChron' 'v.38:no.1-6 (1995)'
+'enumeration' 'v.38:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1995)'
+'enumAndChron' 'v.38:no.7-12 (1995)'
+'enumeration' 'v.38:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1996)'
+'enumAndChron' 'v.39:no.2-5,7-12 (1996)'
+'enumeration' 'v.39:no.2-5,7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1997)'
+'enumAndChron' 'v.40:no.1-6 (1997)'
+'enumeration' 'v.40:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1997)'
+'enumAndChron' 'v.40:no.7-12 (1997)'
+'enumeration' 'v.40:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1998)'
+'enumAndChron' 'v.41:no.1-6 and Suppl. (1998)'
+'enumeration' 'v.41:no.1-6 and Suppl.']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1998)'
+'enumAndChron' 'v.41:no.7-12 (1998)'
+'enumeration' 'v.41:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1999)'
+'enumAndChron' 'v.42:no.1-6 and Suppl. (1999)'
+'enumeration' 'v.42:no.1-6 and Suppl.']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(1999)'
+'enumAndChron' 'v.42:no.7-12 and Suppl. (1999)'
+'enumeration' 'v.42:no.7-12 and Suppl.']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2000)'
+'enumAndChron' 'v.43:no.1-6 (2000)'
+'enumeration' 'v.43:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2000)'
+'enumAndChron' 'v.43:no.7-12 (2000)'
+'enumeration' 'v.43:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2001)'
+'enumAndChron' 'v.44:no.1-6 (2001)'
+'enumeration' 'v.44:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2001)'
+'enumAndChron' 'v.44:no.7-12 (2001)'
+'enumeration' 'v.44:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2002)'
+'enumAndChron' 'v.45:no.1-6 (2002)'
+'enumeration' 'v.45:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2002)'
+'enumAndChron' 'v.45:no.7-12 (2002)'
+'enumeration' 'v.45:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2003)'
+'enumAndChron' 'v.46:no.1-6 (2003)'
+'enumeration' 'v.46:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2003)'
+'enumAndChron' 'v.46:no.7-12 (2003)'
+'enumeration' 'v.46:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2004)'
+'enumAndChron' 'v.47:no.1-6 (2004)'
+'enumeration' 'v.47:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2004)'
+'enumAndChron' 'v.47:no.7-12 (2004)'
+'enumeration' 'v.47:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2005)'
+'enumAndChron' 'v.48:no.1-6 (2005)'
+'enumeration' 'v.48:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2005)'
+'enumAndChron' 'v.48:no.7-12 (2005)'
+'enumeration' 'v.48:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2006)'
+'enumAndChron' 'v.49:no.1-6 (2006)'
+'enumeration' 'v.49:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2006)'
+'enumAndChron' 'v.49:no.7-12 (2006)'
+'enumeration' 'v.49:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2007)'
+'enumAndChron' 'v.50:no.1-6 (2007)'
+'enumeration' 'v.50:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2007)'
+'enumAndChron' 'v.50:no.7-12 (2007)'
+'enumeration' 'v.50:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2008)'
+'enumAndChron' 'v.51:no.1-6 (2008)'
+'enumeration' 'v.51:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2008)'
+'enumAndChron' 'v.51:no.7-12 (2008)'
+'enumeration' 'v.51:no.7-12']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2009)'
+'enumAndChron' 'v.52:no.1-6 (2009)'
+'enumeration' 'v.52:no.1-6']
+, Struct: PyZ3950.asn1.Volume [
+'chronology' '(2009)'
+'enumAndChron' 'v.52:no.7-12 (2009)'
+'enumeration' 'v.52:no.7-12']
+]]
+)
+------------------------------------------------------
+('holdingsAndCirc', Struct: PyZ3950.asn1.HoldingsAndCircData [
+'completeness' '1'
+'dateOfReport' '901128'
+'encodingLevel' '4'
+'generalRetention' '8'
+'localLocation' 'Available Online through Mason Libraries\x00'
+'nucCode' 'elec www\x00'
+'receiptAcqStatus' '4'
+'typeOfRecord' 'x']
+)
