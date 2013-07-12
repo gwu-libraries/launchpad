@@ -5,7 +5,7 @@ env:
   - DJANGO_VERSION=1.4
 #Scripts to run before installing dependencies
 before_install:
-  - sed 's/cx_Oracle/#cx_Oracle/g' requirements.txt > test.txt
+  - sed "s/cx_Oracle/#cx_Oracle/g" requirements.txt > test.txt
   - mv test.txt requirements.txt
 #Command to install dependencies
 install: "pip install -r requirements.txt"
@@ -21,3 +21,4 @@ branches:
 notifications:
     email:
       - darshan@email.gwu.edu
+      - sgilani@email.gwu.edu
