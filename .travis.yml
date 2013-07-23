@@ -1,0 +1,25 @@
+language: python
+python:
+    - "2.6"
+env:
+    - DJANGO_VERSION=1.4
+#Scripts to run before installing dependencies
+before_install:
+    - sed "s/cx_Oracle/#cx_Oracle/g" requirements.txt > test.txt
+    - mv test.txt requirements.txt
+#Command to install dependencies
+install: "pip install -r requirements.txt"
+#Command to run tests
+script:
+    - cp lp/lp/local_settings.py.template lp/lp/local_settings.py
+    - python lp/manage.py test lp
+branches:
+    only:
+        - master
+        - code_cleanup
+        - refactor_integration
+# Email notifications
+notifications:
+    email:
+        - darshan@email.gwu.edu
+        - sgilani@email.gwu.edu
