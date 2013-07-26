@@ -24,15 +24,13 @@ only been tested on ubuntu 10.04 LTS.
 
         sudo apt-get install git-core
 
-3. Download Oracle
+3. Download Oracle Instant Client 11.2.0.3 for Linux
+x86-64 or the platform that matches your system from
+http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html
 
-    Download Instant Client 11.2.0.3 for Linux x86-64 or
-    the platform that matches your system from
-    http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html
-
-    * instant-client-basic
-    * instant-client-devel
-    * instant-client-sqlplus
+        * instant-client-basic
+        * instant-client-devel
+        * instant-client-sqlplus
 
     Or find a copy of the 11.2.0.3.0-1.x86_64 rpms in:
 
@@ -108,7 +106,7 @@ the path according to your installation of oracle.
 
         pip install -r requirements.txt
 
-7. Modify django to allow us to connect to Oracle with the required encoding.  In ```ENV/lib/python2.6/site-packages/django/db/backends/oracle/base.py```,
+7. Modify django to allow us to connect to Oracle with the required encoding.  In ```ENV/lib/python2.7/site-packages/django/db/backends/oracle/base.py```,
 modify line 35 from this:
 
         ('NLS_LANG', '.UTF8')
