@@ -395,6 +395,8 @@ ORDER BY library.library_name"""
             for item in holding['ITEMS']:
                 if item['ITEM_STATUS_DESC'] == 'Charged':
                     item['ITEM_STATUS_DESC'] = 'Checked out'
+                if item['ITEM_STATUS_DESC'] == 'Discharged':
+                    item['ITEM_STATUS_DESC'] = 'Recently Returned'
                 item['ELIGIBLE'] = \
                     is_item_eligible(item, holding.get('LIBRARY_NAME', ''))
                 if lib is not None:
@@ -431,6 +433,9 @@ ORDER BY library.library_name"""
             if holding['AVAILABILITY'].get('ITEM_STATUS_DESC'):
                 if holding['AVAILABILITY']['ITEM_STATUS_DESC'] == 'Charged':
                     holding['AVAILABILITY']['ITEM_STATUS_DESC'] = 'Checked out'
+                if holding['AVAILABILITY']['ITEM_STATUS_DESC'] == 'Discharged':
+                    holding['AVAILABILITY']['ITEM_STATUS_DESC'] =\
+                        'Recently Returned'
         for item in holding.get('ITEMS', []):
             if item['ELIGIBLE'] is True:
                 eligibility = True
