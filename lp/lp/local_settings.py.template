@@ -74,6 +74,7 @@ INDEX_CODES = {
     'isbn': ['020N', '020A', 'ISB3'],
     'issn': ['022A', '022Z'],
     'oclc': ['035A'],
+    'lccn': ['010A'],
     }
 
 

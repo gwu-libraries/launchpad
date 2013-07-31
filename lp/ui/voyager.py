@@ -156,7 +156,7 @@ AND bib_master.suppress_in_opac='N'"""
     if expand_ids:
         bibids = [
             {'BIB_ID': bib['BIB_ID'], 'LIBRARY_NAME':bib['LIBRARY_NAME']}]
-        for num_type in ['isbn', 'issn', 'oclc']:
+        for num_type in ['isbn', 'issn', 'oclc', 'lccn']:
             if bib.get(num_type.upper(), ''):
                 norm_set, disp_set = set(), set()
                 std_nums = get_related_std_nums(bib['BIB_ID'], num_type)
