@@ -1518,22 +1518,12 @@ def get_illiad_link(bib_data):
                     find('&', ind)
                 if end == -1:
                     # if source ID > 35 just send the first 35 characters
-                    if len(bib_data['openurl']['query_string'][ind:]) > 35:
-                        new_sid = bib_data['openurl']['query_string'][ind:35]\
-                            + ':' + settings.ILLIAD_SID
-                        return settings.ILLIAD_URL + new_sid
-                    else:
-                        new_sid = bib_data['openurl']['query_string'][ind:]\
-                            + ':' + settings.ILLIAD_SID
-                        return settings.ILLIAD_URL + new_sid
+                    new_sid = bib_data['openurl']['query_string'][ind:35]\
+                        + ':' + settings.ILLIAD_SID
+                    return settings.ILLIAD_URL + new_sid
                 else:  # it's not at the end
-                    new_sid = ''
-                    if len(bib_data['openurl']['query_string'][ind:end]) > 35:
-                        new_sid = bib_data['openurl']['query_string'][ind:35]\
-                            + ':' + settings.ILLIAD_SID
-                    else:
-                        new_sid = bib_data['openurl']['query_string'][ind:end]\
-                            + ':' + settings.ILLIAD_SID
+                    new_sid = bib_data['openurl']['query_string'][ind:35]\
+                        + ':' + settings.ILLIAD_SID
                     before_string = bib_data['openurl']['query_string'][0:ind]\
                         + new_sid
                     after_sid = bib_data['openurl']['query_string'][end:]
@@ -1545,21 +1535,12 @@ def get_illiad_link(bib_data):
                 end = bib_data['openurl']['query_string'].\
                     find('&', ind)
                 if end == -1:
-                    new_sid = ''
-                    if len(bib_data['openurl']['query_string'][ind:]) > 35:
-                        new_sid = bib_data['openurl']['query_string'][ind:35]\
-                            + ':' + settings.ILLIAD_SID
-                    else:
-                        new_sid = bib_data['openurl']['query_string'][ind:]\
-                            + ':' + settings.ILLIAD_SID
+                    new_sid = bib_data['openurl']['query_string'][ind:35]\
+                        + ':' + settings.ILLIAD_SID
                     return settings.ILLIAD_URL + new_sid
                 else:
-                    if len(bib_data['openurl']['query_string'][ind:end]) > 35:
-                        new_sid = bib_data['openurl']['query_string'][ind:35]\
-                            + ':' + settings.ILLIAD_SID
-                    else:
-                        new_sid = bib_data['openurl']['query_string'][ind:end]\
-                            + ':' + settings.ILLIAD_SID
+                    new_sid = bib_data['openurl']['query_string'][ind:35]\
+                        + ':' + settings.ILLIAD_SID
                     before_string = bib_data['openurl']['query_string'][0:ind]\
                         + new_sid
                     after_sid = bib_data['openurl']['query_string'][end:]
