@@ -28,7 +28,7 @@ def _openurl_dict(request):
         p[k] = ','.join(v)
     d = {'params':  p}
     d['query_string'] = '&'.join(['%s=%s' % (k, v) for k, v
-        in params.items()])
+                        in params.items()])
     d['query_string_encoded'] = request.META.get('QUERY_STRING', '')
     return d
 
@@ -45,7 +45,7 @@ def item(request, bibid):
         bib = voyager.get_bib_data(bibid)
         if not bib:
             return render(request, '404.html', {'num': bibid,
-                'num_type': 'BIB ID'}, status=404)
+                          'num_type': 'BIB ID'}, status=404)
         bib['openurl'] = _openurl_dict(request)
         bib['citation_json'] = citation_json(request)
         # Ensure bib data is ours if possible
@@ -61,7 +61,7 @@ def item(request, bibid):
             holdings = elecsort(holdsort(templocsort(availsort(ours)))) \
                 + elecsort(holdsort(templocsort(availsort(shared)))) \
                 + libsort(elecsort(holdsort(templocsort(availsort(theirs))),
-                    rev=True))
+                                   rev=True))
         else:
             show_aladin_link = False
         return render(request, 'item.html', {
@@ -95,14 +95,14 @@ def item_json(request, bibid, z3950='False', school=None):
         bib_data = voyager.get_bib_data(bibid)
         if not bib_data:
             return HttpResponse('{}', content_type='application_json',
-                status=404)
+                                status=404)
         bib_data['openurl'] = _openurl_dict(request)
         bib_data['holdings'] = voyager.get_holdings(bib_data)
         bib_data['openurl'] = _openurl_dict(request)
         bib_data['citation_json'] = citation_json(request)
         bib_encoded = unicode_data(bib_data)
         return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
-            indent=2), content_type='application/json')
+                            indent=2), content_type='application/json')
     except DatabaseError:
         return redirect('error503')
 
@@ -112,7 +112,7 @@ def non_wrlc_item(request, num, num_type):
     bib = apis.get_bib_data(num=num, num_type=num_type)
     if not bib:
         return render(request, '404.html', {'num': num,
-            'num_type': num_type.upper()}, status=404)
+                      'num_type': num_type.upper()}, status=404)
     bib['openurl'] = _openurl_dict(request)
     bib['citation_json'] = citation_json(request)
     bib['ILLIAD_LINK'] = voyager.get_illiad_link(bib)
@@ -130,19 +130,19 @@ def non_wrlc_item(request, num, num_type):
                 holdings.append(openlibhold)
                 break
     return render(request, 'item.html', {
-       'bibid': '',
-       'bib': bib,
-       'non_gw': True,
-       'debug': settings.DEBUG,
-       'title_chars': settings.TITLE_CHARS,
-       'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
-       'holdings': holdings,
-       'link': '',
-       'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-       'link_resolver': settings.LINK_RESOLVER,
-       'audio_tags': settings.STREAMING_AUDIO_TAGS,
-       'video_tags': settings.STREAMING_VIDEO_TAGS,
-       })
+                  'bibid': '',
+                  'bib': bib,
+                  'non_gw': True,
+                  'debug': settings.DEBUG,
+                  'title_chars': settings.TITLE_CHARS,
+                  'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
+                  'holdings': holdings,
+                  'link': '',
+                  'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
+                  'link_resolver': settings.LINK_RESOLVER,
+                  'audio_tags': settings.STREAMING_AUDIO_TAGS,
+                  'video_tags': settings.STREAMING_VIDEO_TAGS,
+                  })
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
@@ -155,7 +155,7 @@ def gtitem(request, gtbibid):
             bib = voyager.get_z3950_bib_data(gtbibid[:-1], 'GT')
             if bib is None:
                 return render(request, '404.html', {'num': gtbibid,
-                    'num_type': 'BIB ID'}, status=404)
+                              'num_type': 'BIB ID'}, status=404)
             bib['openurl'] = _openurl_dict(request)
             bib['citation_json'] = citation_json(request)
             # Ensure bib data is ours if possible
@@ -190,7 +190,7 @@ def gtitem(request, gtbibid):
                 'non_wrlc_item': True
                 })
         return render(request, '404.html', {'num': gtbibid,
-            'num_type': 'Georgetown BIB ID'}, status=404)
+                      'num_type': 'Georgetown BIB ID'}, status=404)
     except DatabaseError:
         return redirect('error503')
 
@@ -205,13 +205,14 @@ def gtitem_json(request, gtbibid):
             bib_data = voyager.get_z3950_bib_data('b' + gtbibid[:-1], 'GT')
             if not bib_data:
                 return HttpResponse('{}', content_type='application_json',
-                    status=404)
+                                    status=404)
             bib_data['holdings'] = voyager.get_holdings(bib_data, 'GT', False)
             bib_data['openurl'] = _openurl_dict(request)
             bib_data['citation_json'] = citation_json(request)
             bib_encoded = unicode_data(bib_data)
             return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
-                indent=2), content_type='application/json')
+                                           indent=2),
+                                content_type='application/json')
         raise Http404
     except DatabaseError:
         return redirect('error503')
@@ -255,7 +256,7 @@ def gmitem(request, gmbibid):
             bib = voyager.get_z3950_bib_data(gmbibid, 'GM')
             if not bib:
                 return render(request, '404.html', {'num': gmbibid,
-                    'num_type': 'BIB ID'}, status=404)
+                              'num_type': 'BIB ID'}, status=404)
             bib['openurl'] = _openurl_dict(request)
             bib['citation_json'] = citation_json(request)
             # Ensure bib data is ours if possible
@@ -290,7 +291,7 @@ def gmitem(request, gmbibid):
                 'non_wrlc_item': True
                 })
         return render(request, '404.html', {'num': gmbibid,
-            'num_type': 'George Mason BIB ID'}, status=404)
+                      'num_type': 'George Mason BIB ID'}, status=404)
     except DatabaseError:
         return redirect('error503')
 
@@ -305,13 +306,13 @@ def gmitem_json(request, gmbibid):
             bib_data = voyager.get_z3950_bib_data(gmbibid, 'GM')
             if not bib_data:
                 return HttpResponse('{}', content_type='application_json',
-                    status=404)
+                                    status=404)
             bib_data['holdings'] = voyager.get_holdings(bib_data, 'GM', False)
             bib_data['openurl'] = _openurl_dict(request)
             bib_data['citation_json'] = citation_json(request)
             bib_encoded = unicode_data(bib_data)
             return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
-                indent=2), content_type='application/json')
+                                indent=2), content_type='application/json')
         raise Http404
     except DatabaseError:
         return redirect('error503')
@@ -323,7 +324,7 @@ def isbn(request, isbn):
         openurl = _openurl_dict(request)
         if bibid:
             url = '%s?%s' % (reverse('item', args=[bibid]),
-                openurl['query_string_encoded'])
+                             openurl['query_string_encoded'])
             return redirect(url)
         return non_wrlc_item(request, num=isbn, num_type='isbn')
     except DatabaseError:
@@ -336,7 +337,7 @@ def issn(request, issn):
         openurl = _openurl_dict(request)
         if bibid:
             url = '%s?%s' % (reverse('item', args=[bibid]),
-                openurl['query_string_encoded'])
+                             openurl['query_string_encoded'])
             return redirect(url)
         return non_wrlc_item(request, num=issn, num_type='issn')
     except DatabaseError:
@@ -351,10 +352,10 @@ def oclc(request, oclc):
     openurl = _openurl_dict(request)
     if bibid:
         url = '%s?%s' % (reverse('item', args=[bibid]),
-            openurl['query_string_encoded'])
+                         openurl['query_string_encoded'])
         return redirect(url)
     return render(request, '404.html', {'num': oclc,
-        'num_type': 'OCLC number'}, status=404)
+                  'num_type': 'OCLC number'}, status=404)
 
 
 def error500(request):
