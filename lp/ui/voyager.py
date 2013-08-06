@@ -560,7 +560,7 @@ def remove_duplicate_items(i, items):
                         items[j]['ITEM_STATUS_DATE'] is not None):
                     if (items[i]['ITEM_STATUS_DATE'] >
                             items[j]['ITEM_STATUS_DATE']):
-                            items[j]['REMOVE'] = True
+                        items[j]['REMOVE'] = True
                     else:
                         items[i]['REMOVE'] = True
         j = j + 1
