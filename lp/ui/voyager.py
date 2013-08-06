@@ -1315,42 +1315,7 @@ def get_gm_link(lines, line):
 def get_illiad_link(bib_data):
     if 'openurl' in bib_data:
         if bib_data['openurl']['query_string']:
-            ind = bib_data['openurl']['query_string'].find('sid=')
-            #Find the end of the sid key
-            if ind != -1:
-                end = bib_data['openurl']['query_string'].\
-                    find('&', ind)
-                if end == -1:
-                    new_sid = bib_data['openurl']['query_string'][ind:]\
-                        + ':' + settings.ILLIAD_SID
-                    return settings.ILLIAD_URL + new_sid
-                else:  # its not at the end
-                    new_sid = bib_data['openurl']['query_string'][ind:end]\
-                        + ':' + settings.ILLIAD_SID
-                    before_string = bib_data['openurl']['query_string'][0:ind]\
-                        + new_sid
-                    after_sid = bib_data['openurl']['query_string'][end:]
-                    new_string = before_string + after_sid
-                    return settings.ILLIAD_URL + new_string
-            ind = bib_data['openurl']['query_string'].find('rfr_id=')
-            #Find the end of the sid key
-            if ind != -1:
-                end = bib_data['openurl']['query_string'].\
-                    find('&', ind)
-                if end == -1:
-                    new_sid = bib_data['openurl']['query_string'][ind:]\
-                        + ':' + settings.ILLIAD_SID
-                    return settings.ILLIAD_URL + new_sid
-                else:
-                    new_sid = bib_data['openurl']['query_string'][ind:end]\
-                        + ':' + settings.ILLIAD_SID
-                    before_string = bib_data['openurl']['query_string'][0:ind]\
-                        + new_sid
-                    after_sid = bib_data['openurl']['query_string'][end:]
-                    new_string = before_string + after_sid
-                    return settings.ILLIAD_URL + new_string
-            return settings.ILLIAD_URL +\
-                bib_data['openurl']['query_string']
+            return insert_sid(bib_data)
     title = ''
     ind = 0
     query_args = {}
@@ -1436,6 +1401,68 @@ def get_illiad_link(bib_data):
         item = item.encode('ascii', 'replace')
     url += encoded_args
     return url
+
+
+def insert_sid(bib_data):
+    ind = bib_data['openurl']['query_string'].find('sid=')
+    #Find the end of the sid key
+    if ind != -1:
+        end = bib_data['openurl']['query_string'].\
+            find('&', ind)
+        # check if there is an & in the sid field
+        valid_get_param = check_get_param(bib_data['openurl']['query_string'],
+                                          end)
+        if not valid_get_param:  # if there is & sign in sid
+            end = bib_data['openurl']['query_string'].\
+                find('&', end+1)
+        if end == -1:
+            # if source ID > 35 just send the first 35 characters
+            new_sid = bib_data['openurl']['query_string'][ind:ind + 27]\
+                + ':' + settings.ILLIAD_SID
+            new_sid = new_sid.replace('&', 'and', 1)
+            return settings.ILLIAD_URL + new_sid
+        else:  # it's not at the end
+            new_sid = bib_data['openurl']['query_string'][ind:ind + 27]\
+                + ':' + settings.ILLIAD_SID
+            new_sid = new_sid.replace('&', 'and', 1)
+            before_string = bib_data['openurl']['query_string'][0:ind]\
+                + new_sid
+            after_sid = bib_data['openurl']['query_string'][end:]
+            new_string = before_string + after_sid
+            return settings.ILLIAD_URL + new_string
+    ind = bib_data['openurl']['query_string'].find('rfr_id=')
+    #Find the end of the sid key
+    if ind != -1:
+        end = bib_data['openurl']['query_string'].\
+            find('&', ind)
+        valid_get_param = check_get_param(bib_data['openurl']['query_string'],
+                                          end)
+        if not valid_get_param:  # if there is no &sign in sid
+            end = bib_data['openurl']['query_string'].\
+                find('&', end)
+        if end == -1:
+            new_sid = bib_data['openurl']['query_string'][ind:35]\
+                + ':' + settings.ILLIAD_SID
+            return settings.ILLIAD_URL + new_sid
+        else:
+            new_sid = bib_data['openurl']['query_string'][ind:35]\
+                + ':' + settings.ILLIAD_SID
+            before_string = bib_data['openurl']['query_string'][0:ind]\
+                + new_sid
+            after_sid = bib_data['openurl']['query_string'][end:]
+            new_string = before_string + after_sid
+            return settings.ILLIAD_URL + new_string
+    return settings.ILLIAD_URL + \
+        bib_data['openurl']['query_string']
+
+
+def check_get_param(url, end):
+    nextind = url.find('&', end)
+    index = url.rfind('=', end, nextind)
+    if index > end and index < nextind:
+        return True
+    else:
+        return False
 
 
 def clean_title(title):

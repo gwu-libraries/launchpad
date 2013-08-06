@@ -134,7 +134,7 @@ MAX_ITEMS = 6
 
 ILLIAD_URL = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
 
-ILLIAD_SID = 'GWfindit'
+ILLIAD_SID = 'GWLP'
 
 TITLE_CHARS = 255
 
