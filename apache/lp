@@ -33,10 +33,8 @@
     AliasMatch ^/static/css/([^/]*\.css) /LPHOME/launchpad/lp/ui/static/css/$1
     AliasMatch ^/static/img/(.*) /LPHOME/launchpad/lp/ui/static/img/$1
     AliasMatch ^/(sitemap.*) /LPHOME/launchpad/lp/ui/static/sitemaps/$1
-    # /bib urls are an artifact of early over-engineering, were removed
-    RedirectMatch permanent ^/(item/.*)/bib /$1
 
-    WSGIDaemonProcess <your.server.name> processes=2 threads=15 python-path=/LPHOME/launchpad/ENV/lib/python/2.X/site-packages:/LPHOME/launchpad/lp
+    WSGIDaemonProcess <your.server.name> processes=2 threads=15 python-path=/LPHOME/launchpad/ENV/lib/python/2.7/site-packages:/LPHOME/launchpad/lp
 
     WSGIProcessGroup <your.server.name>
 

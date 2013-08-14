@@ -2,6 +2,7 @@ import os
 import sys
 
 DEBUG = True
+ALLOWED_HOSTS = ['YOUR.PUBLIC.SERVER.NAME']
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
