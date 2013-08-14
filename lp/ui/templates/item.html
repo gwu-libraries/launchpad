@@ -378,7 +378,7 @@ $(document).ready(function() {
                                    <span style='color: green'>Available</span>
                                    <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if item.DISPLAY_CALL_NO %}call={{ item.DISPLAY_CALL_NO|urlencode }}{% endif %}&amp;{% if item.TRIMMED_LOCATION_DISPLAY_NAME %}loc={{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream|urlencode }}{% endif %}&amp;title={{ bib.TITLE|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
                                {%else%}
-                                   {% if item.TEMPLOCATION == 'WRLC Center' or bib.FINDING_AID %}
+                                   {% if item.TEMPLOCATION == 'WRLC Center'  or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID %}
                                        <span class='off-site'>Off-site </span>
                                        <br />
                                    {% else %}
@@ -480,13 +480,13 @@ $(document).ready(function() {
                                     {%endif%}
                                 {% endif %}
                             {% endfor %}
-                        {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME == 'WRLC Center' %}
+                        {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME == 'WRLC Center' or holding.LOCATION_DISPLAY_NAME == 'WRLC Shared Collections Facility' %}
                             <span class='off-site'>Off-site </span>
                         {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
                             <span style='color: green'>Available</span>
                             <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if holding.DISPLAY_CALL_NO %}call={{ holding.DISPLAY_CALL_NO|urlencode }}{% endif %}&amp;{% if holding.TRIMMED_LOCATION_DISPLAY_NAME %}loc={{ holding.TRIMMED_LOCATION_DISPLAY_NAME|noscream|urlencode }}{% endif %}&amp;title={{ bib.TITLE|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
 
-                        {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center'%}
+                        {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center' or holding.AVAILABILITY.TEMPLOCATION == 'WRLC Shared Collections Facility'%}
                             <span class='off-site'>Off-site </span>
                         {% else %}
                             {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
