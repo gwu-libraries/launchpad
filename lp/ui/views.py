@@ -1,3 +1,5 @@
+import bibjsontools
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.utils import DatabaseError
@@ -5,8 +7,6 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
-
-import bibjsontools
 
 from ui import voyager, apis
 from ui.sort import libsort, availsort, elecsort, templocsort, \
@@ -17,7 +17,7 @@ def home(request):
     return render(request, 'home.html', {
         'title': 'launchpad home',
         'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-        })
+    })
 
 
 def _openurl_dict(request):
@@ -56,14 +56,14 @@ def item(request, bibid):
         holdings = voyager.get_holdings(bib)
         if holdings:
             holdings = strip_bad_holdings(holdings)
-            show_aladin_link = True
+            show_wrlc_link = True
             ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
             holdings = elecsort(holdsort(templocsort(availsort(ours)))) \
                 + elecsort(holdsort(templocsort(availsort(shared)))) \
                 + libsort(elecsort(holdsort(templocsort(availsort(theirs))),
                                    rev=True))
         else:
-            show_aladin_link = False
+            show_wrlc_link = False
         return render(request, 'item.html', {
             'bibid': bibid,
             'bib': bib,
@@ -78,9 +78,9 @@ def item(request, bibid):
             'audio_tags': settings.STREAMING_AUDIO_TAGS,
             'video_tags': settings.STREAMING_VIDEO_TAGS,
             'max_items': settings.MAX_ITEMS,
-            'show_aladin_link': show_aladin_link,
+            'show_wrlc_link': show_wrlc_link,
             'non_wrlc_item': False
-            })
+        })
     except:
         return redirect('error503')
 
@@ -166,7 +166,7 @@ def gtitem(request, gtbibid):
             holdings = voyager.get_holdings(bib, 'GT', False)
             if holdings:
                 holdings = strip_bad_holdings(holdings)
-                show_aladin_link = False
+                show_wrlc_link = False
                 ours, theirs, shared = splitsort(callnumsort(enumsort(
                     holdings)))
                 holdings = elecsort(availsort(ours)) \
@@ -186,9 +186,9 @@ def gtitem(request, gtbibid):
                 'audio_tags': settings.STREAMING_AUDIO_TAGS,
                 'video_tags': settings.STREAMING_VIDEO_TAGS,
                 'max_items': settings.MAX_ITEMS,
-                'show_aladin_link': show_aladin_link,
+                'show_wrlc_link': show_wrlc_link,
                 'non_wrlc_item': True
-                })
+            })
         return render(request, '404.html', {'num': gtbibid,
                       'num_type': 'Georgetown BIB ID'}, status=404)
     except DatabaseError:
@@ -267,7 +267,7 @@ def gmitem(request, gmbibid):
             holdings = voyager.get_holdings(bib, 'GM', False)
             if holdings:
                 holdings = strip_bad_holdings(holdings)
-                show_aladin_link = False
+                show_wrlc_link = False
                 ours, theirs, shared = splitsort(callnumsort(enumsort(
                     holdings)))
                 holdings = elecsort(availsort(ours)) \
@@ -287,9 +287,9 @@ def gmitem(request, gmbibid):
                 'audio_tags': settings.STREAMING_AUDIO_TAGS,
                 'video_tags': settings.STREAMING_VIDEO_TAGS,
                 'max_items': settings.MAX_ITEMS,
-                'show_aladin_link': show_aladin_link,
+                'show_wrlc_link': show_wrlc_link,
                 'non_wrlc_item': True
-                })
+            })
         return render(request, '404.html', {'num': gmbibid,
                       'num_type': 'George Mason BIB ID'}, status=404)
     except DatabaseError:
@@ -362,21 +362,21 @@ def error500(request):
     return render(request, '500.html', {
         'title': 'error',
         'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-        }, status=500)
+    }, status=500)
 
 
 def error503(request):
     return render(request, '503.html', {
         'title': 'Database Undergoing Maintenance',
         'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-        }, status=503)
+    }, status=503)
 
 
 def robots(request):
     return render(request, 'robots.txt', {
         'enable_sitemaps': settings.ENABLE_SITEMAPS,
         'sitemaps_base_url': settings.SITEMAPS_BASE_URL,
-        }, content_type='text/plain')
+    }, content_type='text/plain')
 
 
 def humans(request):
