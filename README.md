@@ -2,9 +2,9 @@ launchpad
 =========
 
 A django based system that provides a stable URL for every item in the
-libraries catalog. Various discovery services will link to these URLs. The
-page for each item will in turn link out to various other resources that
-provide methods for accessing the content of the items.
+libraries' catalog.  Various discovery services will link to these
+URLs. The page for each item will in turn link out to various other
+resources that provide methods for accessing the content of the items.
 
 Installation Instructions
 -------------------------
@@ -184,3 +184,6 @@ ENABLE_SITEMAPS, SITEMAPS_DIR, and SITEMAPS_BASE_URL settings.  Make sure
 SITEMAPS_DIR exists, then run the management command:
 
         manage.py make_sitemap
+
+9. If you are in production mode, be sure to set ```DEBUG = False``` and 
+the appropriate ```ALLOWED_HOSTS``` in ```lp/local_settings.py```.
