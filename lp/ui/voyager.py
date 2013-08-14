@@ -122,8 +122,10 @@ AND bib_master.suppress_in_opac='N'"""
                 bib['TITLE_ALL'] += title.format_field().decode('iso-8859-1')\
                     .encode('utf-8')
     except DjangoUnicodeDecodeError:
-        return get_bib_data(bibid=bibid, expand_ids=expand_ids,
-                            exclude_names=True)
+        return get_bib_data(
+            bibid=bibid,
+            expand_ids=expand_ids,
+            exclude_names=True)
     # if bib is empty, there's no match -- return immediately
     if not bib:
         return None
@@ -454,7 +456,7 @@ ORDER BY library.library_name"""
         links = holding.get('MFHD_DATA', {}).get('marc856list', [])
         for link in links:
             url = link.get('u', '').lower()
-            if url.startswith('http://sfx.wrlc.org/gw') or \
+            if url.startswith('http://sfx.wrlc.org/gw') or\
                     url.startswith('http://findit.library.gwu.edu/go'):
                 issnindex = url.lower().find('issn=')
                 if issnindex > -1:
@@ -558,7 +560,7 @@ def remove_duplicate_items(i, items):
                         items[j]['ITEM_STATUS_DATE'] is not None):
                     if (items[i]['ITEM_STATUS_DATE'] >
                             items[j]['ITEM_STATUS_DATE']):
-                        items[j]['REMOVE'] = True
+                            items[j]['REMOVE'] = True
                     else:
                         items[i]['REMOVE'] = True
         j = j + 1
