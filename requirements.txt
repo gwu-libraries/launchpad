@@ -1,11 +1,11 @@
+git+https://github.com/lawlesst/bibjsontools.git
 cx_Oracle
-django==1.4
+django>=1.5,<1.6
 django-nose
+lxml
 ply
 pycountry
 pymarc
 python-memcached
 pytz
 git+https://github.com/asl2/PyZ3950.git
-lxml
-git+https://github.com/lawlesst/bibjsontools.git
