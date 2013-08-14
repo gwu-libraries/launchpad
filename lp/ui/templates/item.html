@@ -216,8 +216,8 @@ $(document).ready(function() {
                 {% endif %}
                 <p>
                     <span class="catlink" >
-                    {% if bib.BIB_ID and show_aladin_link %}
-                        View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>Aladin Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                    {% if bib.BIB_ID and show_wrlc_link %}
+                        View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>WRLC Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     {% endif %}
                     </span>
                     </p>
