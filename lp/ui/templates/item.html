@@ -18,14 +18,14 @@
 {% block link_extra %}
 {% if bibid %}
     {% if non_wrlc_item %}
-        {%if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
+        {% if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
             <link rel='canonical' href='{% url "gtitem" bib.BIB_ID %}' />
             <link rel='alternate' type='application/json' href='{% url "gtitem_json" bib.BIB_ID %}' />
-        {%endif%}
-        {%if bib.LIBRARY_NAME == 'GM' %}
+        {% endif %}
+        {% if bib.LIBRARY_NAME == 'GM' %}
             <link rel='canonical' href='{% url "gmitem" bib.BIB_ID %}' />
             <link rel='alternate' type='application/json' href='{% url "gmitem_json" bib.BIB_ID %}' />
-        {%endif%}
+        {% endif %}
     {% else %}
     <link rel='canonical' href='{% url "item" bibid %}' />
     <link rel='alternate' type='application/json' href='{% url "item_json" bibid %}' />
@@ -45,26 +45,20 @@ function toggle_visibility(tbid,lnkid)
 
 };
 
-function showmore(id)
-	{
-		var objt = document.getElementById("toggle-"+id);
-		var objb = document.getElementById("brief-"+id);
-		var objf = document.getElementById("full-"+id);
-		if(objf.style.display == 'block') 
-                {
-			objf.style.display='none';
-			objb.style.display='block';
-			objt.innerHTML="<a href=javascript:showmore('1');>[+] Show</a>";
-
-		}
-                else 
-                {
-			objf.style.display='block';
-			objb.style.display='none';
-			objt.innerHTML="<a href=javascript:showmore('1');>[-] Hide</a>";
-		}		
-
-	};
+function showmore(id) {
+    var objt = document.getElementById("toggle-"+id);
+    var objb = document.getElementById("brief-"+id);
+    var objf = document.getElementById("full-"+id);
+    if(objf.style.display == 'block') {
+        objf.style.display='none';
+        objb.style.display='block';
+        objt.innerHTML="<a href=javascript:showmore('1');>[+] Show</a>";
+    } else {
+        objf.style.display='block';
+        objb.style.display='none';
+        objt.innerHTML="<a href=javascript:showmore('1');>[-] Hide</a>";
+    }        
+};
 
 var newwindow;
 function sms(url) {
@@ -89,14 +83,13 @@ $(document).ready(function() {
         if ($('#cover-image').width() == 1) {
             $('#cover').toggle(200);
         };
-	$(".item_body").hide();
-	$(".item_head").click(function(){
-		$(this).next(".item_body").slideToggle(250);
+        $(".item_body").hide();
+        $(".item_head").click(function() {
+            $(this).next(".item_body").slideToggle(250);
         });
-
     });
     $("#citation_toggle").click(function() {
-        $("#citation_data").toggle('fast', function(){
+        $("#citation_data").toggle('fast', function() {
         });
         cittogtxt("#citation_toggle");
     });
@@ -126,10 +119,10 @@ $(document).ready(function() {
                 {% if bib.CJK_INFO.TITLE %}
                     <span itemprop="name">{{ bib.CJK_INFO.TITLE }}</span> <br />
                 {% endif %}
-                {%if bib.TITLE_ALL|length <= title_chars or TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH <= title_leftover_chars%}
+                {% if bib.TITLE_ALL|length <= title_chars or TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH <= title_leftover_chars %}
                     <span itemprop="name">{{bib.TITLE_ALL}}</span><br/>
-                {%endif%}
-                {%if bib.TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH and  bib.BRIEF_LENGTH > title_leftover_chars%}
+                {% endif %}
+                {% if bib.TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH and  bib.BRIEF_LENGTH > title_leftover_chars %}
                     <div id="brief-1" style="display:block">
                         {{bib.TITLE_BRIEF}}
                     </div>
@@ -196,7 +189,7 @@ $(document).ready(function() {
                         {% endfor %}
                     </span><br />
                 {% endif %}
-                {% if bib.DISPLAY_ISSN_LIST%}
+                {% if bib.DISPLAY_ISSN_LIST %}
                     <span class="isbn-label">ISSN </span>
                     <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
                 {% endif %}
@@ -239,7 +232,7 @@ $(document).ready(function() {
                     Request this title through  <a href= "{{bib.ILLIAD_LINK}}" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     </span></p>
 
-                   {%endif%}
+                   {% endif %}
                    
             </div>
         </td>
@@ -260,7 +253,7 @@ $(document).ready(function() {
             <th width='15%'>Consortium Loan</th>
         </tr>
     </thead>
-    <tbody>		
+    <tbody>        
     {% for library in library_list %}
         {% if library.grouper %}
         <tr>
@@ -272,8 +265,8 @@ $(document).ready(function() {
         {% for holding in library.list %}
             {% if holding.ITEMS %}
                 {% for item in holding.ITEMS %}
-                    {%if holding.MFHD_DATA.marc866list or holding.MFHD_DATA.marc852%}
-                        {%if forloop.first and not holding.MFHD_DATA.marc856list%}
+                    {% if holding.MFHD_DATA.marc866list or holding.MFHD_DATA.marc852%}
+                        {% if forloop.first and not holding.MFHD_DATA.marc856list%}
                         <tr>
                         <td >
                         <div>
@@ -283,8 +276,8 @@ $(document).ready(function() {
                             {% else %}
                                 {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                                 <br />
-                            {%endif%}
-                            {% if holding.MFHD_DATA.marc866list%}
+                            {% endif %}
+                            {% if holding.MFHD_DATA.marc866list %}
                                 {% for line in holding.MFHD_DATA.marc866list %}
                                     <span class="library-has">{{line}}</span>
                                     <br />
@@ -297,8 +290,8 @@ $(document).ready(function() {
                         </div>
                         </td>
                         </tr>
-                        {%endif%}
-                    {%endif%}
+                        {% endif %}
+                    {% endif %}
                     <tr>
                     <td>
                         {% if bib.FINDING_AID %}Gelman Special Collections<br />
@@ -307,15 +300,15 @@ $(document).ready(function() {
                             {% if item.TEMPLOCATION %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
-                                {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
+                                {% if holding.ITEMS|length > max_items and forloop.counter == max_items %}
                                     <input id="{{holding.BIB_ID}}1" type="button" value="[+] Show " style="border:none;background:none;color:blue;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');">
-                                {%endif%}
+                                {% endif %}
                             {% else %}
                                 {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                                 <br />
-                                {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
+                                {% if holding.ITEMS|length > max_items and forloop.counter == max_items %}
                                     <input id="{{holding.BIB_ID}}1" type="button" value="[+] Show " style="border:none;background:none;color:blue;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
-                                {%endif%}
+                                {% endif %}
                             {% endif %}
                         </div>
                         {% endif %}
@@ -346,7 +339,7 @@ $(document).ready(function() {
                                <br /><a href="{{bib.FINDING_AID}}" target="clswindow">View the Finding Aid</a>
                            {% endif %}
                     </td>
-                       <td {%if holding.MFHD_DATA.marc856list|remove_empty_links|length > 0 and not item.eligible %} colspan="2" {% endif %}>
+                       <td {% if holding.MFHD_DATA.marc856list|remove_empty_links|length > 0 and not item.eligible %} colspan="2" {% endif %}>
                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list and not bib.FINDING_AID %}
                              <div class="marc856list">
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
@@ -357,15 +350,15 @@ $(document).ready(function() {
                                        <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
                                        {{holding.LIBRARY_NAME}} only
                                    {% else %}
-                                       {%if item.DISPLAY_CALL_NO in audio_tags%}
+                                       {% if item.DISPLAY_CALL_NO in audio_tags %}
                                            <button onclick="window.open('{{link.u}}')" > Listen online </button>
-                                       {%endif%}
-                                       {%if item.DISPLAY_CALL_NO in video_tags%}
+                                       {% endif %}
+                                       {% if item.DISPLAY_CALL_NO in video_tags %}
                                            <button onclick="window.open('{{link.u}}')" > Watch online </button>
-                                       {%endif%}
-                                       {%if item.DISPLAY_CALL_NO not in audio_tags and item.DISPLAY_CALL_NO not in video_tags%}
+                                       {% endif %}
+                                       {% if item.DISPLAY_CALL_NO not in audio_tags and item.DISPLAY_CALL_NO not in video_tags %}
                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
-                                       {%endif%}
+                                       {% endif %}
                                    {% endif %}
                                    {% if link.3 %}
                                        <span class="link-volumes">[{{ link.3 }}]</span>
@@ -374,18 +367,18 @@ $(document).ready(function() {
                                {% endfor %}
                              </div>
                            {% else %}
-                               {%if item.ITEM_STATUS_DESC == 'Not Charged' and not bib.FINDING_AID %}
+                               {% if item.ITEM_STATUS_DESC == 'Not Charged' and not bib.FINDING_AID %}
                                    <span style='color: green'>Available</span>
                                    <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if item.DISPLAY_CALL_NO %}call={{ item.DISPLAY_CALL_NO|urlencode }}{% endif %}&amp;{% if item.TRIMMED_LOCATION_DISPLAY_NAME %}loc={{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream|urlencode }}{% endif %}&amp;title={{ bib.TITLE|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
-                               {%else%}
-                                   {% if item.TEMPLOCATION == 'WRLC Center'  or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID %}
+                               {% else %}
+                                   {% if item.TEMPLOCATION == 'WRLC Center' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID %}
                                        <span class='off-site'>Off-site </span>
                                        <br />
                                    {% else %}
                                        {{ item.ITEM_STATUS_DESC }}
                                    {% endif %}
-                               {%endif%}
-                           {%endif%}
+                               {% endif %}
+                           {% endif %}
                        </td>
                        {% endif %}
                        <td>
@@ -394,18 +387,18 @@ $(document).ready(function() {
                            {% endif %}
                        </td>
                   </tr>
-                           {%if holding.ITEMS|length > max_items and forloop.counter == max_items%}
+                           {% if holding.ITEMS|length > max_items and forloop.counter == max_items %}
                                <td colspan="4" width="100%">
                                <table width="100%"  id="{{holding.BIB_ID}}" style="display:none;">
                                <col width="40%">
                                <col width="25%">
                                <col width="20%">
                                <col width="15%">
-                           {%endif%}
-                           {%if holding.ITEMS|length > max_items and forloop.last%}
+                           {% endif %}
+                           {% if holding.ITEMS|length > max_items and forloop.last%}
                                </table>
                                </td>
-                           {%endif%}
+                           {% endif %}
                        {% endfor %}
             <!--  If no item data use old template -->
             {% elif "Click" not in holding.TRIMMED_LOCATION_DISPLAY_NAME %}
@@ -425,10 +418,10 @@ $(document).ready(function() {
                                 <span class="library-has">{{ line }}</span>
                             {% endfor %}
                         {% endif %}
-                        {%if holding.ELECTRONIC_DATA.LINK852Z%}
+                        {% if holding.ELECTRONIC_DATA.LINK852Z%}
                             <br />
                             <span class= "note-label"> {{holding.ELECTRONIC_DATA.LINK852Z}} </span>
-                        {%endif%}
+                        {% endif %}
                 
                         </div>
                     </td>
@@ -448,36 +441,36 @@ $(document).ready(function() {
                                 <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img>
                                 {{holding.LIBRARY_NAME}} only
                             {% else %}
-                                {%if holding.DISPLAY_CALL_NO in audio_tags%}
+                                {% if holding.DISPLAY_CALL_NO in audio_tags %}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Listen online </button>
-                                {%endif%}
-                                {%if holding.DISPLAY_CALL_NO in video_tags%}
+                                {% endif %}
+                                {% if holding.DISPLAY_CALL_NO in video_tags %}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Watch online </button>
-                                {%endif%}
-                                {%if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags%}
+                                {% endif %}
+                                {% if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags %}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
-                                {%endif%}
+                                {% endif %}
                             {% endif %}
-                        {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list and holding.MFHD_DATA.marc856list.strip%}
-			    {% for link in holding.MFHD_DATA.marc856list %}
-				{% if link.3%}
-			            <span class="link-volumes">[{{ link.3 }}]</span>
-				{% endif %}
-				{% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
-			            <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-			            <br />
-			            <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
-			            {{holding.LIBRARY_NAME}} only
+                        {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list and holding.MFHD_DATA.marc856list.strip %}
+                {% for link in holding.MFHD_DATA.marc856list %}
+                {% if link.3 %}
+                        <span class="link-volumes">[{{ link.3 }}]</span>
+                {% endif %}
+                {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
+                        <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                        <br />
+                        <img style='height:1em;' src='{{ STATIC_URL }}img/lock.png'></img>
+                        {{holding.LIBRARY_NAME}} only
                                 {% else %}
-                                    {%if holding.DISPLAY_CALL_NO in audio_tags%}
+                                    {% if holding.DISPLAY_CALL_NO in audio_tags %}
                                         <button onclick="window.open('{{link.u}}')" > Listen online </button>
-                                    {%endif%}
-                                    {%if holding.DISPLAY_CALL_NO in video_tags%}
+                                    {% endif %}
+                                    {% if holding.DISPLAY_CALL_NO in video_tags %}
                                         <button onclick="window.open('{{link.u}}')" > Watch online </button>
-                                    {%endif%}
-                                    {%if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags %}
+                                    {% endif %}
+                                    {% if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags %}
                                         <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
-                                    {%endif%}
+                                    {% endif %}
                                 {% endif %}
                             {% endfor %}
                         {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME == 'WRLC Center' or holding.LOCATION_DISPLAY_NAME == 'WRLC Shared Collections Facility' %}
@@ -486,7 +479,7 @@ $(document).ready(function() {
                             <span style='color: green'>Available</span>
                             <a href='javascript:sms("http://catalog.wrlc.org/aquascrape/index.php?{% if holding.DISPLAY_CALL_NO %}call={{ holding.DISPLAY_CALL_NO|urlencode }}{% endif %}&amp;{% if holding.TRIMMED_LOCATION_DISPLAY_NAME %}loc={{ holding.TRIMMED_LOCATION_DISPLAY_NAME|noscream|urlencode }}{% endif %}&amp;title={{ bib.TITLE|truncatechars:80|urlencode }}");'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
 
-                        {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center' or holding.AVAILABILITY.TEMPLOCATION == 'WRLC Shared Collections Facility'%}
+                        {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center' or holding.AVAILABILITY.TEMPLOCATION == 'WRLC Shared Collections Facility' %}
                             <span class='off-site'>Off-site </span>
                         {% else %}
                             {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
@@ -498,7 +491,7 @@ $(document).ready(function() {
                         {% endif %}
                     </td>
                 </tr>
-          {%endif%}
+          {% endif %}
             <!-- Add Link Resolver Data
             {% if holding.LinkResolverData %}
             <tr>
@@ -516,7 +509,7 @@ $(document).ready(function() {
             -->
         {% endfor %}
     {% endfor %}
-    {%if bib.BIB_FORMAT == 'as'%}
+    {% if bib.BIB_FORMAT == 'as' %}
          <tr>
              <td class='library-group-header'>
               InterLibrary Loan
@@ -534,7 +527,7 @@ $(document).ready(function() {
                 </td>
                <td> </td>
            </tr>
-       {%endif%}
+       {% endif %}
     </tbody>
 </table> 
 {% endif %}
@@ -545,19 +538,19 @@ $(document).ready(function() {
 <p>
 {% if bibid %}
     {% if non_wrlc_item %}
-        {%if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
+        {% if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
         View JSON: <a href='{% url "gtitem_json" bib.BIB_ID %}?{{ bib.openurl.query_string|escape }}'>{% url "gtitem_json" bib.BIB_ID %}</a>
         &nbsp;
-        {%endif%}
-        {%if bib.LIBRARY_NAME == 'GM'%}
+        {% endif %}
+        {% if bib.LIBRARY_NAME == 'GM' %}
         View JSON: <a href='{% url "gmitem_json" bib.BIB_ID %}?{{ bib.openurl.query_string|escape }}'>{% url "gmitem_json" bib.BIB_ID %}</a>
         &nbsp;
-        {%endif%}
+        {% endif %}
 
     {% else %}
         View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
         &nbsp;
-    {%endif%}
+    {% endif %}
 {% endif %}
 
 {% if bib.ISBN|clean_isbn %}
