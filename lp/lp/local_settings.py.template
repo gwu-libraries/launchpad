@@ -133,7 +133,7 @@ SCREAMING_LOCATIONS = [
 
 MAX_ITEMS = 6
 
-ILLIAD_URL = 'http://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
+ILLIAD_URL = 'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
 
 ILLIAD_SID = 'GWLP'
 
