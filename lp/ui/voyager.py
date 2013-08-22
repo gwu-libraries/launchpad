@@ -1234,6 +1234,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
                        'DISPLAY_CALL_NO': link['CALLNO'],
                        'CHRON': None}
                 items.append(val)
+    print items
     res.append(m866list)
     res.append(m856list)
     res.append(items)

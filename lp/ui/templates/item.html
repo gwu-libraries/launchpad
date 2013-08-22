@@ -264,9 +264,9 @@ $(document).ready(function() {
         {% endif %}
         {% for holding in library.list %}
             {% if holding.ITEMS %}
-                {% for item in holding.ITEMS %}
-                    {% if holding.MFHD_DATA.marc866list or holding.MFHD_DATA.marc852%}
-                        {% if forloop.first and not holding.MFHD_DATA.marc856list%}
+            {% for item in holding.ITEMS %}
+                {% if holding.MFHD_DATA.marc866list or holding.MFHD_DATA.marc852%}
+                    {% if forloop.first and not holding.MFHD_DATA.marc856list%}
                         <tr>
                         <td >
                         <div>
@@ -290,8 +290,8 @@ $(document).ready(function() {
                         </div>
                         </td>
                         </tr>
-                        {% endif %}
                     {% endif %}
+                {% endif %}
                     <tr>
                     <td>
                         {% if bib.FINDING_AID %}Gelman Special Collections<br />
