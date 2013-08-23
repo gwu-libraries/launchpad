@@ -64,17 +64,18 @@ LIB_LOOKUP = {
 
 Z3950_SERVERS = {
     'LIBRARY_ID': {
-        'SERVER_ADDRESS': '',
-        'SERVER_PORT': '',
-        'DATABASE_NAME': '',
-        'PREFERRED_RECORD_SYNTAX': '',
+        'IP': '',
+        'PORT': '',
+        'DB': '',
+        'SYNTAX': '',
     }
 }
 
 INDEX_CODES = {
-    'isbn': ['020N', '020A', 'ISB3'],
+    'isbn': ['020N', '020A', 'ISB3', '020Z'],
     'issn': ['022A', '022Z'],
     'oclc': ['035A'],
+    'lccn': ['010A']
     }
 
 
