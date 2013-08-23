@@ -224,12 +224,12 @@ $(document).ready(function() {
                     {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID %}
                      <p>
                      <span class = "catlink"> 
-                      Request this title through  <a href= "{{bib.ILLIAD_LINK}}" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
+                         Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
                   </span></p>
                   {%elif bib.ILLIAD_LINK and bib.BIB_FORMAT == 'as' and not bib.FINDING_AID and non_gw%}
                   <p>
                     <span class = "catlink">
-                    Request this title through  <a href= "{{bib.ILLIAD_LINK}}" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                        Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     </span></p>
 
                    {% endif %}
@@ -264,9 +264,9 @@ $(document).ready(function() {
         {% endif %}
         {% for holding in library.list %}
             {% if holding.ITEMS %}
-                {% for item in holding.ITEMS %}
-                    {% if holding.MFHD_DATA.marc866list or holding.MFHD_DATA.marc852%}
-                        {% if forloop.first and not holding.MFHD_DATA.marc856list%}
+            {% for item in holding.ITEMS %}
+                {% if holding.MFHD_DATA.marc866list or holding.MFHD_DATA.marc852%}
+                    {% if forloop.first and not holding.MFHD_DATA.marc856list%}
                         <tr>
                         <td >
                         <div>
@@ -290,8 +290,8 @@ $(document).ready(function() {
                         </div>
                         </td>
                         </tr>
-                        {% endif %}
                     {% endif %}
+                {% endif %}
                     <tr>
                     <td>
                         {% if bib.FINDING_AID %}Gelman Special Collections<br />
@@ -383,7 +383,7 @@ $(document).ready(function() {
                        {% endif %}
                        <td>
                            {% if item.ELIGIBLE %}
-                               <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                           <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="_gaq.push(['Document Delivery', 'CLS', '{{bib.BIB_FORMAT}}']);" target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                            {% endif %}
                        </td>
                   </tr>
@@ -487,7 +487,7 @@ $(document).ready(function() {
                     </td>
                     <td>
                         {% if holding.ELIGIBLE %}
-                            <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                        <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="_gaq.push(['Document Delivery', 'CLS', '{{bib.BIB_FORMAT}}']);" target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                         {% endif %}
                     </td>
                 </tr>
@@ -523,7 +523,7 @@ $(document).ready(function() {
                </td>
                <td>                   </td>
                <td> 
-<a href= "{{bib.ILLIAD_LINK }}" target='newwin'> Request a copy from another library </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
+                   <a href= "{{bib.ILLIAD_LINK }}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Request a copy from another library </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
                 </td>
                <td> </td>
            </tr>
