@@ -22,7 +22,7 @@ only been tested on ubuntu 10.04 LTS.
 
 2. Install git 
 
-        sudo apt-get install git-core
+        sudo apt-get install git
 
 3. Download Oracle Instant Client 11.2.0.3 for Linux
 x86-64 or the platform that matches your system from
