@@ -30,8 +30,7 @@
         </FilesMatch>
     </IfModule>
 
-    AliasMatch ^/static/css/([^/]*\.css) /LPHOME/launchpad/lp/ui/static/css/$1
-    AliasMatch ^/static/img/(.*) /LPHOME/launchpad/lp/ui/static/img/$1
+    AliasMatch ^/static/(.*) /home/ubuntu/launchpad/lp/ui/static/$1
     AliasMatch ^/(sitemap.*) /LPHOME/launchpad/lp/ui/static/sitemaps/$1
 
     WSGIDaemonProcess <your.server.name> processes=2 threads=15 python-path=/LPHOME/launchpad/ENV/lib/python/2.7/site-packages:/LPHOME/launchpad/lp
