@@ -174,6 +174,8 @@ even without apache configured.  This might be sufficient for dev/test.
 
         sudo a2enmod expires
         sudo a2enmod headers
+        sudo a2enmod proxy
+        sudo a2enmod proxy_http
 
 7. Enable the app in apache and bounce apache2 to start it up
 
