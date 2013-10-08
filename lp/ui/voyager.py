@@ -1215,7 +1215,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
             items.append(val)
         if links:
             if (link['STATUS'] not in ['Charged', 'Not Charged', 'Missing',
-                'LIB USE ONLY'] and link['STATUS'] != 'DUE' and
+                'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and
                 'INTERNET' not in link['LOCATION'] and
                     'Online' not in link['LOCATION'] and link['STATUS'] != ''):
                 m866list.append(link['STATUS'])
