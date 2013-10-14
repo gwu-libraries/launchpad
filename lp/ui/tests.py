@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_lccn
+from ui.voyager import insert_sid
 
 
 class CleanIsbnTest(TestCase):
@@ -38,3 +39,26 @@ class CleanLccnTest(TestCase):
         """ensure example cases are handled correctly"""
         for in_lccn, out_lccn in self.examples:
             self.assertEqual(clean_lccn(in_lccn), out_lccn)
+
+class IlliadSidTest(TestCase):
+
+    def test_illiad_sid(self):
+        bib_data_list = []
+        result = []
+        query_string_encoded = [
+                'genre=article&issn=0010194X&title=Columbia%20Journalism%20Review&volume=52&issue=1&date=20130501&atitle=Streams%20of%20consciousness.&spage=24&pages=24-36&sid=EBSCO:Communication%20&%20Mass%20Media%20Complete&aulast=ADLER,%20BEN',
+                'genre=article&issn=01644297&title=Arizona+State+Law+Journal&volume=1974&issue=&date=19740101&atitle=Closing+the+gap%3a+protection+for+mobile+home+owners.&spage=101&pages=101-127&sid=EBSCO:Index+to+Legal+Periodicals+Retrospective%3a+1908-1981+&'
+                ]
+        for query in query_string_encoded:
+            bib_data = {'openurl': {'query_string_encoded': query}}
+            bib_data_list.append(bib_data)
+        for bib_data in bib_data_list:
+            result.append(insert_sid(bib_data, bib_data['openurl']['query_string_encoded'].find('sid=')))
+        correct_result_list = [
+            'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?genre=article&issn=0010194X&title=Columbia%20Journalism%20Review&volume=52&issue=1&date=20130501&atitle=Streams%20of%20consciousness.&spage=24&pages=24-36&sid=EBSCO:Communication%20and%20Mass%20:GWLP&aulast=ADLER,%20BEN',
+                'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?genre=article&issn=01644297&title=Arizona+State+Law+Journal&volume=1974&issue=&date=19740101&atitle=Closing+the+gap%3a+protection+for+mobile+home+owners.&spage=101&pages=101-127&sid=EBSCO:Index+to+Legal+Periodical:GWLP&'
+        ]
+        for f, b in zip(result, correct_result_list):
+            print f
+            print b
+            self.assertEqual(f, b)
