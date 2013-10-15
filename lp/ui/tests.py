@@ -43,22 +43,20 @@ class CleanLccnTest(TestCase):
 class IlliadSidTest(TestCase):
 
     def test_illiad_sid(self):
-        bib_data_list = []
-        result = []
-        query_string_encoded = [
-                'genre=article&issn=0010194X&title=Columbia%20Journalism%20Review&volume=52&issue=1&date=20130501&atitle=Streams%20of%20consciousness.&spage=24&pages=24-36&sid=EBSCO:Communication%20&%20Mass%20Media%20Complete&aulast=ADLER,%20BEN',
-                'genre=article&issn=01644297&title=Arizona+State+Law+Journal&volume=1974&issue=&date=19740101&atitle=Closing+the+gap%3a+protection+for+mobile+home+owners.&spage=101&pages=101-127&sid=EBSCO:Index+to+Legal+Periodicals+Retrospective%3a+1908-1981+&'
+
+        # expected is a list of tuples, each tuple includes the data to call 
+        # insert_sid with and the expected output of the call
+
+        expected = [
+                (
+                    'genre=article&issn=0010194X&title=Columbia%20Journalism%20Review&volume=52&issue=1&date=20130501&atitle=Streams%20of%20consciousness.&spage=24&pages=24-36&sid=EBSCO:Communication%20&%20Mass%20Media%20Complete&aulast=ADLER,%20BEN',
+                    'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?genre=article&issn=0010194X&title=Columbia%20Journalism%20Review&volume=52&issue=1&date=20130501&atitle=Streams%20of%20consciousness.&spage=24&pages=24-36&sid=EBSCO:Communication%20and%20Mass%20:GWLP&aulast=ADLER,%20BEN',
+                ),
+                (
+                    'genre=article&issn=01644297&title=Arizona+State+Law+Journal&volume=1974&issue=&date=19740101&atitle=Closing+the+gap%3a+protection+for+mobile+home+owners.&spage=101&pages=101-127&sid=EBSCO:Index+to+Legal+Periodicals+Retrospective%3a+1908-1981+&', 
+                    'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?genre=article&issn=01644297&title=Arizona+State+Law+Journal&volume=1974&issue=&date=19740101&atitle=Closing+the+gap%3a+protection+for+mobile+home+owners.&spage=101&pages=101-127&sid=EBSCO:Index+to+Legal+Periodical:GWLP&')
                 ]
-        for query in query_string_encoded:
-            bib_data = {'openurl': {'query_string_encoded': query}}
-            bib_data_list.append(bib_data)
-        for bib_data in bib_data_list:
-            result.append(insert_sid(bib_data, bib_data['openurl']['query_string_encoded'].find('sid=')))
-        correct_result_list = [
-            'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?genre=article&issn=0010194X&title=Columbia%20Journalism%20Review&volume=52&issue=1&date=20130501&atitle=Streams%20of%20consciousness.&spage=24&pages=24-36&sid=EBSCO:Communication%20and%20Mass%20:GWLP&aulast=ADLER,%20BEN',
-                'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?genre=article&issn=01644297&title=Arizona+State+Law+Journal&volume=1974&issue=&date=19740101&atitle=Closing+the+gap%3a+protection+for+mobile+home+owners.&spage=101&pages=101-127&sid=EBSCO:Index+to+Legal+Periodical:GWLP&'
-        ]
-        for f, b in zip(result, correct_result_list):
-            print f
-            print b
-            self.assertEqual(f, b)
+
+        for i, o in expected:
+            result = insert_sid({'openurl': {'query_string_encoded': i}}, 0)
+            self.assertEqual(o, result)
