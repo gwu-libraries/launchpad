@@ -94,7 +94,7 @@ def item_json(request, bibid, z3950='False', school=None):
     try:
         bib_data = voyager.get_bib_data(bibid)
         if not bib_data:
-            return HttpResponse('{}', content_type='application_json',
+            return HttpResponse('{}', content_type='application/json',
                                 status=404)
         bib_data['openurl'] = _openurl_dict(request)
         bib_data['holdings'] = voyager.get_holdings(bib_data)
@@ -204,7 +204,7 @@ def gtitem_json(request, gtbibid):
         else:
             bib_data = voyager.get_z3950_bib_data('b' + gtbibid[:-1], 'GT')
             if not bib_data:
-                return HttpResponse('{}', content_type='application_json',
+                return HttpResponse('{}', content_type='application/json',
                                     status=404)
             bib_data['holdings'] = voyager.get_holdings(bib_data, 'GT', False)
             bib_data['openurl'] = _openurl_dict(request)
@@ -305,7 +305,7 @@ def gmitem_json(request, gmbibid):
         else:
             bib_data = voyager.get_z3950_bib_data(gmbibid, 'GM')
             if not bib_data:
-                return HttpResponse('{}', content_type='application_json',
+                return HttpResponse('{}', content_type='application/json',
                                     status=404)
             bib_data['holdings'] = voyager.get_holdings(bib_data, 'GM', False)
             bib_data['openurl'] = _openurl_dict(request)
