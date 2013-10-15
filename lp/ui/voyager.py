@@ -1419,7 +1419,8 @@ def insert_sid(bib_data):
     q = urlparse.parse_qs(bib_data['openurl']['query_string_encoded'])
     illiad_url = None
     if q.has_key('sid') and len(q['sid']) == 1:
-        sid = q['sid'][0][0:35]
+        max_size = 40 - len(settings.ILLIAD_SID)
+        sid = q['sid'][0][0:max_size-1]
         sid += ":" + settings.ILLIAD_SID
         q['sid'] = [sid]
         illiad_url = settings.ILLIAD_URL + urllib.urlencode(q, doseq=True)
