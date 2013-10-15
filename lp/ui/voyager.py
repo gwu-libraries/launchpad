@@ -1315,10 +1315,10 @@ def get_illiad_link(bib_data):
         if bib_data['openurl']['query_string_encoded']:
             ind = bib_data['openurl']['query_string_encoded'].find('sid=')
             if ind != -1:
-                return insert_sid(bib_data, ind)
+                return insert_sid(bib_data)
             ind = bib_data['openurl']['query_string_encoded'].find('rfr_id=')
             if ind != -1:
-                return insert_sid(bib_data, ind)
+                return insert_sid(bib_data)
     title = ''
     ind = 0
     query_args = {}
@@ -1406,7 +1406,7 @@ def get_illiad_link(bib_data):
     return url
 
 
-def insert_sid(bib_data, ind):
+def insert_sid(bib_data):
     ind = bib_data['openurl']['query_string_encoded'].find('sid=')
     #Find the end of the sid key
     if ind != -1:

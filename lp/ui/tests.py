@@ -58,5 +58,5 @@ class IlliadSidTest(TestCase):
                 ]
 
         for i, o in expected:
-            result = insert_sid({'openurl': {'query_string_encoded': i}}, 0)
+            result = insert_sid({'openurl': {'query_string_encoded': i}})
             self.assertEqual(o, result)
