@@ -1,3 +1,5 @@
+import urlparse
+
 from django.test import TestCase
 
 from ui.templatetags.launchpad_extras import clean_isbn, clean_lccn
@@ -44,19 +46,23 @@ class IlliadSidTest(TestCase):
 
     def test_illiad_sid(self):
 
-        # expected is a list of tuples, each tuple includes the data to call 
-        # insert_sid with and the expected output of the call
+        # expected is a list of tuples each of which includes:
+        # 1. an openurl querystring that contains a sid parameter
+        # 2. the expected string that the sid parameter will be rewritten to 
 
         expected = [
                 (
-                    'genre=article&issn=0010194X&title=Columbia%20Journalism%20Review&volume=52&issue=1&date=20130501&atitle=Streams%20of%20consciousness.&spage=24&pages=24-36&sid=EBSCO:Communication%20&%20Mass%20Media%20Complete&aulast=ADLER,%20BEN',
-                    'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?genre=article&issn=0010194X&title=Columbia%20Journalism%20Review&volume=52&issue=1&date=20130501&atitle=Streams%20of%20consciousness.&spage=24&pages=24-36&sid=EBSCO:Communication%20and%20Mass%20:GWLP&aulast=ADLER,%20BEN',
+                    'genre=article&issn=0010194X&title=Columbia%20Journalism%20Review&volume=52&issue=1&date=20130501&atitle=Streams%20of%20consciousness.&spage=24&pages=24-36&sid=EBSCO:Communication%20%26%20Mass%20Media%20Complete&aulast=ADLER,%20BEN',
+                    'EBSCO:Communication & Mass Media Co:GWLP'
                 ),
                 (
-                    'genre=article&issn=01644297&title=Arizona+State+Law+Journal&volume=1974&issue=&date=19740101&atitle=Closing+the+gap%3a+protection+for+mobile+home+owners.&spage=101&pages=101-127&sid=EBSCO:Index+to+Legal+Periodicals+Retrospective%3a+1908-1981+&', 
-                    'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?genre=article&issn=01644297&title=Arizona+State+Law+Journal&volume=1974&issue=&date=19740101&atitle=Closing+the+gap%3a+protection+for+mobile+home+owners.&spage=101&pages=101-127&sid=EBSCO:Index+to+Legal+Periodical:GWLP&')
-                ]
+                    'genre=article&issn=01644297&title=Arizona+State+Law+Journal&volume=1974&issue=&date=19740101&atitle=Closing+the+gap%3a+protection+for+mobile+home+owners.&spage=101&pages=101-127&sid=EBSCO:Index+to+Legal+Periodicals+Retrospective%3a+1908-1981', 
+                    'EBSCO:Index to Legal Periodicals Re:GWLP'
+                )
+            ]
 
-        for i, o in expected:
-            result = insert_sid({'openurl': {'query_string_encoded': i}})
-            self.assertEqual(o, result)
+        for q, expected_sid in expected:
+            url = insert_sid({'openurl': {'query_string_encoded': q}})
+            u = urlparse.urlparse(url)
+            sid = urlparse.parse_qs(u.query)['sid'][0]
+            self.assertEqual(sid, expected_sid)

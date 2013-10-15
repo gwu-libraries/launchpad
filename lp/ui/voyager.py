@@ -1,6 +1,7 @@
 import copy
 import re
 import urllib
+import urlparse
 
 import pycountry
 import pymarc
@@ -1407,36 +1408,22 @@ def get_illiad_link(bib_data):
 
 
 def insert_sid(bib_data):
-    ind = bib_data['openurl']['query_string_encoded'].find('sid=')
-    #Find the end of the sid key
-    if ind != -1:
-        end = bib_data['openurl']['query_string_encoded'].\
-            find('&', ind)
-        # check if there is an & in the sid field
-        valid_get_param = check_get_param(bib_data['openurl']
-                                          ['query_string_encoded'],
-                                          end)
-        if not valid_get_param:  # if there is & sign in sid
-            end = bib_data['openurl']['query_string_encoded'].\
-                find('&', end+1)
-            new_sid = str(bib_data['openurl']
-                          ['query_string_encoded'][ind:ind + 35])
-            new_sid = check_html_escape(new_sid)
-            new_sid = new_sid + ':' + settings.ILLIAD_SID
-            new_sid = new_sid.replace('&', 'and', 1)
-            before_string = bib_data['openurl']['query_string_encoded'][0:ind]\
-                + new_sid
-            after_sid = bib_data['openurl']['query_string_encoded'][end:]
-            new_string = before_string + after_sid
-            return settings.ILLIAD_URL + new_string
-        else:
-            # if source ID > 35 just send the first 35 characters
-            new_sid = bib_data['openurl']['query_string_encoded'][ind:ind + 35]
-            # check if the html escpae character is not truncated
-            new_sid = check_html_escape(new_sid)
-            new_sid = new_sid + ':' + settings.ILLIAD_SID
-            return settings.ILLIAD_URL + new_sid
-
+    """
+    create a ILLIAD url using an openurl querystring. The sid will be rewritten
+    to include ILLIAD_SID at the end. The modified SID must not be longer than 
+    40 characters per https://github.com/gwu-libraries/launchpad/issues/340
+    
+    Note: the order of parameters in the resulting URL will likely be 
+    different from the order in the original query string that is passed in.
+    """
+    q = urlparse.parse_qs(bib_data['openurl']['query_string_encoded'])
+    illiad_url = None
+    if q.has_key('sid') and len(q['sid']) == 1:
+        sid = q['sid'][0][0:35]
+        sid += ":" + settings.ILLIAD_SID
+        q['sid'] = [sid]
+        illiad_url = settings.ILLIAD_URL + urllib.urlencode(q, doseq=True)
+    return illiad_url
 
 def check_html_escape(new_sid):
     if new_sid.endswith('%'):
