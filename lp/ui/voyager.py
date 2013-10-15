@@ -1416,15 +1416,15 @@ def insert_sid(bib_data):
     Note: the order of parameters in the resulting URL will likely be 
     different from the order in the original query string that is passed in.
     """
-    q = urlparse.parse_qs(bib_data['openurl']['query_string_encoded'])
-    illiad_url = None
+    qs = bib_data['openurl']['query_string_encoded']
+    q = urlparse.parse_qs(qs)
     if q.has_key('sid') and len(q['sid']) == 1:
         max_size = 40 - len(settings.ILLIAD_SID)
-        sid = q['sid'][0][0:max_size-1]
-        sid += ":" + settings.ILLIAD_SID
-        q['sid'] = [sid]
-        illiad_url = settings.ILLIAD_URL + urllib.urlencode(q, doseq=True)
-    return illiad_url
+        new_sid = q['sid'][0][0:max_size-1]
+        new_sid += ":" + settings.ILLIAD_SID
+        q['sid'] = [new_sid]
+        qs = urllib.urlencode(q, doseq=True)
+    return settings.ILLIAD_URL + qs
 
 def check_html_escape(new_sid):
     if new_sid.endswith('%'):

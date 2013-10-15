@@ -66,3 +66,8 @@ class IlliadSidTest(TestCase):
             u = urlparse.urlparse(url)
             sid = urlparse.parse_qs(u.query)['sid'][0]
             self.assertEqual(sid, expected_sid)
+
+    def test_no_sid(self):
+        bib_data = {'openurl': {'query_string_encoded': 'genre=article&issn=0010194X&title=Columbia%20Journalism%20Review&volume=52&issue=1&date=20130501&atitle=Streams%20of%20consciousness.&spage=24&pages=24-36&aulast=ADLER,%20BEN'}}
+        url = insert_sid(bib_data)
+        self.assertTrue(url)
