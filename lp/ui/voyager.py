@@ -259,7 +259,8 @@ AND bib_index.normal_heading IN (
         FROM bib_index
         WHERE bib_index.index_code IN (%s)
         AND bib_index.normal_heading IN (%s)
-        AND bib_index.normal_heading != 'OCOLC'"""
+        AND bib_index.normal_heading != 'OCOLC'
+        AND bib_index.normal_heading != bib_index.display_heading"""
     query[5] = """
         AND UPPER(bib_index.display_heading) NOT LIKE %s"""
     query[6] = """
