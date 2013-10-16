@@ -1407,35 +1407,32 @@ def get_illiad_link(bib_data):
 
 
 def insert_sid(bib_data, ind):
-    ind = bib_data['openurl']['query_string_encoded'].find('sid=')
-    #Find the end of the sid key
-    if ind != -1:
+    end = bib_data['openurl']['query_string_encoded'].\
+        find('&', ind)
+    # check if there is an & in the sid field
+    valid_get_param = check_get_param(bib_data['openurl']
+                                      ['query_string_encoded'],
+                                      end)
+    if not valid_get_param:  # if there is & sign in sid
         end = bib_data['openurl']['query_string_encoded'].\
-            find('&', ind)
-        # check if there is an & in the sid field
-        valid_get_param = check_get_param(bib_data['openurl']
-                                          ['query_string_encoded'],
-                                          end)
-        if not valid_get_param:  # if there is & sign in sid
-            end = bib_data['openurl']['query_string_encoded'].\
-                find('&', end+1)
-            new_sid = str(bib_data['openurl']
-                          ['query_string_encoded'][ind:ind + 35])
-            new_sid = check_html_escape(new_sid)
-            new_sid = new_sid + ':' + settings.ILLIAD_SID
-            new_sid = new_sid.replace('&', 'and', 1)
-            before_string = bib_data['openurl']['query_string_encoded'][0:ind]\
-                + new_sid
-            after_sid = bib_data['openurl']['query_string_encoded'][end:]
-            new_string = before_string + after_sid
-            return settings.ILLIAD_URL + new_string
-        else:
-            # if source ID > 35 just send the first 35 characters
-            new_sid = bib_data['openurl']['query_string_encoded'][ind:ind + 35]
-            # check if the html escpae character is not truncated
-            new_sid = check_html_escape(new_sid)
-            new_sid = new_sid + ':' + settings.ILLIAD_SID
-            return settings.ILLIAD_URL + new_sid
+            find('&', end+1)
+        new_sid = str(bib_data['openurl']
+                      ['query_string_encoded'][ind:ind + 35])
+        new_sid = check_html_escape(new_sid)
+        new_sid = new_sid + ':' + settings.ILLIAD_SID
+        new_sid = new_sid.replace('&', 'and', 1)
+        before_string = bib_data['openurl']['query_string_encoded'][0:ind]\
+            + new_sid
+        after_sid = bib_data['openurl']['query_string_encoded'][end:]
+        new_string = before_string + after_sid
+        return settings.ILLIAD_URL + new_string
+    else:
+        # if source ID > 35 just send the first 35 characters
+        new_sid = bib_data['openurl']['query_string_encoded'][ind:ind + 35]
+        # check if the html escpae character is not truncated
+        new_sid = check_html_escape(new_sid)
+        new_sid = new_sid + ':' + settings.ILLIAD_SID
+        return settings.ILLIAD_URL + new_sid
 
 
 def check_html_escape(new_sid):
