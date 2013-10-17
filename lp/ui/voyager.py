@@ -1404,14 +1404,14 @@ def get_illiad_link(bib_data):
 def insert_sid(qs):
     """
     create an ILLIAD url using an openurl querystring. The sid (openurl v0.1) 
-    or rfr_id (openurl v1.0) will be rewritten to include ILLIAD_SID at the 
-    end. 
+    or rfr_id (openurl v1.0) will be rewritten to include settings.ILLIAD_SID 
+    at the end. 
     """
     try:
         q = urlparse.parse_qs(qs, strict_parsing=True)
     except ValueError:
         qs = fix_ampersands(qs)
-        q = urlparse.parse_qs(qs, strict_parsing=True)
+        q = urlparse.parse_qs(qs)
 
     # look to see if we've got openurl v0.1 or v1.0
     sid_name = sid = None
@@ -1438,13 +1438,15 @@ def insert_sid(qs):
 
 def fix_ampersands(qs):
     """
-    Try to fix upstream openurl creators that don't properly encode ampersands 
-    in parameter values. This is kind of tricky business. The basic idea is
-    to split the query string on '=' and then inpsect each part to make sure
-    there aren't more than on '&' characters in it. If there are, all but the 
-    last are assumed to need encoding. Similarly, if an ampersand is present
-    in the last part, it is assumed to need encoding since there is no '=' 
-    following it.
+    Try to fix openurl that don't encode ampersands correctly. This is kind of 
+    tricky business. The basic idea is to split the query string on '=' and 
+    then inpsect each part to make sure there aren't more than one '&' 
+    characters in it. If there are, all but the last are assumed to need 
+    encoding. Similarly, if an ampersand is present in the last part, it 
+    is assumed to need encoding since there is no '=' following it. 
+
+    TODO: if possible we should really try to fix wherever these OpenURLs are 
+    getting created upstream instead of hacking around it here.
     """
     parts = []
     for p in qs.split('='):
@@ -1454,7 +1456,7 @@ def fix_ampersands(qs):
             p = '%26'.join(l) + '&' + last
         parts.append(p)
 
-    # an ampersand in the last part is definitely an error
+    # an & in the last part definitely needs encoding
     parts[-1] = parts[-1].replace('&', '%26')
 
     return '='.join(parts)
