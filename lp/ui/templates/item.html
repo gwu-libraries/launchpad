@@ -240,7 +240,14 @@ $(document).ready(function() {
 
 </div>
 
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#holdings" data-toggle="tab">Holdings</a></li>
+  <li><a href="#details" data-toggle="tab">Details</a></li>
+</ul>
 
+<div class="tab-content">
+
+<div id="holdings" class="tab-pane active">
 {% if holdings %}
     {% regroup holdings by LIBRARY_FULL_NAME as library_list %}
 <table WIDTH='100%' > 
@@ -528,8 +535,14 @@ $(document).ready(function() {
            </tr>
        {% endif %}
     </tbody>
-</table> 
+  </table> 
 {% endif %}
+</div>
+
+<div id="details">
+</div>
+
+</div>
 
 {% if debug %}
 <h3>Debugging info</h3>
