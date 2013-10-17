@@ -1,6 +1,7 @@
 import copy
 import re
 import urllib
+import urlparse
 
 import pycountry
 import pymarc
@@ -1314,9 +1315,8 @@ def get_gm_link(lines, line):
 
 
 def get_illiad_link(bib_data):
-    if 'openurl' in bib_data:
-        if bib_data['openurl']['query_string']:
-            return insert_sid(bib_data)
+    if 'openurl' in bib_data and 'query_string_encoded' in bib_data['openurl']:
+        return insert_sid(bib_data['openurl']['query_string_encoded'])
     title = ''
     ind = 0
     query_args = {}
@@ -1404,66 +1404,65 @@ def get_illiad_link(bib_data):
     return url
 
 
-def insert_sid(bib_data):
-    ind = bib_data['openurl']['query_string'].find('sid=')
-    #Find the end of the sid key
-    if ind != -1:
-        end = bib_data['openurl']['query_string'].\
-            find('&', ind)
-        # check if there is an & in the sid field
-        valid_get_param = check_get_param(bib_data['openurl']['query_string'],
-                                          end)
-        if not valid_get_param:  # if there is & sign in sid
-            end = bib_data['openurl']['query_string'].\
-                find('&', end+1)
-        if end == -1:
-            # if source ID > 35 just send the first 35 characters
-            new_sid = bib_data['openurl']['query_string'][ind:ind + 27]\
-                + ':' + settings.ILLIAD_SID
-            new_sid = new_sid.replace('&', 'and', 1)
-            return settings.ILLIAD_URL + new_sid
-        else:  # it's not at the end
-            new_sid = bib_data['openurl']['query_string'][ind:ind + 27]\
-                + ':' + settings.ILLIAD_SID
-            new_sid = new_sid.replace('&', 'and', 1)
-            before_string = bib_data['openurl']['query_string'][0:ind]\
-                + new_sid
-            after_sid = bib_data['openurl']['query_string'][end:]
-            new_string = before_string + after_sid
-            return settings.ILLIAD_URL + new_string
-    ind = bib_data['openurl']['query_string'].find('rfr_id=')
-    #Find the end of the sid key
-    if ind != -1:
-        end = bib_data['openurl']['query_string'].\
-            find('&', ind)
-        valid_get_param = check_get_param(bib_data['openurl']['query_string'],
-                                          end)
-        if not valid_get_param:  # if there is no &sign in sid
-            end = bib_data['openurl']['query_string'].\
-                find('&', end)
-        if end == -1:
-            new_sid = bib_data['openurl']['query_string'][ind:35]\
-                + ':' + settings.ILLIAD_SID
-            return settings.ILLIAD_URL + new_sid
-        else:
-            new_sid = bib_data['openurl']['query_string'][ind:35]\
-                + ':' + settings.ILLIAD_SID
-            before_string = bib_data['openurl']['query_string'][0:ind]\
-                + new_sid
-            after_sid = bib_data['openurl']['query_string'][end:]
-            new_string = before_string + after_sid
-            return settings.ILLIAD_URL + new_string
-    return settings.ILLIAD_URL + \
-        bib_data['openurl']['query_string']
+def insert_sid(qs):
+    """
+    create an ILLIAD url using an openurl querystring. The sid (openurl v0.1) 
+    or rfr_id (openurl v1.0) will be rewritten to include settings.ILLIAD_SID 
+    at the end. 
+    """
+    try:
+        q = urlparse.parse_qs(qs, strict_parsing=True)
+    except ValueError:
+        qs = fix_ampersands(qs)
+        q = urlparse.parse_qs(qs)
+
+    # look to see if we've got openurl v0.1 or v1.0
+    sid_name = sid = None
+    if q.has_key('sid') and len(q['sid']) == 1:
+        sid_name = 'sid'
+        sid = q['sid'][0]
+    elif q.has_key('rfr_id') and len(q['rfr_id']) == 1:
+        sid_name = 'rfr_id'
+        sid = q['rfr_id'][0]
+
+    if sid_name and sid:
+        # trim the sid value so that it is not longer than 40 characters
+        # https://github.com/gwu-libraries/launchpad/issues/340
+        max_size = 40 - len(settings.ILLIAD_SID) - 1  # 1 for the colon
+        new_sid = sid[0:max_size]
+
+        # encode the querystring using the new sid
+        new_sid += ":" + settings.ILLIAD_SID
+        q[sid_name] = [new_sid]
+        qs = urllib.urlencode(q, doseq=True)
+
+    return settings.ILLIAD_URL + qs
 
 
-def check_get_param(url, end):
-    nextind = url.find('&', end)
-    index = url.rfind('=', end, nextind)
-    if index > end and index < nextind:
-        return True
-    else:
-        return False
+def fix_ampersands(qs):
+    """
+    Try to fix openurl that don't encode ampersands correctly. This is kind of 
+    tricky business. The basic idea is to split the query string on '=' and 
+    then inpsect each part to make sure there aren't more than one '&' 
+    characters in it. If there are, all but the last are assumed to need 
+    encoding. Similarly, if an ampersand is present in the last part, it 
+    is assumed to need encoding since there is no '=' following it. 
+
+    TODO: if possible we should really try to fix wherever these OpenURLs are 
+    getting created upstream instead of hacking around it here.
+    """
+    parts = []
+    for p in qs.split('='):
+        if p.count('&') > 1:
+            l = p.split('&')
+            last = l.pop()
+            p = '%26'.join(l) + '&' + last
+        parts.append(p)
+
+    # an & in the last part definitely needs encoding
+    parts[-1] = parts[-1].replace('&', '%26')
+
+    return '='.join(parts)
 
 
 def clean_title(title):
