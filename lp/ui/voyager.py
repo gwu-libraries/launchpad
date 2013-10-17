@@ -1312,14 +1312,8 @@ def get_gm_link(lines, line):
 
 
 def get_illiad_link(bib_data):
-    if 'openurl' in bib_data:
-        if bib_data['openurl']['query_string_encoded']:
-            ind = bib_data['openurl']['query_string_encoded'].find('sid=')
-            if ind != -1:
-                return insert_sid(bib_data)
-            ind = bib_data['openurl']['query_string_encoded'].find('rfr_id=')
-            if ind != -1:
-                return insert_sid(bib_data)
+    if 'openurl' in bib_data and 'query_string_encoded' in bib_data['openurl']:
+        return insert_sid(bib_data['openurl']['query_string_encoded'])
     title = ''
     ind = 0
     query_args = {}
@@ -1407,40 +1401,63 @@ def get_illiad_link(bib_data):
     return url
 
 
-def insert_sid(bib_data):
+def insert_sid(qs):
     """
-    create a ILLIAD url using an openurl querystring. The sid will be rewritten
-    to include ILLIAD_SID at the end. The modified SID must not be longer than 
-    40 characters per https://github.com/gwu-libraries/launchpad/issues/340
-    
-    Note: the order of parameters in the resulting URL will likely be 
-    different from the order in the original query string that is passed in.
+    create an ILLIAD url using an openurl querystring. The sid (openurl v0.1) 
+    or rfr_id (openurl v1.0) will be rewritten to include ILLIAD_SID at the 
+    end. 
     """
-    qs = bib_data['openurl']['query_string_encoded']
-    q = urlparse.parse_qs(qs)
+    try:
+        q = urlparse.parse_qs(qs, strict_parsing=True)
+    except ValueError:
+        qs = fix_ampersands(qs)
+        q = urlparse.parse_qs(qs, strict_parsing=True)
+
+    # look to see if we've got openurl v0.1 or v1.0
+    sid_name = sid = None
     if q.has_key('sid') and len(q['sid']) == 1:
-        max_size = 40 - len(settings.ILLIAD_SID)
-        new_sid = q['sid'][0][0:max_size-1]
+        sid_name = 'sid'
+        sid = q['sid'][0]
+    elif q.has_key('rfr_id') and len(q['rfr_id']) == 1:
+        sid_name = 'rfr_id'
+        sid = q['rfr_id'][0]
+
+    if sid_name and sid:
+        # trim the sid value so that it is not longer than 40 characters
+        # https://github.com/gwu-libraries/launchpad/issues/340
+        max_size = 40 - len(settings.ILLIAD_SID) - 1  # 1 for the colon
+        new_sid = sid[0:max_size]
+
+        # encode the querystring using the new sid
         new_sid += ":" + settings.ILLIAD_SID
-        q['sid'] = [new_sid]
+        q[sid_name] = [new_sid]
         qs = urllib.urlencode(q, doseq=True)
+
     return settings.ILLIAD_URL + qs
 
-def check_html_escape(new_sid):
-    if new_sid.endswith('%'):
-        new_sid = new_sid + '20'
-    elif new_sid.endswith('%2'):
-        new_sid = new_sid + '20'
-    return new_sid
 
+def fix_ampersands(qs):
+    """
+    Try to fix upstream openurl creators that don't properly encode ampersands 
+    in parameter values. This is kind of tricky business. The basic idea is
+    to split the query string on '=' and then inpsect each part to make sure
+    there aren't more than on '&' characters in it. If there are, all but the 
+    last are assumed to need encoding. Similarly, if an ampersand is present
+    in the last part, it is assumed to need encoding since there is no '=' 
+    following it.
+    """
+    parts = []
+    for p in qs.split('='):
+        if p.count('&') > 1:
+            l = p.split('&')
+            last = l.pop()
+            p = '%26'.join(l) + '&' + last
+        parts.append(p)
 
-def check_get_param(url, end):
-    nextind = url.find('&', end)
-    index = url.rfind('=', end, nextind)
-    if index > end and index < nextind:
-        return True
-    else:
-        return False
+    # an ampersand in the last part is definitely an error
+    parts[-1] = parts[-1].replace('&', '%26')
+
+    return '='.join(parts)
 
 
 def clean_title(title):
