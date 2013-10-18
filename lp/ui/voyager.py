@@ -1315,7 +1315,9 @@ def get_gm_link(lines, line):
 
 
 def get_illiad_link(bib_data):
-    if 'openurl' in bib_data and 'query_string_encoded' in bib_data['openurl']:
+    if 'openurl' in bib_data \
+            and 'query_string_encoded' in bib_data['openurl'] \
+            and bib_data['openurl']['query_string_encoded']:
         return insert_sid(bib_data['openurl']['query_string_encoded'])
     title = ''
     ind = 0
