@@ -481,7 +481,7 @@ ORDER BY library.library_name"""
         if bib_data.get(numformat):
             if numformat == 'OCLC':
                 num = filter(lambda x: x.isdigit(), bib_data[numformat])
-            elif numformat == 'ISBN':
+            elif numformat == 'ISBN' and 'NORMAL_ISBN_LIST' in bib_data:
                 num = bib_data['NORMAL_ISBN_LIST'][0]
             else:
                 num = bib_data[numformat]
