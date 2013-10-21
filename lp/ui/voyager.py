@@ -315,6 +315,8 @@ ORDER BY bib_index.normal_heading"""
         return [pair for pair in results if _is_oclc(pair[1])]
     if num_type == 'issn':
         return [pair for pair in results if _is_valid_issn(pair[0])]
+    if num_type == 'isbn':
+        return [(clean_isbn(p[0]), clean_isbn(p[1])) for p in results]
     return results
 
 
