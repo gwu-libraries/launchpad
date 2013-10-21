@@ -488,7 +488,10 @@ ORDER BY library.library_name"""
         if bib_data.get(numformat):
             if numformat == 'OCLC':
                 num = filter(lambda x: x.isdigit(), bib_data[numformat])
-            elif numformat == 'ISBN':
+            # check if key exists before using it
+            elif numformat == 'ISBN' and \
+                    'NORMAL_ISBN_LIST' in bib_data and \
+                    len(bib_data['NORMAL_ISBN_LIST']) > 0:
                 num = bib_data['NORMAL_ISBN_LIST'][0]
             else:
                 num = bib_data[numformat]
@@ -1415,9 +1418,9 @@ def get_illiad_link(bib_data):
 
 def insert_sid(qs):
     """
-    create an ILLIAD url using an openurl querystring. The sid (openurl v0.1) 
-    or rfr_id (openurl v1.0) will be rewritten to include settings.ILLIAD_SID 
-    at the end. 
+    create an ILLIAD url using an openurl querystring. The sid (openurl v0.1)
+    or rfr_id (openurl v1.0) will be rewritten to include settings.ILLIAD_SID
+    at the end.
     """
     try:
         q = urlparse.parse_qs(qs, strict_parsing=True)
@@ -1427,10 +1430,10 @@ def insert_sid(qs):
 
     # look to see if we've got openurl v0.1 or v1.0
     sid_name = sid = None
-    if q.has_key('sid') and len(q['sid']) == 1:
+    if 'sid' in q and len(q['sid']) == 1:
         sid_name = 'sid'
         sid = q['sid'][0]
-    elif q.has_key('rfr_id') and len(q['rfr_id']) == 1:
+    elif 'rfr_id' in q and len(q['rfr_id']) == 1:
         sid_name = 'rfr_id'
         sid = q['rfr_id'][0]
 
@@ -1450,14 +1453,14 @@ def insert_sid(qs):
 
 def fix_ampersands(qs):
     """
-    Try to fix openurl that don't encode ampersands correctly. This is kind of 
-    tricky business. The basic idea is to split the query string on '=' and 
-    then inpsect each part to make sure there aren't more than one '&' 
-    characters in it. If there are, all but the last are assumed to need 
-    encoding. Similarly, if an ampersand is present in the last part, it 
-    is assumed to need encoding since there is no '=' following it. 
+    Try to fix openurl that don't encode ampersands correctly. This is kind of
+    tricky business. The basic idea is to split the query string on '=' and
+    then inpsect each part to make sure there aren't more than one '&'
+    characters in it. If there are, all but the last are assumed to need
+    encoding. Similarly, if an ampersand is present in the last part, it
+    is assumed to need encoding since there is no '=' following it.
 
-    TODO: if possible we should really try to fix wherever these OpenURLs are 
+    TODO: if possible we should really try to fix wherever these OpenURLs are
     getting created upstream instead of hacking around it here.
     """
     parts = []
