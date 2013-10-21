@@ -250,7 +250,9 @@ AND UPPER(bib_index.display_heading) NOT LIKE %s"""
 AND bib_index.normal_heading IN (
     SELECT bib_index.normal_heading
     FROM bib_index
-    WHERE bib_index.index_code IN (%s)
+    WHERE bib_index.index_code IN (%s)"""
+    if num_type == 'oclc':
+        query[2] = query[2] + """
     AND bib_index.normal_heading != bib_index.display_heading"""
     query[3] = """
     AND UPPER(bib_index.display_heading) NOT LIKE %s"""
@@ -260,7 +262,9 @@ AND bib_index.normal_heading IN (
         FROM bib_index
         WHERE bib_index.index_code IN (%s)
         AND bib_index.normal_heading IN (%s)
-        AND bib_index.normal_heading != 'OCOLC'
+        AND bib_index.normal_heading != 'OCOLC'"""
+    if num_type == 'oclc':
+        query[4] = query[4] + """
         AND bib_index.normal_heading != bib_index.display_heading"""
     query[5] = """
         AND UPPER(bib_index.display_heading) NOT LIKE %s"""
@@ -295,8 +299,11 @@ INNER JOIN bib_master ON bib_index.bib_id = bib_master.bib_id
 WHERE bib_index.index_code IN (%s)
 AND bib_index.bib_id = %s
 AND bib_index.normal_heading != 'OCOLC'
-AND bib_index.normal_heading != bib_index.display_heading
-AND bib_master.suppress_in_opac='N'
+AND bib_master.suppress_in_opac='N'"""
+    if num_type == 'oclc':
+        query = query + """
+AND bib_index.normal_heading != bib_index.display_heading"""
+    query = query + """
 ORDER BY bib_index.normal_heading"""
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), bibid)
     cursor = connection.cursor()
