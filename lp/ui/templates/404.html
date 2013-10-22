@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
+{% if title %}
+    {% block title %}{{ title }}{% endblock title %}
+{% endif %}
+
 {% block content %}
+<article class="libsite-container container">
+    <div class="row-fluid">
+        <div class="span12">
 
 <h1>No items found</h1>
 
@@ -12,10 +19,10 @@
 {% endif %}
 </p>
 
-<p>
-Try a keyword search:
+<h1>Try a keyword search:</h1>
 
-    <form name="search" action="http://gw.summon.serialssolutions.com/search" method="get">
+<p>
+    <form class='form-inline' name="search" action="http://gw.summon.serialssolutions.com/search" method="get">
         <input autocorrect="off" autocapitalize="off" type="text" name="s.q">
         <input type="submit" value="Search" />
     </form>
@@ -39,6 +46,7 @@ Otherwise, try:
     </ul>
 </p>
 
-<br /><br /><br />
-
+        </div>
+    </div>
+</article>
 {% endblock %}

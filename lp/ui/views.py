@@ -1,3 +1,5 @@
+import logging
+
 import bibjsontools
 
 from django.conf import settings
@@ -11,6 +13,9 @@ from django.views.decorators.cache import cache_page
 from ui import voyager, apis
 from ui.sort import libsort, availsort, elecsort, templocsort, \
     splitsort, enumsort, callnumsort, strip_bad_holdings, holdsort
+
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -82,7 +87,8 @@ def item(request, bibid):
             'non_wrlc_item': False
         })
     except:
-        return redirect('error503')
+        logger.exception('unable to render bibid: %s' % bibid)
+        return error500(request)
 
 
 def _date_handler(obj):
@@ -104,7 +110,8 @@ def item_json(request, bibid, z3950='False', school=None):
         return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
                             indent=2), content_type='application/json')
     except DatabaseError:
-        return redirect('error503')
+        logger.exception('unable to render bibid json: %s' % bibid)
+        return error500(request)
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
@@ -192,7 +199,8 @@ def gtitem(request, gtbibid):
         return render(request, '404.html', {'num': gtbibid,
                       'num_type': 'Georgetown BIB ID'}, status=404)
     except DatabaseError:
-        return redirect('error503')
+        logger.exception('unable to render gtbibid: %s' % gtbibid)
+        return error500(request)
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
@@ -215,7 +223,8 @@ def gtitem_json(request, gtbibid):
                                 content_type='application/json')
         raise Http404
     except DatabaseError:
-        return redirect('error503')
+        logger.exception('unable to render gtbibid json: %s' % gtbibid)
+        return error500(request)
 
 
 def unicode_data(bib_data):
@@ -293,7 +302,8 @@ def gmitem(request, gmbibid):
         return render(request, '404.html', {'num': gmbibid,
                       'num_type': 'George Mason BIB ID'}, status=404)
     except DatabaseError:
-        return redirect('error503')
+        logger.exception('unable to render gmbibid: %s' % gmbibid)
+        return error500(request)
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
@@ -315,7 +325,8 @@ def gmitem_json(request, gmbibid):
                                 indent=2), content_type='application/json')
         raise Http404
     except DatabaseError:
-        return redirect('error503')
+        logger.exception('unable to render gmbibid json: %s' % gmbibid)
+        return error500(request)
 
 
 def isbn(request, isbn):
@@ -328,7 +339,8 @@ def isbn(request, isbn):
             return redirect(url)
         return non_wrlc_item(request, num=isbn, num_type='isbn')
     except DatabaseError:
-        return redirect('error503')
+        logger.exception('unable to render isbn: %s' % isbn)
+        return error500(request)
 
 
 def issn(request, issn):
@@ -341,7 +353,8 @@ def issn(request, issn):
             return redirect(url)
         return non_wrlc_item(request, num=issn, num_type='issn')
     except DatabaseError:
-        return redirect('error503')
+        logger.exception('unable to render issn: %s' % issn)
+        return error500(request)
 
 
 def oclc(request, oclc):
@@ -360,7 +373,7 @@ def oclc(request, oclc):
 
 def error500(request):
     return render(request, '500.html', {
-        'title': 'error',
+        'title': 'Sorry, system error',
         'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
     }, status=500)
 
