@@ -1,7 +1,26 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% if title %}
+    {% block title %}{{ title }}{% endblock title %}
+{% endif %}
 
+{% block content %}
+<article class="libsite-container container">
+    <div class="row-fluid">
+        <div class="span12">
+
+{% if title == 'error' %}
+<h1>Sorry, system error</h1>
+<p>
+We're sorry, something went wrong.  I've sent an email report about it
+to the systems folks at the Library so they can fix it.
+</p>
+
+<p>
+Really, I did!  They'll be on it soon.
+</p>
+
+{% else %}
 <h1>No items found</h1>
 
 <p> We're sorry, but we cannot find
@@ -12,10 +31,12 @@
 {% endif %}
 </p>
 
-<p>
-Try a keyword search:
+{% endif %}
 
-    <form name="input" action="http://surveyor.gelman.gwu.edu/" method="get">
+<h2>Try a keyword search:</h2>
+
+<p>
+    <form class='form-inline' name="input" action="http://surveyor.gelman.gwu.edu/" method="get">
         <input autocorrect="off" autocapitalize="off" type="text" name="q">
         <input type="submit" value="Search" />
     </form>
@@ -31,4 +52,7 @@ If you're at GWU:
     </ul>
 </p>
 
+        </div>
+    </div>
+</article>
 {% endblock %}
