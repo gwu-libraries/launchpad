@@ -48,7 +48,7 @@ class Command(BaseCommand):
             line = '<url><loc>%s/item/%s</loc></url>\n' % \
                 (settings.SITEMAPS_BASE_URL, row[0])
             fp.write(line)
-            if i == 50000:
+            if i == 49990:
                 i = 0
                 j += 1
                 fp.write('</urlset>')
