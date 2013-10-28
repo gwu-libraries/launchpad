@@ -47,4 +47,16 @@ mapping = {
 
 
 def extract(record, d={}):
-    pass
+    for name, specs in mapping.items():
+        d[name] = []
+        for spec in specs:
+            if type(spec) == str:
+                for field in record.get_fields(spec):
+                    d[name].append(field.value())
+            # TODO: tuple
+    return d
+
+field_specs_count = 0
+for name, specs in mapping:
+    for spec in specs:
+        field_specs_count += 1
