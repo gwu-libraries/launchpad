@@ -57,6 +57,6 @@ def extract(record, d={}):
     return d
 
 field_specs_count = 0
-for name, specs in mapping:
+for name, specs in mapping.items():
     for spec in specs:
         field_specs_count += 1
