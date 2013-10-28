@@ -22,12 +22,13 @@ class Command(BaseCommand):
     help = 'extract marc records from voyager for testing'
 
     def handle(self, *args, **kwargs):
-        # XXX: remove this
+        # XXX: remove overrides to mapping when these have been resolved
+        # so we don't have to refetch all the records
         marc.mapping = {
-            'copyright_date': [('245', None, 2, 'c')],
+            'copyright_date': [('245', None, 4, 'c')],
             'genre': [('655', None, 4, 'a')]
         }
-        marc.field_specs_count = 1
+        marc.field_specs_count = 2
 
         for bib_id, record in records():
             # no need to continue if we have found everything
@@ -72,8 +73,9 @@ def check_record(bib_id, record, name, field_spec, overwrite=False):
     else:
         tag, ind1, ind2, subfields = field_spec
         for field in record.get_fields(tag):
-            if ind_test(ind1, field.indicator1) and \
-                    ind_test(ind2, field.indicator2):
+            logging.info("looking at %s" % field)
+            if ind(ind1, field.indicator1) and \
+                    ind(ind2, field.indicator2):
                 found = True
 
     if found:
@@ -102,8 +104,9 @@ def records():
             logging.warn("exception when getting marc for %s: %s", bib_id, e)
 
 
-def ind_test(expected, found):
-    if expected == None:
+def ind(expected, found):
+    logging.info("examining %s and %s" % (expected, found))
+    if expected is None:
         return True
     if expected == found:
         return True
