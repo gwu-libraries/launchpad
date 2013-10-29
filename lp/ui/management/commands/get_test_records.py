@@ -25,8 +25,8 @@ class Command(BaseCommand):
         # XXX: remove overrides to mapping when these have been resolved
         # so we don't have to refetch all the records
         marc.mapping = {
-            'copyright_date': [('245', None, 4, 'c')],
-            'genre': [('655', None, 4, 'a')]
+            'copyright_date': [('264', None, 4, 'c')],
+            'genre': '655'
         }
         marc.field_specs_count = 2
 
