@@ -277,7 +277,7 @@ class MarcExtractTests(unittest.TestCase):
     def test_other_standard_identifer_024(self):
         r = self.get_record("024.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["OTHER_STANDARD_IDENTIFER"], ['10.1596/1813-9450-4394'])
+        self.assertEqual(bib_data["OTHER_STANDARD_IDENTIFIER"], ['10.1596/1813-9450-4394'])
 
     def test_terms_of_usage_540(self):
         r = self.get_record("540.mrc")

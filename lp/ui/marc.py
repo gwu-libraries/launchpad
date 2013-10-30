@@ -35,7 +35,7 @@ mapping = {
     'SOURCE_DESCRIPTION': ['588'],
     'MANUFACTURE_NUMBERS': ['028'],
     'GENRE': [('655', None, None, 'a')],
-    'OTHER_STANDARD_IDENTIFER': ['024'],
+    'OTHER_STANDARD_IDENTIFIER': ['024'],
     'PUBLISHER_NUMBER': ['028'],
     'CATALOGING_SOURCE': ['040'],
     'GEOGRAPHIC_AREA': ['043'],
