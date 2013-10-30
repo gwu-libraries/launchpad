@@ -123,6 +123,15 @@ def item_json(request, bibid, z3950='False', school=None):
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
+def item_marc(request, bibid):
+    rec = voyager.get_marc_blob(bibid)
+    if not rec:
+        return HttpResponse('{}', content_type='application/json',
+                            status=404)
+    return HttpResponse(rec.as_json(indent=2), content_type='application/json')
+
+
+@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def non_wrlc_item(request, num, num_type):
     bib = apis.get_bib_data(num=num, num_type=num_type)
     if not bib:
