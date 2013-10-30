@@ -4,50 +4,56 @@ Extracts selected MARC data to a friendly Python dictionary.
 
 # a machine readable version of
 # https://github.com/gwu-libraries/launchpad/wiki/MARC-Extraction
+# note: the order of each rule controls the display order
 
-mapping = {
-    'STANDARD_TITLE': ['240'],
-    'OTHER_TITLE': ['130', '242', '246', '730', '740', '247'],
-    'OTHER_AUTHORS': ['700', '710', '711'],
-    'EARLIER_TITLE': ['247', '780'],
-    'TITLE_CHANGED_TO': ['785'],
-    'COPYRIGHT_DATE': [('245', None, 2, 'c')],
-    'CURRENT_FREQUENCY': ['310', '321', '362'],
-    'PUBLICATION_HISTORY': ['362'],
-    'SERIES': ['440', '800', '810', '811', '830'],
-    'SUBJECTS': ['650', '600', '610', '630', '651'],
-    'DESCRIPTION': ['300', '516', '344', '345', '346', '347'],
-    'IN_COLLECTION': ['773'],
-    'THESIS_DISSERTATION':  ['502'],
-    'CONTENTS': ['505'],
-    'PRODUCTION_CREDITS': ['508'],
-    'CITATION': ['510'],
-    'PERFORMERS': ['511'],
-    'SUMMARY': ['520'],
-    'REPRODUCTION': ['533'],
-    'ORIGINAL_VERSION': ['534'],
-    'FUNDING_SPONSORS': ['536'],
-    'SYSTEM_REQUIREMENTS': ['538'],
-    'TERMS_OF_USAGE': ['540'],
-    'COPYRIGHT': ['542'],
-    'FINDING_AIDS': ['555'],
-    'TITLE_HISTORY': ['580'],
-    'SOURCE_DESCRIPTION': ['588'],
-    'MANUFACTURE_NUMBERS': ['028'],
-    'GENRE': [('655', None, None, 'a')],
-    'OTHER_STANDARD_IDENTIFIER': ['024'],
-    'PUBLISHER_NUMBER': ['028'],
-    'CATALOGING_SOURCE': ['040'],
-    'GEOGRAPHIC_AREA': ['043'],
-    'OCLC_CODE': ['049'],
-    'DDC': ['082'],
-    'NOTES': ['500', '501', '504', '507', '530', '546', '547', '550', '586',
-              '590'],
-}
+mapping = (
+    ('STANDARD_TITLE', 'Standard Title', ['240']),
+    ('OTHER_TITLE', 'Other Title', ['130', '242', '246', '730', '740', '247']),
+    ('OTHER_AUTHORS', 'Other Authors', ['700', '710', '711']),
+    ('EARLIER_TITLE', 'Earlier Title', ['247', '780']),
+    ('TITLE_CHANGED_TO', 'Title Changed To', ['785']),
+    ('SUBJECTS', 'Subjects', ['650', '600', '610', '630', '651']),
+    ('SERIES', 'Series', ['440', '800', '810', '811', '830']),
+    ('DESCRIPTION', 'Description', ['300', '516', '344', '345', '346', '347']),
+    ('COPYRIGHT_DATE', 'Copyright Date', [('245', None, 2, 'c')]),
+    ('NOTES', 'Notes', ['500', '501', '504', '507', '530', '546', '547',
+                        '550', '586', '590']),
+    ('SUMMARY', 'Summary', ['520']),
+    ('CURRENT_FREQUENCY', 'Current Frequency', ['310', '321', '362']),
+    ('PUBLICATION_HISTORY', 'Publication History', ['362']),
+    ('IN_COLLECTION', 'In Collection', ['773']),
+    ('THESIS_DISSERTATION', 'Thesis/Dissertation', ['502']),
+    ('CONTENTS', 'Contents', ['505']),
+    ('PRODUCTION_CREDITS', 'Production Credits', ['508']),
+    ('CITATION', 'Citation', ['510']),
+    ('PERFORMERS', 'Performers', ['511']),
+    ('REPRODUCTION', 'Reproduction', ['533']),
+    ('ORIGINAL_VERSION', 'Original Version', ['534']),
+    ('FUNDING_SPONSORS', 'Funding Sponsors', ['536']),
+    ('SYSTEM_REQUIREMENTS', 'System Requirements', ['538']),
+    ('TERMS_OF_USAGE', 'Terms of Usage', ['540']),
+    ('COPYRIGHT', 'Copyright', ['542']),
+    ('FINDING_AIDS', 'Finding Aids', ['555']),
+    ('TITLE_HISTORY', 'Title History', ['580']),
+    ('SOURCE_DESCRIPTION', 'Source Description', ['588']),
+    ('MANUFACTURE_NUMBERS', 'Manufacture Numbers', ['028']),
+    ('GENRE', 'Genre', [('655', None, None, 'a')]),
+    ('OTHER_STANDARD_IDENTIFIER', 'Other Identifiers', ['024']),
+    ('PUBLISHER_NUMBER', 'Publisher Numbers', ['028']),
+    ('CATALOGING_SOURCE', 'Cataloging Source', ['040']),
+    ('GEOGRAPHIC_AREA', 'Geographic Area', ['043']),
+    ('OCLC_CODE', 'OCLC Code', ['049']),
+    ('DDC', 'Dewey Decimal Classification', ['082']),
+)
 
 
 def extract(record, d={}):
-    for name, specs in mapping.items():
+    """
+    Takes a pymarc.Record object and returns extracted information as a
+    dictionary. If you pass in a dictionary the extracted information will
+    be folded into it.
+    """
+    for name, display_name, specs in mapping:
         d[name] = []
         for spec in specs:
 
@@ -56,7 +62,7 @@ def extract(record, d={}):
                 for field in record.get_fields(spec):
                     d[name].append(field.value())
 
-            # complex field specification 
+            # complex field specification
             else:
                 tag, ind1, ind2, subfields = spec
                 for field in record.get_fields(tag):
@@ -73,15 +79,10 @@ def extract(record, d={}):
 
 
 def ind(expected, found):
+    "Tests an indicator rule"
     if expected is None:
         return True
     elif expected == found:
         return True
     else:
         return False
-
-
-field_specs_count = 0
-for name, specs in mapping.items():
-    for spec in specs:
-        field_specs_count += 1

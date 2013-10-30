@@ -539,12 +539,25 @@ $(document).ready(function() {
 {% endif %}
 </div>
 
-<div id="details">
+<div id="details" class="tab-pane">
+  <table>
+        {% for name, values in details %}
+        <tr>
+            <td>{{ name }}</td>
+            <td>
+                {% for val in values %}
+                {{ val }}<br>
+                {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+    </table>
 </div>
 
 </div>
 
 {% if debug %}
+<br>
 <h3>Debugging info</h3>
 
 <p>
