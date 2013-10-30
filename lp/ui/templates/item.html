@@ -19,7 +19,8 @@
     {% if non_wrlc_item %}
         {% if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
             <link rel='canonical' href='{% url "gtitem" bib.BIB_ID %}' />
-            <link rel='alternate' type='application/json' href='{% url "gtitem_json" bib.BIB_ID %}' />
+            <link title="JSON" rel='alternate' type='application/json' href='{% url "gtitem_json" bib.BIB_ID %}' />
+            <link title="MARC JSON" rel='alternate' type='application/json' href='{% url "item_marc" bib.BIB_ID %}' />
         {% endif %}
         {% if bib.LIBRARY_NAME == 'GM' %}
             <link rel='canonical' href='{% url "gmitem" bib.BIB_ID %}' />
@@ -575,6 +576,7 @@ $(document).ready(function() {
     {% else %}
         View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
         &nbsp;
+        View MARC: <a href="{% url "item_marc" bibid %}">{% url "item_marc" bibid %}</a>
     {% endif %}
 {% endif %}
 
