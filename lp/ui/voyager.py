@@ -81,8 +81,8 @@ from bib_master"""
     cursor.execute(query, [bibid])
     row = cursor.fetchone()
     raw_marc = str(row[0])
-    marc = pymarc.record.Record(data=raw_marc)
-    return marc
+    rec = pymarc.record.Record(data=raw_marc)
+    return rec
 
 
 def get_bib_data(bibid, expand_ids=True, exclude_names=False):

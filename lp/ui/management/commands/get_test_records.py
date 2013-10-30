@@ -14,32 +14,34 @@ from ui import marc
 from ui.voyager import get_marc_blob
 
 
+# where to write the records
 test_data_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'testdata')
+
+# keep track of what field specifications have got marc records
 field_specs_found = set()
+
+# the total number of field specifications, so we know when we're done
+num_field_specs = 0
+for name, display_name, specs in marc.mapping:
+    for spec in specs:
+        num_field_specs += 1
 
 
 class Command(BaseCommand):
     help = 'extract marc records from voyager for testing'
 
     def handle(self, *args, **kwargs):
-        # XXX: remove overrides to mapping when these have been resolved
-        # so we don't have to refetch all the records
-        marc.mapping = {
-            'copyright_date': [('264', None, 4, 'c')],
-            'genre': '655'
-        }
-        marc.field_specs_count = 2
 
         for bib_id, record in records():
             # no need to continue if we have found everything
-            if marc.field_specs_count == len(field_specs_found):
+            if num_field_specs == len(field_specs_found):
                 logging.info("found marc records for all field specifications")
                 break
 
             # provide an indicator of records being looked at
             logging.info("examining %s", bib_id)
 
-            for name, field_specs in marc.mapping.items():
+            for name, display_name, field_specs in marc.mapping:
                 for fs in field_specs:
                     if not fs in field_specs_found:
                         found = check_record(bib_id, record, name, fs)
@@ -74,8 +76,8 @@ def check_record(bib_id, record, name, field_spec, overwrite=False):
         tag, ind1, ind2, subfields = field_spec
         for field in record.get_fields(tag):
             logging.info("looking at %s" % field)
-            if ind(ind1, field.indicator1) and \
-                    ind(ind2, field.indicator2):
+            if marc.ind(ind1, field.indicator1) and \
+                    marc.ind(ind2, field.indicator2):
                 found = True
 
     if found:
@@ -90,7 +92,12 @@ def check_record(bib_id, record, name, field_spec, overwrite=False):
 
 def records():
     cursor = connection.cursor()
-    query = "SELECT BIB_ID FROM bib_master WHERE SUPPRESS_IN_OPAC = 'N' ORDER BY BIB_ID DESC"
+    query = """
+            SELECT BIB_ID
+            FROM bib_master
+            WHERE SUPPRESS_IN_OPAC = 'N'
+            ORDER BY BIB_ID DESC
+            """
     cursor.execute(query)
     while True:
         try:
@@ -102,12 +109,3 @@ def records():
             yield bib_id, record
         except Exception as e:
             logging.warn("exception when getting marc for %s: %s", bib_id, e)
-
-
-def ind(expected, found):
-    logging.info("examining %s and %s" % (expected, found))
-    if expected is None:
-        return True
-    if expected == found:
-        return True
-    return False
