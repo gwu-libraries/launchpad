@@ -20,11 +20,6 @@ class MarcExtractTests(unittest.TestCase):
         bib_data = extract(r)
         self.assertEqual(bib_data["SOURCE_DESCRIPTION"], ['Latest issue consulted: Vol. 30 (2011).'])
 
-    def test_cataloging_source_040(self):
-        r = self.get_record("040.mrc")
-        bib_data = extract(r)
-        self.assertEqual(bib_data["CATALOGING_SOURCE"], ['DLC DLC m.c. EAU'])
-
     def test_description_300(self):
         r = self.get_record("300.mrc")
         bib_data = extract(r)
