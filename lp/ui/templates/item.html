@@ -547,7 +547,12 @@ $(document).ready(function() {
             <td>{{ name }}</td>
             <td>
                 {% for val in values %}
-                {{ val }}<br>
+                {% if name == "Subjects" %}
+                <a href="http://surveyor.gelman.gwu.edu/?q=subject:%22{{ val|urlencode }}%22">{{ val }}</a>
+                {% else %}
+                {{ val }}
+                {% endif %}
+                <br>
                 {% endfor %}
             </td>
           </tr>
