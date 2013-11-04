@@ -60,7 +60,10 @@ def extract(record, d={}):
             # simple field specification
             if type(spec) == str:
                 for field in record.get_fields(spec):
-                    d[name].append(field.value())
+                    if field.is_subject_field():
+                        d[name].append(field.format_field())
+                    else:
+                        d[name].append(field.value())
 
             # complex field specification
             else:
