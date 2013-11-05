@@ -551,7 +551,7 @@ $(document).ready(function() {
                 <a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ val|urlencode }}%22">{{ val }}</a>
                 {% elif name == "Series" %}
                 <a href="http://surveyor.gelman.gwu.edu/?q=series:%22{{ val|urlencode }}%22">{{ val }}</a>
-                {% elif name == "Subjects" %}
+                {% elif name == "Subjects" or name == "Genre" %}
                 <a href="http://surveyor.gelman.gwu.edu/?q=subject:%22{{ val|urlencode }}%22">{{ val }}</a>
                 {% else %}
                 {{ val }}
