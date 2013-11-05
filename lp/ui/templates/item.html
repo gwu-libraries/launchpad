@@ -549,6 +549,8 @@ $(document).ready(function() {
                 {% for val in values %}
                 {% if name == "Other Authors" %}
                 <a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ val|urlencode }}%22">{{ val }}</a>
+                {% elif name == "Series" %}
+                <a href="http://surveyor.gelman.gwu.edu/?q=series:%22{{ val|urlencode }}%22">{{ val }}</a>
                 {% elif name == "Subjects" %}
                 <a href="http://surveyor.gelman.gwu.edu/?q=subject:%22{{ val|urlencode }}%22">{{ val }}</a>
                 {% else %}
