@@ -15,7 +15,7 @@ from ui.voyager import get_marc_blob
 
 
 # where to write the records
-test_data_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'testdata')
+test_data_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'tests', 'data')
 
 # keep track of what field specifications have got marc records
 field_specs_found = set()
@@ -58,7 +58,7 @@ def check_record(bib_id, record, name, field_spec, overwrite=False):
     # determine where the marc record would be saved if there is a match
     # if we already have a file and we're not overwriting we can return
     # immediately
-    filename = os.path.join(test_data_dir, "%s_%s.mrc" % (name, field_spec))
+    filename = os.path.join(test_data_dir, "%s.mrc" % field_spec)
     if os.path.isfile(filename) and not overwrite:
         return True
 
