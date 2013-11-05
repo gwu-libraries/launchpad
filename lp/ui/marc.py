@@ -2,6 +2,30 @@
 Extracts selected MARC data to a friendly Python dictionary.
 """
 
+import os
+import re
+import json
+
+
+# turn the 043 codes into human readable strings based on the table list at
+# http://www.loc.gov/standards/codelists/gacs.xml
+
+gacs_file = os.path.join(os.path.dirname(__file__), "gacs.json")
+gacs_dict = json.loads(open(gacs_file).read())
+
+
+def gacs(field):
+    values = []
+    for c, v in field:
+        # only interested in subfield a
+        if c == 'a':
+            # strip trailing dashes from gacs code if present
+            v = re.sub(r"-+$", "", v)
+            # add the string for the gacs code if it is available
+            values.append(gacs_dict.get(v, v))
+    return values
+
+
 # a machine readable version of
 # https://github.com/gwu-libraries/launchpad/wiki/MARC-Extraction
 # note: the order of each rule controls the display order
@@ -40,7 +64,7 @@ mapping = (
     ('GENRE', 'Genre', [('655', None, None, 'a')]),
     ('OTHER_STANDARD_IDENTIFIER', 'Other Identifiers', ['024']),
     ('PUBLISHER_NUMBER', 'Publisher Numbers', ['028']),
-    ('GEOGRAPHIC_AREA', 'Geographic Area', ['043']),
+    ('GEOGRAPHIC_AREA', 'Geographic Area', [('043', gacs)]),
     ('OCLC_CODE', 'OCLC Code', ['049']),
     ('DDC', 'Dewey Decimal Classification', ['082']),
 )
@@ -65,7 +89,7 @@ def extract(record, d={}):
                         d[name].append(field.value())
 
             # complex field specification
-            else:
+            elif len(spec) == 4:
                 tag, ind1, ind2, subfields = spec
                 for field in record.get_fields(tag):
                     if ind(ind1, field.indicator1) and ind(ind2,
@@ -76,6 +100,16 @@ def extract(record, d={}):
                                 parts.append(value)
                         if len(parts) > 0:
                             d[name].append(' '.join(parts))
+
+            # function based specification
+            elif len(spec) == 2:
+                tag, func = spec
+                for field in record.get_fields(tag):
+                    d[name].extend(func(field))
+
+            # uhoh, the field specification looks bad
+            else:
+                raise Exception("invalid mapping for %s" % name)
 
     return d
 

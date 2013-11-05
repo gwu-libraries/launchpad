@@ -272,7 +272,7 @@ class MarcExtractTests(unittest.TestCase):
     def test_geographic_area_043(self):
         r = self.get_record("043.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["GEOGRAPHIC_AREA"], ['e------ n-us---'])
+        self.assertEqual(bib_data["GEOGRAPHIC_AREA"], ['Europe', 'United States'])
 
     def test_other_standard_identifer_024(self):
         r = self.get_record("024.mrc")
