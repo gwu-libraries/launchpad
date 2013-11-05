@@ -123,6 +123,11 @@ class MarcExtractTests(unittest.TestCase):
         bib_data = extract(r)
         self.assertEqual(bib_data["COPYRIGHT"], ['130861, 342054 DCU'])
 
+    def test_copyright_264(self):
+        r = self.get_record("264.mrc")
+        bib_data = extract(r)
+        self.assertEqual(bib_data["COPYRIGHT_DATE"], ['2013.'])
+
     def test_system_requirements_538(self):
         r = self.get_record("538.mrc")
         bib_data = extract(r)
