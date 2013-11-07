@@ -84,7 +84,7 @@ def extract(record, d={}):
             if type(spec) == str:
                 for field in record.get_fields(spec):
                     if field.is_subject_field():
-                        d[name].append(field.format_field())
+                        d[name].append(subject(field))
                     else:
                         d[name].append(field.value())
 
@@ -122,3 +122,16 @@ def ind(expected, found):
         return True
     else:
         return False
+
+
+def subject(f):
+    s = ''
+    for code, value in f:
+        if code == '0':
+            # TODO: might be useful to return subject URLs
+            continue
+        elif code not in ('v', 'x', 'y', 'z'):
+            s += ' %s' % value
+        else:
+            s += ' -- %s' % value
+    return s.strip()
