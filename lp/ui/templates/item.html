@@ -138,20 +138,20 @@ $(document).ready(function() {
                 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
                     <span class="author">
                     {% if bib.CJK_INFO.AUTHOR %}
-                        <span itemprop="author">{{ bib.CJK_INFO.AUTHOR }}</span> <br />
+                        <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.CJK_INFO.AUTHOR|urlencode }}%22">{{ bib.CJK_INFO.AUTHOR }}</a></span> <br />
                     {% endif %}
                     {% if bib.AUTHORS %}
                         {% for contributor in bib.AUTHORS %}
                             {% if forloop.first %}
-                                <span itemprop="author">{{contributor}}</span>
+                                <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22">{{contributor}}</a></span>
                             {% else %}
-                                <span itemprop="contributor">{{contributor}}</span>
+                                <span itemprop="contributor"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22">{{contributor}}</a></span>
                             {% endif %}
                             {% if not forloop.last %}; {% endif %}
                         {% endfor %}
                     {% else %}
                         {% if bib.AUTHOR %}
-                            <span itemprop="author">{{ bib.AUTHOR }}</span>
+                            <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.AUTHOR|urlencode }}%22">{{ bib.AUTHOR }}</a></span>
                         {% endif %}
                     {% endif %}
                     </span><br />
