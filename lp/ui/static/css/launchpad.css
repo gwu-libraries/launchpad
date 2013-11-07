@@ -54,6 +54,11 @@ td {
     color: #000000;
 }
 
+td.field-label {
+    font-size: smaller;
+    padding-right: 15px;
+}
+
 .library-group-header{
     padding-top: 1em;
     font-size: large;
