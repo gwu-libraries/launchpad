@@ -50,8 +50,13 @@ td {
     border-bottom: 1px solid #e6e6e6;
     padding-top: .4em;
     padding-bottom: .4em;
-    MARGIN: 0px;
-    COLOR: #000000;
+    margin: 0px;
+    color: #000000;
+}
+
+td.field-label {
+    font-size: smaller;
+    padding-right: 15px;
 }
 
 .library-group-header{

@@ -19,7 +19,8 @@
     {% if non_wrlc_item %}
         {% if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
             <link rel='canonical' href='{% url "gtitem" bib.BIB_ID %}' />
-            <link rel='alternate' type='application/json' href='{% url "gtitem_json" bib.BIB_ID %}' />
+            <link title="JSON" rel='alternate' type='application/json' href='{% url "gtitem_json" bib.BIB_ID %}' />
+            <link title="MARC JSON" rel='alternate' type='application/json' href='{% url "item_marc" bib.BIB_ID %}' />
         {% endif %}
         {% if bib.LIBRARY_NAME == 'GM' %}
             <link rel='canonical' href='{% url "gmitem" bib.BIB_ID %}' />
@@ -137,20 +138,20 @@ $(document).ready(function() {
                 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
                     <span class="author">
                     {% if bib.CJK_INFO.AUTHOR %}
-                        <span itemprop="author">{{ bib.CJK_INFO.AUTHOR }}</span> <br />
+                        <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.CJK_INFO.AUTHOR|urlencode }}%22">{{ bib.CJK_INFO.AUTHOR }}</a></span> <br />
                     {% endif %}
                     {% if bib.AUTHORS %}
                         {% for contributor in bib.AUTHORS %}
                             {% if forloop.first %}
-                                <span itemprop="author">{{contributor}}</span>
+                                <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22">{{contributor}}</a></span>
                             {% else %}
-                                <span itemprop="contributor">{{contributor}}</span>
+                                <span itemprop="contributor"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22">{{contributor}}</a></span>
                             {% endif %}
                             {% if not forloop.last %}; {% endif %}
                         {% endfor %}
                     {% else %}
                         {% if bib.AUTHOR %}
-                            <span itemprop="author">{{ bib.AUTHOR }}</span>
+                            <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.AUTHOR|urlencode }}%22">{{ bib.AUTHOR }}</a></span>
                         {% endif %}
                     {% endif %}
                     </span><br />
@@ -240,7 +241,14 @@ $(document).ready(function() {
 
 </div>
 
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#holdings" data-toggle="tab">Holdings</a></li>
+  <li><a href="#details" data-toggle="tab">Details</a></li>
+</ul>
 
+<div class="tab-content">
+
+<div id="holdings" class="tab-pane active">
 {% if holdings %}
     {% regroup holdings by LIBRARY_FULL_NAME as library_list %}
 <table WIDTH='100%' > 
@@ -528,10 +536,38 @@ $(document).ready(function() {
            </tr>
        {% endif %}
     </tbody>
-</table> 
+  </table> 
 {% endif %}
+</div>
+
+<div id="details" class="tab-pane">
+  <table>
+        {% for name, values in details %}
+        <tr>
+            <td class="field-label">{{ name }}</td>
+            <td>
+                {% for val in values %}
+                {% if name == "Other Authors" %}
+                <a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ val|urlencode }}%22">{{ val }}</a>
+                {% elif name == "Series" %}
+                <a href="http://surveyor.gelman.gwu.edu/?q=series:%22{{ val|urlencode }}%22">{{ val }}</a>
+                {% elif name == "Subjects" or name == "Genre" %}
+                <a href="http://surveyor.gelman.gwu.edu/?q=subject:%22{{ val|urlencode }}%22">{{ val }}</a>
+                {% else %}
+                {{ val }}
+                {% endif %}
+                <br>
+                {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+    </table>
+</div>
+
+</div>
 
 {% if debug %}
+<br>
 <h3>Debugging info</h3>
 
 <p>
@@ -549,6 +585,7 @@ $(document).ready(function() {
     {% else %}
         View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
         &nbsp;
+        View MARC: <a href="{% url "item_marc" bibid %}">{% url "item_marc" bibid %}</a>
     {% endif %}
 {% endif %}
 
