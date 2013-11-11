@@ -213,7 +213,6 @@ AND bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac = 'N'"""
     cursor = connection.cursor()
-    cursor = connection.cursor()
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
     cursor.execute(query, [])
     bibs = _make_dict(cursor)
