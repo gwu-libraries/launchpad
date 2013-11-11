@@ -110,8 +110,8 @@ AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
     paramcount = 8 if not exclude_names else 7
     cursor.execute(query, [bibid] * paramcount)
+    bib = {}
     try:
-        bib = _make_dict(cursor, first=True)
         if exclude_names:
             marc = get_marc_blob(bibid)
             bib['TITLE'] = marc.title()
@@ -122,6 +122,8 @@ AND bib_master.suppress_in_opac='N'"""
             for title in title_fields:
                 bib['TITLE_ALL'] += title.format_field().decode('iso-8859-1')\
                     .encode('utf-8')
+        else:
+            bib = _make_dict(cursor, first=True)
     except DjangoUnicodeDecodeError:
         return get_bib_data(bibid=bibid, expand_ids=expand_ids,
                             exclude_names=True)
@@ -210,6 +212,7 @@ AND bib_index.normal_heading = '%s'
 AND bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac = 'N'"""
+    cursor = connection.cursor()
     cursor = connection.cursor()
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
     cursor.execute(query, [])
