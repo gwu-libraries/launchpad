@@ -12,11 +12,12 @@ from django.db import connection
 from django.utils.encoding import smart_str, DjangoUnicodeDecodeError
 
 from ui import apis
+from ui import marc
+from ui import z3950
 from ui.templatetags.launchpad_extras import cjk_info
 from ui.templatetags.launchpad_extras import clean_isbn
 from ui.templatetags.launchpad_extras import clean_lccn
 from ui.templatetags.launchpad_extras import clean_oclc
-from ui import z3950
 
 GW_LIBRARY_IDS = [7, 11, 18, 21]
 
@@ -80,8 +81,8 @@ from bib_master"""
     cursor.execute(query, [bibid])
     row = cursor.fetchone()
     raw_marc = str(row[0])
-    marc = pymarc.record.Record(data=raw_marc)
-    return marc
+    rec = pymarc.record.Record(data=raw_marc)
+    return rec
 
 
 def get_bib_data(bibid, expand_ids=True, exclude_names=False):
@@ -110,14 +111,14 @@ AND bib_master.suppress_in_opac='N'"""
     cursor = connection.cursor()
     paramcount = 8 if not exclude_names else 7
     cursor.execute(query, [bibid] * paramcount)
+    rec = get_marc_blob(bibid)
     try:
         bib = _make_dict(cursor, first=True)
         if exclude_names:
-            marc = get_marc_blob(bibid)
-            bib['TITLE'] = marc.title()
-            bib['AUTHOR'] = marc.author()
-            bib['PUBLISHER'] = marc.publisher()
-            title_fields = marc.get_fields('245')
+            bib['TITLE'] = rec.title()
+            bib['AUTHOR'] = rec.author()
+            bib['PUBLISHER'] = rec.publisher()
+            title_fields = rec.get_fields('245')
             bib['TITLE_ALL'] = ''
             for title in title_fields:
                 bib['TITLE_ALL'] += title.format_field().decode('iso-8859-1')\
@@ -176,6 +177,7 @@ AND bib_master.suppress_in_opac='N'"""
     if bib.get('LINK') \
             and bib.get('MESSAGE', '') == '856:42:$zCONNECT TO FINDING AID':
         bib['FINDING_AID'] = bib['LINK'][9:]
+    marc.extract(rec, bib)
     return bib
 
 

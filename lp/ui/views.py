@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
-from ui import voyager, apis
+from ui import voyager, apis, marc
 from ui.sort import libsort, availsort, elecsort, templocsort, \
     splitsort, enumsort, callnumsort, strip_bad_holdings, holdsort
 
@@ -69,6 +69,13 @@ def item(request, bibid):
                                    rev=True))
         else:
             show_wrlc_link = False
+
+        # extract details for easy display in a separate tab
+        details = []
+        for name, display_name, specs in marc.mapping:
+            if name in bib and len(bib[name]) > 0:
+                details.append((display_name, bib[name]))
+
         return render(request, 'item.html', {
             'bibid': bibid,
             'bib': bib,
@@ -84,7 +91,8 @@ def item(request, bibid):
             'video_tags': settings.STREAMING_VIDEO_TAGS,
             'max_items': settings.MAX_ITEMS,
             'show_wrlc_link': show_wrlc_link,
-            'non_wrlc_item': False
+            'non_wrlc_item': False,
+            'details': details,
         })
     except:
         logger.exception('unable to render bibid: %s' % bibid)
@@ -112,6 +120,15 @@ def item_json(request, bibid, z3950='False', school=None):
     except DatabaseError:
         logger.exception('unable to render bibid json: %s' % bibid)
         return error500(request)
+
+
+@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
+def item_marc(request, bibid):
+    rec = voyager.get_marc_blob(bibid)
+    if not rec:
+        return HttpResponse('{}', content_type='application/json',
+                            status=404)
+    return HttpResponse(rec.as_json(indent=2), content_type='application/json')
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
