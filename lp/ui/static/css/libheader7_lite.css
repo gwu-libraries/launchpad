@@ -1,8 +1,6 @@
 @charset "utf-8";
 
 /* Libraries site styles */
-/* use libheader7_lite_dropin.css instead if you don't need to alter the main content/body styles */
-/* mods for Bootstrap swatch are at the end */
 
 html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
@@ -279,26 +277,3 @@ input[type=submit], button {
 
 }
 
-
-/* MODS FOR BOOTSTRAP SWATCH, uncomment to use OR include libheader7_lite_bootswatch.css */
-
-/* #libheader {
-    width: auto;
-    max-width: 1170px;
-}
- 
-.libsite-container {
-    margin-top: 45px;
-}
-
-#libfooter {
-    width: auto;
-    max-width: 1170px;
-}
-
-.libheader-liblink {margin-left:0;}
-@media screen and (max-width:1200px) {.libheader-liblink {margin-left:.5em;} }
-.libfooter-text {margin:0 0;}
-@media screen and (max-width:1200px) {.libfooter-text {margin: 0 .5em;} }
-
-*/
