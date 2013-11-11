@@ -41,20 +41,56 @@ class Z3950Catalog():
         except:
             raise
 
-    def holdings(self, bibid=None, zoom_record=None, add_items=True):
+    def holdings(self, bibid=None, zoom_record=None, school=''):
         if bibid and not zoom_record:
             zoom_record = self.zoom_record(bibid)
         holdings = []
-        for rec in zoom_record.data.holdingsData:
-            holdmeta = {}
-            holdmeta['callnum'] = rec[1].callNumber
-            holdmeta['location'] = rec[1].localLocation
-            holding = Holding(metadata=holdmeta)
-            if add_items:
-                itemmeta = {}
-                itemmeta['callnum'] = rec[1].callNumber
-                itemmeta['permloc'] = rec[1].localLocation
-                itemmeta['status'] = rec[1].publicNote
-                holding.items = [Item(metadata=itemmeta)]
-            holdings.append(holding)
-        return holdings
+        if hasattr(zoom_record, 'data') and hasattr(zoom_record.data,
+                                                    'holdingsData'):
+            for rec in zoom_record.data.holdingsData:
+                holdmeta = {}
+                holdmeta['item_status'] = 0
+                holdmeta['callnum'] = ''
+                holdmeta['status'] = ''
+                holdmeta['url'] = ''
+                holdmeta['note'] = ''
+                holdmeta['msg'] = ''
+                if hasattr(rec[1], 'callNumber'):
+                    holdmeta['callnum'] = rec[1].callNumber.rstrip('\x00')
+                else:
+                    holdmeta['callnum'] = ''
+                holdmeta['location'] = rec[1].localLocation.rstrip('\x00')
+                if hasattr(rec[1], 'publicNote') and school == 'GT':
+                    holdmeta['status'] = rec[1].publicNote.rstrip('\x00')
+                if hasattr(rec[1], 'publicNote') and school == 'GM':
+                    holdmeta['note'] = rec[1].publicNote.rstrip('\x00')
+                if hasattr(rec[1], 'circulationData'):
+                    holdmeta['status'] = rec[1].circulationData[0].availableNow
+                if holdmeta['status'] is True or\
+                        holdmeta['status'] == ' AVAILABLE':
+                    holdmeta['status'] = 'Not Charged'
+                    holdmeta['item_status'] = 1
+                marc = pymarc.record.Record(zoom_record.data.
+                                            bibliographicRecord.encoding[1])
+                if marc['856']:
+                    holdmeta['url'] = marc['856']['u']
+                    holdmeta['msg'] = marc['856']['z']
+                holdings.append(holdmeta)
+            return holdings
+        if hasattr(zoom_record, 'data'):
+            marc = pymarc.record.Record(zoom_record.data)
+            if marc['856']:
+                holdmeta['url'] = marc['856']['u']
+                holdmeta['msg'] = marc['856']['z']
+                holdmeta['callnum'] = ''
+                holdmeta['status'] = ''
+                holdmeta['note'] = ''
+                holdmeta['item_status'] = 0
+                holdmeta['location'] = ''
+                holdings.append(holdmeta)
+                return holdings
+            else:
+                return [{'item_status': 0, 'location': '', 'callnum': '',
+                         'status': '', 'url': '', 'note': '', 'msg': ''}]
+        return [{'item_status': 0, 'location': '', 'callnum': '', 'status': '',
+                'url': '', 'note': '', 'msg': ''}]
