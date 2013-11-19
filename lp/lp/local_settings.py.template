@@ -161,6 +161,7 @@ ITEM_PAGE_CACHE_SECONDS = 60 * 60 # one hour
 
 # If this value is present (not empty), GA bug will be added to html
 GOOGLE_ANALYTICS_UA = ''
+GOOGLE_ANALYTICS_AGGREGATE_UA = ''
 
 # Link resolver information, only used in debug mode now
 LINK_RESOLVER = {
