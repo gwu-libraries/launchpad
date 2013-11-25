@@ -1445,9 +1445,9 @@ def insert_sid(qs):
 
     if 'rft.genre' in q and q['rft.genre'] == 'unknown':
         if 'rft_val_format' in q:
-            length = len(q['rft_val_format'])
-            index = q['rft_val_format'].rfind(':', 0, length)
-            q['rft.genre'] = q['rft_val_format'][index:length]
+            index = q['rft_val_format'].rfind(':', 0, len(q['rft_val_format']))
+            q['rft.genre'] = q['rft_val_format'][index:len(q['rft_val_format'])]
+
 
     if sid_name and sid:
         # trim the sid value so that it is not longer than 40 characters
