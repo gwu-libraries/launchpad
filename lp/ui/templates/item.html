@@ -138,20 +138,20 @@ $(document).ready(function() {
                 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
                     <span class="author">
                     {% if bib.CJK_INFO.AUTHOR %}
-                        <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.CJK_INFO.AUTHOR|urlencode }}%22">{{ bib.CJK_INFO.AUTHOR }}</a></span> <br />
+                        <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.CJK_INFO.AUTHOR|urlencode }}%22" target='newwin'>{{ bib.CJK_INFO.AUTHOR }}</a></span> <br />
                     {% endif %}
                     {% if bib.AUTHORS %}
                         {% for contributor in bib.AUTHORS %}
                             {% if forloop.first %}
-                                <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22">{{contributor}}</a></span>
+                                <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22" target='newwin' >{{contributor}}</a></span>
                             {% else %}
-                                <span itemprop="contributor"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22">{{contributor}}</a></span>
+                                <span itemprop="contributor"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22" target='newwin'>{{contributor}}</a></span>
                             {% endif %}
                             {% if not forloop.last %}; {% endif %}
                         {% endfor %}
                     {% else %}
                         {% if bib.AUTHOR %}
-                            <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.AUTHOR|urlencode }}%22">{{ bib.AUTHOR }}</a></span>
+                            <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.AUTHOR|urlencode }}%22" target='newwin'>{{ bib.AUTHOR }}</a></span>
                         {% endif %}
                     {% endif %}
                     </span><br />
@@ -548,11 +548,11 @@ $(document).ready(function() {
             <td>
                 {% for val in values %}
                 {% if name == "Other Authors" %}
-                <a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ val|urlencode }}%22">{{ val }}</a>
+                <a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ val|urlencode }}%22" target='newwin'>{{ val }}</a>
                 {% elif name == "Series" %}
-                <a href="http://surveyor.gelman.gwu.edu/?q=series:%22{{ val|urlencode }}%22">{{ val }}</a>
+                <a href="http://surveyor.gelman.gwu.edu/?q=series:%22{{ val|urlencode }}%22" target='newwin'>{{ val }}</a>
                 {% elif name == "Subjects" or name == "Genre" %}
-                <a href="http://surveyor.gelman.gwu.edu/?q=subject:%22{{ val|urlencode }}%22">{{ val }}</a>
+                <a href="http://surveyor.gelman.gwu.edu/?q=subject:%22{{ val|urlencode }}%22" target='newwin'>{{ val }}</a>
                 {% else %}
                 {{ val }}
                 {% endif %}
