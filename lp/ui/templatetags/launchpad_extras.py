@@ -93,15 +93,21 @@ def settings_value(name):
     return getattr(settings, name, '')
 
 
+@register.assignment_tag
+def assign_settings_value(name):
+    return getattr(settings, name, '')
+
+
 @register.filter
 def citationlist(citation_json):
     snippets = []
     for key in ['type', 'author', 'title', 'journal', 'identifier',
-        'publisher', 'volume', 'issue', 'year', 'pages']:
+                'publisher', 'volume', 'issue', 'year', 'pages']:
         if citation_json.get(key, None):
             snippets.append(listelement(key, citation_json))
-    if not citation_json.get('pages') and citation_json.get('start_page') and \
-        citation_json.get('end_page'):
+    if not citation_json.get('pages') \
+            and citation_json.get('start_page') \
+            and citation_json.get('end_page'):
         snippets.append(listelement('start_page', citation_json))
         snippets.append(listelement('end_page', citation_json))
     html = '<dl class="dl-horizontal">%s</dl>' % ''.join(snippets)
