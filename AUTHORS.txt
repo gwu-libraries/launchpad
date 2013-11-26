@@ -4,14 +4,15 @@ throughout, including Laura Wrubel, Chandler Christoffel, Glenn Canner,
 Jackie Shieh, Christopher Gross, Zachary Elder, and Robin Kinder.
 Key support from the WRLC consortium came from Jim Austin and Phil Boyer.
 
-The programmer team (past and present) at GW Libraries includes:
+The programmer team past (marked by *) and present at GW Libraries includes:
 
 Michael Cummings <michaelc@gwu.edu>
-Joshua Gomez <jngomez@gwu.edu>
+* Joshua Gomez <jngomez@gwu.edu>
 Raza Gilani <sgilani@gwu.edu>
 Christian Aldridge <zut@gwu.edu>
 Daniel Chudnov <dchud@gwu.edu>
 Darshan Pandhi <darshan@gwu.edu>
+* Rosalyn Metz <rosy@gwu.edu>
 
 
 The following people have contributed code to this repository and agreed
