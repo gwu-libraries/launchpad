@@ -105,7 +105,7 @@ $(document).ready(function() {
     <div class="span12">
 <div itemscope itemtype="{{bib.MICRODATA_TYPE}}">
 
-<table border='0' style='width:100%;'>
+<table id='desc-table' border='0' style='width:100%;'>
     <tr>
         <td>
             {% if bib.ISBN|clean_isbn %}
