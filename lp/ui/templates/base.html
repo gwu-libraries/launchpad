@@ -1,3 +1,4 @@
+{% load launchpad_extras %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -40,7 +41,7 @@
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', '{{ google_analytics_ua }}']);
     _gaq.push(['_trackPageview']);
-    _gaq.push(['aggregate._setAccount', '{{ google_analytics_aggregate_ua }}']);
+    _gaq.push(['aggregate._setAccount', '{% settings_value "GOOGLE_ANALYTICS_AGGREGATE_UA" %}']);
     _gaq.push(['aggregate._trackPageview']);
 
     (function() {
