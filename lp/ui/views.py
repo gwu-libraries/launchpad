@@ -89,6 +89,7 @@ def item(request, bibid):
             'enable_humans': settings.ENABLE_HUMANS,
             'audio_tags': settings.STREAMING_AUDIO_TAGS,
             'video_tags': settings.STREAMING_VIDEO_TAGS,
+            'bound_item_link': settings.BOUND_WITH_ITEM_LINK,
             'max_items': settings.MAX_ITEMS,
             'show_wrlc_link': show_wrlc_link,
             'non_wrlc_item': False,
@@ -166,6 +167,7 @@ def non_wrlc_item(request, num, num_type):
                   'link_resolver': settings.LINK_RESOLVER,
                   'audio_tags': settings.STREAMING_AUDIO_TAGS,
                   'video_tags': settings.STREAMING_VIDEO_TAGS,
+                  'bound_item_link': settings.BOUND_WITH_ITEM_LINK,
                   })
 
 
@@ -209,6 +211,7 @@ def gtitem(request, gtbibid):
                 'enable_humans': settings.ENABLE_HUMANS,
                 'audio_tags': settings.STREAMING_AUDIO_TAGS,
                 'video_tags': settings.STREAMING_VIDEO_TAGS,
+                'bound_item_link': settings.BOUND_WITH_ITEM_LINK,
                 'max_items': settings.MAX_ITEMS,
                 'show_wrlc_link': show_wrlc_link,
                 'non_wrlc_item': True
@@ -312,6 +315,7 @@ def gmitem(request, gmbibid):
                 'enable_humans': settings.ENABLE_HUMANS,
                 'audio_tags': settings.STREAMING_AUDIO_TAGS,
                 'video_tags': settings.STREAMING_VIDEO_TAGS,
+                'bound_item_link': settings.BOUND_WITH_ITEM_LINK,
                 'max_items': settings.MAX_ITEMS,
                 'show_wrlc_link': show_wrlc_link,
                 'non_wrlc_item': True
