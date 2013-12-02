@@ -624,7 +624,14 @@ FROM mfhd_master
 WHERE mfhd_master.mfhd_id=%s"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id] * 8)
-    return _make_dict(cursor, first=True)
+    results = _make_dict(cursor, first=True)
+    string = results.get('LINK856U')
+    if string:
+        if settings.BOUND_WITH_ITEM_LINK not in string:
+            results['bound_item'] = False
+        else:
+            results['bound_item'] = True
+    return results
 
 
 def get_mfhd_data(mfhd_id):
@@ -653,6 +660,12 @@ WHERE mfhd_master.mfhd_id=%s"""
             for subfield in item.split('$')[1:]:
                 if subfield[0] in temp:
                     temp[subfield[0]] = subfield[1:]
+                if temp[subfield[0]] == 'u' and \
+                        settings.BOUND_WITH_ITEM_LINK not in temp[subfield[0]]:
+                    temp['bound_item'] = False
+                elif temp[subfield[0]] == 'u' and \
+                        settings.BOUND_WITH_ITEM_LINK in temp[subfield[0]]:
+                    temp['bound_item'] = True
             marc856.append(temp)
     # parse "library has" info from 866
     marc866 = []
@@ -1133,6 +1146,11 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'LINK856U': link,
                   'LINK866': None,
                   'MFHD_ID': None}
+    if link:
+        if settings.BOUND_WITH_ITEM_LINK not in link:
+            electronic['bound_item'] = False
+        else:
+            electronic['bound_item'] = True
     return electronic
 
 
@@ -1217,6 +1235,10 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
             link['STATUS'] = 'Missing'
         if link['LINK']:
             val = {'3': '', 'z': link['MESSAGE'], 'u': link['LINK']}
+            if settings.BOUND_WITH_ITEM_LINK not in val['u']:
+                val['bound_item'] = False
+            else:
+                val['bound_item'] = True
             m856list.append(val)
             continue
             for item in links:

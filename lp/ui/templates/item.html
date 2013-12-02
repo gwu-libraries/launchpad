@@ -361,7 +361,7 @@ $(document).ready(function() {
                                            <button onclick="window.open('{{link.u}}')" > Listen online </button>
                                        {% elif item.DISPLAY_CALL_NO in video_tags %}
                                            <button onclick="window.open('{{link.u}}')" > Watch online </button>
-                                       {% elif bound_item_link not in link.u%}
+                                       {% elif not link.bound_item%}
                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
                                        {%else%}
                                             <a href="{{link.u}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
@@ -409,7 +409,6 @@ $(document).ready(function() {
                        {% endfor %}
             <!--  If no item data use old template -->
             {% elif "Click" not in holding.TRIMMED_LOCATION_DISPLAY_NAME %}
-    print perm_loc
                 <tr>
                     <td>
                         <div class="itemrow">
@@ -453,7 +452,7 @@ $(document).ready(function() {
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Listen online </button>
                                 {% elif holding.DISPLAY_CALL_NO in video_tags %}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Watch online </button>
-                                {% elif bound_item_link not in holding.ELECTRONIC_DATA.LINK856U%}
+                                {% elif not holding.ELECTRONIC_DATA.bound_item%}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
                                 {%else%}
                                     <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
@@ -474,7 +473,7 @@ $(document).ready(function() {
                                         <button onclick="window.open('{{link.u}}')" > Listen online </button>
                                     {% elif holding.DISPLAY_CALL_NO in video_tags %}
                                         <button onclick="window.open('{{link.u}}')" > Watch online </button>
-                                    {% elif bound_item_link not in link.u%}
+                                    {% elif not link.bound_item%}
                                         <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
                                     {%else%}
                                         <a href="{{link.u}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
