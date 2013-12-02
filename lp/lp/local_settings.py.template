@@ -149,6 +149,8 @@ STREAMING_AUDIO_TAGS = ['GW: Streaming Audio', 'GW Streaming Audio']
 
 STREAMING_VIDEO_TAGS = ['GW: Streaming Video', 'GW Streaming Video']
 
+BOUND_WITH_ITEM_LINK = 'findit.library.gwu.edu/item/'
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
