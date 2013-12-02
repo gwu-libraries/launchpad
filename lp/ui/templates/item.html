@@ -359,11 +359,9 @@ $(document).ready(function() {
                                    {% else %}
                                        {% if item.DISPLAY_CALL_NO in audio_tags %}
                                            <button onclick="window.open('{{link.u}}')" > Listen online </button>
-                                       {% endif %}
-                                       {% if item.DISPLAY_CALL_NO in video_tags %}
+                                       {% elif item.DISPLAY_CALL_NO in video_tags %}
                                            <button onclick="window.open('{{link.u}}')" > Watch online </button>
-                                       {% endif %}
-                                       {% if item.DISPLAY_CALL_NO not in audio_tags and item.DISPLAY_CALL_NO not in video_tags and 'findit.library.gwu.edu/item/' not in link.u%}
+                                       {% elif 'findit.library.gwu.edu/item/' not in link.u%}
                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
                                        {%else%}
                                             <a href="{{link.u}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
@@ -411,6 +409,7 @@ $(document).ready(function() {
                        {% endfor %}
             <!--  If no item data use old template -->
             {% elif "Click" not in holding.TRIMMED_LOCATION_DISPLAY_NAME %}
+    print perm_loc
                 <tr>
                     <td>
                         <div class="itemrow">
@@ -452,11 +451,9 @@ $(document).ready(function() {
                             {% else %}
                                 {% if holding.DISPLAY_CALL_NO in audio_tags %}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Listen online </button>
-                                {% endif %}
-                                {% if holding.DISPLAY_CALL_NO in video_tags %}
+                                {% elif holding.DISPLAY_CALL_NO in video_tags %}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Watch online </button>
-                                {% endif %}
-                                {% if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags and 'findit.library.gwu.edu/item/' not in holding.ELECTRONIC_DATA.LINK856U%}
+                                {% elif 'findit.library.gwu.edu/item/' not in holding.ELECTRONIC_DATA.LINK856U%}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
                                 {%else%}
                                     <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
@@ -475,11 +472,9 @@ $(document).ready(function() {
                                 {% else %}
                                     {% if holding.DISPLAY_CALL_NO in audio_tags %}
                                         <button onclick="window.open('{{link.u}}')" > Listen online </button>
-                                    {% endif %}
-                                    {% if holding.DISPLAY_CALL_NO in video_tags %}
+                                    {% elif holding.DISPLAY_CALL_NO in video_tags %}
                                         <button onclick="window.open('{{link.u}}')" > Watch online </button>
-                                    {% endif %}
-                                    {% if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags and 'findit.library.gwu.edu/item/' not in link.u%}
+                                    {% elif 'findit.library.gwu.edu/item/' not in link.u%}
                                         <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
                                     {%else%}
                                         <a href="{{link.u}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>

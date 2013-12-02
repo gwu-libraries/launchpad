@@ -1024,8 +1024,6 @@ def is_eligible(holding):
     if holding.get('LIBRARY_NAME', '') in settings.INELIGIBLE_LIBRARIES:
         return False
     marc856 = holding.get('MFHD_DATA', {}).get('marc856list', [])
-    if not marc856 and not holding.get('ITEMS', None):
-        return True
     if holding.get('AVAILABILITY', {}):
         perm_loc = holding['AVAILABILITY']['PERMLOCATION'].upper() if \
             holding['AVAILABILITY'].get('PERMLOCATION', '') else ''
@@ -1033,6 +1031,8 @@ def is_eligible(holding):
             holding['AVAILABILITY'].get('TEMPLOCATION', '') else ''
         status = holding['AVAILABILITY']['ITEM_STATUS_DESC'].upper() if \
             holding['AVAILABILITY'].get('ITEM_STATUS_DESC', '') else ''
+    #elif not marc856 and not holding.get('ITEMS', None):
+    #    return True
     else:
         return False
     if (holding.get('LIBRARY_NAME', '') == 'GM' and
