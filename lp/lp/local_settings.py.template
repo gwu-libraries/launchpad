@@ -149,6 +149,8 @@ STREAMING_AUDIO_TAGS = ['GW: Streaming Audio', 'GW Streaming Audio']
 
 STREAMING_VIDEO_TAGS = ['GW: Streaming Video', 'GW Streaming Video']
 
+GOVT_DOC_LINK = 'purl.access.gpo.gov'
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
