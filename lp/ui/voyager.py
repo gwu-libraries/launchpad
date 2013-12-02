@@ -627,10 +627,9 @@ WHERE mfhd_master.mfhd_id=%s"""
     results = _make_dict(cursor, first=True)
     string = results.get('LINK856U')
     if string:
-        if settings.BOUND_WITH_ITEM_LINK not in string:
-            results['bound_item'] = False
-        else:
-            results['bound_item'] = True
+        results['bound_item'] = is_bound_item(string)
+    else:
+        results['bound_item'] = False
     return results
 
 
@@ -660,12 +659,8 @@ WHERE mfhd_master.mfhd_id=%s"""
             for subfield in item.split('$')[1:]:
                 if subfield[0] in temp:
                     temp[subfield[0]] = subfield[1:]
-                if temp[subfield[0]] == 'u' and \
-                        settings.BOUND_WITH_ITEM_LINK not in temp[subfield[0]]:
-                    temp['bound_item'] = False
-                elif temp[subfield[0]] == 'u' and \
-                        settings.BOUND_WITH_ITEM_LINK in temp[subfield[0]]:
-                    temp['bound_item'] = True
+                if temp[subfield[0]] == 'u':
+                    temp['bound_item'] = is_bound_item(temp[subfield[0]])
             marc856.append(temp)
     # parse "library has" info from 866
     marc866 = []
@@ -1147,10 +1142,7 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'LINK866': None,
                   'MFHD_ID': None}
     if link:
-        if settings.BOUND_WITH_ITEM_LINK not in link:
-            electronic['bound_item'] = False
-        else:
-            electronic['bound_item'] = True
+            electronic['bound_item'] = is_bound_item(link)
     return electronic
 
 
@@ -1235,10 +1227,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
             link['STATUS'] = 'Missing'
         if link['LINK']:
             val = {'3': '', 'z': link['MESSAGE'], 'u': link['LINK']}
-            if settings.BOUND_WITH_ITEM_LINK not in val['u']:
-                val['bound_item'] = False
-            else:
-                val['bound_item'] = True
+            val['bound_item'] = is_bound_item(val['u'])
             m856list.append(val)
             continue
             for item in links:
@@ -1281,6 +1270,13 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
     res.append(items)
     res.append(m852)
     return res
+
+
+def is_bound_item(link):
+    if settings.BOUND_WITH_ITEM_LINK not in link:
+        return False
+    else:
+        return True
 
 
 def get_gt_link(lines):
