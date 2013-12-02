@@ -120,6 +120,7 @@ AND bib_master.suppress_in_opac='N'"""
             bib['PUBLISHER'] = rec.publisher()
             title_fields = rec.get_fields('245')
             bib['TITLE_ALL'] = ''
+            bib['BIB_ID'] = bibid
             for title in title_fields:
                 bib['TITLE_ALL'] += title.format_field().decode('iso-8859-1')\
                     .encode('utf-8')
@@ -486,9 +487,10 @@ ORDER BY library.library_name"""
                         num = url[isbnindex + 5:]
                         stop = num.find('&')
                         num = num[:stop] if stop > -1 else num
-                linkdata = apis.sersol360link(num, num_type)
-                for ld in linkdata:
-                    holding['LinkResolverData'].append(ld)
+                if 'num' in locals():
+                    linkdata = apis.sersol360link(num, num_type)
+                    for ld in linkdata:
+                        holding['LinkResolverData'].append(ld)
     # get free electronic book link from open library
     for numformat in ('LCCN', 'ISBN', 'OCLC'):
         if bib_data.get(numformat):
