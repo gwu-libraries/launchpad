@@ -43,6 +43,7 @@ mapping = (
     ('NOTES', 'Notes', ['500', '501', '504', '507', '530', '546', '547',
                         '550', '586', '590']),
     ('SUMMARY', 'Summary', ['520']),
+    ('BIOGRAPHICAL NOTES', 'Biographical Notes', ['545']),
     ('CURRENT_FREQUENCY', 'Current Frequency', ['310', '321', '362']),
     ('PUBLICATION_HISTORY', 'Publication History', ['362']),
     ('IN_COLLECTION', 'In Collection', ['773']),
