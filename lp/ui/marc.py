@@ -66,7 +66,6 @@ mapping = (
     ('PUBLISHER_NUMBER', 'Publisher Numbers', ['028']),
     ('GEOGRAPHIC_AREA', 'Geographic Area', [('043', gacs)]),
     ('OCLC_CODE', 'OCLC Code', ['049']),
-    ('DDC', 'Dewey Decimal Classification', ['082']),
 )
 
 
