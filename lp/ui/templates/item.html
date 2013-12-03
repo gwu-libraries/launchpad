@@ -35,7 +35,6 @@
 
 {% block javascript_extra %}
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
-<!--<script src="http://code.jquery.com/jquery-1.9.1.js"></script>-->
 <script type='text/javascript'>
 function toggle_visibility(tbid,lnkid)
 {
@@ -99,7 +98,7 @@ $(document).ready(function() {
 {% endblock javascript_extra %}
 
 {% block content %}
-
+{% assign_settings_value "BOUND_WITH_ITEM_LINK" as bound_item_link %}
 <article class="libsite-container container" >
 <div class="row-fluid">
     <div class="span12">
@@ -325,7 +324,6 @@ $(document).ready(function() {
                         <div class="linkresolverlist">
                         {% for link in holding.LinkResolverData %}
                             <div class="linkresolverresource">
-                                <!-- <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</a>: -->
                                 <button class="smallbuttons" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</button>
                                     <div class="linkresolverdata">
                                         {% if link.start %}
@@ -363,7 +361,7 @@ $(document).ready(function() {
                                            <button onclick="window.open('{{link.u}}')" > Watch online </button>
                                        {% elif not link.bound_item%}
                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
-                                       {%else%}
+                                       {% else %}
                                             <a href="{{link.u}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                        {% endif %}
                                    {% endif %}
@@ -454,7 +452,7 @@ $(document).ready(function() {
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Watch online </button>
                                 {% elif not holding.ELECTRONIC_DATA.bound_item%}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
-                                {%else%}
+                                {% else %}
                                     <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                 {% endif %}
                             {% endif %}
@@ -475,7 +473,7 @@ $(document).ready(function() {
                                         <button onclick="window.open('{{link.u}}')" > Watch online </button>
                                     {% elif not link.bound_item%}
                                         <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
-                                    {%else%}
+                                    {% else %}
                                         <a href="{{link.u}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                     {% endif %}
                                 {% endif %}

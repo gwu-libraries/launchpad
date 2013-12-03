@@ -93,6 +93,11 @@ def settings_value(name):
     return getattr(settings, name, '')
 
 
+@register.assignment_tag
+def assign_settings_value(name):
+    return getattr(settings, name, '')
+
+
 @register.filter
 def citationlist(citation_json):
     snippets = []

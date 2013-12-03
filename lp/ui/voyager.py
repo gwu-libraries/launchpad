@@ -1039,8 +1039,6 @@ def is_eligible(holding):
             holding['AVAILABILITY'].get('TEMPLOCATION', '') else ''
         status = holding['AVAILABILITY']['ITEM_STATUS_DESC'].upper() if \
             holding['AVAILABILITY'].get('ITEM_STATUS_DESC', '') else ''
-    #elif not marc856 and not holding.get('ITEMS', None):
-    #    return True
     else:
         return False
     if (holding.get('LIBRARY_NAME', '') == 'GM' and
