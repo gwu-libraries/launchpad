@@ -62,8 +62,9 @@ class Z3950Catalog():
                 marc = pymarc.record.Record(zoom_record.data.
                                             bibliographicRecord.encoding[1])
                 if marc['856']:
-                    holdmeta['url'] = marc['856']['u']
-                    holdmeta['msg'] = marc['856']['z']
+                    if 'www.loc.gov' not in marc['856']['u']:
+                        holdmeta['url'] = marc['856']['u']
+                        holdmeta['msg'] = marc['856']['z']
                 holdings.append(holdmeta)
             return holdings
         if hasattr(zoom_record, 'data'):
