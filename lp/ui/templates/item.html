@@ -99,7 +99,9 @@ $(document).ready(function() {
 {% endblock javascript_extra %}
 
 {% block content %}
-
+{% assign_settings_value "STREAMING_AUDIO_TAGS" as audio_tags %}
+{% assign_settings_value "STREAMING_VIDEO_TAGS" as video_tags %}
+{% assign_settings_value "MAX_ITEMS" as max_items %}
 <article class="libsite-container container" >
 <div class="row-fluid">
     <div class="span12">
@@ -119,6 +121,8 @@ $(document).ready(function() {
                 {% if bib.CJK_INFO.TITLE %}
                     <span itemprop="name">{{ bib.CJK_INFO.TITLE }}</span> <br />
                 {% endif %}
+                {% assign_settings_value "TITLE_CHARS" as title_chars %}
+                {% assign_settings_value "TITLE_LEFTOVER_CHARS" as title_leftover_chars %}
                 {% if bib.TITLE_ALL|length <= title_chars or TITLE_ALL|length > title_chars and bib.BRIEF_LENGTH <= title_leftover_chars %}
                     <span itemprop="name">{{bib.TITLE_ALL}}</span><br/>
                 {% endif %}
@@ -566,6 +570,7 @@ $(document).ready(function() {
 
 </div>
 
+{% assign_settings_value "DEBUG" as debug %}
 {% if debug %}
 <br>
 <h3>Debugging info</h3>
@@ -592,6 +597,7 @@ $(document).ready(function() {
 {% if bib.ISBN|clean_isbn %}
 ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a>
 &nbsp;
+    {% assign_settings_value "LINK_RESOLVER" as link_resolver %}
     {% if link_resolver.base_url and link_resolver.name %}
     (<a href='{{ link_resolver.base_url }}?isbn={{ bib.ISBN|clean_isbn }}&amp;{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
 &nbsp;

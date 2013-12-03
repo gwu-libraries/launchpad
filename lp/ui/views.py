@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 def home(request):
     return render(request, 'home.html', {
         'title': 'launchpad home',
-        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
     })
 
 
@@ -79,17 +78,8 @@ def item(request, bibid):
         return render(request, 'item.html', {
             'bibid': bibid,
             'bib': bib,
-            'debug': settings.DEBUG,
-            'title_chars': settings.TITLE_CHARS,
-            'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
             'holdings': holdings,
             'link': bib.get('LINK', [])[9:],
-            'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-            'link_resolver': settings.LINK_RESOLVER,
-            'enable_humans': settings.ENABLE_HUMANS,
-            'audio_tags': settings.STREAMING_AUDIO_TAGS,
-            'video_tags': settings.STREAMING_VIDEO_TAGS,
-            'max_items': settings.MAX_ITEMS,
             'show_wrlc_link': show_wrlc_link,
             'non_wrlc_item': False,
             'details': details,
@@ -157,15 +147,8 @@ def non_wrlc_item(request, num, num_type):
                   'bibid': '',
                   'bib': bib,
                   'non_gw': True,
-                  'debug': settings.DEBUG,
-                  'title_chars': settings.TITLE_CHARS,
-                  'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
                   'holdings': holdings,
                   'link': '',
-                  'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-                  'link_resolver': settings.LINK_RESOLVER,
-                  'audio_tags': settings.STREAMING_AUDIO_TAGS,
-                  'video_tags': settings.STREAMING_VIDEO_TAGS,
                   })
 
 
@@ -199,17 +182,8 @@ def gtitem(request, gtbibid):
             return render(request, 'item.html', {
                 'bibid': bibid,
                 'bib': bib,
-                'debug': settings.DEBUG,
-                'title_chars': settings.TITLE_CHARS,
-                'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
                 'holdings': holdings,
                 'link': bib.get('LINK', [])[9:],
-                'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-                'link_resolver': settings.LINK_RESOLVER,
-                'enable_humans': settings.ENABLE_HUMANS,
-                'audio_tags': settings.STREAMING_AUDIO_TAGS,
-                'video_tags': settings.STREAMING_VIDEO_TAGS,
-                'max_items': settings.MAX_ITEMS,
                 'show_wrlc_link': show_wrlc_link,
                 'non_wrlc_item': True
             })
@@ -302,17 +276,8 @@ def gmitem(request, gmbibid):
             return render(request, 'item.html', {
                 'bibid': bibid,
                 'bib': bib,
-                'debug': settings.DEBUG,
-                'title_chars': settings.TITLE_CHARS,
-                'title_leftover_chars': settings.TITLE_LEFTOVER_CHARS,
                 'holdings': holdings,
                 'link': bib.get('LINK', [])[9:],
-                'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
-                'link_resolver': settings.LINK_RESOLVER,
-                'enable_humans': settings.ENABLE_HUMANS,
-                'audio_tags': settings.STREAMING_AUDIO_TAGS,
-                'video_tags': settings.STREAMING_VIDEO_TAGS,
-                'max_items': settings.MAX_ITEMS,
                 'show_wrlc_link': show_wrlc_link,
                 'non_wrlc_item': True
             })
@@ -391,14 +356,12 @@ def oclc(request, oclc):
 def error500(request):
     return render(request, '500.html', {
         'title': 'Sorry, system error',
-        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
     }, status=500)
 
 
 def error503(request):
     return render(request, '503.html', {
         'title': 'Database Undergoing Maintenance',
-        'google_analytics_ua': settings.GOOGLE_ANALYTICS_UA,
     }, status=503)
 
 

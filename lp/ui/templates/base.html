@@ -36,6 +36,7 @@
 {% endblock link_extra %}
 
 {% block analytics_bug %}
+    {% assign_settings_value "GOOGLE_ANALYTICS_UA" as google_analytics_ua %}
     {% if google_analytics_ua %}
     <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -55,6 +56,7 @@
     </script>
     {% endif %}
 {% endblock analytics_bug %}
+{% assign_settings_value "ENABLE_HUMANS" as enable_humans %}
 {% if enable_humans %}
     <link type="text/plain" rel="humans" href="{% url 'humans' %}" />
 {% endif %}
