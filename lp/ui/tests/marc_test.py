@@ -344,11 +344,6 @@ class MarcExtractTests(unittest.TestCase):
         bib_data = extract(r)
         self.assertEqual(bib_data["THESIS_DISSERTATION"], ['Thesis (M.A.)--Cornell, 1964.'])
 
-    def test_oclc_code_049(self):
-        r = self.get_record("049.mrc")
-        bib_data = extract(r)
-        self.assertEqual(bib_data["OCLC_CODE"], ['EAUU'])
-
     def test_genre_655(self):
         r = self.get_record("655.mrc")
         bib_data = extract(r)
