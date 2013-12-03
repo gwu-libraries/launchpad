@@ -1442,12 +1442,11 @@ def insert_sid(qs):
     elif 'rfr_id' in q and len(q['rfr_id']) == 1:
         sid_name = 'rfr_id'
         sid = q['rfr_id'][0]
-
-    if 'rft.genre' in q and q['rft.genre'] == 'unknown':
-        if 'rft_val_format' in q:
-            length = len(q['rft_val_format'])
-            index = q['rft_val_format'].rfind(':', 0, length)
-            q['rft.genre'] = q['rft_val_format'][index:length]
+    if 'rft.genre' in q and q['rft.genre'][0] == 'unknown':
+        if 'rft_val_fmt' in q and len(q['rft_val_fmt']) == 1:
+            length = len(q['rft_val_fmt'][0])
+            index = q['rft_val_fmt'][0].rfind(':', 0, length)
+            q['rft.genre'] = [q['rft_val_fmt'][0][index+1:length]]
 
     if sid_name and sid:
         # trim the sid value so that it is not longer than 40 characters
