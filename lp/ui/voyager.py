@@ -120,6 +120,7 @@ AND bib_master.suppress_in_opac='N'"""
             bib['PUBLISHER'] = rec.publisher()
             title_fields = rec.get_fields('245')
             bib['TITLE_ALL'] = ''
+            bib['BIB_ID'] = bibid
             for title in title_fields:
                 bib['TITLE_ALL'] += title.format_field().decode('iso-8859-1')\
                     .encode('utf-8')
@@ -486,9 +487,10 @@ ORDER BY library.library_name"""
                         num = url[isbnindex + 5:]
                         stop = num.find('&')
                         num = num[:stop] if stop > -1 else num
-                linkdata = apis.sersol360link(num, num_type)
-                for ld in linkdata:
-                    holding['LinkResolverData'].append(ld)
+                if 'num' in locals():
+                    linkdata = apis.sersol360link(num, num_type)
+                    for ld in linkdata:
+                        holding['LinkResolverData'].append(ld)
     # get free electronic book link from open library
     for numformat in ('LCCN', 'ISBN', 'OCLC'):
         if bib_data.get(numformat):
@@ -624,7 +626,13 @@ FROM mfhd_master
 WHERE mfhd_master.mfhd_id=%s"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id] * 8)
-    return _make_dict(cursor, first=True)
+    results = _make_dict(cursor, first=True)
+    string = results.get('LINK856U')
+    if string:
+        results['govt_doc'] = is_govt_doc(string)
+    else:
+        results['govt_doc'] = False
+    return results
 
 
 def get_mfhd_data(mfhd_id):
@@ -653,6 +661,8 @@ WHERE mfhd_master.mfhd_id=%s"""
             for subfield in item.split('$')[1:]:
                 if subfield[0] in temp:
                     temp[subfield[0]] = subfield[1:]
+                if temp[subfield[0]] == 'u':
+                    temp['govt_doc'] = is_govt_doc(temp[subfield[0]])
             marc856.append(temp)
     # parse "library has" info from 866
     marc866 = []
@@ -1024,7 +1034,8 @@ def is_eligible(holding):
     if holding.get('LIBRARY_NAME', '') in settings.INELIGIBLE_LIBRARIES:
         return False
     marc856 = holding.get('MFHD_DATA', {}).get('marc856list', [])
-    if not marc856 and not holding.get('ITEMS', None):
+    if not marc856 and not holding.get('ITEMS', None) and \
+            not holding.get('AVAILABILITY', {}):
         return True
     if holding.get('AVAILABILITY', {}):
         perm_loc = holding['AVAILABILITY']['PERMLOCATION'].upper() if \
@@ -1133,6 +1144,10 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'LINK856U': link,
                   'LINK866': None,
                   'MFHD_ID': None}
+    if link:
+        electronic['govt_doc'] = is_govt_doc(link)
+    else:
+        electronic['govt_doc'] = False
     return electronic
 
 
@@ -1217,6 +1232,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
             link['STATUS'] = 'Missing'
         if link['LINK']:
             val = {'3': '', 'z': link['MESSAGE'], 'u': link['LINK']}
+            val['govt_doc'] = is_govt_doc(val['u'])
             m856list.append(val)
             continue
             for item in links:
@@ -1259,6 +1275,13 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
     res.append(items)
     res.append(m852)
     return res
+
+
+def is_govt_doc(link):
+    if settings.GOVT_DOC_LINK not in link:
+        return False
+    else:
+        return True
 
 
 def get_gt_link(lines):

@@ -73,7 +73,7 @@ Z3950_SERVERS = {
 
 INDEX_CODES = {
     'isbn': ['020N', '020A', 'ISB3', '020Z'],
-    'issn': ['022A', '022Z'],
+    'issn': ['022A', '022Z', '022L'],
     'oclc': ['035A'],
     'lccn': ['010A']
     }
@@ -149,6 +149,8 @@ STREAMING_AUDIO_TAGS = ['GW: Streaming Audio', 'GW Streaming Audio']
 
 STREAMING_VIDEO_TAGS = ['GW: Streaming Video', 'GW Streaming Video']
 
+GOVT_DOC_LINK = 'purl.access.gpo.gov'
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
@@ -161,6 +163,7 @@ ITEM_PAGE_CACHE_SECONDS = 60 * 60 # one hour
 
 # If this value is present (not empty), GA bug will be added to html
 GOOGLE_ANALYTICS_UA = ''
+GOOGLE_ANALYTICS_AGGREGATE_UA = ''
 
 # Link resolver information, only used in debug mode now
 LINK_RESOLVER = {
