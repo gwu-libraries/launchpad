@@ -351,7 +351,7 @@ $(document).ready(function() {
                              <div class="marc856list">
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
                                  <div class="marc856resource">
-                                   {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' %}
+                                   {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' and not link.govt_doc%}
                                        <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                        <br />
                                        <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
@@ -442,7 +442,7 @@ $(document).ready(function() {
                             {% if holding.ELECTRONIC_DATA.LINK8563 %}
                                 <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
                             {% endif %}
-                            {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
+                            {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not holding.ELECTRONIC_DATA.govt_doc%}
                                 <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                 <br />
                                 <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img>
@@ -463,7 +463,7 @@ $(document).ready(function() {
                 {% if link.3 %}
                         <span class="link-volumes">[{{ link.3 }}]</span>
                 {% endif %}
-                {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' %}
+                {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not link.govt_doc%}
                         <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                         <br />
                         <img style='height:1em;' src='{{ STATIC_URL }}img/lock.png'></img>
