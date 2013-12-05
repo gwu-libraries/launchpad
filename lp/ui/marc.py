@@ -43,6 +43,7 @@ mapping = (
     ('NOTES', 'Notes', ['500', '501', '504', '507', '530', '546', '547',
                         '550', '586', '590']),
     ('SUMMARY', 'Summary', ['520']),
+    ('BIOGRAPHICAL NOTES', 'Biographical Notes', ['545']),
     ('CURRENT_FREQUENCY', 'Current Frequency', ['310', '321', '362']),
     ('PUBLICATION_HISTORY', 'Publication History', ['362']),
     ('IN_COLLECTION', 'In Collection', ['773']),
@@ -65,7 +66,6 @@ mapping = (
     ('OTHER_STANDARD_IDENTIFIER', 'Other Identifiers', ['024']),
     ('PUBLISHER_NUMBER', 'Publisher Numbers', ['028']),
     ('GEOGRAPHIC_AREA', 'Geographic Area', [('043', gacs)]),
-    ('OCLC_CODE', 'OCLC Code', ['049']),
     ('DDC', 'Dewey Decimal Classification', ['082']),
 )
 
