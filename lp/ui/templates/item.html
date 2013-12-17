@@ -35,7 +35,6 @@
 
 {% block javascript_extra %}
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
-<!--<script src="http://code.jquery.com/jquery-1.9.1.js"></script>-->
 <script type='text/javascript'>
 function toggle_visibility(tbid,lnkid)
 {
@@ -99,9 +98,13 @@ $(document).ready(function() {
 {% endblock javascript_extra %}
 
 {% block content %}
+<<<<<<< HEAD
 {% assign_settings_value "STREAMING_AUDIO_TAGS" as audio_tags %}
 {% assign_settings_value "STREAMING_VIDEO_TAGS" as video_tags %}
 {% assign_settings_value "MAX_ITEMS" as max_items %}
+=======
+{% assign_settings_value "BOUND_WITH_ITEM_LINK" as bound_item_link %}
+>>>>>>> t398-change-button-text-for-launchpad-links
 <article class="libsite-container container" >
 <div class="row-fluid">
     <div class="span12">
@@ -329,7 +332,6 @@ $(document).ready(function() {
                         <div class="linkresolverlist">
                         {% for link in holding.LinkResolverData %}
                             <div class="linkresolverresource">
-                                <!-- <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</a>: -->
                                 <button class="smallbuttons" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</button>
                                     <div class="linkresolverdata">
                                         {% if link.start %}
@@ -363,12 +365,12 @@ $(document).ready(function() {
                                    {% else %}
                                        {% if item.DISPLAY_CALL_NO in audio_tags %}
                                            <button onclick="window.open('{{link.u}}')" > Listen online </button>
-                                       {% endif %}
-                                       {% if item.DISPLAY_CALL_NO in video_tags %}
+                                       {% elif item.DISPLAY_CALL_NO in video_tags %}
                                            <button onclick="window.open('{{link.u}}')" > Watch online </button>
-                                       {% endif %}
-                                       {% if item.DISPLAY_CALL_NO not in audio_tags and item.DISPLAY_CALL_NO not in video_tags %}
+                                       {% elif not link.bound_item%}
                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
+                                       {% else %}
+                                            <a href="{{link.u}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                        {% endif %}
                                    {% endif %}
                                    {% if link.3 %}
@@ -454,12 +456,12 @@ $(document).ready(function() {
                             {% else %}
                                 {% if holding.DISPLAY_CALL_NO in audio_tags %}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Listen online </button>
-                                {% endif %}
-                                {% if holding.DISPLAY_CALL_NO in video_tags %}
+                                {% elif holding.DISPLAY_CALL_NO in video_tags %}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Watch online </button>
-                                {% endif %}
-                                {% if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags %}
+                                {% elif not holding.ELECTRONIC_DATA.bound_item%}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
+                                {% else %}
+                                    <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                 {% endif %}
                             {% endif %}
                         {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list and holding.MFHD_DATA.marc856list.strip %}
@@ -475,12 +477,12 @@ $(document).ready(function() {
                                 {% else %}
                                     {% if holding.DISPLAY_CALL_NO in audio_tags %}
                                         <button onclick="window.open('{{link.u}}')" > Listen online </button>
-                                    {% endif %}
-                                    {% if holding.DISPLAY_CALL_NO in video_tags %}
+                                    {% elif holding.DISPLAY_CALL_NO in video_tags %}
                                         <button onclick="window.open('{{link.u}}')" > Watch online </button>
-                                    {% endif %}
-                                    {% if holding.DISPLAY_CALL_NO not in audio_tags and holding.DISPLAY_CALL_NO not in video_tags %}
+                                    {% elif not link.bound_item%}
                                         <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
+                                    {% else %}
+                                        <a href="{{link.u}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
