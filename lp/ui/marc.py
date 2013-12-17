@@ -46,7 +46,9 @@ mapping = (
     ('BIOGRAPHICAL NOTES', 'Biographical Notes', ['545']),
     ('CURRENT_FREQUENCY', 'Current Frequency', ['310', '321', '362']),
     ('PUBLICATION_HISTORY', 'Publication History', ['362']),
-    ('IN_COLLECTION', 'In Collection', ['773']),
+    ('IN_COLLECTION', 'In Collection', [
+        ('773', None, None, 'abdghikmnopqrstuwxyz')
+    ]),
     ('THESIS_DISSERTATION', 'Thesis/Dissertation', ['502']),
     ('CONTENTS', 'Contents', ['505']),
     ('PRODUCTION_CREDITS', 'Production Credits', ['508']),

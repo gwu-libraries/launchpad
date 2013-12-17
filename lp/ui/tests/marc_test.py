@@ -216,7 +216,7 @@ class MarcExtractTests(unittest.TestCase):
     def test_in_collection_773(self):
         r = self.get_record("773.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["IN_COLLECTION"], ['c2as American Historical Association. Annual report of the American Historical Association. Washington. 25 cm. v. 2 [1897] (OCoLC)1150082'])
+        self.assertEqual(bib_data["IN_COLLECTION"], ['American Historical Association. Annual report of the American Historical Association. Washington. 25 cm. v. 2 [1897] (OCoLC)1150082'])
 
     def test_notes_500(self):
         r = self.get_record("500.mrc")
