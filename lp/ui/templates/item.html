@@ -563,8 +563,14 @@ $(document).ready(function() {
                 <br>
                 {% endfor %}
             </td>
-          </tr>
+        </tr>
         {% endfor %}
+        {% if bib.OCLC %}
+        <tr>
+            <td class="field-label">OCLC Number</td>
+            <td>{{ bib.OCLC }}</td>
+        </tr>
+        {% endif %}
     </table>
 </div>
 
@@ -610,10 +616,6 @@ ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}?{{ bib.openurl.query_string|
     (<a href='{{ link_resolver.base_url }}?issn={{ bib.ISSN|clean_issn }}&amp;{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
 &nbsp;
     {% endif %}
-{% endif %}
-{% if bib.NETWORK_NUMBER|clean_oclc %}
-OCLC: <a href='{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}?{{ bib.openurl.query_string|escape }}'>{% url "oclc" bib.NETWORK_NUMBER|clean_oclc %}</a>
-&nbsp;
 {% endif %}
 </p>
 
