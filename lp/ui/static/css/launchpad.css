@@ -171,6 +171,8 @@ td.field-label {
     border-bottom: 1px solid #ddd;
 }
 
+#desc-table td {border:0;}
+
 footer {
     margin-top: 3em;
 }
