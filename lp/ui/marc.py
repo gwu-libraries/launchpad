@@ -96,7 +96,14 @@ def extract(record, d={}):
                        field.indicator2):
                         parts = []
                         for code, value in field:
-                            if code in subfields:
+                            # TODO: we purposefully ignore $6 for now since 
+                            # it is used for linking alternate script 
+                            # representations. Ideally some day we could 
+                            # have a way to layer them into our data
+                            # representation, or simply using the original
+                            # character set as the default since our 
+                            # web browsers can easily display them now.
+                            if code != '6' and code in subfields:
                                 parts.append(value)
                         if len(parts) > 0:
                             d[name].append(' '.join(parts))
@@ -127,8 +134,7 @@ def ind(expected, found):
 def subject(f):
     s = ''
     for code, value in f:
-        if code == '0':
-            # TODO: might be useful to return subject URLs
+        if code in ['0', '6']:
             continue
         elif code not in ('v', 'x', 'y', 'z'):
             s += ' %s' % value
