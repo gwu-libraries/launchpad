@@ -25,6 +25,11 @@ class MarcExtractTests(unittest.TestCase):
         bib_data = extract(r)
         self.assertEqual(bib_data["DESCRIPTION"], ['xvi, 190 p. illus. 28 cm.'])
 
+    def test_description_351(self):
+        r = self.get_record("351.mrc")
+        bib_data = extract(r)
+        self.assertEqual(bib_data["DESCRIPTION"], ['Organized into 3 Series'])
+    
     def test_description_516(self):
         r = self.get_record("516.mrc")
         bib_data = extract(r)
@@ -218,6 +223,11 @@ class MarcExtractTests(unittest.TestCase):
         bib_data = extract(r)
         self.assertEqual(bib_data["IN_COLLECTION"], ['American Historical Association. Annual report of the American Historical Association. Washington. 25 cm. v. 2 [1897] (OCoLC)1150082'])
 
+    def test_in_collection_545(self):
+        r = self.get_record("545.mrc")
+        bib_data = extract(r)
+        self.assertEqual(bib_data["BIOGRAPHICAL NOTES"], ['Mitch Snyder (1943-1990) was a radical Catholic, advocate for the rights of homeless people'])
+
     def test_notes_500(self):
         r = self.get_record("500.mrc")
         bib_data = extract(r)
@@ -237,6 +247,11 @@ class MarcExtractTests(unittest.TestCase):
         r = self.get_record("507.mrc")
         bib_data = extract(r)
         self.assertEqual(bib_data["NOTES"], ['Scale 1:625,000.'])
+
+    def test_notes_521(self):
+        r = self.get_record("521.mrc")
+        bib_data = extract(r)
+        self.assertEqual(bib_data["NOTES"], ['MPAA rating: Not rated.'])
 
     def test_notes_530(self):
         r = self.get_record("530.mrc")
