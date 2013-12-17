@@ -226,7 +226,7 @@ class MarcExtractTests(unittest.TestCase):
     def test_in_collection_545(self):
         r = self.get_record("545.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["BIOGRAPHICAL SUMMARY"], ['Mitch Snyder (1943-1990) was a radical Catholic, advocate for the rights of homeless people'])
+        self.assertEqual(bib_data["BIOGRAPHICAL NOTES"], ['Mitch Snyder (1943-1990) was a radical Catholic, advocate for the rights of homeless people'])
 
     def test_notes_500(self):
         r = self.get_record("500.mrc")
