@@ -149,11 +149,9 @@ STREAMING_AUDIO_TAGS = ['GW: Streaming Audio', 'GW Streaming Audio']
 
 STREAMING_VIDEO_TAGS = ['GW: Streaming Video', 'GW Streaming Video']
 
-<<<<<<< HEAD
 GOVT_DOC_LINK = 'purl.access.gpo.gov'
-=======
+
 BOUND_WITH_ITEM_LINK = 'findit.library.gwu.edu/item/'
->>>>>>> t398-change-button-text-for-launchpad-links
 
 CACHES = {
     'default': {
