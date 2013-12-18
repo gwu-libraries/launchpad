@@ -28,7 +28,7 @@ class MarcExtractTests(unittest.TestCase):
     def test_description_351(self):
         r = self.get_record("351.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["DESCRIPTION"], ['Organized into 3 Series'])
+        self.assertEqual(bib_data["DESCRIPTION"][1], 'Organized into 3 series: I. Prison Materials, 1970-1972. II. CCNV. III. Personal/Family Materials.')
     
     def test_description_516(self):
         r = self.get_record("516.mrc")
@@ -221,7 +221,7 @@ class MarcExtractTests(unittest.TestCase):
     def test_in_collection_545(self):
         r = self.get_record("545.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["BIOGRAPHICAL NOTES"], ['Mitch Snyder (1943-1990) was a radical Catholic, advocate for the rights of homeless people'])
+        self.assertEqual(['Mitch Snyder (1943-1990) was a radical Catholic, advocate for the rights of homeless people, and leader of the Community for Creative Non-Violence (CCNV) in Washington, D.C. CCNV began as an anti-war group and became an advocacy group for the homeless.'], bib_data["BIOGRAPHICAL NOTES"])
 
     def test_notes_500(self):
         r = self.get_record("500.mrc")
@@ -246,7 +246,7 @@ class MarcExtractTests(unittest.TestCase):
     def test_notes_521(self):
         r = self.get_record("521.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["NOTES"], ['MPAA rating: Not rated.'])
+        self.assertIn( 'MPAA rating: Not rated.', bib_data['NOTES'])
 
     def test_notes_530(self):
         r = self.get_record("530.mrc")
