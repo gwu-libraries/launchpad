@@ -47,13 +47,17 @@ def clean_lccn(value):
         left, sep, right = value.partition('-')
         # all chars in right should be digits, and len <= 6
         right = ''.join([c for c in right if c.isdigit()])
-        if len(right) > 6:
-            return ''
-        # left-pad with 0s until len == 6
-        if len(right) < 6:
-            right = '%06d' % int(right)
+        if right:
+            if len(right) > 6:
+                return ''
+            # left-pad with 0s until len == 6
+            if len(right) < 6:
+                right = '%06d' % int(right)
         value = '%s%s' % (left, right)
-    return value
+    if len(value) < 8 or len(value) > 12:
+        return ''
+    else:
+        return value
 
 
 @register.filter

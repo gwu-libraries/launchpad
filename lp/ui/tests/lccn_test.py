@@ -22,6 +22,13 @@ class CleanLccnTest(TestCase):
         ('2001-000002', '2001000002'),
         ('75-425165//r75', '75425165'),
         (' 79139101 /AC/r932', '79139101'),
+        # The following are from:
+        # https://github.com/gwu-libraries/launchpad/issues/454
+        (' 60004010 -', '60004010'),
+        (' c 76017069 -x', 'c76017069'),
+        (' 77-', ''),
+        ('', ''),
+        ('01019951-REV', '01019951'),
     ]
 
     def test_normalized_lccns(self):
