@@ -218,15 +218,16 @@ $(document).ready(function() {
                     {{ bib.citation_json|citationlist|safe }}
                 </div>
                 {% endif %}
-                <p>
+                <!---<p>
                     <span class="catlink" >
                     {% if bib.BIB_ID and show_wrlc_link %}
                         View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>WRLC Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     {% endif %}
-                    </span>
-                    </p>
+                </span>
+                Commented this out due to this issue https://github.com/gwu-libraries/launchpad/issues/433
+                    </p>-->
                     {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID %}
-                     <p>
+                    <p>
                      <span class = "catlink"> 
                          Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
                   </span></p>
