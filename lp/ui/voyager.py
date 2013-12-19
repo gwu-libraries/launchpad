@@ -170,7 +170,8 @@ AND bib_master.suppress_in_opac='N'"""
                     bib['NORMAL_%s_LIST' % num_type.upper()] = list(norm_set)
                     bib['DISPLAY_%s_LIST' % num_type.upper()] = list(disp_set)
                     # use std nums to get related bibs
-                    new_bibids = get_related_bibids(norm, num_type)
+                    new_bibids = get_related_bibids(norm, num_type,
+                                                    bib['TITLE'])
                     for nb in new_bibids:
                         if nb['BIB_ID'] not in [x['BIB_ID'] for x in bibids]:
                             bibids.append(nb)
@@ -237,7 +238,7 @@ def _normalize_num(num, num_type):
     return num
 
 
-def get_related_bibids(num_list, num_type):
+def get_related_bibids(num_list, num_type, title):
     query = [None] * 7
     query[0] = """
 SELECT DISTINCT bib_index.bib_id,
@@ -250,6 +251,7 @@ AND bib_master.suppress_in_opac='N'
 AND bib_index.index_code IN (%s)
 AND bib_index.normal_heading != 'OCOLC'"""
     query[1] = """
+AND UPPER(bib_index.display_heading) NOT LIKE %s
 AND UPPER(bib_index.display_heading) NOT LIKE %s"""
     query[2] = """
 AND bib_index.normal_heading IN (
@@ -260,6 +262,7 @@ AND bib_index.normal_heading IN (
         query[2] = query[2] + """
     AND bib_index.normal_heading != bib_index.display_heading"""
     query[3] = """
+    AND UPPER(bib_index.display_heading) NOT LIKE %s
     AND UPPER(bib_index.display_heading) NOT LIKE %s"""
     query[4] = """
     AND bib_id IN (
@@ -272,6 +275,7 @@ AND bib_index.normal_heading IN (
         query[4] = query[4] + """
         AND bib_index.normal_heading != bib_index.display_heading"""
     query[5] = """
+        AND UPPER(bib_index.display_heading) NOT LIKE %s
         AND UPPER(bib_index.display_heading) NOT LIKE %s"""
     query[6] = """
         )
@@ -279,21 +283,36 @@ AND bib_index.normal_heading IN (
 ORDER BY bib_index.bib_id"""
     indexclause = _in_clause(settings.INDEX_CODES[num_type])
     numclause = _in_clause(num_list)
-    likeclause = '%' + 'SET' + '%'
+    likeclause1 = '%' + 'SET' + '%'
+    likeclause2 = '%' + 'SER' + '%'
     query[0] = query[0] % indexclause
     query[2] = query[2] % indexclause
     query[4] = query[4] % (indexclause, numclause)
     query = ''.join(query)
-    args = [likeclause] * 3
+    args = [likeclause1, likeclause2] * 3
     cursor = connection.cursor()
     cursor.execute(query, args)
     results = _make_dict(cursor)
+    for row in results[:]:
+        new_title = get_title(row['BIB_ID'])
+        if title[0:10] != new_title[0:10]:
+            results.remove(row)
     output_keys = ('BIB_ID', 'LIBRARY_NAME')
     if num_type == 'oclc':
         return [dict([
             (k, row[k]) for k in output_keys]) for row in
             results if _is_oclc(row['DISPLAY_HEADING'])]
     return [dict([(k, row[k]) for k in output_keys]) for row in results]
+
+
+def get_title(bibid):
+    query = """
+    SELECT TITLE FROM bib_text
+    WHERE bib_text.bib_id = %s"""
+    cursor = connection.cursor()
+    cursor.execute(query, [bibid])
+    result = _make_dict(cursor)
+    return result[0]['TITLE']
 
 
 def get_related_std_nums(bibid, num_type):
