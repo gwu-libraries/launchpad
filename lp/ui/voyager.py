@@ -504,10 +504,20 @@ ORDER BY library.library_name"""
             else:
                 num = bib_data[numformat]
             openlibhold = apis.openlibrary(num, numformat)
-            if openlibhold:
+            title = get_open_library_item_title(openlibhold)
+            if openlibhold and bib_data['TITLE'][0:10] == title[0:10]:
                 holdings.append(openlibhold)
                 break
     return [h for h in holdings if not h.get('REMOVE', False)]
+
+
+def get_open_library_item_title(holding):
+    title = ''
+    if holding.get('MFHD_DATA', None):
+        index = holding['MFHD_DATA']['marc856list'][0]['u'].rfind('/')
+        title = holding['MFHD_DATA']['marc856list'][0]['u'][index+1]
+        title.replace('_', ' ')
+    return title
 
 
 def init_z3950_holdings(bibid, lib):
