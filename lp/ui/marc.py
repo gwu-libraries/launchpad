@@ -88,7 +88,7 @@ def extract(record, d={}):
                     if field.is_subject_field():
                         d[name].append(subject(field))
                     else:
-                        d[name].append(field.value())
+                        d[name].append(field.format_field())
 
             # complex field specification
             elif len(spec) == 4:

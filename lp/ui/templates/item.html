@@ -142,20 +142,38 @@ $(document).ready(function() {
                 {% if bib.AUTHOR or bib.CJK_INFO.AUTHOR or bib.AUTHORS %}
                     <span class="author">
                     {% if bib.CJK_INFO.AUTHOR %}
-                        <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.CJK_INFO.AUTHOR|urlencode }}%22" target='_blank'>{{ bib.CJK_INFO.AUTHOR }}</a></span> <br />
+                        <span itemprop="author">{{ bib.CJK_INFO.AUTHOR }}</span> <br />
                     {% endif %}
                     {% if bib.AUTHORS %}
                         {% for contributor in bib.AUTHORS %}
                             {% if forloop.first %}
-                                <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22" target='_blank' >{{contributor}}</a></span>
+                                <span itemprop="author">
+                                  {% if contributor|is_non_roman %}
+                                  {{ contributor }}
+                                  {% else %}
+                                  <a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22" target='_blank' >{{contributor}}</a>
+                                  {% endif %}
+                                </span>
                             {% else %}
+                                {% if contributor|is_non_roman %} 
+                                {{ contributor }}
+                                {% else %}
                                 <span itemprop="contributor"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ contributor|urlencode }}%22" target='_blank'>{{contributor}}</a></span>
+                                {% endif %}
                             {% endif %}
                             {% if not forloop.last %}; {% endif %}
                         {% endfor %}
                     {% else %}
                         {% if bib.AUTHOR %}
-                            <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.AUTHOR|urlencode }}%22" target='_blank'>{{ bib.AUTHOR }}</a></span>
+                            {% if bib.AUTHOR|is_non_roman %}
+                            {{ bib.AUTHOR }}
+                            {% else %}
+                                {% if bib.AUTHOR|is_non_roman %}
+                                {{ bib.AUTHOR }}
+                                {% else %}
+                                <span itemprop="author"><a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ bib.AUTHOR|urlencode }}%22" target='_blank'>{{ bib.AUTHOR }}</a></span>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                     </span><br />
@@ -551,7 +569,9 @@ $(document).ready(function() {
             <td class="field-label">{{ name }}</td>
             <td>
                 {% for val in values %}
-                {% if name == "Other Authors" %}
+                {% if val|is_non_roman %}
+                {{ val }}
+                {% elif name == "Other Authors" %}
                 <a href="http://surveyor.gelman.gwu.edu/?q=author:%22{{ val|urlencode }}%22" target='_blank'>{{ val }}</a>
                 {% elif name == "Series" %}
                 <a href="http://surveyor.gelman.gwu.edu/?q=series:%22{{ val|urlencode }}%22" target='_blank'>{{ val }}</a>
