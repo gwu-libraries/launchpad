@@ -118,6 +118,17 @@ def citationlist(citation_json):
     return html
 
 
+@register.filter
+def is_non_roman(s):
+    # TODO: use of this can go away when we don't have to worry about
+    # sending non-roman text at surveyor in item.html
+    try:
+        s.encode('iso-8859-1')
+        return False
+    except:
+        return True
+
+
 def listelement(key, citation_json):
     value = citation_json[key]
     if key == 'journal':
