@@ -119,6 +119,7 @@ AND bib_master.suppress_in_opac='N'"""
             bib['AUTHOR'] = rec.author()
             bib['PUBLISHER'] = rec.publisher()
             title_fields = rec.get_fields('245')
+            bib['LIBRARY_NAME'] = get_library_name(bibid)
             bib['TITLE_ALL'] = ''
             bib['BIB_ID'] = bibid
             for title in title_fields:
@@ -226,6 +227,18 @@ AND bib_master.suppress_in_opac = 'N'"""
         if bib['LIBRARY_NAME'] == settings.PREF_LIB:
             return bib['BIB_ID']
     return bibs[0]['BIB_ID'] if bibs else None
+
+
+def get_library_name(bibid):
+    query = """
+SELECT library_name
+FROM bib_master, library
+WHERE bib_master.bib_id = %s
+AND bib_master.library_id=library.library_id"""
+    cursor = connection.cursor()
+    cursor.execute(query, [bibid])
+    result = _make_dict(cursor)
+    return result[0]['LIBRARY_NAME']
 
 
 def _normalize_num(num, num_type):
@@ -1174,7 +1187,7 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'LINK866': None,
                   'MFHD_ID': None}
     if link:
-    	electronic['bound_item'] = is_bound_item(link)
+        electronic['bound_item'] = is_bound_item(link)
     return electronic
 
 
