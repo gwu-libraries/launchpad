@@ -61,7 +61,7 @@ def item(request, bibid):
         holdings = voyager.get_holdings(bib)
         if holdings:
             holdings = strip_bad_holdings(holdings)
-            show_wrlc_link = are_all_holdings_electronic(holdings)
+            show_wrlc_link = display_wrlc_link(holdings)
             ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
             holdings = elecsort(holdsort(templocsort(availsort(ours)))) \
                 + elecsort(holdsort(templocsort(availsort(shared)))) \
@@ -90,7 +90,7 @@ def item(request, bibid):
         return error500(request)
 
 
-def are_all_holdings_electronic(holdings):
+def display_wrlc_link(holdings):
     x = 0
     for holding in holdings:
         if holding.get('MFHD_DATA', None):
