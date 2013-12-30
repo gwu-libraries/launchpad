@@ -1174,7 +1174,7 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'LINK866': None,
                   'MFHD_ID': None}
     if link:
-    	electronic['bound_item'] = is_bound_item(link)
+        electronic['bound_item'] = is_bound_item(link)
     return electronic
 
 
