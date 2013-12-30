@@ -60,7 +60,7 @@ def item(request, bibid):
         holdings = voyager.get_holdings(bib)
         if holdings:
             holdings = strip_bad_holdings(holdings)
-            show_wrlc_link = True
+            show_wrlc_link = display_wrlc_link(holdings)
             ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
             holdings = elecsort(holdsort(templocsort(availsort(ours)))) \
                 + elecsort(holdsort(templocsort(availsort(shared)))) \
@@ -87,6 +87,18 @@ def item(request, bibid):
     except:
         logger.exception('unable to render bibid: %s' % bibid)
         return error500(request)
+
+
+def display_wrlc_link(holdings):
+    y = 0
+    for holding in holdings:
+        if 'gelman media lab' in\
+                holding.get('LOCATION_DISPLAY_NAME', '').lower():
+            y = y + 1
+    if y == len(holdings):
+        return False
+    else:
+        return True
 
 
 def _date_handler(obj):
