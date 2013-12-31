@@ -1,6 +1,6 @@
 from django import template
 from django.conf import settings
-from django.template.defaultfilters import stringfilter
+from django.template.defaultfilters import stringfilter, urlencode
 
 
 register = template.Library()
@@ -127,6 +127,41 @@ def is_non_roman(s):
         return False
     except:
         return True
+
+
+@register.simple_tag
+def explore(value_type, value):
+    target = getattr(settings, 'EXPLORE_TYPE', 'surveyor')
+    v = urlencode(value)
+    url = None
+
+    if target not in ('summon', 'surveyor'):
+        raise Exception("unknown EXPLORE_TYPE in settings: %s" % target)
+
+    if value_type not in ('author', 'subject', 'series'):
+        raise Exception("unknown explore value_type: %s" % value_type)
+
+    if value_type == 'author':
+        if target == 'surveyor':
+            url = 'http://surveyor.gelman.gwu.edu/?q=author:%22' + v + '%22'
+        elif target == 'summon':
+            url = 'http://gw.summon.serialssolutions.com/search?s.q=Author:%22' + v + '%22'
+
+    elif value_type == 'subject':
+        if target == 'surveyor':
+            url = 'http://surveyor.gelman.gwu.edu/?q=subject:%22' + v + '%22'
+        elif target == 'summon':
+            parts = ['subjectterms:"' + s + '"' for s in value.split(' -- ')]
+            q = urlencode(' AND '.join(parts))
+            url = 'http://gw.summon.serialssolutions.com/search?s.q=' + q
+
+    elif value_type == 'series':
+        if target == 'surveyor':
+            url = 'http://surveyor.gelman.gwu.edu/?q=series:%22' + v + '%22'
+        elif target == 'summon':
+            url = 'http://gw.summon.serialssolutions.com/search?s.q=title:%22' + v + '%22'
+
+    return url
 
 
 def listelement(key, citation_json):
