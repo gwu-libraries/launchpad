@@ -589,7 +589,7 @@ def get_additional_holdings(result, holding):
 
 def remove_duplicate_items(i, items):
     #check if the item has already been processed
-    if 'REMOVE' in items[i]:
+    if items[i].get('REMOVE'):
         return
     if 'ITEM_STATUS_DATE' in items[i]:
         if items[i]['ITEM_STATUS_DATE'] is None:
