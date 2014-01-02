@@ -700,15 +700,7 @@ WHERE mfhd_master.mfhd_id=%s"""
     string = results.get('MARC856', '')
     marc856 = []
     if string:
-        for item in string.split(' // '):
-            temp = {'3': '', 'u': '', 'z': ''}
-            for subfield in item.split('$')[1:]:
-                if subfield[0] in temp:
-                    temp[subfield[0]] = subfield[1:]
-                if temp[subfield[0]] == 'u':
-                    temp['bound_item'] = is_bound_item(temp[subfield[0]])
-                    temp['govt_doc'] = is_govt_doc(temp[subfield[0]])
-            marc856.append(temp)
+        marc856 = get_marc856(string)
     # parse "library has" info from 866
     marc866 = []
     string = results.get('MARC866', '')
@@ -720,6 +712,19 @@ WHERE mfhd_master.mfhd_id=%s"""
                     break
     return {'marc852': marc852, 'marc856list': marc856,
             'marc866list': marc866}
+
+
+def get_marc856(marc856_field):
+    marc856 = []
+    for item in marc856_field.split(' // '):
+        temp = {'3': '', 'u': '', 'z': ''}
+        for subfield in item.split('$')[1:]:
+            if subfield[0] in temp:
+                temp[subfield[0]] = subfield[1:]
+                if subfield[0] == 'u':
+                    temp['bound_item'] = is_bound_item(temp[subfield[0]])
+        marc856.append(temp)
+    return marc856
 
 
 def get_mfhd_raw(mfhd_id):
@@ -1191,7 +1196,10 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'MFHD_ID': None}
     if link:
         electronic['bound_item'] = is_bound_item(link)
+<<<<<<< HEAD
         electronic['govt_doc'] = is_govt_doc(link)
+=======
+>>>>>>> t482-missing-dict-key
     return electronic
 
 
