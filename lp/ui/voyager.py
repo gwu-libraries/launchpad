@@ -536,19 +536,19 @@ ORDER BY library.library_name"""
             else:
                 num = bib_data[numformat]
             openlibhold = apis.openlibrary(num, numformat)
-            title = get_open_library_item_title(openlibhold)
+            title = ''
+            if openlibhold.get('MFHD_DATA', None):
+                title = get_open_library_item_title(openlibhold['MFHD_DATA']['marc856list'][0]['u'])
             if openlibhold and bib_data['TITLE'][0:10] == title[0:10]:
                 holdings.append(openlibhold)
                 break
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
-def get_open_library_item_title(holding):
-    title = ''
-    if holding.get('MFHD_DATA', None):
-        index = holding['MFHD_DATA']['marc856list'][0]['u'].rfind('/')
-        title = holding['MFHD_DATA']['marc856list'][0]['u'][index+1]
-        title.replace('_', ' ')
+def get_open_library_item_title(link):
+    index = link.rfind('/')
+    title = link[index+1:]
+    title = title.replace("_", " ")
     return title
 
 
