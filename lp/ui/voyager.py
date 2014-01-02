@@ -672,8 +672,10 @@ WHERE mfhd_master.mfhd_id=%s"""
     string = results.get('LINK856U')
     if string:
         results['bound_item'] = is_bound_item(string)
+        results['govt_doc'] = is_govt_doc(string)
     else:
         results['bound_item'] = False
+        results['govt_doc'] = False
     return results
 
 
@@ -705,6 +707,7 @@ WHERE mfhd_master.mfhd_id=%s"""
                     temp[subfield[0]] = subfield[1:]
                 if temp[subfield[0]] == 'u':
                     temp['bound_item'] = is_bound_item(temp[subfield[0]])
+                    temp['govt_doc'] = is_govt_doc(temp[subfield[0]])
             marc856.append(temp)
     # parse "library has" info from 866
     marc866 = []
@@ -1188,6 +1191,7 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'MFHD_ID': None}
     if link:
         electronic['bound_item'] = is_bound_item(link)
+        electronic['govt_doc'] = is_govt_doc(link)
     return electronic
 
 
@@ -1273,6 +1277,7 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
         if link['LINK']:
             val = {'3': '', 'z': link['MESSAGE'], 'u': link['LINK']}
             val['bound_item'] = is_bound_item(val['u'])
+            val['govt_doc'] = is_govt_doc(val['u'])
             m856list.append(val)
             continue
             for item in links:
@@ -1319,6 +1324,13 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
 
 def is_bound_item(link):
     if settings.BOUND_WITH_ITEM_LINK not in link:
+        return False
+    else:
+        return True
+
+
+def is_govt_doc(link):
+    if settings.GOVT_DOC_LINK not in link:
         return False
     else:
         return True
