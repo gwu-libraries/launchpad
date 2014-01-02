@@ -1196,10 +1196,7 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'MFHD_ID': None}
     if link:
         electronic['bound_item'] = is_bound_item(link)
-<<<<<<< HEAD
         electronic['govt_doc'] = is_govt_doc(link)
-=======
->>>>>>> t482-missing-dict-key
     return electronic
 
 
