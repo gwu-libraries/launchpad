@@ -59,7 +59,6 @@ def item(request, bibid):
                 if alt_bib['LIBRARY_NAME'] == settings.PREF_LIB:
                     return item(request, alt_bib['BIB_ID'])
         holdings = voyager.get_holdings(bib)
-        print holdings
         if holdings:
             holdings = strip_bad_holdings(holdings)
             show_wrlc_link = display_wrlc_link(holdings)
