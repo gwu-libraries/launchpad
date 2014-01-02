@@ -308,7 +308,7 @@ ORDER BY bib_index.bib_id"""
     results = _make_dict(cursor)
     for row in results[:]:
         new_title = get_title(row['BIB_ID'])
-        if title[0:10] != new_title[0:10]:
+        if title[0:10].lower() != new_title[0:10].lower():
             results.remove(row)
     output_keys = ('BIB_ID', 'LIBRARY_NAME')
     if num_type == 'oclc':
