@@ -897,12 +897,14 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
     try:
         if school in ['GT', 'DA'] and isinstance(bib, list):
             zoomrecord = conn.zoom_record(bib[0])
-            return get_z3950_holding_data(zoomrecord, conn, bib[0], school,
+            result = get_z3950_holding_data(zoomrecord, conn, bib[0], school,
                                           bib_data)
+            return result
         elif school in ['GT', 'DA'] and not isinstance(bib, list):
             zoomrecord = conn.zoom_record(str(id))
-            return get_z3950_holding_data(zoomrecord, conn, str(id), school,
+            result = get_z3950_holding_data(zoomrecord, conn, str(id), school,
                                           bib_data)
+            return result
         elif school == 'GM' and isinstance(bib, list):
             correctbib = get_correct_gm_bib(bib)
             if not translate_bib:
@@ -1286,41 +1288,26 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
             val['govt_doc'] = is_govt_doc(val['u'])
             m856list.append(val)
             continue
-            for item in links:
-                val = {'ITEM_ENUM': None,
-                       'ELIGIBLE': '',
-                       'ITEM_STATUS': 0,
-                       'TEMPLOCATION': None,
-                       'ITEM_STATUS_DESC': item['STATUS'],
-                       'BIB_ID': id,
-                       'ITEM_ID': 0,
-                       'LIBRARY_FULL_NAME': '',
-                       'PERMLOCATION': item['LOCATION'],
-                       'TRIMMED_LOCATION_DISPLAY_NAME': '',
-                       'DISPLAY_CALL_NO': item['CALLNO'],
-                       'CHRON': None}
+        if (link['STATUS'] not in settings.INELIGIBLE_866_STATUS and
+                'DUE' not in link['STATUS'] and
+            'INTERNET' not in link['LOCATION'] and
+                'Online' not in link['LOCATION'] and link['STATUS'] != ''):
+            m866list.append(link['STATUS'])
+        elif (link['STATUS'] != '' or link['LOCATION'] != '' or
+                link['CALLNO'] != ''):
+            val = {'ITEM_ENUM': None,
+                   'ELIGIBLE': '',
+                   'ITEM_STATUS': 0,
+                   'TEMPLOCATION': None,
+                   'ITEM_STATUS_DESC': link['STATUS'],
+                   'BIB_ID': id,
+                   'ITEM_ID': 0,
+                   'LIBRARY_FULL_NAME': '',
+                   'PERMLOCATION': link['LOCATION'],
+                   'TRIMMED_LOCATION_DISPLAY_NAME': '',
+                   'DISPLAY_CALL_NO': link['CALLNO'],
+                   'CHRON': None}
             items.append(val)
-        if links:
-            if (link['STATUS'] not in ['Charged', 'Not Charged', 'Missing',
-                'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and
-                'INTERNET' not in link['LOCATION'] and
-                    'Online' not in link['LOCATION'] and link['STATUS'] != ''):
-                m866list.append(link['STATUS'])
-            elif (link['STATUS'] != '' or link['LOCATION'] != '' or
-                    link['CALLNO'] != '' and not link['LINK']):
-                val = {'ITEM_ENUM': None,
-                       'ELIGIBLE': '',
-                       'ITEM_STATUS': 0,
-                       'TEMPLOCATION': None,
-                       'ITEM_STATUS_DESC': link['STATUS'],
-                       'BIB_ID': id,
-                       'ITEM_ID': 0,
-                       'LIBRARY_FULL_NAME': '',
-                       'PERMLOCATION': link['LOCATION'],
-                       'TRIMMED_LOCATION_DISPLAY_NAME': '',
-                       'DISPLAY_CALL_NO': link['CALLNO'],
-                       'CHRON': None}
-                items.append(val)
     res.append(m866list)
     res.append(m856list)
     res.append(items)
