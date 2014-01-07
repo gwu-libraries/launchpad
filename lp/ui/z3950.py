@@ -71,9 +71,8 @@ class Z3950Catalog():
             marc = pymarc.record.Record(zoom_record.data)
             if marc['856']:
                 holdmeta = {}
-                field856 = marc['856']
-                holdmeta['url'] = field856['u']
-                holdmeta['msg'] = field856['z']
+                holdmeta['url'] = marc['856']['u']
+                holdmeta['msg'] = marc['856']['z']
                 holdmeta['callnum'] = ''
                 holdmeta['status'] = ''
                 holdmeta['note'] = ''
