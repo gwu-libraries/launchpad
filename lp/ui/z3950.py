@@ -29,11 +29,11 @@ class Z3950Catalog():
     def get_holding(self, bibid=None, zoom_record=None, school=''):
         if bibid and not zoom_record:
             zoom_record = self.zoom_record(bibid)
-        holdings = []
-        holdmeta = {}
         if hasattr(zoom_record, 'data') and hasattr(zoom_record.data,
                                                     'holdingsData'):
+            holdings = []
             for rec in zoom_record.data.holdingsData:
+                holdmeta = {}
                 holdmeta['item_status'] = 0
                 holdmeta['callnum'] = ''
                 holdmeta['status'] = ''
@@ -52,7 +52,7 @@ class Z3950Catalog():
                 if hasattr(rec[1], 'circulationData'):
                     holdmeta['status'] = rec[1].circulationData[0].availableNow
                 if holdmeta['status'] is True or\
-                        holdmeta['status'] == ' AVAILABLE':
+                        holdmeta['status'].strip() == 'AVAILABLE':
                     holdmeta['status'] = 'Not Charged'
                     holdmeta['item_status'] = 1
                 elif holdmeta['status'] is False or\
