@@ -151,7 +151,7 @@ $(document).ready(function() {
                                 {% if contributor|is_non_roman %}
                                 {{ contributor }}
                                 {% else %}
-                                <a target="_blank" href="{% explore "author" contributor %}">{{ contributor }}</a>
+                                <a target="_blank" href="{% explore_author contributor %}">{{ contributor }}</a>
                                 {% endif %}
                                 </span>
                             {% else %}
@@ -159,7 +159,7 @@ $(document).ready(function() {
                                 {% if contributor|is_non_roman %} 
                                 {{ contributor }}
                                 {% else %}
-                                <a target="_blank" href="{% explore "author" contributor %}">{{ contributor }}</a>
+                                <a target="_blank" href="{% explore_author contributor %}">{{ contributor }}</a>
                                 {% endif %}
                                 </span>
                             {% endif %}
@@ -171,7 +171,7 @@ $(document).ready(function() {
                             {% if bib.AUTHOR|is_non_roman %}
                             {{ bib.AUTHOR }}
                             {% else %}
-                            <a target="_blank" href="{% explore "author" bib.AUTHOR %}">{{ bib.AUTHOR }}</a>
+                            <a target="_blank" href="{% explore_author bib.AUTHOR %}">{{ bib.AUTHOR }}</a>
                             {% endif %}
                         </span>
                         {% endif %}
@@ -572,12 +572,12 @@ $(document).ready(function() {
                 {% if val|is_non_roman %}
                 {{ val }}
                 {% elif name == "Other Authors" %}
-                <a href="{% explore "author" val %}" target='_blank'>{{ val }}</a>
+                <a href="{% explore_author val %}" target='_blank'>{{ val }}</a>
                 {% elif name == "Series" %}
-                <a href="{% explore "series" val %}" target='_blank'>{{ val }}</a>
+                <a href="{% explore_series val %}" target='_blank'>{{ val }}</a>
 
                 {% elif name == "Subjects" or name == "Genre" %}
-                <a href="{% explore "subject" val %}" target='_blank'>{{ val }}</a>
+                <a href="{% explore_subject val %}" target='_blank'>{{ val }}</a>
                 {% else %}
                 {{ val }}
                 {% endif %}
