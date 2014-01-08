@@ -145,7 +145,7 @@ def explore(value_type, value):
         if target == 'surveyor':
             url = 'http://surveyor.gelman.gwu.edu/?q=author:%22' + v + '%22'
         elif target == 'summon':
-            url = 'http://gw.summon.serialssolutions.com/search?s.q=Author:%22' + v + '%22'
+            url = 'http://gw.summon.serialssolutions.com/search?s.cmd=addTextFilter(SourceType%5C:%5C(%22Library+Catalog%22%5C))&s.q=author:%22' + v + '%22'
 
     elif value_type == 'subject':
         if target == 'surveyor':
@@ -153,13 +153,13 @@ def explore(value_type, value):
         elif target == 'summon':
             parts = ['subjectterms:"' + s + '"' for s in value.split(' -- ')]
             q = urlencode(' AND '.join(parts))
-            url = 'http://gw.summon.serialssolutions.com/search?s.q=' + q
+            url = 'http://gw.summon.serialssolutions.com/search?s.cmd=addTextFilter(SourceType%5C:%5C(%22Library+Catalog%22%5C))&s.q=' + q
 
     elif value_type == 'series':
         if target == 'surveyor':
             url = 'http://surveyor.gelman.gwu.edu/?q=series:%22' + v + '%22'
         elif target == 'summon':
-            url = 'http://gw.summon.serialssolutions.com/search?s.q=title:%22' + v + '%22'
+            url = 'http://gw.summon.serialssolutions.com/search?s.cmd=addTextFilter(SourceType%5C:%5C(%22Library+Catalog%22%5C))&s.q=%22' + v + '%22'
 
     return url
 
