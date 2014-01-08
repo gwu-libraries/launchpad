@@ -203,10 +203,10 @@ $(document).ready(function() {
                 {% endif %}
                 <br />
 
-                {% if bib.DISPLAY_ISBN_LIST %}
+                {% if bib.RELATED_ISBN_LIST %}
                     <span class="isbn-label">ISBN </span>
                     <span class="isbn">
-                        {% for isbn in bib.DISPLAY_ISBN_LIST %}
+                        {% for isbn in bib.RELATED_ISBN_LIST %}
                             <span itemprop="isbn">{{ isbn }}{% if not forloop.last %}, {% endif %}</span>
                         {% endfor %}
                     </span><br />
