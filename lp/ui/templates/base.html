@@ -39,20 +39,21 @@
     {% assign_settings_value "GOOGLE_ANALYTICS_UA" as google_analytics_ua %}
     {% if google_analytics_ua %}
     <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', '{{ google_analytics_ua }}']);
-    _gaq.push(['_trackPageview']);
-    _gaq.push(['aggregate._setAccount', '{% settings_value "GOOGLE_ANALYTICS_AGGREGATE_UA" %}']);
-    _gaq.push(['aggregate._trackPageview']);
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', '{{ google_analytics_ua }}']);
+        _gaq.push(['_trackPageview']);
+        _gaq.push(['aggregate._setAccount', '{% settings_value "GOOGLE_ANALYTICS_AGGREGATE_UA" %}']);
+        _gaq.push(['aggregate._trackPageview']);
 
-    (function() {
-        var ga = document.createElement('script'); 
-        ga.type = 'text/javascript'; 
-        ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; 
-        s.parentNode.insertBefore(ga, s);
-    })();
+        (function() {
+             var ga = document.createElement('script');
+                 ga.type = 'text/javascript';
+                     ga.async = true;
+                         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                             var s = document.getElementsByTagName('script')[0];
+                                 s.parentNode.insertBefore(ga, s);
+                                 })();
+
     </script>
     {% endif %}
 {% endblock analytics_bug %}
