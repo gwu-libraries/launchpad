@@ -121,6 +121,7 @@ AND bib_master.suppress_in_opac='N'"""
             title_fields = rec.get_fields('245')
             bib['LIBRARY_NAME'] = get_library_name(bibid)
             bib['TITLE_ALL'] = ''
+            bib['BIB_FORMAT'] = ''
             bib['BIB_ID'] = bibid
             for title in title_fields:
                 bib['TITLE_ALL'] += title.format_field().decode('iso-8859-1')\
@@ -539,7 +540,8 @@ ORDER BY library.library_name"""
             openlibhold = apis.openlibrary(num, numformat)
             title = ''
             if openlibhold.get('MFHD_DATA', None):
-                title = get_open_library_item_title(openlibhold['MFHD_DATA']['marc856list'][0]['u'])
+                title = get_open_library_item_title(openlibhold['MFHD_DATA']
+                                                    ['marc856list'][0]['u'])
             if openlibhold and bib_data['TITLE'][0:10] == title[0:10]:
                 holdings.append(openlibhold)
                 break
