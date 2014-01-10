@@ -1,4 +1,6 @@
+from datetime import datetime
 import pymarc
+import re
 from PyZ3950 import zoom
 
 
@@ -46,7 +48,9 @@ class Z3950Catalog():
                     holdmeta['callnum'] = ''
                 holdmeta['location'] = rec[1].localLocation.rstrip('\x00')
                 if hasattr(rec[1], 'publicNote') and school == 'GT':
-                    holdmeta['status'] = rec[1].publicNote.rstrip('\x00')
+                    status = rec[1].publicNote.rstrip('\x00')
+                    holdmeta['status'] = self.append_leading_year_digits(
+                        status)
                 if hasattr(rec[1], 'publicNote') and school == 'GM':
                     holdmeta['note'] = rec[1].publicNote.rstrip('\x00')
                 if hasattr(rec[1], 'circulationData'):
@@ -57,8 +61,15 @@ class Z3950Catalog():
                     holdmeta['item_status'] = 1
                 elif holdmeta['status'] is False or\
                         holdmeta['status'] == ' DUE':
-                    holdmeta['status'] = 'Charged'
-                    holdmeta['item_status'] = 0
+                    if rec[1].circulationData[0].availablityDate:
+                        date_obj = datetime.strptime(rec[1].circulationData[0]
+                                                     .availablityDate,
+                                                     '%Y-%m-%d %H:%M:%S')
+                        holdmeta['status'] = date_obj.strftime("DUE %m-%d-%Y")
+                        holdmeta['item_status'] = 0
+                    else:
+                        holdmeta['status'] = 'Charged'
+                        holdmeta['item_status'] = 0
                 marc = pymarc.record.Record(zoom_record.data.
                                             bibliographicRecord.encoding[1])
                 if marc['856']:
@@ -85,3 +96,10 @@ class Z3950Catalog():
 
         return [{'item_status': 0, 'location': '', 'callnum': '', 'status': '',
                  'url': '', 'note': '', 'msg': ''}]
+
+    def append_leading_year_digits(self, status):
+        if len(status) > 4:
+            result = re.match('(\d{2})[/.-](\d{2})[/.-](\d{2})$', status[4:])
+            if result:
+                return status[:10] + '20' + status[10:]
+        return status
