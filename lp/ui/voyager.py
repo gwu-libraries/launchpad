@@ -541,7 +541,8 @@ ORDER BY library.library_name"""
             openlibhold = apis.openlibrary(num, numformat)
             title = ''
             if openlibhold.get('MFHD_DATA', None):
-                title = get_open_library_item_title(openlibhold['MFHD_DATA']['marc856list'][0]['u'])
+                title = get_open_library_item_title(openlibhold['MFHD_DATA']
+                                                    ['marc856list'][0]['u'])
             if openlibhold and bib_data['TITLE'][0:10] == title[0:10]:
                 holdings.append(openlibhold)
                 break
@@ -748,7 +749,8 @@ SELECT DISTINCT display_call_no, item_status_desc, item_status.item_status,
        permLocation.location_display_name as PermLocation,
        tempLocation.location_display_name as TempLocation,
        mfhd_item.item_enum, mfhd_item.chron, item.item_id, item_status_date,
-       bib_master.bib_id, to_char(CIRC_TRANSACTIONS.CHARGE_DUE_DATE, 'mm-dd-yyyy') AS DUE
+       bib_master.bib_id,
+       to_char(CIRC_TRANSACTIONS.CHARGE_DUE_DATE, 'mm-dd-yyyy') AS DUE
 FROM bib_master
 JOIN library ON library.library_id = bib_master.library_id
 JOIN bib_mfhd ON bib_master.bib_id = bib_mfhd.bib_id
