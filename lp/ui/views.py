@@ -93,7 +93,7 @@ def display_wrlc_link(holdings):
     y = 0
     for holding in holdings:
         for loc in settings.INELIGIBLE_ILL_LOCS:
-            if loc in\
+            if loc.lower() in\
                     holding.get('LOCATION_DISPLAY_NAME', '').lower():
                 y = y + 1
     if y == len(holdings):
