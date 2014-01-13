@@ -119,6 +119,7 @@ AND bib_master.suppress_in_opac='N'"""
             bib['AUTHOR'] = rec.author()
             bib['PUBLISHER'] = rec.publisher()
             title_fields = rec.get_fields('245')
+            bib['LIBRARY_NAME'] = get_library_name(bibid)
             bib['TITLE_ALL'] = ''
             bib['BIB_ID'] = bibid
             for title in title_fields:
@@ -228,6 +229,18 @@ AND bib_master.suppress_in_opac = 'N'"""
     return bibs[0]['BIB_ID'] if bibs else None
 
 
+def get_library_name(bibid):
+    query = """
+SELECT library_name
+FROM bib_master, library
+WHERE bib_master.bib_id = %s
+AND bib_master.library_id=library.library_id"""
+    cursor = connection.cursor()
+    cursor.execute(query, [bibid])
+    result = _make_dict(cursor)
+    return result[0]['LIBRARY_NAME']
+
+
 def _normalize_num(num, num_type):
     if num_type == 'isbn':
         return clean_isbn(num)
@@ -295,7 +308,8 @@ ORDER BY bib_index.bib_id"""
     results = _make_dict(cursor)
     for row in results[:]:
         new_title = get_title(row['BIB_ID'])
-        if title[0:10] != new_title[0:10]:
+        # remove the holding if titles are different
+        if title[0:12].lower() != new_title[0:12].lower():
             results.remove(row)
     output_keys = ('BIB_ID', 'LIBRARY_NAME')
     if num_type == 'oclc':
@@ -523,19 +537,20 @@ ORDER BY library.library_name"""
             else:
                 num = bib_data[numformat]
             openlibhold = apis.openlibrary(num, numformat)
-            title = get_open_library_item_title(openlibhold)
+            title = ''
+            if openlibhold.get('MFHD_DATA', None):
+                title = get_open_library_item_title(openlibhold['MFHD_DATA']
+                                                    ['marc856list'][0]['u'])
             if openlibhold and bib_data['TITLE'][0:10] == title[0:10]:
                 holdings.append(openlibhold)
                 break
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
-def get_open_library_item_title(holding):
-    title = ''
-    if holding.get('MFHD_DATA', None):
-        index = holding['MFHD_DATA']['marc856list'][0]['u'].rfind('/')
-        title = holding['MFHD_DATA']['marc856list'][0]['u'][index+1]
-        title.replace('_', ' ')
+def get_open_library_item_title(link):
+    index = link.rfind('/')
+    title = link[index+1:]
+    title = title.replace("_", " ")
     return title
 
 
@@ -659,8 +674,10 @@ WHERE mfhd_master.mfhd_id=%s"""
     string = results.get('LINK856U')
     if string:
         results['bound_item'] = is_bound_item(string)
+        results['govt_doc'] = is_govt_doc(string)
     else:
         results['bound_item'] = False
+        results['govt_doc'] = False
     return results
 
 
@@ -685,14 +702,7 @@ WHERE mfhd_master.mfhd_id=%s"""
     string = results.get('MARC856', '')
     marc856 = []
     if string:
-        for item in string.split(' // '):
-            temp = {'3': '', 'u': '', 'z': ''}
-            for subfield in item.split('$')[1:]:
-                if subfield[0] in temp:
-                    temp[subfield[0]] = subfield[1:]
-                if temp[subfield[0]] == 'u':
-                    temp['bound_item'] = is_bound_item(temp[subfield[0]])
-            marc856.append(temp)
+        marc856 = get_marc856(string)
     # parse "library has" info from 866
     marc866 = []
     string = results.get('MARC866', '')
@@ -704,6 +714,19 @@ WHERE mfhd_master.mfhd_id=%s"""
                     break
     return {'marc852': marc852, 'marc856list': marc856,
             'marc866list': marc866}
+
+
+def get_marc856(marc856_field):
+    marc856 = []
+    for item in marc856_field.split(' // '):
+        temp = {'3': '', 'u': '', 'z': ''}
+        for subfield in item.split('$')[1:]:
+            if subfield[0] in temp:
+                temp[subfield[0]] = subfield[1:]
+                if subfield[0] == 'u':
+                    temp['bound_item'] = is_bound_item(temp[subfield[0]])
+        marc856.append(temp)
+    return marc856
 
 
 def get_mfhd_raw(mfhd_id):
@@ -875,12 +898,14 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
     try:
         if school in ['GT', 'DA'] and isinstance(bib, list):
             zoomrecord = conn.zoom_record(bib[0])
-            return get_z3950_holding_data(zoomrecord, conn, bib[0], school,
-                                          bib_data)
+            result = get_z3950_holding_data(zoomrecord, conn, bib[0], school,
+                                            bib_data)
+            return result
         elif school in ['GT', 'DA'] and not isinstance(bib, list):
             zoomrecord = conn.zoom_record(str(id))
-            return get_z3950_holding_data(zoomrecord, conn, str(id), school,
-                                          bib_data)
+            result = get_z3950_holding_data(zoomrecord, conn, str(id), school,
+                                            bib_data)
+            return result
         elif school == 'GM' and isinstance(bib, list):
             correctbib = get_correct_gm_bib(bib)
             if not translate_bib:
@@ -1175,6 +1200,7 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'MFHD_ID': None}
     if link:
         electronic['bound_item'] = is_bound_item(link)
+        electronic['govt_doc'] = is_govt_doc(link)
     return electronic
 
 
@@ -1260,43 +1286,29 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
         if link['LINK']:
             val = {'3': '', 'z': link['MESSAGE'], 'u': link['LINK']}
             val['bound_item'] = is_bound_item(val['u'])
+            val['govt_doc'] = is_govt_doc(val['u'])
             m856list.append(val)
             continue
-            for item in links:
-                val = {'ITEM_ENUM': None,
-                       'ELIGIBLE': '',
-                       'ITEM_STATUS': 0,
-                       'TEMPLOCATION': None,
-                       'ITEM_STATUS_DESC': item['STATUS'],
-                       'BIB_ID': id,
-                       'ITEM_ID': 0,
-                       'LIBRARY_FULL_NAME': '',
-                       'PERMLOCATION': item['LOCATION'],
-                       'TRIMMED_LOCATION_DISPLAY_NAME': '',
-                       'DISPLAY_CALL_NO': item['CALLNO'],
-                       'CHRON': None}
+        if (link['STATUS'] not in settings.INELIGIBLE_866_STATUS and
+                'DUE' not in link['STATUS'] and
+            'INTERNET' not in link['LOCATION'] and
+                'Online' not in link['LOCATION'] and link['STATUS'] != ''):
+            m866list.append(link['STATUS'])
+        elif (link['STATUS'] != '' or link['LOCATION'] != '' or
+                link['CALLNO'] != ''):
+            val = {'ITEM_ENUM': None,
+                   'ELIGIBLE': '',
+                   'ITEM_STATUS': 0,
+                   'TEMPLOCATION': None,
+                   'ITEM_STATUS_DESC': link['STATUS'],
+                   'BIB_ID': id,
+                   'ITEM_ID': 0,
+                   'LIBRARY_FULL_NAME': '',
+                   'PERMLOCATION': link['LOCATION'],
+                   'TRIMMED_LOCATION_DISPLAY_NAME': '',
+                   'DISPLAY_CALL_NO': link['CALLNO'],
+                   'CHRON': None}
             items.append(val)
-        if links:
-            if (link['STATUS'] not in ['Charged', 'Not Charged', 'Missing',
-                'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and
-                'INTERNET' not in link['LOCATION'] and
-                    'Online' not in link['LOCATION'] and link['STATUS'] != ''):
-                m866list.append(link['STATUS'])
-            elif (link['STATUS'] != '' or link['LOCATION'] != '' or
-                    link['CALLNO'] != '' and not link['LINK']):
-                val = {'ITEM_ENUM': None,
-                       'ELIGIBLE': '',
-                       'ITEM_STATUS': 0,
-                       'TEMPLOCATION': None,
-                       'ITEM_STATUS_DESC': link['STATUS'],
-                       'BIB_ID': id,
-                       'ITEM_ID': 0,
-                       'LIBRARY_FULL_NAME': '',
-                       'PERMLOCATION': link['LOCATION'],
-                       'TRIMMED_LOCATION_DISPLAY_NAME': '',
-                       'DISPLAY_CALL_NO': link['CALLNO'],
-                       'CHRON': None}
-                items.append(val)
     res.append(m866list)
     res.append(m856list)
     res.append(items)
@@ -1306,6 +1318,13 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
 
 def is_bound_item(link):
     if settings.BOUND_WITH_ITEM_LINK not in link:
+        return False
+    else:
+        return True
+
+
+def is_govt_doc(link):
+    if settings.GOVT_DOC_LINK not in link:
         return False
     else:
         return True
