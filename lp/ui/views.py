@@ -92,9 +92,10 @@ def item(request, bibid):
 def display_wrlc_link(holdings):
     y = 0
     for holding in holdings:
-        if 'gelman media lab' in\
-                holding.get('LOCATION_DISPLAY_NAME', '').lower():
-            y = y + 1
+        for loc in settings.INELIGIBLE_ILL_LOCS:
+            if loc in\
+                    holding.get('LOCATION_DISPLAY_NAME', '').lower():
+                y = y + 1
     if y == len(holdings):
         return False
     else:
