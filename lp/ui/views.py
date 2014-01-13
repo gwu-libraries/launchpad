@@ -61,14 +61,14 @@ def item(request, bibid):
         holdings = voyager.get_holdings(bib)
         if holdings:
             holdings = strip_bad_holdings(holdings)
-            show_wrlc_link = display_wrlc_link(holdings)
+            show_ill_link = display_ill_link(holdings)
             ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
             holdings = elecsort(holdsort(templocsort(availsort(ours)))) \
                 + elecsort(holdsort(templocsort(availsort(shared)))) \
                 + libsort(elecsort(holdsort(templocsort(availsort(theirs))),
                                    rev=True))
         else:
-            show_wrlc_link = False
+            show_ill_link = False
 
         # extract details for easy display in a separate tab
         details = []
@@ -81,7 +81,7 @@ def item(request, bibid):
             'bib': bib,
             'holdings': holdings,
             'link': bib.get('LINK', [])[9:],
-            'show_wrlc_link': show_wrlc_link,
+            'show_ill_link': show_ill_link,
             'non_wrlc_item': False,
             'details': details,
         })
@@ -90,7 +90,15 @@ def item(request, bibid):
         return error500(request)
 
 
-def display_wrlc_link(holdings):
+def display_ill_link(holdings):
+    y = 0
+    for holding in holdings:
+        for loc in settings.INELIGIBLE_ILL_LOCS:
+            if loc.lower() in\
+                    holding.get('LOCATION_DISPLAY_NAME', '').lower():
+                y = y + 1
+    if y == len(holdings):
+        return False
     x = 0
     for holding in holdings:
         if holding.get('MFHD_DATA', None):

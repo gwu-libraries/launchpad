@@ -244,12 +244,12 @@ $(document).ready(function() {
                 </span>
                 Commented this out due to this issue https://github.com/gwu-libraries/launchpad/issues/433
                     </p>-->
-                    {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID and show_wrlc_link %}
+                    {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID and show_ill_link %}
                     <p>
                      <span class = "catlink"> 
                          Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
                   </span></p>
-                  {%elif bib.ILLIAD_LINK and show_wrlc_link and bib.BIB_FORMAT == 'as' and not bib.FINDING_AID and non_gw%}
+                  {%elif bib.ILLIAD_LINK and show_ill_link and bib.BIB_FORMAT == 'as' and not bib.FINDING_AID and non_gw%}
                   <p>
                     <span class = "catlink">
                         Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
@@ -538,7 +538,7 @@ $(document).ready(function() {
             -->
         {% endfor %}
     {% endfor %}
-    {% if bib.BIB_FORMAT == 'as' and show_wrlc_link%}
+    {% if bib.BIB_FORMAT == 'as' and show_ill_link%}
          <tr>
              <td class='library-group-header'>
               InterLibrary Loan
