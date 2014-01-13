@@ -31,8 +31,12 @@ class ExploreTests(unittest.TestCase):
         url = explore_subject('Whaling')
         self.assertEqual(url, 'http://gw.summon.serialssolutions.com/search?s.cmd=addTextFilter%28SourceType%5C%3A%5C%28%22Library+Catalog%22%5C%29%29&s.q=subjectterms%3A%22Whaling%22')
 
+        # subdivided subject headings translate into slightly different
+        # summon queries where each part is turned into a separate 
+        # subjectterms query. 
+        url = explore_subject('Whaling -- Rhode Island')
+        self.assertEqual(url, 'http://gw.summon.serialssolutions.com/search?s.cmd=addTextFilter%28SourceType%5C%3A%5C%28%22Library+Catalog%22%5C%29%29&s.q=subjectterms%3A%22Whaling%22+AND+subjectterms%3A%22Rhode+Island%22')
+
         settings.EXPLORE_TYPE = 'surveyor'
         url = explore_subject('Whaling')
         self.assertEqual(url, 'http://surveyor.gelman.gwu.edu/?q=subject%3A%22Whaling%22')
-
-        # TODO test structured subject
