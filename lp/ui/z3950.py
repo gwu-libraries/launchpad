@@ -27,11 +27,11 @@ class Z3950Catalog():
             raise
 
     def get_holding(self, bibid=None, zoom_record=None, school=''):
+        holdings = []
         if bibid and not zoom_record:
             zoom_record = self.zoom_record(bibid)
         if hasattr(zoom_record, 'data') and hasattr(zoom_record.data,
                                                     'holdingsData'):
-            holdings = []
             for rec in zoom_record.data.holdingsData:
                 holdmeta = {}
                 holdmeta['item_status'] = 0
@@ -70,6 +70,7 @@ class Z3950Catalog():
         if hasattr(zoom_record, 'data'):
             marc = pymarc.record.Record(zoom_record.data)
             if marc['856']:
+                holdmeta = {}
                 holdmeta['url'] = marc['856']['u']
                 holdmeta['msg'] = marc['856']['z']
                 holdmeta['callnum'] = ''
@@ -82,6 +83,5 @@ class Z3950Catalog():
             else:
                 return [{'item_status': 0, 'location': '', 'callnum': '',
                         'status': '', 'url': '', 'note': '', 'msg': ''}]
-
         return [{'item_status': 0, 'location': '', 'callnum': '', 'status': '',
                  'url': '', 'note': '', 'msg': ''}]
