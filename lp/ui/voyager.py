@@ -73,6 +73,13 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
     return authors
 
 
+def get_all_bibs(bibids):
+    bibs = []
+    for bib in bibids:
+        bibs.append(bib['BIB_ID'])
+    return bibs
+
+
 def get_marc_blob(bibid):
     query = """
 SELECT wrlcdb.getBibBlob(%s) AS marcblob
@@ -317,6 +324,23 @@ ORDER BY bib_index.bib_id"""
             (k, row[k]) for k in output_keys]) for row in
             results if _is_oclc(row['DISPLAY_HEADING'])]
     return [dict([(k, row[k]) for k in output_keys]) for row in results]
+
+
+def get_related_isbns(bibs):
+    query = """
+SELECT DISTINCT bib_index.display_heading
+    FROM bib_index
+    WHERE bib_index.bib_id IN (%s)
+    AND bib_index.index_code IN (%s)
+    ORDER BY bib_index.display_heading"""
+    indexclause = _in_clause(settings.INDEX_CODES['isbn'])
+    numclause = _in_clause(bibs)
+    cursor = connection.cursor()
+    #args = [numclause, indexclause]
+    query = query % (numclause, indexclause)
+    cursor.execute(query, [])
+    results = cursor.fetchall()
+    return [(clean_isbn(p[0])) for p in results]
 
 
 def get_title(bibid):
