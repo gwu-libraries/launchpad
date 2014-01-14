@@ -53,7 +53,8 @@
 <table id='desc-table' border='0' style='width:100%;'>
     <tr>
         <td>
-            {% if bib.ISBN|clean_isbn %}
+            {% assign_settings_value "ENABLE_OPENLIBRARY_COVERS" as enable_covers %}
+            {% if enable_covers and bib.ISBN|clean_isbn %}
             <div id='cover'>
                 <img itemprop="image" id='cover-image' src='http://covers.openlibrary.org/b/isbn/{{ bib.ISBN|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
             </div>

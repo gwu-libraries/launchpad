@@ -188,6 +188,9 @@ API_LIST = [
      'key': ''}
     ]
 
+# Show covers from openlibrary.org?
+ENABLE_OPENLIBRARY_COVERS = False
+
 # Show humans.txt?
 ENABLE_HUMANS = False
 
