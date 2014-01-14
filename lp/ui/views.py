@@ -183,7 +183,7 @@ def gtitem(request, gtbibid):
         if bibid:
             return redirect('item', bibid=bibid)
         else:
-            bib = voyager.get_z3950_bib_data(gtbibid[:-1], 'GT')
+            bib = voyager.get_z3950_bib_data(gtbibid[1:], 'GT')
             if bib is None:
                 return render(request, '404.html', {'num': gtbibid,
                               'num_type': 'BIB ID'}, status=404)
@@ -225,7 +225,7 @@ def gtitem_json(request, gtbibid):
         if bibid:
             return redirect('item_json', bibid=bibid)
         else:
-            bib_data = voyager.get_z3950_bib_data('b' + gtbibid[:-1], 'GT')
+            bib_data = voyager.get_z3950_bib_data('b' + gtbibid[1:], 'GT')
             if not bib_data:
                 return HttpResponse('{}', content_type='application/json',
                                     status=404)
