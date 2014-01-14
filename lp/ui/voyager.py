@@ -604,7 +604,7 @@ def get_additional_holdings(result, holding):
 
 def remove_duplicate_items(i, items):
     #check if the item has already been processed
-    if 'REMOVE' in items[i]:
+    if items[i].get('REMOVE'):
         return
     if 'ITEM_STATUS_DATE' in items[i]:
         if items[i]['ITEM_STATUS_DATE'] is None:
@@ -618,14 +618,16 @@ def remove_duplicate_items(i, items):
             if 'ITEM_STATUS_DATE' in items[j]:
                 if items[j]['ITEM_STATUS_DATE'] is None:
                     items[j]['REMOVE'] = True
-            if ('ITEM_STATUS_DATE' in items[i] and
-                    'ITEM_STATUS_DATE' in items[j]):
-                if (items[i]['ITEM_STATUS_DATE'] is not None and
-                        items[j]['ITEM_STATUS_DATE'] is not None):
-                    if (items[i]['ITEM_STATUS_DATE'] >
-                            items[j]['ITEM_STATUS_DATE']):
+            if 'ITEM_STATUS_DATE' in items[i] and\
+                    'ITEM_STATUS_DATE' in items[j]:
+                if items[i]['ITEM_STATUS_DATE'] is not None and\
+                        items[j]['ITEM_STATUS_DATE'] is not None:
+                    if items[i]['ITEM_STATUS_DATE'] >\
+                            items[j]['ITEM_STATUS_DATE']\
+                            and items[j]['ITEM_STATUS'] <= 11:
                         items[j]['REMOVE'] = True
-                    else:
+                    elif items[j]['ITEM_STATUS'] > 11 and\
+                            items[i]['ITEM_STATUS'] <= 11:
                         items[i]['REMOVE'] = True
         j = j + 1
 
