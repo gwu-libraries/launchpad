@@ -128,6 +128,7 @@ AND bib_master.suppress_in_opac='N'"""
             title_fields = rec.get_fields('245')
             bib['LIBRARY_NAME'] = get_library_name(bibid)
             bib['TITLE_ALL'] = ''
+            bib['BIB_FORMAT'] = ''
             bib['BIB_ID'] = bibid
             for title in title_fields:
                 bib['TITLE_ALL'] += title.format_field().decode('iso-8859-1')\
