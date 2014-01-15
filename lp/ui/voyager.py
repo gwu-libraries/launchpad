@@ -460,12 +460,14 @@ ORDER BY library.library_name"""
             holding.update({'ELECTRONIC_DATA':
                             get_electronic_data(holding['MFHD_ID']),
                             'AVAILABILITY':
-                            get_availability(holding['MFHD_ID'])})
+                            get_items(holding['MFHD_ID'], first=True)})
             holding.update({'MFHD_DATA': get_mfhd_data(holding['MFHD_ID']),
                             'ITEMS': get_items(holding['MFHD_ID'])})
         if holding.get('ITEMS', []):
             i = 0
             for item in holding['ITEMS']:
+                if 'DUE' in item and item['DUE'] is not None:
+                    item['ITEM_STATUS_DESC'] = 'DUE ' + item['DUE']
                 if item['ITEM_STATUS_DESC'] == 'Charged':
                     item['ITEM_STATUS_DESC'] = 'Checked out'
                 if item['ITEM_STATUS_DESC'] == 'Discharged':
@@ -767,16 +769,16 @@ WHERE mfhd_master.mfhd_id=%s"""
     return _make_dict(cursor, first=True)
 
 
-def get_availability(mfhd_id):
+def get_items(mfhd_id, first=False):
     query = """
 SELECT DISTINCT display_call_no, item_status_desc, item_status.item_status,
        permLocation.location_display_name as PermLocation,
        tempLocation.location_display_name as TempLocation,
        mfhd_item.item_enum, mfhd_item.chron, item.item_id, item_status_date,
-       bib_master.bib_id
+       bib_master.bib_id,
+       to_char(CIRC_TRANSACTIONS.CHARGE_DUE_DATE, 'mm-dd-yyyy') AS DUE
 FROM bib_master
 JOIN library ON library.library_id = bib_master.library_id
-JOIN bib_text ON bib_text.bib_id = bib_master.bib_id
 JOIN bib_mfhd ON bib_master.bib_id = bib_mfhd.bib_id
 JOIN mfhd_master ON mfhd_master.mfhd_id = bib_mfhd.mfhd_id
 JOIN mfhd_item on mfhd_item.mfhd_id = mfhd_master.mfhd_id
@@ -787,37 +789,14 @@ JOIN item_status_type ON
 JOIN location permLocation ON permLocation.location_id = item.perm_location
 LEFT OUTER JOIN location tempLocation ON
     tempLocation.location_id = item.temp_location
+LEFT OUTER JOIN circ_transactions on item.item_id = circ_transactions.item_id
 WHERE bib_mfhd.mfhd_id = %s
+AND mfhd_master.suppress_in_opac = 'N'
 ORDER BY PermLocation, TempLocation, item_status_date desc"""
     cursor = connection.cursor()
     cursor.execute(query, [mfhd_id])
-    return _make_dict(cursor, first=True)
-
-
-def get_items(mfhd_id):
-    query = """
-SELECT DISTINCT display_call_no, item_status_desc, item_status.item_status,
-       permLocation.location_display_name as PermLocation,
-       tempLocation.location_display_name as TempLocation,
-       mfhd_item.item_enum, mfhd_item.chron, item.item_id, item_status_date,
-       bib_master.bib_id
-FROM bib_master
-JOIN library ON library.library_id = bib_master.library_id
-JOIN bib_text ON bib_text.bib_id = bib_master.bib_id
-JOIN bib_mfhd ON bib_master.bib_id = bib_mfhd.bib_id
-JOIN mfhd_master ON mfhd_master.mfhd_id = bib_mfhd.mfhd_id
-JOIN mfhd_item on mfhd_item.mfhd_id = mfhd_master.mfhd_id
-JOIN item ON item.item_id = mfhd_item.item_id
-JOIN item_status ON item_status.item_id = item.item_id
-JOIN item_status_type ON
-    item_status.item_status = item_status_type.item_status_type
-JOIN location permLocation ON permLocation.location_id = item.perm_location
-LEFT OUTER JOIN location tempLocation ON
-    tempLocation.location_id = item.temp_location
-WHERE bib_mfhd.mfhd_id = %s
-ORDER BY PermLocation, TempLocation, item_status_date desc"""
-    cursor = connection.cursor()
-    cursor.execute(query, [mfhd_id])
+    if first:
+        return _make_dict(cursor, first=True)
     return _make_dict(cursor)
 
 
