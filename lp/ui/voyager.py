@@ -1442,13 +1442,13 @@ def get_illiad_link(bib_data):
         elif bib_data.get('AUTHORS', []):
             query_args['rft.au'] = bib_data['AUTHORS'][0]
         if bib_data.get('PUBLISHER', ''):
-            query_args['rft.pub'] = bib_data['PUBLISHER']
+            query_args['rft.pub'] = bib_data['PUBLISHER'][1:]
         if bib_data.get('ISBN', ''):
             query_args['rft.isbn'] = bib_data['ISBN']
         if bib_data.get('PUB_PLACE', ''):
             query_args['rft.place'] = bib_data['PUB_PLACE']
         if bib_data.get('PUBLISHER_DATE', ''):
-            query_args['rft.date'] = bib_data['PUBLISHER_DATE'][1:]
+            query_args['rft.date'] = bib_data['PUBLISHER_DATE']
         if bib_data.get('TITLE', ''):
             ind = bib_data['TITLE'].find('/')
         if ind != -1:
@@ -1514,6 +1514,7 @@ def get_illiad_link(bib_data):
     for item in str_args:
         item = item.encode('ascii', 'replace')
     url += encoded_args
+    url = urllib.unquote(url)
     return url
 
 

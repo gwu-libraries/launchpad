@@ -366,15 +366,14 @@ def issn(request, issn):
 def oclc(request, oclc):
     try:
         bibid = voyager.get_primary_bibid(num=oclc, num_type='oclc')
+        openurl = _openurl_dict(request)
+        if bibid:
+            url = '%s?%s' % (reverse('item', args=[bibid]),
+                             openurl['query_string_encoded'])
+            return redirect(url)
+        return non_wrlc_item(request, num=oclc, num_type='oclc')
     except DatabaseError:
         return redirect('error503')
-    openurl = _openurl_dict(request)
-    if bibid:
-        url = '%s?%s' % (reverse('item', args=[bibid]),
-                         openurl['query_string_encoded'])
-        return redirect(url)
-    return render(request, '404.html', {'num': oclc,
-                  'num_type': 'OCLC number'}, status=404)
 
 
 def error500(request):
