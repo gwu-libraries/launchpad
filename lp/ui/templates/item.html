@@ -35,64 +35,7 @@
 
 {% block javascript_extra %}
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
-<script type='text/javascript'>
-function toggle_visibility(tbid,lnkid)
-{
- if(document.all){document.getElementById(tbid).style.display = document.getElementById(tbid).style.display == "block" ? "none" : "block";}
-  else{document.getElementById(tbid).style.display = document.getElementById(tbid).style.display == "table" ? "none" : "table";}
-  document.getElementById(lnkid).value = document.getElementById(lnkid).value == "[-] Hide " ? "[+] Show " : "[-] Hide ";
-
-};
-
-function showmore(id) {
-    var objt = document.getElementById("toggle-"+id);
-    var objb = document.getElementById("brief-"+id);
-    var objf = document.getElementById("full-"+id);
-    if(objf.style.display == 'block') {
-        objf.style.display='none';
-        objb.style.display='block';
-        objt.innerHTML="<a href=javascript:showmore('1');>[+] Show</a>";
-    } else {
-        objf.style.display='block';
-        objb.style.display='none';
-        objt.innerHTML="<a href=javascript:showmore('1');>[-] Hide</a>";
-    }        
-};
-
-var newwindow;
-function sms(url) {
-    newwindow = window.open(url, 'name', 'height=590,width=400,toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0');
-    if (window.focus) {
-        newwindow.focus();
-    };
-};
-</script>
-
-<script type='text/javascript'>
-function cittogtxt(elemid) {
-    if ($(elemid).text() == 'Hide'){
-        $(elemid).text('Show');}
-    else {
-        $(elemid).text('Hide');}
-};
-
-
-$(document).ready(function() {
-    $('#cover-image').load(function() {
-        if ($('#cover-image').width() == 1) {
-            $('#cover').toggle(200);
-        };
-        $(".item_body").hide();
-        $(".item_head").click(function() {
-            $(this).next(".item_body").slideToggle(250);
-        });
-    });
-    $("#citation_toggle").click(function() {
-        $("#citation_data").toggle('fast', function() {
-        });
-        cittogtxt("#citation_toggle");
-    });
-});
+<script type='text/javascript' src="{{ STATIC_URL}}js/launchpad.js"></script>
 </script>
 
 {% endblock javascript_extra %}
@@ -203,10 +146,10 @@ $(document).ready(function() {
                 {% endif %}
                 <br />
 
-                {% if bib.DISPLAY_ISBN_LIST %}
+                {% if bib.RELATED_ISBN_LIST %}
                     <span class="isbn-label">ISBN </span>
                     <span class="isbn">
-                        {% for isbn in bib.DISPLAY_ISBN_LIST %}
+                        {% for isbn in bib.RELATED_ISBN_LIST %}
                             <span itemprop="isbn">{{ isbn }}{% if not forloop.last %}, {% endif %}</span>
                         {% endfor %}
                     </span><br />
@@ -238,18 +181,18 @@ $(document).ready(function() {
                 {% endif %}
                 <!---<p>
                     <span class="catlink" >
-                    {% if bib.BIB_ID and show_wrlc_link %}
+                    {% if bib.BIB_ID %}
                         View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>WRLC Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     {% endif %}
                 </span>
                 Commented this out due to this issue https://github.com/gwu-libraries/launchpad/issues/433
                     </p>-->
-                    {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID %}
+                    {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID and show_ill_link %}
                     <p>
                      <span class = "catlink"> 
                          Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
                   </span></p>
-                  {%elif bib.ILLIAD_LINK and bib.BIB_FORMAT == 'as' and not bib.FINDING_AID and non_gw%}
+                  {%elif bib.ILLIAD_LINK and show_ill_link and bib.BIB_FORMAT == 'as' and not bib.FINDING_AID and non_gw%}
                   <p>
                     <span class = "catlink">
                         Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
@@ -538,7 +481,7 @@ $(document).ready(function() {
             -->
         {% endfor %}
     {% endfor %}
-    {% if bib.BIB_FORMAT == 'as' %}
+    {% if bib.BIB_FORMAT == 'as' and show_ill_link%}
          <tr>
              <td class='library-group-header'>
               InterLibrary Loan

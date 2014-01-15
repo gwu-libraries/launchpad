@@ -73,6 +73,13 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
     return authors
 
 
+def get_all_bibs(bibids):
+    bibs = []
+    for bib in bibids:
+        bibs.append(bib['BIB_ID'])
+    return bibs
+
+
 def get_marc_blob(bibid):
     query = """
 SELECT wrlcdb.getBibBlob(%s) AS marcblob
@@ -319,6 +326,23 @@ ORDER BY bib_index.bib_id"""
     return [dict([(k, row[k]) for k in output_keys]) for row in results]
 
 
+def get_related_isbns(bibs):
+    query = """
+SELECT DISTINCT bib_index.display_heading
+    FROM bib_index
+    WHERE bib_index.bib_id IN (%s)
+    AND bib_index.index_code IN (%s)
+    ORDER BY bib_index.display_heading"""
+    indexclause = _in_clause(settings.INDEX_CODES['isbn'])
+    numclause = _in_clause(bibs)
+    cursor = connection.cursor()
+    #args = [numclause, indexclause]
+    query = query % (numclause, indexclause)
+    cursor.execute(query, [])
+    results = cursor.fetchall()
+    return [(clean_isbn(p[0])) for p in results]
+
+
 def get_title(bibid):
     query = """
     SELECT TITLE FROM bib_text
@@ -539,7 +563,8 @@ ORDER BY library.library_name"""
             openlibhold = apis.openlibrary(num, numformat)
             title = ''
             if openlibhold.get('MFHD_DATA', None):
-                title = get_open_library_item_title(openlibhold['MFHD_DATA']['marc856list'][0]['u'])
+                title = get_open_library_item_title(openlibhold['MFHD_DATA']
+                                                    ['marc856list'][0]['u'])
             if openlibhold and bib_data['TITLE'][0:10] == title[0:10]:
                 holdings.append(openlibhold)
                 break
@@ -603,16 +628,31 @@ def get_additional_holdings(result, holding):
 
 def remove_duplicate_items(i, items):
     #check if the item has already been processed
-    if 'REMOVE' in items[i]:
+    if items[i].get('REMOVE'):
         return
     j = i + 1
     while j < len(items):
         if items[i]['ITEM_ID'] == items[j]['ITEM_ID']:
-            if (items[i]['ITEM_STATUS_DATE'] >
-                items[j]['ITEM_STATUS_DATE']):
-                items[j]['REMOVE'] = True
-            else:
-                items[i]['REMOVE'] = True
+            if 'ITEM_STATUS_DATE' in items[i] and\
+                    'ITEM_STATUS_DATE' in items[j]:
+                if items[i]['ITEM_STATUS_DATE'] is not None and\
+                        items[j]['ITEM_STATUS_DATE'] is not None:
+                    if items[i]['ITEM_STATUS_DATE'] >\
+                            items[j]['ITEM_STATUS_DATE']\
+                            and items[j]['ITEM_STATUS'] <= 11:
+                        items[j]['REMOVE'] = True
+                    elif items[j]['ITEM_STATUS'] > 11 and\
+                            items[i]['ITEM_STATUS'] <= 11:
+                        items[i]['REMOVE'] = True
+                if items[j]['ITEM_STATUS_DATE'] is None:
+                    items[j]['REMOVE'] = True
+                if items[i]['ITEM_STATUS_DATE'] is None:
+                    items[i]['REMOVE'] = True
+                if (items[i]['ITEM_STATUS_DATE'] >
+                        items[j]['ITEM_STATUS_DATE']):
+                    items[j]['REMOVE'] = True
+                else:
+                    items[i]['REMOVE'] = True
         j = j + 1
 
 
@@ -884,12 +924,14 @@ def get_z3950_holdings(id, school, id_type, query_type, bib_data,
     try:
         if school in ['GT', 'DA'] and isinstance(bib, list):
             zoomrecord = conn.zoom_record(bib[0])
-            return get_z3950_holding_data(zoomrecord, conn, bib[0], school,
-                                          bib_data)
+            result = get_z3950_holding_data(zoomrecord, conn, bib[0], school,
+                                            bib_data)
+            return result
         elif school in ['GT', 'DA'] and not isinstance(bib, list):
             zoomrecord = conn.zoom_record(str(id))
-            return get_z3950_holding_data(zoomrecord, conn, str(id), school,
-                                          bib_data)
+            result = get_z3950_holding_data(zoomrecord, conn, str(id), school,
+                                            bib_data)
+            return result
         elif school == 'GM' and isinstance(bib, list):
             correctbib = get_correct_gm_bib(bib)
             if not translate_bib:
@@ -1273,41 +1315,26 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
             val['govt_doc'] = is_govt_doc(val['u'])
             m856list.append(val)
             continue
-            for item in links:
-                val = {'ITEM_ENUM': None,
-                       'ELIGIBLE': '',
-                       'ITEM_STATUS': 0,
-                       'TEMPLOCATION': None,
-                       'ITEM_STATUS_DESC': item['STATUS'],
-                       'BIB_ID': id,
-                       'ITEM_ID': 0,
-                       'LIBRARY_FULL_NAME': '',
-                       'PERMLOCATION': item['LOCATION'],
-                       'TRIMMED_LOCATION_DISPLAY_NAME': '',
-                       'DISPLAY_CALL_NO': item['CALLNO'],
-                       'CHRON': None}
+        if (link['STATUS'] not in settings.INELIGIBLE_866_STATUS and
+                'DUE' not in link['STATUS'] and
+            'INTERNET' not in link['LOCATION'] and
+                'Online' not in link['LOCATION'] and link['STATUS'] != ''):
+            m866list.append(link['STATUS'])
+        elif (link['STATUS'] != '' or link['LOCATION'] != '' or
+                link['CALLNO'] != ''):
+            val = {'ITEM_ENUM': None,
+                   'ELIGIBLE': '',
+                   'ITEM_STATUS': 0,
+                   'TEMPLOCATION': None,
+                   'ITEM_STATUS_DESC': link['STATUS'],
+                   'BIB_ID': id,
+                   'ITEM_ID': 0,
+                   'LIBRARY_FULL_NAME': '',
+                   'PERMLOCATION': link['LOCATION'],
+                   'TRIMMED_LOCATION_DISPLAY_NAME': '',
+                   'DISPLAY_CALL_NO': link['CALLNO'],
+                   'CHRON': None}
             items.append(val)
-        if links:
-            if (link['STATUS'] not in ['Charged', 'Not Charged', 'Missing',
-                'LIB USE ONLY'] and 'DUE' not in link['STATUS'] and
-                'INTERNET' not in link['LOCATION'] and
-                    'Online' not in link['LOCATION'] and link['STATUS'] != ''):
-                m866list.append(link['STATUS'])
-            elif (link['STATUS'] != '' or link['LOCATION'] != '' or
-                    link['CALLNO'] != '' and not link['LINK']):
-                val = {'ITEM_ENUM': None,
-                       'ELIGIBLE': '',
-                       'ITEM_STATUS': 0,
-                       'TEMPLOCATION': None,
-                       'ITEM_STATUS_DESC': link['STATUS'],
-                       'BIB_ID': id,
-                       'ITEM_ID': 0,
-                       'LIBRARY_FULL_NAME': '',
-                       'PERMLOCATION': link['LOCATION'],
-                       'TRIMMED_LOCATION_DISPLAY_NAME': '',
-                       'DISPLAY_CALL_NO': link['CALLNO'],
-                       'CHRON': None}
-                items.append(val)
     res.append(m866list)
     res.append(m856list)
     res.append(items)

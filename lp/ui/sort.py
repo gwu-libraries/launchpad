@@ -1,3 +1,5 @@
+from urlparse import urlparse
+
 from lp import settings
 
 
@@ -106,8 +108,13 @@ def elecsort(holdings_list, rev=False):
 def strip_bad_holdings(holdings_list):
     goodstuff = []
     for holding in holdings_list:
+        electronic_hold = False
         #look for online resources with no link
-        if 'online' in holding.get('LOCATION_DISPLAY_NAME', '').lower():
+        for electronic_loc in settings.ELECTRONIC_LOCS:
+            if electronic_loc.lower() in holding.get('LOCATION_DISPLAY_NAME', '').lower():
+                electronic_hold = True
+                break
+        if electronic_hold:
             if holding.get('ELECTRONIC_DATA', {}):
                 if not holding['ELECTRONIC_DATA'].get('LINK856U'):
                     continue

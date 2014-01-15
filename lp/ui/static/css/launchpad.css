@@ -128,7 +128,7 @@ td.field-label {
 
 .marc856list{
     /*font-size: small;*/
-    color: gray;
+    color: black;
 }
 
 .marc856data{
@@ -160,10 +160,6 @@ td.field-label {
 #cover {
     float: left;
     padding: 1.2em 1em .5em 0;
-}
-
-#description {
-    float: left;
 }
 
 #cover-image {
