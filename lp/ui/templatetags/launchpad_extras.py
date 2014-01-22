@@ -1,3 +1,5 @@
+from urllib import urlencode
+
 from django import template
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
@@ -129,6 +131,59 @@ def is_non_roman(s):
         return True
 
 
+@register.simple_tag
+def explore_author(s):
+    et = _get_explore_type()
+    if et == 'surveyor':
+        url = 'http://surveyor.gelman.gwu.edu/'
+        q = [
+                ('q', 'author:"' + s + '"')
+            ]
+    elif et == 'summon':
+        url = 'http://gw.summon.serialssolutions.com/search'
+        q = [
+                ('s.cmd', 'addTextFilter(SourceType\:\("Library Catalog"\))'),
+                ('s.q', 'author:"' + s + '"')
+            ]
+
+    return url + '?' + urlencode(q)
+
+
+@register.simple_tag
+def explore_subject(s):
+    et = _get_explore_type()
+    if et == 'surveyor':
+        url = 'http://surveyor.gelman.gwu.edu/'
+        q = [
+                ('q', 'subject:"' + s + '"')
+            ]
+    elif et == 'summon':
+        url = 'http://gw.summon.serialssolutions.com/search'
+        parts = ['subjectterms:"' + t + '"' for t in s.split(' -- ')]
+        q = [
+                ('s.cmd', 'addTextFilter(SourceType\:\("Library Catalog"\))'),
+                ('s.q', ' AND '.join(parts))
+            ]
+    return url + '?' + urlencode(q)
+
+
+@register.simple_tag
+def explore_series(s):
+    et = _get_explore_type()
+    if et == 'surveyor':
+        url = 'http://surveyor.gelman.gwu.edu/'
+        q = [
+                ('q', 'series:"' + s + '"')
+            ]
+    elif et == 'summon':
+        url = 'http://gw.summon.serialssolutions.com/search'
+        q = [
+                ('s.cmd', 'addTextFilter(SourceType\:\("Library Catalog"\))'),
+                ('s.q', '"' + s + '"')
+            ]
+    return url + '?' + urlencode(q)
+
+
 def listelement(key, citation_json):
     value = citation_json[key]
     if key == 'journal':
@@ -142,3 +197,12 @@ def listelement(key, citation_json):
     elif 'page' in key:
         value = value.replace('EOA', '')
     return '<dt>%s</dt><dd>%s</dd>' % (key.replace('_', ' '), value)
+
+
+def _get_explore_type():
+    target = getattr(settings, 'EXPLORE_TYPE', 'surveyor')
+    if target not in ('summon', 'surveyor'):
+        raise Exception("unknown EXPLORE_TYPE in settings: %s" % target)
+    return target
+
+
