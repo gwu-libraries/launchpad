@@ -180,7 +180,7 @@ AND bib_master.suppress_in_opac='N'"""
                     bib['DISPLAY_%s_LIST' % num_type.upper()] = list(disp_set)
                     # use std nums to get related bibs
                     new_bibids = get_related_bibids(norm, num_type,
-                                                    bib['TITLE'])
+                                                    bib.get('TITLE', ''))
                     for nb in new_bibids:
                         if nb['BIB_ID'] not in [x['BIB_ID'] for x in bibids]:
                             bibids.append(nb)
@@ -315,8 +315,13 @@ ORDER BY bib_index.bib_id"""
     cursor.execute(query, args)
     results = _make_dict(cursor)
     for row in results[:]:
-        new_title = get_title(row['BIB_ID'])
+        if title is None:
+            title = ''
+        result = get_title(row['BIB_ID'])
+        new_title = result.get('TITLE', '')
         # remove the holding if titles are different
+        if new_title is None:
+            continue
         if title[0:12].lower() != new_title[0:12].lower():
             results.remove(row)
     output_keys = ('BIB_ID', 'LIBRARY_NAME')
@@ -350,8 +355,8 @@ def get_title(bibid):
     WHERE bib_text.bib_id = %s"""
     cursor = connection.cursor()
     cursor.execute(query, [bibid])
-    result = _make_dict(cursor)
-    return result[0]['TITLE']
+    result = _make_dict(cursor, first=True)
+    return result
 
 
 def get_related_std_nums(bibid, num_type):
