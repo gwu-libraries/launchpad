@@ -50,7 +50,7 @@ mapping = (
         ('773', None, None, 'abdghikmnopqrstuwxyz')
     ]),
     ('THESIS_DISSERTATION', 'Thesis/Dissertation', ['502']),
-    ('CONTENTS', 'Contents', ['505']),
+    ('CONTENTS', 'Contents', ['505', '990']),
     ('PRODUCTION_CREDITS', 'Production Credits', ['508']),
     ('CITATION', 'Citation', ['510']),
     ('PERFORMERS', 'Performers', ['511']),
