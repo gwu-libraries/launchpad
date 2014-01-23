@@ -339,6 +339,11 @@ class MarcExtractTests(unittest.TestCase):
         bib_data = extract(r)
         self.assertEqual(bib_data["CONTENTS"], ['v. 1. Text.--v. 2. Plates.'])
 
+    def test_contents_990(self):
+        r = self.get_record("990.mrc")
+        bib_data = extract(r)
+        self.assertIn( 'Philosophy of religion and the question of God.', bib_data['CONTENTS'])
+
     def test_reproduction_533(self):
         r = self.get_record("533.mrc")
         bib_data = extract(r)
