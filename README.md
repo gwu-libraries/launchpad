@@ -107,16 +107,18 @@ the path according to your installation of oracle.
         pip install -r requirements.txt
         easy_install pytz
 
-7. Modify django to allow us to connect to Oracle with the required encoding.  In ```ENV/lib/python2.7/site-packages/django/db/backends/oracle/base.py```,
-modify line 35 from this:
+7. *Note*: Voyager's Oracle implementation *requires* ASCII encoding on
+   database connections.  Django strictly mandates UTF8 encodings on 
+   connections, so we have to override this by setting ```'NLS_LANG'```
+   to ```'.US7ASCII'``` in our ```wsgi.py```, overriding Django's strong
+   preference (and that of its community).  See the "Release: All"
+   section of the release notes on our project wiki for examples to test.
 
-        ('NLS_LANG', '.UTF8')
+        https://github.com/gwu-libraries/launchpad/wiki
 
-    to this:
-
-        ('NLS_LANG', '.US7ASCII')
-        
-    Note: this is suboptimal.  For an explanation see https://github.com/gwu-libraries/launchpad/issues/22.  Sorry.
+   See https://code.djangoproject.com/ticket/15313#comment:4 for more
+   details and a helpful response by a core Django developer advocating
+   this approach over our previous Django-patching madness.
 
 
 - - -

@@ -18,9 +18,16 @@ framework.
 #ENV = '/PATH/TO/YOUR/VIRTUALENV'
 #site.addsitedir(ENV + '/lib/python2.7/site-packages')
 
+
 import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lp.settings")
+
+# Adjust because Voyager in Oracle *requires* ASCII-encoded connections
+from django.db.backends.oracle.base import _setup_environment
+_setup_environment([
+    ('NLS_LANG', '.US7ASCII'),
+])
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
