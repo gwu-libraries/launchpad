@@ -342,7 +342,7 @@ class MarcExtractTests(unittest.TestCase):
     def test_contents_990(self):
         r = self.get_record("990.mrc")
         bib_data = extract(r)
-        self.assertIn( 'Philosophy of religion and the question of God.', bib_data['CONTENTS'])
+        self.assertEqual(bib_data["CONTENTS"], ['Ch. 1. What is this thing called "philosophy"? -- Ch. 2. The process of coming to know -- Ch. 3. Knowing in common sense, science, history, and art -- Ch. 4. Positions on the theory of knowledge -- Ch. 5. Metaphysics : what philosophy can tell us about reality -- Ch. 6. A short introduction to ethics -- Ch. 7. Philosophy of religion and the question of God.'
 
     def test_reproduction_533(self):
         r = self.get_record("533.mrc")
