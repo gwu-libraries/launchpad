@@ -146,7 +146,7 @@ ILLIAD_SID = 'GWLP'
 
 TITLE_CHARS = 255
 
-FEEDBACK_FORM_URL = '"https://docs.google.com/spreadsheet/viewform?formkey=dDVfMTNIT0tneVFvNFZoQkNXc01SN2c6MQ'
+FEEDBACK_FORM_URL = 'https://docs.google.com/spreadsheet/viewform?formkey=dDVfMTNIT0tneVFvNFZoQkNXc01SN2c6MQ'
 
 TITLE_LEFTOVER_CHARS = 5
 
