@@ -342,7 +342,7 @@ class MarcExtractTests(unittest.TestCase):
     def test_contents_990(self):
         r = self.get_record("990.mrc")
         bib_data = extract(r)
-        self.assertIn( 'Philosophy of religion and the question of God.', bib_data['CONTENTS'])
+        self.assertIn('Philosophy of religion and the question of God.', bib_data['CONTENTS'][0])
 
     def test_reproduction_533(self):
         r = self.get_record("533.mrc")
