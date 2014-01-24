@@ -733,7 +733,7 @@ WHERE mfhd_master.mfhd_id=%s"""
     marc852 = ''
     if string:
         for subfield in string.split('$')[1:]:
-            if subfield[0] == 'z':
+            if subfield and subfield[0] == 'z':
                 marc852 = subfield[1:]
     # parse link from 856
     string = results.get('MARC856', '')
