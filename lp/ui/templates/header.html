@@ -2,7 +2,7 @@
 
 <header class="navbar-fixed-top">
 <script language='javascript'>
-function feedback() { var fbform="https://docs.google.com/spreadsheet/viewform?formkey=dDVfMTNIT0tneVFvNFZoQkNXc01SN2c6MQ"; fbform += "&entry_3=" + window.location; window.open(fbform); }
+    function feedback() { var fbform="{% settings_value 'FEEDBACK_FORM_URL' %}"; fbform += "&entry_3=" + window.location; window.open(fbform); }
 </script>
     <div id="libheader-container">
         <div id="libheader" >
