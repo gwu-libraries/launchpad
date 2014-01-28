@@ -33,12 +33,6 @@
 {% endif %}
 {% endblock link_extra %}
 
-{% block javascript_extra %}
-<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
-<script type='text/javascript' src="{{ STATIC_URL}}js/launchpad.js"></script>
-</script>
-
-{% endblock javascript_extra %}
 
 {% block content %}
 {% assign_settings_value "STREAMING_AUDIO_TAGS" as audio_tags %}
