@@ -54,8 +54,8 @@
     #ProxyPassMatch /isbn/.* !
     #ProxyPassMatch /oclc/.* !
     #ProxyPassMatch /static/.* !
-    #ProxyPassMatch /about/.* !
-    #ProxyPassMatch /api/.* !
+    #ProxyPassMatch /about/?.* !
+    #ProxyPassMatch /api/?.* !
     #ProxyPassMatch /robots.txt !
     #ProxyPassMatch /humans.txt !
     #ProxyPassMatch /sitemap.* !
