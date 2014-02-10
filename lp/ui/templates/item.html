@@ -202,6 +202,8 @@
 
 </div>
 
+{% if holdings %}
+
 <ul class="nav nav-tabs">
   <li class="active"><a href="#holdings" data-toggle="tab">Availability</a></li>
   <li><a href="#details" data-toggle="tab">Details</a></li>
@@ -210,7 +212,6 @@
 <div class="tab-content">
 
 <div id="holdings" class="tab-pane active">
-{% if holdings %}
     {% regroup holdings by LIBRARY_FULL_NAME as library_list %}
 <table WIDTH='100%' > 
     <thead>
@@ -497,7 +498,6 @@
        {% endif %}
     </tbody>
   </table> 
-{% endif %}
 </div>
 
 <div id="details" class="tab-pane">
@@ -534,6 +534,8 @@
 </div>
 
 </div>
+
+{% endif %}
 
 {% assign_settings_value "DEBUG" as debug %}
 {% if debug %}
