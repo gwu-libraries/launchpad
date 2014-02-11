@@ -210,3 +210,8 @@ SER_SOL_API_URL = 'http://uz4ug4lz9g.openurl.xml.serialssolutions.com/openurlxml
 SER_SOL_API_MAX_ATTEMPTS = 3
 
 SER_SOL_DBID_TEXT = 'TN5'
+
+# where to link to for subject, author links
+
+EXPLORE_TYPE = 'surveyor'
+

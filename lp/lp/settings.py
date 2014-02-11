@@ -203,7 +203,6 @@ Z3950_SERVERS = {
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
-EXPLORE_TYPE = 'surveyor'
 
 # Be sure to create your own 'local_settings.py' file as described in README
 try:
