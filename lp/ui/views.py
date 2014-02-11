@@ -173,6 +173,7 @@ def non_wrlc_item(request, num, num_type):
                   'non_gw': True,
                   'holdings': holdings,
                   'link': '',
+                  'show_ill_link': True
                   })
 
 
