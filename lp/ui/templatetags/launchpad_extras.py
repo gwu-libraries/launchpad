@@ -108,7 +108,7 @@ def assign_settings_value(name):
 def citationlist(citation_json):
     snippets = []
     for key in ['author', 'year', 'title', 'journal', 'volume',
-                'issue', 'pages', 'identifier']:
+                'issue', 'pages']:
         if citation_json.get(key, None):
             snippets.append(listelement(key, citation_json))
     if not citation_json.get('pages') \
