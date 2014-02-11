@@ -154,25 +154,14 @@
                     <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
                 {% endif %}
                 {% if bib.citation_json %}
-                <p>You are looking for
-                {% if bib.citation_json.volume %}volume:
-                    <span style="font-weight: bold">
-                        {{ bib.citation_json.volume }}</span>
-                {% endif %}
-                {% if bib.citation_json.issue %}issue:
-                    <span style="font-weight: bold">
-                        {{ bib.citation_json.issue }}</span>
-                {% endif %}
-                {% if bib.citation_json.year %}year:
-                    <span style="font-weight: bold">
-                        {{ bib.citation_json.year }}</span>
-                {% endif %}
-                    <br/>Full citation data available:
-                    <a href="#" id="citation_toggle">Show</a>
-                </p>
-                <div id="citation_data" style="display: none">
-                    {{ bib.citation_json|citationlist|safe }}
-                </div>
+                <p>The
+                {% if bib.citation_json.type %}
+                        {{ bib.citation_json.type }} 
+                {%else%}
+                    item
+                {%endif%}
+                you are looking for is 
+                {{bib.citation_json|citationlist|safe}}</p>
                 {% endif %}
                 <!---<p>
                     <span class="catlink" >

@@ -107,8 +107,8 @@ def assign_settings_value(name):
 @register.filter
 def citationlist(citation_json):
     snippets = []
-    for key in ['type', 'author', 'title', 'journal', 'identifier',
-                'publisher', 'volume', 'issue', 'year', 'pages']:
+    for key in ['author', 'year', 'title', 'journal', 'volume',
+                'issue', 'pages']:
         if citation_json.get(key, None):
             snippets.append(listelement(key, citation_json))
     if not citation_json.get('pages') \
@@ -116,7 +116,8 @@ def citationlist(citation_json):
             and citation_json.get('end_page'):
         snippets.append(listelement('start_page', citation_json))
         snippets.append(listelement('end_page', citation_json))
-    html = '<dl class="dl-horizontal">%s</dl>' % ''.join(snippets)
+
+    html = '<br>%s' % ''.join(snippets)
     return html
 
 
@@ -194,9 +195,15 @@ def listelement(key, citation_json):
         value = '; '.join(['%s: %s' % (i['type'], i['id']) for i in value])
     elif key == 'type':
         value = value.replace('inbook', 'chapter')
+    elif key == 'year':
+        value = '(' + value + '),'
+    elif key == 'title' or key == 'journal' or key == 'volume':
+        value = value + ','
+    elif key == 'issue':
+        value = '(' + value + '), '
     elif 'page' in key:
         value = value.replace('EOA', '')
-    return '<dt>%s</dt><dd>%s</dd>' % (key.replace('_', ' '), value)
+    return '%s ' % value
 
 
 def _get_explore_type():
