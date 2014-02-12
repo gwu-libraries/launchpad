@@ -664,6 +664,12 @@ def remove_duplicate_items(i, items):
                         items[i]['ITEM_STATUS_DATE']) and\
                         items[i]['ITEM_STATUS'] <= 11:
                     items[i]['REMOVE'] = True
+                elif (items[j]['ITEM_STATUS_DATE'] ==
+                        items[i]['ITEM_STATUS_DATE']) and\
+                        items[i]['ITEM_STATUS'] <= 11 and\
+                        items[i]['ITEM_STATUS'] <= 11:
+                    items[j]['REMOVE'] = True
+
         j = j + 1
 
 
