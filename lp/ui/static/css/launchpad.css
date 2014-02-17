@@ -181,3 +181,11 @@ footer {
     color: gray;
     font-weight: normal;
 }
+
+.navbar-search {
+    padding-right: 10px;
+}
+
+#libheader-container {
+    height: 2.3em;
+}
