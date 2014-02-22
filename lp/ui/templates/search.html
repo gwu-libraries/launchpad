@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load launchpad_extras %}
+
+{% block content %}
+<section class="libsite-container container">
+
+{% for doc in results %}
+<article class="search-result">
+{{ doc.name }}
+</article>
+{% endfor %}
+
+</section>
+{% endblock %}

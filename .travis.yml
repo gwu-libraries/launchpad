@@ -1,24 +1,25 @@
+install: pip install -r requirements.txt
+script: 
+- cp lp/lp/local_settings.py.template lp/lp/local_settings.py
+- python lp/manage.py test lp
+python: 
+- "2.7"
+branches: 
+  only: 
+  - master
+  - refactor
+notifications: 
+  email: 
+  - ehs@pobox.com
+  - darshan@email.gwu.edu
+  - sgilani@email.gwu.edu
+before_install: 
+- sed "s/cx_Oracle/#cx_Oracle/g" requirements.txt > test.txt
+- mv test.txt requirements.txt
 language: python
-python:
-  - "2.7"
-env:
+env: 
+  matrix: 
   - DJANGO_VERSION=1.4
-#Scripts to run before installing dependencies
-before_install:
-  - sed "s/cx_Oracle/#cx_Oracle/g" requirements.txt > test.txt
-  - mv test.txt requirements.txt
-#Command to install dependencies
-install: "pip install -r requirements.txt"
-#Command to run tests
-script:
-  - cp lp/lp/local_settings.py.template lp/lp/local_settings.py
-  - python lp/manage.py test lp
-branches:
-  only:
-    - master
-    - refactor
-# Email notifications
-notifications:
-    email:
-      - darshan@email.gwu.edu
-      - sgilani@email.gwu.edu
+  global: 
+    secure: TQNCTpV/wtx/0b9wE/rH/MQhxagjIdPSEpHoi6Bs2vmbkKiP84RZIS9IUY1oQPrDuvbCE/qAcrMuO+4oQ3fqmoAoVLHl9PkPfV8U6g+VpTtea/Y2IoVGcYDbJTcPXYBuhchTzjl0TNmYnsZbSx3w4MC2ECu+BWq4uI/SFG07Zk8=
+    secure: PhEjxBHh+tz7Mv9rs/xjbZnXNJCTjwyNIW13thHQ+By4sHqFVGO+MaLmBY7tVZVgoRxfir5k+P8MXlTbh+nbav6RNQB9MXdwWYUnSBdFt/FwFIspYG5S5ccH3r+SY1X5buXAW+tonNWoUodILnU90vDdx8ylLi/MvdbAR05Zxn4=

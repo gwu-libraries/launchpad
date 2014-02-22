@@ -8,3 +8,4 @@ pycountry
 pymarc
 python-memcached
 git+https://github.com/asl2/PyZ3950.git
+summoner

@@ -215,3 +215,7 @@ SER_SOL_DBID_TEXT = 'TN5'
 
 EXPLORE_TYPE = 'surveyor'
 
+# summon api
+SUMMON_ID = "gw"
+SUMMON_SECRET_KEY = "you-will-need-this-to-do-searches"
+

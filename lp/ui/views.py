@@ -1,8 +1,7 @@
 import logging
-
-import bibjsontools
 from urlparse import urlparse
 
+import bibjsontools
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.utils import DatabaseError
@@ -11,7 +10,7 @@ from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
-from ui import voyager, apis, marc
+from ui import voyager, apis, marc, summon
 from ui.sort import libsort, availsort, elecsort, templocsort, \
     splitsort, enumsort, callnumsort, strip_bad_holdings, holdsort
 
@@ -398,3 +397,12 @@ def robots(request):
 
 def humans(request):
     return render(request, 'humans.txt', {}, content_type='text/plain')
+
+
+def search(request):
+    q = request.GET.get('q', '')
+    api = summon.Summon(settings.SUMMON_ID, settings.SUMMON_SECRET_KEY)
+    results = api.search(q, hl=False, ps=50)
+    return render(request, 'search.html', {
+        "results": results
+    })
