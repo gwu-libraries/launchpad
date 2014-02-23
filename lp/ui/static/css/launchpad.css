@@ -1,9 +1,3 @@
-/*#libheader-container {
-    background-image: url(/static/img/bg-local-nav-bottom.png);
-}*/
-
-.libheader-container {margin-top:35px;}
-
 body {
     font-family: Helvetica, Arial, sans-serif;
 }
@@ -186,6 +180,4 @@ footer {
     padding-right: 10px;
 }
 
-#libheader-container {
-    height: 2.3em;
-}
+

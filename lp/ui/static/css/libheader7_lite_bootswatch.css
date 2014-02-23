@@ -5,8 +5,12 @@
     max-width: 1170px;
 }
 
+#libheader-container {
+    height: 35px;
+}
+
 .libsite-container {
-    margin-top: 35px;
+    margin-top: 40px;
     margin-bottom: 35px;
 }
 
