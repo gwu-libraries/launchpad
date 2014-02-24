@@ -4,11 +4,47 @@
 {% block content %}
 <section class="libsite-container container">
 
-{% for doc in results %}
-<article class="search-result">
-{{ doc.name }}
-</article>
-{% endfor %}
+    <section id="search-results">
+
+    {% for doc in results %}
+    <article class="search-result" itemscope itemtype="{{ doc.type }}">
+        {% if doc.type == "Book" %}<img title="Book" class="item-type" src="{{ STATIC_URL }}img/book.png">{%endif %}
+        {% if doc.type == "VideoObject" %}<img title="Video" class="item-type" src="{{ STATIC_URL }}img/video.png">{% endif %}
+        {% if doc.type == "AudioObject" %}<img title="Audio" class="item-type" src="{{ STATIC_URL }}img/audio.png">{% endif %}
+        {% if doc.type == "Map" %}<img title="Map" class="item-type" src="{{ STATIC_URL }}img/map.png">{% endif %}
+
+        {% if doc.thumbnailUrl %}
+            <img class="cover" src={{ doc.thumbnailUrl }}>
+        {% endif %}
+
+        <a href="{{ doc.id }}">
+            <span class="title" itemprop="name">{{ doc.name }}</span><br>
+        </a>
+
+        {% if doc.author %}
+            {% for author in doc.author %}
+                <span itemprop="author" itemtype="Person" itemscope>
+                  <span itemprop="name">{{ author.name }}</span>
+                </span>
+            {% endfor %}
+            <br>
+        {% endif %}
+
+        {% if doc.publisher %}
+            <span itemprop="publisher" itemscope itemtype="Person">
+                <span itemprop="address">{{ doc.publisher.address }}</span> :
+                <span itemprop="name">{{ doc.publisher.name }}</span>
+            </span>
+        {% endif %}
+        {{ doc.datePublished }}
+    </article>
+    {% endfor %}
+  
+    </section>
+
+    <section id="facets">
+    facet1
+    </section>
 
 </section>
 {% endblock %}

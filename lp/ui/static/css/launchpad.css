@@ -180,4 +180,33 @@ footer {
     padding-right: 10px;
 }
 
+.search-result {
+  padding: 10px;
+  border-bottom: solid thin #cccccc;
+  clear: both;
+}
 
+.search-result .title {
+  font-size: 14pt;
+  font-weight: bold;
+}
+
+.search-result img.cover {
+  height: 65px;
+  float: right;
+}
+
+#search-results {
+  width: 60%;
+}
+
+#facets {
+  width: 40%;
+}
+
+img.item-type {
+  float: left;
+  vertical-align: top;
+  margin-right: 10px;
+  height: 30px;
+}

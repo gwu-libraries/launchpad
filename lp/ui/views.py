@@ -402,7 +402,8 @@ def humans(request):
 def search(request):
     q = request.GET.get('q', '')
     api = summon.Summon(settings.SUMMON_ID, settings.SUMMON_SECRET_KEY)
-    results = api.search(q, hl=False, ps=50)
+    results = api.search(q, hl=False, ps=50,
+        cmd='addTextFilter(SourceType\:\("Library Catalog"\))')
     return render(request, 'search.html', {
         "results": results
     })
