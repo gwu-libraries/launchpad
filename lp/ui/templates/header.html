@@ -14,7 +14,7 @@
             <div class="libheader-link">&bull;</div>
             <div class="libheader-link"><a href="javascript:feedback();" >Found a Problem?</a></div>
             <form class="navbar-search pull-right" action="{% url "search" %}" method="get">
-              <input name="q" type="text" class="search-query" placeholder="Search">
+              <input name="q" type="text" class="search-query" placeholder="Search" value="{{ q }}">
             </form>
         </div>
     </div>

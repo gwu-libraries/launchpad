@@ -405,5 +405,6 @@ def search(request):
     results = api.search(q, hl=False, ps=50,
         cmd='addTextFilter(SourceType\:\("Library Catalog"\))')
     return render(request, 'search.html', {
+        "q": q,
         "results": results
     })
