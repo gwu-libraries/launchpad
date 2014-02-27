@@ -75,7 +75,7 @@ def item(request, bibid):
             if name in bib and len(bib[name]) > 0:
                 details.append((display_name, bib[name]))
         bibs = voyager.get_all_bibs(bib['BIB_ID_LIST'])
-        bib['RELATED_ISBN_LIST'] = voyager.get_related_isbns(bibs)
+        bib['RELATED_ISBN_LIST'] = list(set(voyager.get_related_isbns(bibs)))
         return render(request, 'item.html', {
             'bibid': bibid,
             'bib': bib,
