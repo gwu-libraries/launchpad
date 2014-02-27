@@ -400,11 +400,44 @@ def humans(request):
 
 
 def search(request):
-    q = request.GET.get('q', '')
+    params = request.GET
+    q = params.get('q', '')
+    fmt = params.get('format', 'html')
+    raw = params.get('raw', False)
+
     api = summon.Summon(settings.SUMMON_ID, settings.SUMMON_SECRET_KEY)
-    results = api.search(q, hl=False, ps=50,
-        cmd='addTextFilter(SourceType\:\("Library Catalog"\))')
-    return render(request, 'search.html', {
-        "q": q,
-        "results": results
-    })
+    kwargs = {
+        "hl": False,
+        "ps": 50,
+        "cmd": 'addTextFilter(SourceType\:\("Library Catalog"\))',
+        "raw": raw
+    }
+    results = api.search(q, **kwargs)
+
+    # json-ld
+    if fmt == "json":
+        return HttpResponse(
+            json.dumps(results, indent=2),
+            content_type='application/json'
+        )
+
+    # raw summon results
+    elif raw:
+        if settings.DEBUG:
+            return HttpResponse(
+                json.dumps(results, indent=2),
+                content_type='application/json'
+            )
+        else:
+            # don't serve as a Summon proxy in production!
+            return HttpResponse('Unauthorized', status=401)
+
+    # default to a regular html web page
+    else:
+        return render(request, 'search.html', {
+            "q": q,
+            "results": results,
+            "debug": settings.DEBUG,
+            "json_url": request.get_full_path() + "&format=json",
+            "raw_url": request.get_full_path() + "&raw=true",
+        })

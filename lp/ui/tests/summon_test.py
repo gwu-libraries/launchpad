@@ -38,3 +38,8 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['publisher']['address'], 'Medford, N.J')
         self.assertEqual(i['datePublished'], '2000')
         self.assertEqual(i['thumbnailUrl'], 'http://covers-cdn.summon.serialssolutions.com/index.aspx?isbn=9781573870993/mc.gif&client=summon&freeimage=true')
+
+    def test_raw(self):
+        results = self.summon.search("isbn:1573870994", raw=True)
+        self.assertEqual(results['documents'][0]['Title'], ['The web of knowledge'])
+            

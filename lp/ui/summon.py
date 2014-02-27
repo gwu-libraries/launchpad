@@ -13,7 +13,14 @@ class Summon():
         return self._summon.status()
 
     def search(self, *args, **kwargs):
+        """
+        Performs the search and massages data into schema.org JSON-LD. If 
+        you pass in raw=True you will get the raw summon response instead.
+        """
         response = self._summon.search(*args, **kwargs)
+        if kwargs.get("raw", False):
+            return response
+
         results = []
         for doc in response['documents']:
             item = self._convert(doc)

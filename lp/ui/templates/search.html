@@ -2,7 +2,7 @@
 {% load launchpad_extras %}
 
 {% block content %}
-<section class="libsite-container container">
+<div class="libsite-container container">
 
     <section id="search-results">
 
@@ -46,5 +46,15 @@
     facet1
     </section>
 
-</section>
+    {% if debug %}
+    <h2>Debugging info:</h2>
+    JSON: <a href="{{ json_url }}">{{ json_url }}</a>
+    &nbsp;
+    Summon: <a href="{{ raw_url }}">{{ raw_url }}</a>
+    <br>
+    <br>
+    {% endif %}
+
+</div>
+
 {% endblock %}
