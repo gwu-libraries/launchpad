@@ -1,25 +1,24 @@
-install: pip install -r requirements.txt
-script: 
-- cp lp/lp/local_settings.py.template lp/lp/local_settings.py
-- python lp/manage.py test lp
-python: 
-- "2.7"
+notifications: 
+  email: 
+  - darshan@email.gwu.edu
+  - sgilani@email.gwu.edu
 branches: 
   only: 
   - master
-  - m17-integration
-notifications: 
-  email: 
-  - ehs@pobox.com
-  - darshan@email.gwu.edu
-  - sgilani@email.gwu.edu
+  - refactor
+install: pip install -r requirements.txt
+language: python
+python: 
+- "2.7"
 before_install: 
 - sed "s/cx_Oracle/#cx_Oracle/g" requirements.txt > test.txt
 - mv test.txt requirements.txt
-language: python
+script: 
+- cp lp/lp/local_settings.py.template lp/lp/local_settings.py
+- python lp/manage.py test lp
 env: 
   matrix: 
   - DJANGO_VERSION=1.4
   global: 
-    secure: TQNCTpV/wtx/0b9wE/rH/MQhxagjIdPSEpHoi6Bs2vmbkKiP84RZIS9IUY1oQPrDuvbCE/qAcrMuO+4oQ3fqmoAoVLHl9PkPfV8U6g+VpTtea/Y2IoVGcYDbJTcPXYBuhchTzjl0TNmYnsZbSx3w4MC2ECu+BWq4uI/SFG07Zk8=
-    secure: PhEjxBHh+tz7Mv9rs/xjbZnXNJCTjwyNIW13thHQ+By4sHqFVGO+MaLmBY7tVZVgoRxfir5k+P8MXlTbh+nbav6RNQB9MXdwWYUnSBdFt/FwFIspYG5S5ccH3r+SY1X5buXAW+tonNWoUodILnU90vDdx8ylLi/MvdbAR05Zxn4=
+  - secure: Ye4xFpXmGtxuHMNeRKLBSncLS+Hq94Aq+Sx6YWjddHAEv8uqTDC4aENlXosoHpR551Prto9Prp+8A61eLZrKKR5DGj8bQXOeFGdPMtGp5kYSlK8/Pgfl24Oi732V056Oo9PBSR+uv5o0/MXMGHKQEhJJpJlODuYqBaAXSbQi6T8=
+  - secure: I8JiNsWMTZUJo1GaC6XuZhiuu4ftJ5LcrOWxPIzanMlhWhpsucoJZhhIqkrUHnd/Zu0MroddvTE0njHXGg0dXFdxBzjXXlpfZhdoDicngu/c94yRNB6jtX2NnipNUwXCYsBOaGrKgLgtXlrkcfaTJZmt915fmNS4+/yAzEQt8h0=
