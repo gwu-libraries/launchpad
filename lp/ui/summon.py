@@ -1,5 +1,6 @@
 import summoner
 
+
 class Summon():
     """
     A wrapper for summoner.Summon which adds schema.org conversion. Maybe
@@ -14,7 +15,7 @@ class Summon():
 
     def search(self, *args, **kwargs):
         """
-        Performs the search and massages data into schema.org JSON-LD. If 
+        Performs the search and massages data into schema.org JSON-LD. If
         you pass in raw=True you will get the raw summon response instead.
         """
         response = self._summon.search(*args, **kwargs)
@@ -30,7 +31,7 @@ class Summon():
 
     def _convert(self, doc):
         i = {}
-  
+
         # must have a bibid and a type
         if 'ExternalDocumentID' not in doc or 'ContentType' not in doc:
             return None
@@ -38,24 +39,22 @@ class Summon():
         i['id'] = '/item/' + doc['ExternalDocumentID'][0]
         i['type'] = self._get_type(doc)
 
-        if 'DocumentTitleAlternate' in doc:
-            i['name'] = doc['DocumentTitleAlternate'][0]
-        elif 'Title' in doc:
+        if doc.get('Title'):
             i['name'] = doc['Title'][0]
-        else:
-            i['name'] = '???'
+            if doc.get('Subtitle'):
+                i['name'] += " : " + doc['Subtitle'][0]
 
         i['author'] = []
         for name in doc.get('Author', []):
             i['author'].append({'name': name})
 
-        if doc.get('PublicationYear', []):
+        if doc.get('PublicationYear'):
             i['datePublished'] = doc['PublicationYear'][0]
 
-        if doc.get('Publisher', []):
+        if doc.get('Publisher'):
             i['publisher'] = {'name': doc['Publisher'][0]}
             if 'PublicationPlace' in doc:
-              i['publisher']['address'] = doc['PublicationPlace'][0]
+                i['publisher']['address'] = doc['PublicationPlace'][0]
 
         if doc.get('thumbnail_m', []):
             i['thumbnailUrl'] = doc['thumbnail_m'][0]
