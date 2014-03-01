@@ -7,7 +7,7 @@ python:
 branches: 
   only: 
   - master
-  - refactor
+  - m17-integration
 notifications: 
   email: 
   - ehs@pobox.com
