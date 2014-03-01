@@ -1,6 +1,8 @@
 launchpad
 =========
 
+[![Build Status](https://secure.travis-ci.org/gwu-libraries/launchpad.png)](http://travis-ci.org/gwu-libraries/launchpad)
+
 A django based system that provides a stable URL for every item in the
 libraries' catalog.  Various discovery services will link to these
 URLs. The page for each item will in turn link out to various other
