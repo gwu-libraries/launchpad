@@ -23,7 +23,7 @@ class SummonTests(unittest.TestCase):
         search = self.summon.search("isbn:1573870994")
         self.assertTrue(len(search['results']) > 0)
         i = search['results'][0]
-        self.assertEqual(i['@id'], '/item/2402189')
+        self.assertEqual(i['@id'], '/item/m2402189')
         self.assertEqual(i['@type'], 'Book')
         self.assertEqual(i['name'], 'The web of knowledge : a festschrift in honor of Eugene Garfield')
 

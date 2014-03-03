@@ -43,7 +43,9 @@ class Summon():
         if 'ExternalDocumentID' not in doc or 'ContentType' not in doc:
             return None
 
+        id = doc['ExternalDocumentID'][0]
         i['@id'] = '/item/' + doc['ExternalDocumentID'][0]
+
         i['@type'] = self._get_type(doc)
 
         if doc.get('Title'):
@@ -68,9 +70,20 @@ class Summon():
 
         if doc.get('Institution'):
             i['offers'] = []
-            for inst in doc['Institution']:
-                inst = re.sub(' \(.+\)', '', inst)
-                i['offers'].append({'seller': inst})
+            inst = doc.get('Institution')[0]
+            inst = re.sub(' \(.+\)', '', inst)
+            i['offers'].append({
+                'seller': inst,
+                'serialNumber': id
+            })
+
+            # George Mason and Georgetown load into Summon with their own ids.
+            # Launchpad handles these with the the m & b prefixes
+
+            if inst  == 'George Mason University':
+                i['@id'] = '/item/m' + id
+            elif inst == 'Georgetown':
+                i['@id'] = '/item/b' + id
 
         return i
 
