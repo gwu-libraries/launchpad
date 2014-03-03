@@ -1,3 +1,4 @@
+import re
 import summoner
 
 
@@ -64,6 +65,12 @@ class Summon():
 
         if doc.get('thumbnail_m', []):
             i['thumbnailUrl'] = doc['thumbnail_m'][0]
+
+        if doc.get('Institution'):
+            i['offers'] = []
+            for inst in doc['Institution']:
+                inst = re.sub(' \(.+\)', '', inst)
+                i['offers'].append({'seller': inst})
 
         return i
 
