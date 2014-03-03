@@ -19,15 +19,12 @@ class SummonTests(unittest.TestCase):
         self.summon = Summon(id, key)
         self.summoner = summoner.Summon(id, key)
 
-    def test_status(self):
-        self.assertEqual(self.summon.status(), 'available')
-
     def test_search(self):
-        results = self.summon.search("isbn:1573870994")
-        self.assertTrue(len(results) > 0)
-        i = results[0]
-        self.assertEqual(i['id'], '/item/2402189')
-        self.assertEqual(i['type'], 'Book')
+        search = self.summon.search("isbn:1573870994")
+        self.assertTrue(len(search['results']) > 0)
+        i = search['results'][0]
+        self.assertEqual(i['@id'], '/item/2402189')
+        self.assertEqual(i['@type'], 'Book')
         self.assertEqual(i['name'], 'The web of knowledge : a festschrift in honor of Eugene Garfield')
 
         self.assertEqual(len(i['author']), 3)
@@ -42,4 +39,12 @@ class SummonTests(unittest.TestCase):
     def test_raw(self):
         results = self.summon.search("isbn:1573870994", raw=True)
         self.assertEqual(results['documents'][0]['Title'], ['The web of knowledge'])
-            
+
+    def test_search_for_template(self):
+        search = self.summon.search("isbn:1573870994", for_template=True)
+        self.assertTrue(len(search['results']) > 0)
+        i = search['results'][0]
+        self.assertTrue('id' in i)
+        self.assertTrue('type' in i)
+        self.assertTrue('@id' not in i)
+        self.assertTrue('@type' not in i)

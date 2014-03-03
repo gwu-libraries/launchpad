@@ -6,7 +6,7 @@
 
     <section id="search-results">
 
-    {% for doc in results %}
+    {% for doc in search_results.results %}
     <article class="search-result" itemscope itemtype="{{ doc.type }}">
         {% if doc.type == "Book" %}<img title="Book" class="item-type" src="{{ STATIC_URL }}img/book.png">{%endif %}
         {% if doc.type == "VideoObject" %}<img title="Video" class="item-type" src="{{ STATIC_URL }}img/video.png">{% endif %}

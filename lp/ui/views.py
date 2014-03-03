@@ -410,14 +410,18 @@ def search(request):
         "hl": False,
         "ps": 50,
         "cmd": 'addTextFilter(SourceType\:\("Library Catalog"\))',
-        "raw": raw
+        "raw": raw,
     }
-    results = api.search(q, **kwargs)
+
+    if fmt == "html":
+        kwargs['for_template'] = True
+
+    search_results = api.search(q, **kwargs)
 
     # json-ld
     if fmt == "json":
         return HttpResponse(
-            json.dumps(results, indent=2),
+            json.dumps(search_results, indent=2),
             content_type='application/json'
         )
 
@@ -425,7 +429,7 @@ def search(request):
     elif raw:
         if settings.DEBUG:
             return HttpResponse(
-                json.dumps(results, indent=2),
+                json.dumps(search_results, indent=2),
                 content_type='application/json'
             )
         else:
@@ -436,7 +440,7 @@ def search(request):
     else:
         return render(request, 'search.html', {
             "q": q,
-            "results": results,
+            "search_results": search_results,
             "debug": settings.DEBUG,
             "json_url": request.get_full_path() + "&format=json",
             "raw_url": request.get_full_path() + "&raw=true",
