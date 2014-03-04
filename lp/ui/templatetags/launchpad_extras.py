@@ -134,6 +134,7 @@ def is_non_roman(s):
 
 @register.simple_tag
 def explore_author(s):
+    s = encode_str(s)
     et = _get_explore_type()
     if et == 'surveyor':
         url = 'http://surveyor.gelman.gwu.edu/'
@@ -146,12 +147,12 @@ def explore_author(s):
                 ('s.cmd', 'addTextFilter(SourceType\:\("Library Catalog"\))'),
                 ('s.q', 'author:"' + s + '"')
             ]
-
     return url + '?' + urlencode(q)
 
 
 @register.simple_tag
 def explore_subject(s):
+    s = encode_str(s)
     et = _get_explore_type()
     if et == 'surveyor':
         url = 'http://surveyor.gelman.gwu.edu/'
@@ -170,6 +171,7 @@ def explore_subject(s):
 
 @register.simple_tag
 def explore_series(s):
+    s = encode_str(s)
     et = _get_explore_type()
     if et == 'surveyor':
         url = 'http://surveyor.gelman.gwu.edu/'
@@ -211,5 +213,13 @@ def _get_explore_type():
     if target not in ('summon', 'surveyor'):
         raise Exception("unknown EXPLORE_TYPE in settings: %s" % target)
     return target
+
+
+def encode_str(s):
+    try:
+        s = s.encode('utf-8')
+    except UnicodeDecodeError:
+        s = s.decode('iso-8859-1').encode('utf-8')
+    return s
 
 
