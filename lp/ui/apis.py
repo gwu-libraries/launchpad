@@ -52,7 +52,7 @@ def googlebooks(num, num_type, url, key):
 
 
 def worldcat(num, num_type, url, key):
-    url = url % (num_type, num, key)
+    url = url % (num, key)
     try:
         records = marcxml.parse_xml_to_array(urlopen(url))
         if not records:

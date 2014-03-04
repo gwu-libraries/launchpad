@@ -2,7 +2,6 @@ import os
 import sys
 
 DEBUG = True
-ALLOWED_HOSTS = ['YOUR.PUBLIC.SERVER.NAME']
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -20,12 +19,12 @@ if 'test' in sys.argv:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': '',
-            'NAME': '',
-            'USER': '',
-            'PASSWORD': '',
-            'HOST': '',
-            'PORT': '',
+            'ENGINE': 'django.db.backends.oracle',
+            'NAME': 'VGER',
+            'USER': 'dbread',
+            'PASSWORD': 'libs8db',
+            'HOST': 'oracle.wrlc.org',
+            'PORT': '1521',
         }
     }
 
@@ -63,11 +62,23 @@ LIB_LOOKUP = {
 
 
 Z3950_SERVERS = {
-    'LIBRARY_ID': {
-        'IP': '',
-        'PORT': '',
-        'DB': '',
-        'SYNTAX': '',
+    'GM': {
+        'IP': '64.74.237.114',
+        'PORT': 7090,
+        'DB': 'VOYAGER',
+        'SYNTAX': 'OPAC'
+    },
+    'GT': {
+        'IP': '141.161.93.5',
+        'PORT': 210,
+        'DB': 'INNOPAC',
+        'SYNTAX': 'OPAC'
+    },
+    'DA': {
+        'IP': '141.161.93.5',
+        'PORT': 210,
+        'DB': 'INNOPAC',
+        'SYNTAX': 'OPAC'
     }
 }
 
@@ -75,13 +86,13 @@ INDEX_CODES = {
     'isbn': ['020N', '020A', 'ISB3', '020Z'],
     'issn': ['022A', '022Z', '022L'],
     'oclc': ['035A'],
-    'lccn': ['010A']
+    'lccn': ['010A'],
     }
 
 
 # Preferred library for bib record and top of the holdings list
 # ex.: 'GW'
-PREF_LIB = ''  
+PREF_LIB = 'GW'
 
 # Institution name, link, etc. to display in HTML header
 INSTITUTION_NAME = 'GW Libraries'
@@ -91,46 +102,49 @@ HOST_INSTITUTION_LINK = 'http://www.gwu.edu/'
 
 # Libraries that should be put at the bottom of the holdings list
 # Optional, can be empty or used for libraries with restricted access, etc.
-BOTTOM_LIBS = [] 
+BOTTOM_LIBS = []
 
 # Eligibility Options
 
 INELIGIBLE_LIBRARIES = ['JB', 'HL', 'HS', 'AL']
 
 SHARED_LIBRARY_NAMES = ['WR', 'E-Resources', 'E-GovDoc',
-    'Internet Archive', 'IA']
+                        'Internet Archive', 'IA']
 
-INELIGIBLE_PERM_LOCS = ['REFERENCE', 'REF', 'RESERVE', 'NON-CIRC', 
-    'RESTRICTED', 'ONLY', 'IN LIBRARY', 'MICRO', 'ARCHIVES', 'KIEV', 'SPEC',
-    'IBT', 'AUDIOTAPES', 'CD-ROM', 'DISCS', 'RECORDS', 'RUSH', 'VIDEOTAPES',
-    'VIDEODISCS', 'MEDIA VIDEOS', 'DEAF DVD', 'DEAF VHS', 'IN PROCESS',
-    'AU: LAW', 'LAW LIBRARY', 'QATAR', 'TURKEY', 'CAMPUS USE', 'MEDIA LAB']
+INELIGIBLE_PERM_LOCS = ['REFERENCE', 'REF', 'RESERVE', 'NON-CIRC',
+                        'RESTRICTED', 'ONLY', 'IN LIBRARY', 'MICRO',
+                        'ARCHIVES', 'KIEV', 'SPEC',
+                        'IBT', 'AUDIOTAPES', 'CD-ROM', 'DISCS',
+                        'RECORDS', 'RUSH', 'VIDEOTAPES',
+                        'VIDEODISCS', 'MEDIA VIDEOS', 'DEAF DVD',
+                        'DEAF VHS', 'IN PROCESS',
+                        'AU: LAW', 'QATAR', 'TURKEY', 'CAMPUS USE']
 
 # Add electronic locations
 ELECTRONIC_LOCS = ['AVAILABLE TO ALL', 'ONLINE', 'ELECTRONIC', 'INTERNET',
-    'STREAMING', 'EREADER']
+                         'STREAMING', 'EREADER']
 
 INELIGIBLE_PERM_LOCS += ELECTRONIC_LOCS
 
 INELIGIBLE_TEMP_LOCS = ['RESERVE', 'BINDERY']
 
-INELIGIBLE_STATUS = ['RENEWED', 'MISSING', 'LOST', 'OVERDUE', 'TRANSIT',
-    'HOLD', 'DUE', 'CHARGED', 'UNAVAILABLE', 'WITHDRAWN', 'DAMAGED',
-    'LIB USE ONLY', 'CHECKED OUT']
+INELIGIBLE_ILL_LOCS = ['gelman media lab']
 
-INELIGIBLE_ILL_LOCS = ['GELMAN MEDIA LAB']
-                     
+INELIGIBLE_STATUS = ['RENEWED', 'MISSING', 'LOST', 'OVERDUE', 'TRANSIT',
+                     'HOLD', 'DUE', 'CHARGED', 'UNAVAILABLE',
+                     'WITHDRAWN', 'DAMAGED', 'LIB USE ONLY', 'CHECKED OUT']
+
 SCREAMING_LOCATIONS = [
     # NOTE: 'LAU' must preceed 'AU'
     ('LAU', 'Lauinger'),
     ('AU', 'American'),
     ('FLOOR', 'floor'),
     ('GELMAN', 'Gelman'),
-    ('GROUND', 'ground'),    
+    ('GROUND', 'ground'),
     ('LOWER LEVEL', 'lower level'),
-    ('MARYMOUNT', 'Marymount'),    
+    ('MARYMOUNT', 'Marymount'),
     ('MT VERNON CAMPUS', 'Mt. Vernon campus'),
-    ('SCIENCE', 'Science'),    
+    ('SCIENCE', 'Science'),
     ('Stacks', 'stacks'),
     ('UNBOUND', 'unbound'),
     ('VAN NESS', 'Van Ness'),
@@ -138,7 +152,8 @@ SCREAMING_LOCATIONS = [
 
 MAX_ITEMS = 6
 
-INELIGIBLE_866_STATUS = ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY', 'SPC USE ONLY']
+INELIGIBLE_866_STATUS = ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY',
+                         'SPC USE ONLY']
 
 ILLIAD_URL = 'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
 
@@ -146,20 +161,20 @@ ILLIAD_SID = 'GWLP'
 
 TITLE_CHARS = 255
 
-FEEDBACK_FORM_URL = 'https://docs.google.com/spreadsheet/viewform?formkey=dDVfMTNIT0tneVFvNFZoQkNXc01SN2c6MQ'
-
 TITLE_LEFTOVER_CHARS = 5
 
+FEEDBACK_FORM_URL = 'https://docs.google.com/spreadsheet/viewform?formkey=dDVfMTNIT0tneVFvNFZoQkNXc01SN2c6MQ'
+
 MARC_245_SUBFIELDS = ['$a', '$b', '$c', '$f', '$g', '$h', '$k', '$n',
-    '$p', '$s', '$6', '$8']
+                      '$p', '$s', '$6', '$8']
 
 STREAMING_AUDIO_TAGS = ['GW: Streaming Audio', 'GW Streaming Audio']
 
 STREAMING_VIDEO_TAGS = ['GW: Streaming Video', 'GW Streaming Video']
 
-GOVT_DOC_LINK = 'purl.access.gpo.gov'
-
 BOUND_WITH_ITEM_LINK = 'findit.library.gwu.edu/item/'
+
+GOVT_DOC_LINK = 'purl.access.gpo.gov'
 
 CACHES = {
     'default': {
@@ -169,11 +184,10 @@ CACHES = {
         }
     }
 
-ITEM_PAGE_CACHE_SECONDS = 60 * 60 # one hour
+ITEM_PAGE_CACHE_SECONDS = 60 * 60  # one hour
 
 # If this value is present (not empty), GA bug will be added to html
-GOOGLE_ANALYTICS_UA = ''
-GOOGLE_ANALYTICS_AGGREGATE_UA = ''
+GOOGLE_ANALYTICS_UA = 'UA-33683577-1'
 
 # Link resolver information, only used in debug mode now
 LINK_RESOLVER = {
@@ -187,11 +201,8 @@ API_LIST = [
      'key': ''},
     {'name': 'worldcat',
      'url': 'http://www.worldcat.org/webservices/catalog/content/%s?wskey=%s',
-     'key': ''}
+     'key': 'MmH4bDecNtB2OsKNLNzTCHP9qGUZrJUT7bdNc4BHligfY2pXcE7pb7lL2GnMV4MPqsrCUqZwsbY8Yu84'}
     ]
-
-# Show covers from openlibrary.org?
-ENABLE_OPENLIBRARY_COVERS = False
 
 # Show humans.txt?
 ENABLE_HUMANS = False
@@ -210,8 +221,3 @@ SER_SOL_API_URL = 'http://uz4ug4lz9g.openurl.xml.serialssolutions.com/openurlxml
 SER_SOL_API_MAX_ATTEMPTS = 3
 
 SER_SOL_DBID_TEXT = 'TN5'
-
-# where to link to for subject, author links
-
-EXPLORE_TYPE = 'surveyor'
-
