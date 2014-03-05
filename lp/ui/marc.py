@@ -36,11 +36,7 @@ mapping = (
     ('OTHER_AUTHORS', 'Other Authors', ['700', '710', '711']),
     ('EARLIER_TITLE', 'Earlier Title', ['247', '780']),
     ('TITLE_CHANGED_TO', 'Title Changed To', ['785']),
-    ('SUBJECTS', 'Subjects', [('650', None, None, 'abcdevwxyz'), 
-                              ('600', None, None, 'abcdefghjklmnopqrstuvxyz'), 
-                              ('610', None, None, 'abcdefghjklmnoprstuvxyz'),
-                              ('630', None, None, 'adefghklmnoprstvxyz'),
-                              ('651', None, None, 'aevxyz')]),
+    ('SUBJECTS', 'Subjects', ['650', '600', '610', '630', '651']),
     ('SERIES', 'Series', ['440', '800', '810', '811', '830']),
     ('DESCRIPTION', 'Description', ['300', '351', '516', '344', '345', '346', '347']),
     ('COPYRIGHT_DATE', 'Copyright Date', [('264', None, None, 'c')]),
@@ -139,7 +135,7 @@ def ind(expected, found):
 def subject(f):
     s = ''
     for code, value in f:
-        if code in ['0', '6']:
+        if code in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
             continue
         elif code not in ('v', 'x', 'y', 'z'):
             s += ' %s' % value
