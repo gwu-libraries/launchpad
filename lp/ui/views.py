@@ -109,8 +109,7 @@ def display_ill_link(holdings):
                     x = x + 1
     if x == len(holdings):
         return False
-    else:
-        return True
+    return True
 
 
 def _date_handler(obj):
