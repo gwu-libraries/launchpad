@@ -154,13 +154,15 @@
                     <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
                 {% endif %}
                 {% if bib.citation_json %}
-                <p>The
+                <p>
+                <!-- The
                 {% if bib.citation_json.type %}
                         {{ bib.citation_json.type }} 
                 {%else%}
                     item
                 {%endif%}
-                you are looking for is 
+                -->
+                You are looking for:  
                 {{bib.citation_json|citationlist|safe}}</p>
                 {% endif %}
                 <!---<p>
