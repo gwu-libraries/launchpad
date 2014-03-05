@@ -579,7 +579,6 @@ ORDER BY library.library_name"""
                 open_title = title[0:10].lower()
                 ratio = difflib.SequenceMatcher(None, bib_title,
                                                 open_title).ratio()
-                print ratio
                 if ratio >= settings.TITLE_SIMILARITY_RATIO:
                     holdings.append(openlibhold)
                     break
