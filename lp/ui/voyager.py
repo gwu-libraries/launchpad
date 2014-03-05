@@ -1,4 +1,5 @@
 import copy
+import difflib
 import re
 import urllib
 import urlparse
@@ -573,9 +574,14 @@ ORDER BY library.library_name"""
             if openlibhold.get('MFHD_DATA', None):
                 title = get_open_library_item_title(openlibhold['MFHD_DATA']
                                                     ['marc856list'][0]['u'])
-            if openlibhold and bib_data['TITLE'][0:10] == title[0:10]:
-                holdings.append(openlibhold)
-                break
+            if openlibhold:
+                bib_title = bib_data['TITLE'][0:10].lower()
+                open_title = title[0:10].lower()
+                ratio = difflib.SequenceMatcher(None, bib_title,
+                                                open_title).ratio()
+                if ratio >= settings.TITLE_SIMILARITY_RATIO:
+                    holdings.append(openlibhold)
+                    break
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
