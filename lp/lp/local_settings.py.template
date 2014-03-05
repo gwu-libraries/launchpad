@@ -140,6 +140,9 @@ MAX_ITEMS = 6
 
 INELIGIBLE_866_STATUS = ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY', 'SPC USE ONLY']
 
+# Similarity ratio based on minimal edit distance for open library and voyager titles
+TITLE_SIMILARITY_RATIO = 0.6
+
 ILLIAD_URL = 'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
 
 ILLIAD_SID = 'GWLP'
