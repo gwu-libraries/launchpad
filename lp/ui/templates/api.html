@@ -4,6 +4,7 @@
 
 {% block content %}
 
+<div id="content" style="margin: 0 .5em;">
 <h1>The findit API</h1>
 
 <p>
@@ -80,6 +81,12 @@ can have it!  Just add ".json" to the end of any /item/[bib id] URL:
 <dd><a href="{% url 'item_json' '3992408' %}">{% url 'item_json' '3992408' %}</a></dd>
 
 <p>
+<p>
+Adding ".json" after the URL returns the brief bibliographic information and all the holding details. You can retrieve the MARC fields for the entire the bibliographic record, without the holding details, by  adding "/marc.json" after the item id.
+
+</p>
+
+<p>
 We're using JSON because it's useful in most every programming language.
 You should be able to use your language of choice to process this data.
 </p>
@@ -116,6 +123,6 @@ If you are interested in bulk access to this data, or data like it,
 let us know directly.  We'd be happy to discuss your interest and see
 if we can help.
 </p>
-
+</div>
 
 {% endblock content %}
