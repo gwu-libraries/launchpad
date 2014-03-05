@@ -135,7 +135,7 @@ def ind(expected, found):
 def subject(f):
     s = ''
     for code, value in f:
-        if code in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+        if code in map(lambda x: str(x), list(range(0, 9, 1))):
             continue
         elif code not in ('v', 'x', 'y', 'z'):
             s += ' %s' % value
