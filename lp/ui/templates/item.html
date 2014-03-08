@@ -89,7 +89,7 @@
                                 {% if contributor|is_non_roman %}
                                 {{ contributor }}
                                 {% else %}
-                                <a target="_blank" href="{% explore_author contributor %}">{{ contributor }}</a>
+                                <a target="_explorewindow" href="{% explore_author contributor %}">{{ contributor }}</a>
                                 {% endif %}
                                 </span>
                             {% else %}
@@ -97,7 +97,7 @@
                                 {% if contributor|is_non_roman %} 
                                 {{ contributor }}
                                 {% else %}
-                                <a target="_blank" href="{% explore_author contributor %}">{{ contributor }}</a>
+                                <a target="_explorewindow" href="{% explore_author contributor %}">{{ contributor }}</a>
                                 {% endif %}
                                 </span>
                             {% endif %}
@@ -109,7 +109,7 @@
                             {% if bib.AUTHOR|is_non_roman %}
                             {{ bib.AUTHOR }}
                             {% else %}
-                            <a target="_blank" href="{% explore_author bib.AUTHOR %}">{{ bib.AUTHOR }}</a>
+                            <a target="_explorewindow" href="{% explore_author bib.AUTHOR %}">{{ bib.AUTHOR }}</a>
                             {% endif %}
                         </span>
                         {% endif %}
@@ -154,19 +154,21 @@
                     <span class="issn">{{ bib.DISPLAY_ISSN_LIST|join:", " }}</span><br/>
                 {% endif %}
                 {% if bib.citation_json %}
-                <p>The
+                <p>
+                <!-- The
                 {% if bib.citation_json.type %}
                         {{ bib.citation_json.type }} 
                 {%else%}
                     item
                 {%endif%}
-                you are looking for is 
+                -->
+                You are looking for:  
                 {{bib.citation_json|citationlist|safe}}</p>
                 {% endif %}
                 <!---<p>
                     <span class="catlink" >
                     {% if bib.BIB_ID %}
-                        View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='newwin'>WRLC Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                        View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='interlibrarywindow'>WRLC Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     {% endif %}
                 </span>
                 Commented this out due to this issue https://github.com/gwu-libraries/launchpad/issues/433
@@ -174,12 +176,12 @@
                     {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID and show_ill_link %}
                     <p>
                      <span class = "catlink"> 
-                         Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
+                         Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='interlibrarywindow'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
                   </span></p>
                   {%elif bib.ILLIAD_LINK and show_ill_link and bib.BIB_FORMAT == 'as' and not bib.FINDING_AID and non_gw%}
                   <p>
                     <span class = "catlink">
-                        Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                        Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='interlibrarywindow'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     </span></p>
 
                    {% endif %}
@@ -293,7 +295,7 @@
                            {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
                            {% if item.ITEM_ENUM %} {{ item.ITEM_ENUM }} {% endif %}
                            {% if bib.FINDING_AID %}
-                               <br /><a href="{{bib.FINDING_AID}}" target="clswindow">View the Finding Aid</a>
+                               <br /><a href="{{bib.FINDING_AID}}" target="eresourcewindow">View the Finding Aid</a>
                            {% endif %}
                     </td>
                        <td {% if holding.MFHD_DATA.marc856list|remove_empty_links|length > 0 and not item.eligible %} colspan="2" {% endif %}>
@@ -302,7 +304,7 @@
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
                                  <div class="marc856resource">
                                    {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' and not link.govt_doc%}
-                                       <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                                       <a href="{{link.u}}" target="eresourcewindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                        <br />
                                        <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
                                        {{holding.LIBRARY_NAME}} only
@@ -314,7 +316,7 @@
                                        {% elif not link.bound_item%}
                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
                                        {% else %}
-                                            <a href="{{link.u}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                                            <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                        {% endif %}
                                    {% endif %}
                                    {% if link.3 %}
@@ -393,7 +395,7 @@
                                 <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
                             {% endif %}
                             {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not holding.ELECTRONIC_DATA.govt_doc%}
-                                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                 <br />
                                 <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img>
                                 {{holding.LIBRARY_NAME}} only
@@ -405,7 +407,7 @@
                                 {% elif not holding.ELECTRONIC_DATA.bound_item%}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
                                 {% else %}
-                                    <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                                    <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                 {% endif %}
                             {% endif %}
                         {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list and holding.MFHD_DATA.marc856list.strip %}
@@ -414,7 +416,7 @@
                         <span class="link-volumes">[{{ link.3 }}]</span>
                 {% endif %}
                 {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not link.govt_doc%}
-                        <a href="{{link.u}}" target="clswindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                        <a href="{{link.u}}" target="eresourcewindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                         <br />
                         <img style='height:1em;' src='{{ STATIC_URL }}img/lock.png'></img>
                         {{holding.LIBRARY_NAME}} only
@@ -426,7 +428,7 @@
                                     {% elif not link.bound_item%}
                                         <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
                                     {% else %}
-                                        <a href="{{link.u}}" target="clswindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                                        <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
@@ -480,7 +482,7 @@
                </td>
                <td>                   </td>
                <td> 
-                   <a href= "{{bib.ILLIAD_LINK }}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='newwin'> Request a copy from another library </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
+                   <a href= "{{bib.ILLIAD_LINK }}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='interlibrarywindow'> Request a copy from another library </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
                 </td>
                <td> </td>
            </tr>
@@ -499,12 +501,12 @@
                 {% if val|is_non_roman %}
                 {{ val }}
                 {% elif name == "Other Authors" %}
-                <a href="{% explore_author val %}" target='_blank'>{{ val }}</a>
+                <a href="{% explore_author val %}" target='_explorewindow'>{{ val }}</a>
                 {% elif name == "Series" %}
-                <a href="{% explore_series val %}" target='_blank'>{{ val }}</a>
+                <a href="{% explore_series val %}" target='_explorewindow'>{{ val }}</a>
 
                 {% elif name == "Subjects" or name == "Genre" %}
-                <a href="{% explore_subject val %}" target='_blank'>{{ val }}</a>
+                <a href="{% explore_subject val %}" target='_explorewindow'>{{ val }}</a>
                 {% else %}
                 {{ val }}
                 {% endif %}

@@ -103,7 +103,7 @@ SHARED_LIBRARY_NAMES = ['WR', 'E-Resources', 'E-GovDoc',
 INELIGIBLE_PERM_LOCS = ['REFERENCE', 'REF', 'RESERVE', 'NON-CIRC', 
     'RESTRICTED', 'ONLY', 'IN LIBRARY', 'MICRO', 'ARCHIVES', 'KIEV', 'SPEC',
     'IBT', 'AUDIOTAPES', 'CD-ROM', 'DISCS', 'RECORDS', 'RUSH', 'VIDEOTAPES',
-    'VIDEODISCS', 'MEDIA VIDEOS', 'DEAF DVD', 'DEAF VHS', 'IN PROCESS',
+    'VIDEODISCS', 'MEDIA VIDEOS', 'DEAF DVD', 'DEAF VHS', 'IN PROCESS', 'SCS',
     'AU: LAW', 'LAW LIBRARY', 'QATAR', 'TURKEY', 'CAMPUS USE', 'MEDIA LAB']
 
 # Add electronic locations
@@ -139,6 +139,9 @@ SCREAMING_LOCATIONS = [
 MAX_ITEMS = 6
 
 INELIGIBLE_866_STATUS = ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY', 'SPC USE ONLY']
+
+# Similarity ratio for open library and voyager titles
+TITLE_SIMILARITY_RATIO = 0.6
 
 ILLIAD_URL = 'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
 
@@ -186,7 +189,7 @@ API_LIST = [
      'url': 'https://www.googleapis.com/books/v1/volumes?q=%s:%s',
      'key': ''},
     {'name': 'worldcat',
-     'url': 'http://www.worldcat.org/webservices/catalog/content/%s/%s?wskey=%s',
+     'url': 'http://www.worldcat.org/webservices/catalog/content/%s?wskey=%s',
      'key': ''}
     ]
 
