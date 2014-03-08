@@ -12,6 +12,7 @@
         {% if doc.type == "VideoObject" %}<img title="Video" class="item-type" src="{{ STATIC_URL }}img/video.png">{% endif %}
         {% if doc.type == "AudioObject" %}<img title="Audio" class="item-type" src="{{ STATIC_URL }}img/audio.png">{% endif %}
         {% if doc.type == "Map" %}<img title="Map" class="item-type" src="{{ STATIC_URL }}img/map.png">{% endif %}
+        {% if doc.type == "Periodical" %}<img title="Map" class="item-type" src="{{ STATIC_URL }}img/periodical.png">{% endif %}
 
         {% if doc.thumbnailUrl %}
             <img class="cover" src={{ doc.thumbnailUrl }}>
@@ -37,6 +38,12 @@
             </span>
         {% endif %}
         {{ doc.datePublished }}
+        <br>
+        <span itemprop="offers">
+            {% for offer in doc.offers %}
+            <span itemprop="seller">{{ offer.seller }}</span>
+            {% endfor %}
+        </span>
     </article>
     {% endfor %}
   
