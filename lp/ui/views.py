@@ -402,14 +402,26 @@ def humans(request):
 def search(request):
     params = request.GET
     q = params.get('q', '')
+    page = params.get('page', 1)
     fmt = params.get('format', 'html')
     raw = params.get('raw', False)
+
+    try:
+        page = int(page)
+    except ValueError:
+        raise Http404
+
+    # summon can't currently return results for pages > 50 with page size of 10
+    max_pages = 50
+    hits_per_page = 10
+    if page > max_pages:
+        raise Http404
 
     api = summon.Summon(settings.SUMMON_ID, settings.SUMMON_SECRET_KEY)
     kwargs = {
         "hl": False,
-        "ps": 50,
-        "cmd": 'addTextFilter(SourceType\:\("Library Catalog"\))',
+        "pn": page,
+        "fq": 'SourceType:("Library Catalog")',
         "raw": raw,
     }
 
@@ -438,8 +450,31 @@ def search(request):
 
     # default to a regular html web page
     else:
+        # build pagination links as a list of tuples (page number, url)
+        # for use in the search results template
+        page_range_start = ((page - 1) / hits_per_page) * hits_per_page + 1
+        page_range_end = page_range_start + hits_per_page
+
+        page_range = []
+        page_query = request.GET.copy()
+        for n in range(page_range_start, page_range_end):
+            page_query['page'] = n
+            page_range.append((n, page_query.urlencode()))
+
+        next_page_range = prev_page_range = None
+        if page_range_end - 1 < max_pages:
+            page_query['page'] = page_range_end
+            next_page_range = page_query.urlencode()
+        if page_range_start > hits_per_page:
+            page_query['page'] = page_range_start - 1
+            prev_page_range = page_query.urlencode()
+
         return render(request, 'search.html', {
             "q": q,
+            "page": page,
+            "page_range": page_range,
+            "next_page_range": next_page_range,
+            "prev_page_range": prev_page_range,
             "search_results": search_results,
             "debug": settings.DEBUG,
             "json_url": request.get_full_path() + "&format=json",

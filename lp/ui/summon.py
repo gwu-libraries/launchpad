@@ -1,3 +1,4 @@
+import re
 import summoner
 
 
@@ -10,12 +11,19 @@ class Summon():
     def __init__(self, summon_id, summon_key):
         self._summon = summoner.Summon(summon_id, summon_key)
 
-    def search(self, *args, **kwargs):
+    def search(self, q, *args, **kwargs):
         """
         Performs the search and massages data into schema.org JSON-LD. If
         you pass in raw=True you will get the raw summon response instead.
         """
-        summon_response = self._summon.search(*args, **kwargs)
+        summon_response = self._summon.search(q, *args, **kwargs)
+
+        # calculate some things to include in our response that Summon
+        # responses don't explicitly include
+        total_results = summon_response['recordCount']
+        page = kwargs.get("pn", 1)
+        items_per_page = kwargs.get("ps", 10)
+        start_index = (page * items_per_page) - items_per_page
 
         # return raw Summon response if that's what they want
         if kwargs.get("raw", False):
@@ -24,7 +32,13 @@ class Summon():
         # django templates don't use @ prefixed parameters from json-ld
         for_template = kwargs.get('for_template', False)
 
-        response = {"results": []}
+        response = {
+            "query": q,
+            "totalResults": total_results,
+            "itemsPerPage": items_per_page,
+            "startIndex": start_index,
+            "results": []
+        }
         for doc in summon_response['documents']:
             item = self._convert(doc)
             if item:
@@ -42,7 +56,9 @@ class Summon():
         if 'ExternalDocumentID' not in doc or 'ContentType' not in doc:
             return None
 
+        id = doc['ExternalDocumentID'][0]
         i['@id'] = '/item/' + doc['ExternalDocumentID'][0]
+
         i['@type'] = self._get_type(doc)
 
         if doc.get('Title'):
@@ -64,6 +80,23 @@ class Summon():
 
         if doc.get('thumbnail_m', []):
             i['thumbnailUrl'] = doc['thumbnail_m'][0]
+
+        if doc.get('Institution'):
+            i['offers'] = []
+            inst = doc.get('Institution')[0]
+            inst = re.sub(' \(.+\)', '', inst)
+            i['offers'].append({
+                'seller': inst,
+                'serialNumber': id
+            })
+
+            # George Mason and Georgetown load into Summon with their own ids.
+            # Launchpad handles these with the the m & b prefixes
+
+            if inst  == 'George Mason University':
+                i['@id'] = '/item/m' + id
+            elif inst == 'Georgetown':
+                i['@id'] = '/item/b' + id
 
         return i
 
