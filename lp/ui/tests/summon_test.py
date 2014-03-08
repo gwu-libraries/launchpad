@@ -21,6 +21,11 @@ class SummonTests(unittest.TestCase):
 
     def test_search(self):
         search = self.summon.search("isbn:1573870994")
+
+        self.assertEqual(search['totalResults'], 1)
+        self.assertEqual(search['startIndex'], 0)
+        self.assertTrue(search['itemsPerPage'], 10)
+
         self.assertTrue(len(search['results']) > 0)
         i = search['results'][0]
         self.assertEqual(i['@id'], '/item/m2402189')

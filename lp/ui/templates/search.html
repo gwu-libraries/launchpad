@@ -4,6 +4,24 @@
 {% block content %}
 <div class="libsite-container container">
 
+    <section class="pagination">
+        <ul>
+
+        {% if prev_page_range %}
+        <li><a href="{% url "search" %}?{{ prev_page_range }}">«</a></li>
+        {% endif %}
+
+        {% for n, q in page_range %}
+        <li {% if n == page %}class="active"{% endif %}><a href="{% url "search" %}?{{q}}">{{ n }}</a></li>
+        {% endfor %}
+
+        {% if next_page_range %}
+        <li><a href="{% url "search" %}?{{ next_page_range }}">»</a>
+        {% endif %}
+
+        </ul> 
+    </section>
+
     <section id="search-results">
 
     {% for doc in search_results.results %}
@@ -46,12 +64,31 @@
         </span>
     </article>
     {% endfor %}
-  
+
     </section>
 
     <section id="facets">
     facet1
     </section>
+
+     <section class="pagination">
+        <ul>
+
+        {% if prev_page_range %}
+        <li><a href="{% url "search" %}?{{ prev_page_range }}">«</a></li>
+        {% endif %}
+
+        {% for n, q in page_range %}
+        <li {% if n == page %}class="active"{% endif %}><a href="{% url "search" %}?{{q}}">{{ n }}</a></li>
+        {% endfor %}
+
+        {% if next_page_range %}
+        <li><a href="{% url "search" %}?{{ next_page_range }}">»</a>
+        {% endif %}
+
+        </ul> 
+    </section>
+
 
     {% if debug %}
     <h2>Debugging info:</h2>
@@ -61,6 +98,7 @@
     <br>
     <br>
     {% endif %}
+
 
 </div>
 
