@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% load launchpad_extras %}
+{% load launchpad_extras humanize %}
 
 {% block content %}
 <div class="libsite-container container">
 
-    <section class="pagination">
+    <section class="pagination pagination-small text-center">
         <ul>
 
         {% if prev_page_range %}
@@ -22,7 +22,9 @@
         </ul> 
     </section>
 
-    <section id="search-results">
+    <div class="row">
+
+    <section id="search-results" class="span8">
 
     {% for doc in search_results.results %}
     <article class="search-result" itemscope itemtype="{{ doc.type }}">
@@ -33,7 +35,7 @@
         {% if doc.type == "Periodical" %}<img title="Map" class="item-type" src="{{ STATIC_URL }}img/periodical.png">{% endif %}
 
         {% if doc.thumbnailUrl %}
-            <img class="cover" src={{ doc.thumbnailUrl }}>
+            <img itemprop="image" class="cover" src={{ doc.thumbnailUrl }}>
         {% endif %}
 
         <a href="{{ doc.id }}">
@@ -67,11 +69,21 @@
 
     </section>
 
-    <section id="facets">
-    facet1
+    <section id="facets" class="span4">
+    {% for facet in search_results.facets %}
+        <h2>{{ facet.name }}</h2>
+        <ul>
+            {% for f in facet.counts %}
+            <li>{{ f.name }} ({{ f.count|intcomma }})</li> 
+            {% endfor %}
+        </ul>
+        <hr>
+    {% endfor %}
     </section>
 
-     <section class="pagination">
+    </div>
+
+    <section class="pagination pagination-small text-center">
         <ul>
 
         {% if prev_page_range %}

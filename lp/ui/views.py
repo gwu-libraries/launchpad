@@ -421,7 +421,16 @@ def search(request):
     kwargs = {
         "hl": False,
         "pn": page,
-        "fq": 'SourceType:("Library Catalog")',
+        "fq": ['SourceType:("Library Catalog")'],
+        "ff": [
+            'ContentType,or',
+            'Author,or',
+            'Language,or',
+            'SubjectTerms,or',
+            'Genre,or',
+            'Institution,or',
+            #'PublicationDecade,or',
+        ],
         "raw": raw,
     }
 

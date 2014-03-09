@@ -4,8 +4,9 @@ import summoner
 
 class Summon():
     """
-    A wrapper for summoner.Summon which adds schema.org conversion. Maybe
-    this could be pushed into summoner if it becomes generalized.
+    A wrapper for summoner.Summon which massages the Summon response format
+    into schema.org flavored JSON-LD. Maybe this could be pushed into
+    summoner if it is general purpose enough.
     """
 
     def __init__(self, summon_id, summon_key):
@@ -39,6 +40,25 @@ class Summon():
             "startIndex": start_index,
             "results": []
         }
+
+        if 'facetFields' in summon_response:
+            response['facets'] = []
+            for ff in summon_response['facetFields']:
+                # turn "SubjectTerms" into "Subject Terms"
+                name = ff['displayName']
+                name = re.sub(r'(.)([A-Z])', r'\1 \2', name)
+
+                facet = {'name': name, 'counts': []}
+                for c in ff['counts']:
+                    # oddly, some facet values are in lower case such as authors
+                    # which can appear like shakespeare, william, 1564-1616
+                    # instead of Shakespeare, William, 1564-1616 The call to 
+                    facet['counts'].append({
+                        'name': c['value'].title(),
+                        'count': c['count']
+                    })
+                response['facets'].append(facet)
+
         for doc in summon_response['documents']:
             item = self._convert(doc)
             if item:
@@ -80,6 +100,9 @@ class Summon():
 
         if doc.get('thumbnail_m', []):
             i['thumbnailUrl'] = doc['thumbnail_m'][0]
+
+        if doc.get('ISBN'):
+            i['isbn'] = doc['ISBN']
 
         if doc.get('Institution'):
             i['offers'] = []

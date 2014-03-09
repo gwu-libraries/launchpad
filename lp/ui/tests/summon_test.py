@@ -31,6 +31,7 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['@id'], '/item/m2402189')
         self.assertEqual(i['@type'], 'Book')
         self.assertEqual(i['name'], 'The web of knowledge : a festschrift in honor of Eugene Garfield')
+        self.assertEqual(i['isbn'], ["9781573870993", "1573870994"])
 
         self.assertEqual(len(i['author']), 3)
         self.assertEqual(i['author'][0]['name'], 'Garfield, Eugene')
@@ -44,6 +45,7 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(len(i['offers']), 1)
         self.assertEqual(i['offers'][0]['seller'], 'George Mason University')
 
+
     def test_raw(self):
         results = self.summon.search("isbn:1573870994", raw=True)
         self.assertEqual(results['documents'][0]['Title'], ['The web of knowledge'])
@@ -56,3 +58,15 @@ class SummonTests(unittest.TestCase):
         self.assertTrue('type' in i)
         self.assertTrue('@id' not in i)
         self.assertTrue('@type' not in i)
+
+    def test_facets(self):
+        search = self.summon.search("interesting",
+                fq='SourceType:("Library Catalog")',
+                ff=["ContentType,or", "Author,or"])
+        self.assertTrue('facets' in search)
+        self.assertEqual(len(search['facets']), 2)
+        self.assertEqual(search['facets'][0]['name'], 'Content Type')
+        self.assertEqual(search['facets'][1]['name'], 'Author')
+        counts = search['facets'][0]['counts']
+        self.assertEqual(counts[0]['name'], 'Book / Ebook')
+        self.assertTrue(counts[0]['count'] > 0)

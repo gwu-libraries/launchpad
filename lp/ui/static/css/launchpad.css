@@ -196,14 +196,6 @@ footer {
   float: right;
 }
 
-#search-results {
-  width: 60%;
-}
-
-#facets {
-  width: 40%;
-}
-
 img.item-type {
   float: left;
   vertical-align: top;
