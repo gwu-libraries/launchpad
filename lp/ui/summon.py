@@ -50,9 +50,18 @@ class Summon():
 
                 facet = {'name': name, 'counts': []}
                 for c in ff['counts']:
-                    # oddly, some facet values are in lower case such as authors
-                    # which can appear like shakespeare, william, 1564-1616
-                    # instead of Shakespeare, William, 1564-1616 The call to 
+
+                    # some facet values are in lower case such as authors
+                    # which can appear like:
+                    #
+                    #    shakespeare, william, 1564-1616
+                    #
+                    # instead of:
+                    #
+                    #    Shakespeare, William, 1564-1616
+                    #
+                    # this call to title() will fix that as best we can
+
                     facet['counts'].append({
                         'name': c['value'].title(),
                         'count': c['count']

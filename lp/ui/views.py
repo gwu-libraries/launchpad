@@ -411,7 +411,7 @@ def search(request):
     except ValueError:
         raise Http404
 
-    # summon can't currently return results for pages > 50 with page size of 10
+    # summon can't return results for pages > 50 with page size of 20
     max_pages = 50
     page_size = 20
     if page > max_pages:
@@ -430,14 +430,24 @@ def search(request):
             'SubjectTerms,or',
             'Genre,or',
             'Institution,or',
-            #'PublicationDecade,or',
         ],
+        #"fvf": ['Language,German,false'],
         "raw": raw,
     }
 
+    # add selected facets to the query
+    for facet in params.getlist('facet'):
+        if ':' not in facet:
+            continue
+        facet_field, facet_value = facet.split(':', 2)
+        if 'fvf' not in kwargs:
+            kwargs['fvf'] = []
+        kwargs['fvf'].append('%s,%s,false' % (facet_field, facet_value))
+    
     if fmt == "html":
         kwargs['for_template'] = True
 
+    # TODO: catch Summon API errors here?
     search_results = api.search(q, **kwargs)
 
     # json-ld
@@ -491,6 +501,14 @@ def search(request):
         if page_range_start > page_links:
             page_query['page'] = page_range_start - 1
             prev_page_range = page_query.urlencode()
+
+        # add links to facet values
+        facet_query = request.GET.copy()
+        facet_query['page'] = 1
+        for f in search_results['facets']:
+            for fc in f['counts']:
+                facet_query['facet'] = "%s:%s" % (f['name'], fc['name'])
+                fc['url'] = facet_query.urlencode()
 
         return render(request, 'search.html', {
             "q": q,
