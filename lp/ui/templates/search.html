@@ -24,7 +24,7 @@
 
     <div class="row">
 
-    <section id="search-results" class="span8">
+    <section id="search-results" class="span9">
 
     {% for doc in search_results.results %}
     <article class="search-result" itemscope itemtype="{{ doc.type }}">
@@ -69,7 +69,7 @@
 
     </section>
 
-    <section id="facets" class="span4">
+    <section id="facets" class="span3">
     {% for facet in search_results.facets %}
         <h2>{{ facet.name }}</h2>
         <ul>

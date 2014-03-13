@@ -413,7 +413,7 @@ def search(request):
 
     # summon can't currently return results for pages > 50 with page size of 10
     max_pages = 50
-    hits_per_page = 10
+    page_size = 20
     if page > max_pages:
         raise Http404
 
@@ -421,6 +421,7 @@ def search(request):
     kwargs = {
         "hl": False,
         "pn": page,
+        "ps": page_size,
         "fq": ['SourceType:("Library Catalog")'],
         "ff": [
             'ContentType,or',
@@ -459,22 +460,35 @@ def search(request):
 
     # default to a regular html web page
     else:
-        # build pagination links as a list of tuples (page number, url)
-        # for use in the search results template
-        page_range_start = ((page - 1) / hits_per_page) * hits_per_page + 1
-        page_range_end = page_range_start + hits_per_page
+        # TODO: pull out page link generation so it can be tested
+        # how many pagination links to display
+        page_links = 10
 
+        # the first page number in the pagination links
+        page_range_start = ((page - 1) / page_links) * page_links + 1
+
+        # the last page number + 1 in the pagination links
+        # this is used in a range() below so it is offset by 1
+        page_range_end = page_range_start + page_links
+
+        # don't display page links that we can't get
+        actual_pages = search_results['totalResults'] / page_size + 1
+        if actual_pages <= page_range_end:
+            page_range_end = actual_pages + 1
+
+        # build page links as a list of tuples (page number, url)
         page_range = []
         page_query = request.GET.copy()
         for n in range(page_range_start, page_range_end):
             page_query['page'] = n
             page_range.append((n, page_query.urlencode()))
 
+        # create links for going to the next set of page results
         next_page_range = prev_page_range = None
-        if page_range_end - 1 < max_pages:
+        if actual_pages > max_pages and page_range_end - 1 < max_pages:
             page_query['page'] = page_range_end
             next_page_range = page_query.urlencode()
-        if page_range_start > hits_per_page:
+        if page_range_start > page_links:
             page_query['page'] = page_range_start - 1
             prev_page_range = page_query.urlencode()
 
