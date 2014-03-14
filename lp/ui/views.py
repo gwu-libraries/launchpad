@@ -422,6 +422,7 @@ def search(request):
         "hl": False,
         "pn": page,
         "fq": 'SourceType:("Library Catalog")',
+        "ho": "f",
         "raw": raw,
     }
 
