@@ -432,7 +432,7 @@ def search(request):
             'Genre,or',
             'Institution,or',
         ],
-        #"fvf": ['Language,German,false'],
+        "ho": "f",
         "raw": raw,
     }
 
