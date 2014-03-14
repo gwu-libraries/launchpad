@@ -1,3 +1,4 @@
+import re
 import logging
 from urlparse import urlparse
 
@@ -502,13 +503,25 @@ def search(request):
             page_query['page'] = page_range_start - 1
             prev_page_range = page_query.urlencode()
 
-        # add links to facet values
+        # massage facets a bit before passing them off to the template
+        # to make them easier to process there
         facet_query = request.GET.copy()
         facet_query['page'] = 1
         for f in search_results['facets']:
             for fc in f['counts']:
+                # add a url that preserves the state of the query in case
+                # the user wants to select the facet. we create the link
+                # using the un-modified names because summon api requires it
+                # http://api.summon.serialssolutions.com/help/api/search/parameters/facet-value-filter
                 facet_query['facet'] = "%s:%s" % (f['name'], fc['name'])
                 fc['url'] = facet_query.urlencode()
+
+                # make sure the facet name is capitalized
+                # "bazzocchi, marco antonio" -> "Bazzocchi, Marco Antonio"
+                fc['name'] = fc['name'].title()
+
+            # add space to the name: "ContentType" -> "Content Type"
+            f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
 
         return render(request, 'search.html', {
             "q": q,

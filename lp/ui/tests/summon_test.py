@@ -65,8 +65,8 @@ class SummonTests(unittest.TestCase):
                 ff=["ContentType,or", "Author,or"])
         self.assertTrue('facets' in search)
         self.assertEqual(len(search['facets']), 2)
-        self.assertEqual(search['facets'][0]['name'], 'Content Type')
+        self.assertEqual(search['facets'][0]['name'], 'ContentType')
         self.assertEqual(search['facets'][1]['name'], 'Author')
         counts = search['facets'][0]['counts']
-        self.assertEqual(counts[0]['name'], 'Book / Ebook')
+        self.assertEqual(counts[0]['name'], 'Book / eBook')
         self.assertTrue(counts[0]['count'] > 0)

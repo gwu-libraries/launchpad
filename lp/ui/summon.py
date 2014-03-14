@@ -41,29 +41,14 @@ class Summon():
             "results": []
         }
 
+        # summarize facets
         if 'facetFields' in summon_response:
             response['facets'] = []
             for ff in summon_response['facetFields']:
-                # turn "SubjectTerms" into "Subject Terms"
-                name = ff['displayName']
-                name = re.sub(r'(.)([A-Z])', r'\1 \2', name)
-
-                facet = {'name': name, 'counts': []}
+                facet = {'name': ff['displayName'], 'counts': []}
                 for c in ff['counts']:
-
-                    # some facet values are in lower case such as authors
-                    # which can appear like:
-                    #
-                    #    shakespeare, william, 1564-1616
-                    #
-                    # instead of:
-                    #
-                    #    Shakespeare, William, 1564-1616
-                    #
-                    # this call to title() will fix that as best we can
-
                     facet['counts'].append({
-                        'name': c['value'].title(),
+                        'name': c['value'],
                         'count': c['count']
                     })
                 response['facets'].append(facet)
