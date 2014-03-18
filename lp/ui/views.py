@@ -413,8 +413,8 @@ def search(request):
         raise Http404
 
     # summon can't return results for pages > 50 with page size of 20
-    max_pages = 50
-    page_size = 20
+    max_pages = 20
+    page_size = 50
     if page > max_pages:
         raise Http404
 
@@ -433,6 +433,7 @@ def search(request):
             'Institution,or',
         ],
         "ho": "f",
+        "light": "t",
         "raw": raw,
     }
 
@@ -441,6 +442,7 @@ def search(request):
         if ':' not in facet:
             continue
         facet_field, facet_value = facet.split(':', 2)
+        facet_value = facet_value.replace(',', '\\,')
         if 'fvf' not in kwargs:
             kwargs['fvf'] = []
         kwargs['fvf'].append('%s,%s,false' % (facet_field, facet_value))
@@ -473,7 +475,7 @@ def search(request):
     else:
         # TODO: pull out page link generation so it can be tested
         # how many pagination links to display
-        page_links = 10
+        page_links = 5
 
         # the first page number in the pagination links
         page_range_start = ((page - 1) / page_links) * page_links + 1

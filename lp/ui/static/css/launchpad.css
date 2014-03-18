@@ -202,3 +202,7 @@ img.item-type {
   margin-right: 10px;
   height: 30px;
 }
+
+section.search {
+  margin-top: 15px;
+}

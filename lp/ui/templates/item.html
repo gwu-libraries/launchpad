@@ -41,7 +41,14 @@
 {% assign_settings_value "BOUND_WITH_ITEM_LINK" as bound_item_link %}
 <article class="libsite-container container" >
 <div class="row-fluid">
-    <div class="span12">
+
+  <section class="search">
+    <form class="span12" action="{% url "search" %}" method="get">
+      <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
+    </form>
+  </section>
+
+
 <div itemscope itemtype="{{bib.MICRODATA_TYPE}}">
 
 <table id='desc-table' border='0' style='width:100%;'>

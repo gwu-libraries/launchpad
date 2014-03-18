@@ -2,24 +2,28 @@
 {% load launchpad_extras humanize %}
 
 {% block content %}
+
 <div class="libsite-container container">
 
-    <section class="pagination pagination-small text-center">
-        <ul>
+    <section class="search row">
+      <form class="span12" action="{% url "search" %}" method="get">
+        <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
+        <span class="pagination">
+          <ul>
+            {% if prev_page_range %}
+            <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
+            {% endif %}
 
-        {% if prev_page_range %}
-        <li><a href="{% url "search" %}?{{ prev_page_range }}">«</a></li>
-        {% endif %}
+            {% for n, q in page_range %}
+            <li {% if n == page %}class="active"{% endif %}><a href="{% url "search" %}?{{q}}">{{ n }}</a></li>
+            {% endfor %}
 
-        {% for n, q in page_range %}
-        <li {% if n == page %}class="active"{% endif %}><a href="{% url "search" %}?{{q}}">{{ n }}</a></li>
-        {% endfor %}
-
-        {% if next_page_range %}
-        <li><a href="{% url "search" %}?{{ next_page_range }}">»</a>
-        {% endif %}
-
-        </ul> 
+            {% if next_page_range %}
+            <li><a href="{% url "search" %}?{{ next_page_range }}">&#x00bb;</a>
+            {% endif %}
+          </ul> 
+        </span>
+      </form>
     </section>
 
     <div class="row">
