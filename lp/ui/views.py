@@ -1,6 +1,6 @@
 import re
 import logging
-from urlparse import urlparse
+import urlparse
 
 import bibjsontools
 from django.conf import settings
@@ -104,7 +104,7 @@ def display_ill_link(holdings):
     for holding in holdings:
         if holding.get('MFHD_DATA', None):
             for marc856 in holding['MFHD_DATA']['marc856list']:
-                components = urlparse(marc856['u'])
+                components = urlparse.urlparse(marc856['u'])
                 if components.scheme and components.netloc:
                     x = x + 1
     if x == len(holdings):
@@ -446,7 +446,7 @@ def search(request):
         if 'fvf' not in kwargs:
             kwargs['fvf'] = []
         kwargs['fvf'].append('%s,%s,false' % (facet_field, facet_value))
-    
+
     if fmt == "html":
         kwargs['for_template'] = True
 
@@ -507,22 +507,19 @@ def search(request):
 
         # massage facets a bit before passing them off to the template
         # to make them easier to process there
-        facet_query = request.GET.copy()
-        facet_query['page'] = 1
         for f in search_results['facets']:
             for fc in f['counts']:
-                # add a url that preserves the state of the query in case
-                # the user wants to select the facet. we create the link
-                # using the un-modified names because summon api requires it
-                # http://api.summon.serialssolutions.com/help/api/search/parameters/facet-value-filter
-                facet_query['facet'] = "%s:%s" % (f['name'], fc['name'])
-                fc['url'] = facet_query.urlencode()
+                fq = request.GET.copy()
+                fq.update({'facet': "%s:%s" % (f['name'], fc['name'])})
+                fq['page'] = 1
+                fc['url'] = fq.urlencode()
 
                 # make sure the facet name is capitalized
                 # "bazzocchi, marco antonio" -> "Bazzocchi, Marco Antonio"
                 fc['name'] = fc['name'].title()
 
-            # add space to the name: "ContentType" -> "Content Type"
+            # add spaces to the facet name
+            # "ContentType" -> "Content Type"
             f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
 
         return render(request, 'search.html', {
