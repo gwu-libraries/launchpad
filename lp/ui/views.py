@@ -431,6 +431,7 @@ def search(request):
             'SubjectTerms,or',
             'Genre,or',
             'Institution,or',
+            'Discipline,or',
         ],
         "ho": "f",
         "light": "t",
