@@ -1,3 +1,9 @@
+"""
+This is a specialized command for running unit tests against the 
+live, read-only Voyager database. The normal test command will attempt
+to create a test database, which we cannot do in the Voyager db.
+"""
+
 import unittest
 
 from django.core.management.base import BaseCommand
