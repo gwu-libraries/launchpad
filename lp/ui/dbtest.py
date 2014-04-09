@@ -7,7 +7,7 @@ management command to run them.
 
 from unittest import TestCase
 
-from ui.db import get_item
+from ui.db import get_item, get_availability
 
 class DbTests(TestCase):
 
@@ -16,13 +16,14 @@ class DbTests(TestCase):
         self.assertEqual(i['@type'], 'Book')
 
     def test_availability(self):
-        a = get_availability('4467824')
+        a = get_availability('5769326')
+        print a
         self.assertEqual(len(a), 1)
 
         o = a[0]
-        self.assertEqual(o, 'Offer')
-        self.assertEqual(o['seller'], 'Georgetown University')
-        self.assertEqual(o['availabilityAtOrFrom'], 'Lauinger stacks')
-        self.assertEqual(o['sku'], 'PR6019.O9 F45 1939')
+        self.assertEqual(o['@type'], 'Offer')
+        self.assertEqual(o['seller'], 'George Washington')
+        self.assertEqual(o['availabilityAtOrFrom'], 'Gelman stacks')
+        self.assertEqual(o['sku'], 'PR6019.O9 F5 1999')
         self.assertEqual(o['status'], 'http://purl.org/goodrelations/v1#LeaseOut')
-        self.assertEqual(o['serialNumber'], '8988479')
+        self.assertEqual(o['serialNumber'], '999')
