@@ -55,13 +55,16 @@
             <br>
         {% endif %}
 
+        {% if doc.bookEdition %}
+          <span itemprop="bookEdition">{{ doc.bookEdition }}</span>.
+        {% endif %}
         {% if doc.publisher %}
             <span itemprop="publisher" itemscope itemtype="Person">
                 <span itemprop="address">{{ doc.publisher.address }}</span> :
                 <span itemprop="name">{{ doc.publisher.name }}</span>
-            </span>
+            </span>,
         {% endif %}
-        {{ doc.datePublished }}
+        {{ doc.datePublished }}.
         <br>
         <span itemprop="offers">
             {% for offer in doc.offers %}

@@ -98,6 +98,9 @@ class Summon():
         if doc.get('ISBN'):
             i['isbn'] = doc['ISBN']
 
+        if doc.get('Edition'):
+            i['bookEdition'] = doc['Edition'][0].strip('.')
+
         if doc.get('Institution'):
             i['offers'] = []
             inst = doc.get('Institution')[0]
