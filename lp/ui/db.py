@@ -1,5 +1,5 @@
 """
-Refactored helper methods for working with the database. This is a work in 
+Refactored helper methods for working with the database. This is a work in
 progress. You should probably be looking at ui.voyager until this work is
 more fully developed.
 """
@@ -41,14 +41,14 @@ def get_availability(bibid):
 
     query = \
         """
-        SELECT DISTINCT 
-          display_call_no, 
+        SELECT DISTINCT
+          display_call_no,
           item_status_desc,
           item_status.item_status,
           permLocation.location_display_name as PermLocation,
           tempLocation.location_display_name as TempLocation,
-          mfhd_item.item_enum, 
-          mfhd_item.chron, 
+          mfhd_item.item_enum,
+          mfhd_item.chron,
           item.item_id,
           item_status_date,
           to_char(CIRC_TRANSACTIONS.CHARGE_DUE_DATE, 'mm-dd-yyyy') AS DUE,
@@ -86,23 +86,36 @@ def get_availability(bibid):
         a = {
             '@type': 'Offer',
             'seller': seller,
-            'availabilityAtOrFrom': _normalize_location(row[3]),
             'sku': row[0],
-            'status': _normalize_status(row[1]),
-            'serialNumber': str(row[7]),
+            'status': _normalize_status(row[2]),
         }
+
+        if row[4]:
+            a['availabilityAtOrFrom'] = _normalize_location(row[4])
+        else:
+            a['availabilityAtOrFrom'] = _normalize_location(row[3])
+
+        # serial number can be null, apparently
+        if row[7]:
+            a['serialNumber'] = str(row[7])
+
+        # add due date if we have one
+        if row[9]:
+            a['availabilityStarts'] = row[9]
+
         results.append(a)
 
     return results
 
+
 def _normalize_status(status_id):
     """
-    This function will turn one of the standard item status codes 
-    into a GoodRelations URI: 
+    This function will turn one of the standard item status codes
+    into a GoodRelations URI:
 
     http://www.w3.org/community/schemabibex/wiki/Holdings_via_Offer
 
-    Here is a snapshot in time of item_status_ids, their description, 
+    Here is a snapshot in time of item_status_ids, their description,
     and count:
 
       1 Not Charged                  5897029
@@ -135,6 +148,18 @@ def _normalize_status(status_id):
         return 'http://schema.org/InStock'
     else:
         return 'http://schema.org/OutOfStock'
+
+
+def fetch_one(query, params=[]):
+    cursor = connection.cursor()
+    cursor.execute(query, params)
+    return cursor.fetchone()
+
+
+def fetch_all(query, params):
+    cursor = connection
+    cursor.execute(query, params)
+    return cursor.fetchall()
 
 
 def _normalize_location(location):
