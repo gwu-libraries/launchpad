@@ -90,6 +90,7 @@ def get_availability(bibid):
             'status': _normalize_status(row[2]),
         }
 
+        # use temp location if there is one, otherwise use perm location
         if row[4]:
             a['availabilityAtOrFrom'] = _normalize_location(row[4])
         else:
