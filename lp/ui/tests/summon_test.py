@@ -37,6 +37,12 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['author'][0]['name'], 'Garfield, Eugene')
         self.assertEqual(i['author'][1]['name'], 'Atkins, Helen Barsky')
         self.assertEqual(i['author'][2]['name'], 'Cronin, Blaise')
+
+        self.assertEqual(len(i['about']), 3)
+        self.assertEqual(i['about'][0]['name'], 'Science -- Abstracting and indexing')
+        self.assertEqual(i['about'][1]['name'], 'Indexing')
+        self.assertEqual(i['about'][2]['name'], 'Garfield, Eugene')
+
         self.assertEqual(i['publisher']['name'], 'Information Today')
         self.assertEqual(i['publisher']['address'], 'Medford, N.J')
         self.assertEqual(i['datePublished'], '2000')

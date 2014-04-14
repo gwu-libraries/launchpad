@@ -43,26 +43,44 @@
         {% endif %}
 
         <a href="{{ doc.id }}">
-            <span class="title" itemprop="name">{{ doc.name }}</span><br>
+            <span class="title" itemprop="name">{{ doc.name }}</span>
         </a>
 
         {% if doc.author %}
+            / 
             {% for author in doc.author %}
                 <span itemprop="author" itemtype="Person" itemscope>
-                  <span itemprop="name">{{ author.name }}</span>
+                    {% if forloop.last %}
+                    <span itemprop="name">{{ author.name }}.</span>
+                    {% else %}
+                    <span itemprop="name">{{ author.name }}</span>
+                    {% endif %}
                 </span>
             {% endfor %}
-            <br>
         {% endif %}
 
         {% if doc.publisher %}
-            <span itemprop="publisher" itemscope itemtype="Person">
-                <span itemprop="address">{{ doc.publisher.address }}</span> :
-                <span itemprop="name">{{ doc.publisher.name }}</span>
-            </span>
+        <span itemprop="publisher" itemscope itemtype="Person">
+            <span itemprop="address">{{ doc.publisher.address }}</span> :
+            <span itemprop="name">{{ doc.publisher.name }}</span>
+        </span>
         {% endif %}
-        {{ doc.datePublished }}
+
+        {{ doc.datePublished }}.
+
         <br>
+        
+        {% if doc.about %}
+            Subjects:
+            <ul class="subjects" itemprop="about">
+                {% for subject in doc.about %}
+                <li itemprop="about">{{ subject.name }}</li>
+                {% if not forloop.last %} ; {% endif %}
+                {% endfor %}
+            </ul>
+            <br>
+        {% endif %}
+
         <span itemprop="offers">
             {% for offer in doc.offers %}
             <span itemprop="seller">{{ offer.seller }}</span>

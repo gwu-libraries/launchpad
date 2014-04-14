@@ -206,3 +206,15 @@ img.item-type {
 section.search {
   margin-top: 15px;
 }
+
+ul.subjects {
+  list-style-type: none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+.subjects li {
+  display: inline;
+  font-size: medium;
+}
