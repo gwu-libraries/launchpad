@@ -5,25 +5,23 @@
 
 <div class="libsite-container container">
 
-    <section class="search row">
-      <form class="span12" action="{% url "search" %}" method="get">
-        <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
-        <span class="pagination">
-          <ul>
-            {% if prev_page_range %}
-            <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
-            {% endif %}
+    <section class="search row pagination">
+        <form class="span12" action="{% url "search" %}" method="get">
+            <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
+            <ul>
+                {% if prev_page_range %}
+                <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
+                {% endif %}
 
-            {% for n, q in page_range %}
-            <li {% if n == page %}class="active"{% endif %}><a href="{% url "search" %}?{{q}}">{{ n }}</a></li>
-            {% endfor %}
+                {% for n, q in page_range %}
+                <li {% if n == page %}class="active"{% endif %}><a href="{% url "search" %}?{{q}}">{{ n }}</a></li>
+                {% endfor %}
 
-            {% if next_page_range %}
-            <li><a href="{% url "search" %}?{{ next_page_range }}">&#x00bb;</a>
-            {% endif %}
-          </ul> 
-        </span>
-      </form>
+                {% if next_page_range %}
+                <li><a href="{% url "search" %}?{{ next_page_range }}">&#x00bb;</a>
+                {% endif %}
+            </ul> 
+        </form>
     </section>
 
     <div class="row">
@@ -39,7 +37,7 @@
         {% if doc.type == "Periodical" %}<img title="Map" class="item-type" src="{{ STATIC_URL }}img/periodical.png">{% endif %}
 
         {% if doc.thumbnailUrl %}
-            <img itemprop="image" class="cover" src={{ doc.thumbnailUrl }}>
+        <img itemprop="image" class="cover" src={{ doc.thumbnailUrl }}>
         {% endif %}
 
         <a href="{{ doc.id }}">
@@ -47,16 +45,20 @@
         </a>
 
         {% if doc.author %}
-            / 
-            {% for author in doc.author %}
-                <span itemprop="author" itemtype="Person" itemscope>
-                    {% if forloop.last %}
-                    <span itemprop="name">{{ author.name }}.</span>
-                    {% else %}
-                    <span itemprop="name">{{ author.name }}</span>
-                    {% endif %}
-                </span>
-            {% endfor %}
+        / 
+        {% for author in doc.author %}
+        <span itemprop="author" itemtype="Person" itemscope>
+            {% if forloop.last %}
+            <span itemprop="name">{{ author.name }}.</span>
+            {% else %}
+            <span itemprop="name">{{ author.name }}</span>
+            {% endif %}
+        </span>
+        {% endfor %}
+        {% endif %}
+
+        {% if doc.bookEdition %}
+        <span itemprop="bookEdition">{{ doc.bookEdition }}</span>.
         {% endif %}
 
         {% if doc.publisher %}
@@ -71,14 +73,14 @@
         <br>
         
         {% if doc.about %}
-            Subjects:
-            <ul class="subjects" itemprop="about">
-                {% for subject in doc.about %}
-                <li itemprop="about">{{ subject.name }}</li>
-                {% if not forloop.last %} ; {% endif %}
-                {% endfor %}
-            </ul>
-            <br>
+        Subjects:
+        <ul class="subjects" itemprop="about">
+            {% for subject in doc.about %}
+            <li itemprop="about">{{ subject.name }}</li>
+            {% if not forloop.last %} ; {% endif %}
+            {% endfor %}
+        </ul>
+        <br>
         {% endif %}
 
         <span itemprop="offers">
@@ -108,25 +110,23 @@
 
     </div>
 
-    <section class="search row">
-      <form class="span12" action="{% url "search" %}" method="get">
-        <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
-        <span class="pagination">
-          <ul>
-            {% if prev_page_range %}
-            <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
-            {% endif %}
+    <section class="search row pagination">
+        <form class="span12" action="{% url "search" %}" method="get">
+            <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
+            <ul>
+                {% if prev_page_range %}
+                <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
+                {% endif %}
 
-            {% for n, q in page_range %}
-            <li {% if n == page %}class="active"{% endif %}><a href="{% url "search" %}?{{q}}">{{ n }}</a></li>
-            {% endfor %}
+                {% for n, q in page_range %}
+                <li {% if n == page %}class="active"{% endif %}><a href="{% url "search" %}?{{q}}">{{ n }}</a></li>
+                {% endfor %}
 
-            {% if next_page_range %}
-            <li><a href="{% url "search" %}?{{ next_page_range }}">&#x00bb;</a>
-            {% endif %}
-          </ul> 
-        </span>
-      </form>
+                {% if next_page_range %}
+                <li><a href="{% url "search" %}?{{ next_page_range }}">&#x00bb;</a>
+                {% endif %}
+            </ul> 
+        </form>
     </section>
 
     {% if debug %}
