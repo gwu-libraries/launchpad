@@ -84,6 +84,11 @@ class Summon():
         for name in doc.get('Author', []):
             i['author'].append({'name': name})
 
+        i['about'] = []
+        for subject in doc.get('SubjectTermsDisplay', []):
+            subject = subject.strip('.')
+            i['about'].append({'name': subject})
+
         if doc.get('PublicationYear'):
             i['datePublished'] = doc['PublicationYear'][0]
 
