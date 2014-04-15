@@ -42,8 +42,27 @@ function cittogtxt(elemid) {
 
 function check_availability() {
     $(".search-result").each(function(i, e) {
-      var result = $(e);
+      var item = $(e);
+      var bibid = item.data('bibid');
+      var url = '/availability?bibid=' + bibid;
+      $.ajax(url).done(add_availability);
     });
+}
+
+function add_availability(availability) {
+  var bibid = availability.bibid;
+  for (var i = 0; i < availability.offers.length; i++) {
+    a = availability.offers[i];
+    var msg = a.seller;
+    if (a.status == "http://schema.org/InStock") {
+      msg += " (Available) "
+    } else if (a.availabilityAtOrFrom) {
+      msg += " (Due: " + a.availabilityStarts + ")";
+    } else {
+      msg += " (Checked Out)";
+    }
+    $("[data-bibid=" + bibid + "] .offers").append(msg);
+  }
 }
 
 $(document).ready(function() {

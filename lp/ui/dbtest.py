@@ -18,6 +18,7 @@ class DbTests(TestCase):
 
     def test_availability(self):
         a = get_availability('5769326')
+        self.assertEqual(a['bibid'], '5769326')
         self.assertEqual(len(a['offers']), 1)
 
         o = a['offers'][0]
@@ -50,6 +51,27 @@ class DbTests(TestCase):
                     o['availabilityAtOrFrom'].lower(),
                     'wrlc shared collections facility'
                 )
+
+    def test_checked_out(self):
+        # get a bib_id for something that's checked out
+        q = """
+            SELECT bib_id, circ_transactions.circ_transaction_id
+            FROM bib_mfhd, mfhd_item, item, circ_transactions
+            WHERE ROWNUM = 1
+              AND circ_transactions.charge_due_date IS NOT NULL
+              AND circ_transactions.item_id = item.item_id
+              AND item.item_id = mfhd_item.item_id
+              AND mfhd_item.mfhd_id = bib_mfhd.mfhd_id
+            """
+        bib_id, circ_id = fetch_one(q)
+        print circ_id
+        a = get_availability(bib_id)
+        found = False
+        for offer in a['offers']:
+            if 'availabilityStarts' in offer:
+                print offer
+                found = True
+        self.assertTrue(found)
 
     def test_availability_georgetown(self):
         a = get_availability('4218864')

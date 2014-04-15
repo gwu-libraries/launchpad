@@ -40,6 +40,9 @@ def get_availability(bibid, hostname='findit.library.gwu.edu'):
     Get availability information as JSON-LD for a given bibid.
     """
 
+    # TODO: resolve b and m prefixed bibids to their actual bibid first
+    # TODO: add all parameter to get related bibids from other institutions?
+
     query = \
         """
         SELECT DISTINCT
@@ -52,7 +55,7 @@ def get_availability(bibid, hostname='findit.library.gwu.edu'):
           mfhd_item.chron,
           item.item_id,
           item_status_date,
-          to_char(CIRC_TRANSACTIONS.CHARGE_DUE_DATE, 'mm-dd-yyyy') AS DUE,
+          to_char(CIRC_TRANSACTIONS.CHARGE_DUE_DATE, 'yyyy-mm-dd') AS DUE,
           library.library_display_name
         FROM bib_master
         JOIN library ON library.library_id = bib_master.library_id
@@ -86,7 +89,9 @@ def get_availability(bibid, hostname='findit.library.gwu.edu'):
             '@vocab': 'http://schema.org/',
         },
         '@id': 'http://' + hostname + reverse('item', args=[bibid]),
-        'offers': []
+        'offers': [],
+        # TODO: make sure bibid is in json-ld @context
+        'bibid': bibid,
     }
 
     for row in cursor.fetchall():
