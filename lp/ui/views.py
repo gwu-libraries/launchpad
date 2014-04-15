@@ -428,7 +428,6 @@ def search(request):
             'ContentType,or',
             'Author,or',
             'Language,or',
-            'SubjectTerms,or',
             'Genre,or',
             'Institution,or',
             'Discipline,or',
