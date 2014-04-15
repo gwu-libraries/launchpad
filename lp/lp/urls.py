@@ -32,7 +32,8 @@ urlpatterns = patterns('ui.views',
         name='api'),
     url(r'^robots.txt$', 'robots', name='robots'),
     url(r'^503.html$', 'error503', name='error503'),
-    url(r'^search$', 'search', name='search')
+    url(r'^search$', 'search', name='search'),
+    url(r'^availability$', 'availability', name='availability')
 )
 
 if settings.ENABLE_HUMANS:

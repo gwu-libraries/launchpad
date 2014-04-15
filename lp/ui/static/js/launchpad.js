@@ -40,6 +40,12 @@ function cittogtxt(elemid) {
     }
 }
 
+function check_availability() {
+    $(".search-result").each(function(i, e) {
+      var result = $(e);
+    });
+}
+
 $(document).ready(function() {
     $('#cover-image').load(function() {
         if ($('#cover-image').width() == 1) {
@@ -54,4 +60,5 @@ $(document).ready(function() {
         $("#citation_data").toggle('fast', function() { });
         cittogtxt("#citation_toggle");
     });
+    check_availability();
 });

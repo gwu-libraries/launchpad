@@ -8,6 +8,7 @@ import pymarc
 
 from django.db import connection
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 
 def get_item(bibid):
@@ -34,7 +35,7 @@ def get_marc(bibid):
     return record
 
 
-def get_availability(bibid):
+def get_availability(bibid, hostname='findit.library.gwu.edu'):
     """
     Get availability information as JSON-LD for a given bibid.
     """
@@ -80,7 +81,14 @@ def get_availability(bibid):
     cursor = connection.cursor()
     cursor.execute(query, [bibid])
 
-    results = []
+    results = {
+        '@context': {
+            '@vocab': 'http://schema.org/',
+        },
+        '@id': 'http://' + hostname + reverse('item', args=[bibid]),
+        'offers': []
+    }
+
     for row in cursor.fetchall():
         seller = settings.LIB_LOOKUP.get(row[10], '?')
         a = {
@@ -104,7 +112,7 @@ def get_availability(bibid):
         if row[9]:
             a['availabilityStarts'] = row[9]
 
-        results.append(a)
+        results['offers'].append(a)
 
     return results
 

@@ -18,9 +18,9 @@ class DbTests(TestCase):
 
     def test_availability(self):
         a = get_availability('5769326')
-        self.assertEqual(len(a), 1)
+        self.assertEqual(len(a['offers']), 1)
 
-        o = a[0]
+        o = a['offers'][0]
         self.assertEqual(o['@type'], 'Offer')
         self.assertEqual(o['seller'], 'George Washington')
         self.assertEqual(o['availabilityAtOrFrom'].lower(), 'gelman stacks')
@@ -44,7 +44,7 @@ class DbTests(TestCase):
             """
         bib_id, item_id = fetch_one(q)
         a = get_availability(bib_id)
-        for o in a:
+        for o in a['offers']:
             if 'serialNumber' in o and o['serialNumber'] == str(item_id):
                 self.assertEqual(
                     o['availabilityAtOrFrom'].lower(),
@@ -53,9 +53,9 @@ class DbTests(TestCase):
 
     def test_availability_georgetown(self):
         a = get_availability('4218864')
-        self.assertEqual(len(a), 1)
+        self.assertEqual(len(a['offers']), 1)
 
-        o = a[0]
+        o = a['offers'][0]
         self.assertEqual(o['@type'], 'Offer')
         self.assertEqual(o['seller'], 'Georgetown')
         # TODO: this should be something else once z39.50 lookup is working
