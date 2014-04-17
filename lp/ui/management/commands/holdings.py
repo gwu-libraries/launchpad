@@ -1,7 +1,8 @@
-from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
-from ui import voyager as v
-import sys
+import json
+
+from ui import db
+from django.core.management.base import BaseCommand
+
 
 class Command(BaseCommand):
     args = '<bibid>'
@@ -9,7 +10,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if len(args) >= 1:
-            bib = v.get_bib_data(args[0])
-            h = v.get_holdings(bib )
-            
-
+            bibid = args[0]
+            print json.dumps(db.get_availability(bibid), indent=2)

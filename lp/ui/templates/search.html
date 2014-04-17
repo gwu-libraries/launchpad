@@ -33,7 +33,7 @@
     <section id="search-results" class="span9">
 
     {% for doc in search_results.results %}
-    <article data-bibid="{{ doc.bibid }}" class="search-result" itemscope itemtype="{{ doc.type }}">
+    <article id="{{ doc.bibid }}" class="search-result" itemscope itemtype="{{ doc.type }}">
         {% if doc.type == "Book" %}<img title="Book" class="item-type" src="{{ STATIC_URL }}img/book.png">{%endif %}
         {% if doc.type == "VideoObject" %}<img title="Video" class="item-type" src="{{ STATIC_URL }}img/video.png">{% endif %}
         {% if doc.type == "AudioObject" %}<img title="Audio" class="item-type" src="{{ STATIC_URL }}img/audio.png">{% endif %}

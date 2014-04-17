@@ -43,14 +43,19 @@ function cittogtxt(elemid) {
 function check_availability() {
     $(".search-result").each(function(i, e) {
       var item = $(e);
-      var bibid = item.data('bibid');
+      var bibid = item.attr('id');
       var url = '/availability?bibid=' + bibid;
       $.ajax(url).done(add_availability);
     });
 }
 
 function add_availability(availability) {
-  var bibid = availability.bibid;
+  if (availability.summon) {
+    var id = availability.summon;
+  } else {
+    var id = availability.wrlc;
+  }
+
   for (var i = 0; i < availability.offers.length; i++) {
     a = availability.offers[i];
     var msg = a.seller;
@@ -60,10 +65,12 @@ function add_availability(availability) {
       msg += " (Offsite) "
     } else if (a.availabilityStarts) {
       msg += " (Due: " + a.availabilityStarts + ")";
-    } else {
+    } else if (a.status == "http://schema.org/OutOfStock") {
       msg += " (Checked Out)";
+    } else {
+      msg += " (???)";
     }
-    $("[data-bibid=" + bibid + "] .offers").append(msg);
+    $("#" + id + " .offers").append(msg);
   }
 }
 

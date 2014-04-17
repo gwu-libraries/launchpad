@@ -4,6 +4,7 @@ progress. You should probably be looking at ui.voyager until this work is
 more fully developed.
 """
 
+import re
 import pymarc
 
 from django.db import connection
@@ -39,9 +40,19 @@ def get_availability(bibid, hostname='findit.library.gwu.edu'):
     """
     Get availability information as JSON-LD for a given bibid.
     """
-
-    # TODO: resolve b and m prefixed bibids to their actual bibid first
     # TODO: add all parameter to get related bibids from other institutions?
+
+    if not isinstance(bibid, basestring):
+        raise Exception("supplied a non-string: %s" % bibid)
+
+    # if bibid isn't numeric it's a temporary summon id that we need to resolve
+    if not re.match('^\d+', bibid):
+        summon_id = bibid
+        bibid = get_bibid_from_summonid(bibid)
+        if not bibid:
+            return None
+    else:
+        summon_id = None
 
     query = \
         """
@@ -90,9 +101,15 @@ def get_availability(bibid, hostname='findit.library.gwu.edu'):
         },
         '@id': 'http://' + hostname + reverse('item', args=[bibid]),
         'offers': [],
-        # TODO: make sure bibid is in json-ld @context
-        'bibid': bibid,
+        # TODO: make sure wrlc is defined in json-ld @context
+        'wrlc': bibid,
     }
+
+    # if they asked using the temporary summon id (Georgetown/GeorgeMason)
+    # include that in the response too
+    # TODO: make sure summon is definied in json-ld @context
+    if summon_id:
+        results['summon'] = summon_id
 
     for row in cursor.fetchall():
         seller = settings.LIB_LOOKUP.get(row[10], '?')
@@ -160,7 +177,7 @@ def _normalize_status(status_id):
     # TODO: more granularity needed?
     if status_id == 1:
         return 'http://schema.org/InStock'
-    else:
+    elif status_id:
         return 'http://schema.org/OutOfStock'
 
 
@@ -181,3 +198,59 @@ def _normalize_location(location):
         return None
     parts = location.split(': ', 1)
     return parts.pop().capitalize()
+
+
+def get_bibid_from_summonid(id):
+    """
+    For some reason Georgetown and GeorgeMason loaded Summon with their
+    own IDs so we need to look them up differently.
+    """
+    if id.startswith('b'):
+        return get_bibid_from_gtid(id)
+    elif id.startswith('m'):
+        return get_bibid_from_gmid(id)
+    else:
+        return None
+
+
+def get_bibid_from_gtid(id):
+    id = id.strip("X")
+    query = \
+        """
+        SELECT bib_index.bib_id
+        FROM bib_index, bib_master
+        WHERE bib_index.normal_heading = %s
+        AND bib_index.index_code = '907A'
+        AND bib_index.bib_id = bib_master.bib_id
+        AND bib_master.library_id IN ('14', '15')
+        """
+    cursor = connection.cursor()
+    cursor.execute(query, [id.upper()])
+    results = cursor.fetchone()
+    return str(results[0]) if results else None
+
+
+def get_bibid_from_gmid(id):
+    id = id.lstrip("m")
+    query = \
+        """
+        SELECT bib_index.bib_id
+        FROM bib_index, bib_master
+        WHERE bib_index.index_code = '035A'
+        AND bib_index.bib_id=bib_master.bib_id
+        AND bib_index.normal_heading=bib_index.display_heading
+        AND bib_master.library_id = '6'
+        AND bib_index.normal_heading = %s
+        """
+    cursor = connection.cursor()
+    cursor.execute(query, [id.upper()])
+    results = cursor.fetchone()
+    return str(results[0]) if results else None
+
+
+"""
+def get_z3950_availability(bib_id, library):
+    result = get_z3950_holdings(holding['BIB_ID'],
+                                holding['LIBRARY_NAME'], 'bib',
+                                '', bib_data, translate_bib)
+"""

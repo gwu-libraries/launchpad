@@ -7,6 +7,7 @@ management command to run them.
 
 from unittest import TestCase
 
+from ui import db
 from ui.db import get_item, get_availability, fetch_one
 
 
@@ -18,7 +19,7 @@ class DbTests(TestCase):
 
     def test_availability(self):
         a = get_availability('5769326')
-        self.assertEqual(a['bibid'], '5769326')
+        self.assertEqual(a['wrlc'], '5769326')
         self.assertEqual(len(a['offers']), 1)
 
         o = a['offers'][0]
@@ -44,7 +45,7 @@ class DbTests(TestCase):
               AND mfhd_item.mfhd_id = bib_mfhd.mfhd_id
             """
         bib_id, item_id = fetch_one(q)
-        a = get_availability(bib_id)
+        a = get_availability(str(bib_id))
         for o in a['offers']:
             if 'serialNumber' in o and o['serialNumber'] == str(item_id):
                 self.assertEqual(
@@ -64,21 +65,52 @@ class DbTests(TestCase):
               AND mfhd_item.mfhd_id = bib_mfhd.mfhd_id
             """
         bib_id, circ_id = fetch_one(q)
-        print circ_id
-        a = get_availability(bib_id)
+        a = get_availability(str(bib_id))
         found = False
         for offer in a['offers']:
             if 'availabilityStarts' in offer:
-                print offer
                 found = True
         self.assertTrue(found)
 
-    def test_availability_georgetown(self):
-        a = get_availability('4218864')
-        self.assertEqual(len(a['offers']), 1)
+    def test_georgetown_id(self):
+        bibid = db.get_bibid_from_summonid('b10086948')
+        self.assertEqual(bibid, '4218864')
+        bibid = db.get_bibid_from_summonid('b1268708x')
+        self.assertEqual(bibid, '4467824')
 
+    def test_georgemason_id(self):
+        bibid = db.get_bibid_from_summonid('m55883')
+        self.assertEqual(bibid, '1560207')
+
+    def test_bad_bibd(self):
+        self.assertEqual(get_availability('nevermind'), None)
+
+    def test_availability_georgemason(self):
+        a = get_availability('m55883')
+        self.assertEqual(a['wrlc'], '1560207')
+        self.assertEqual(a['summon'], 'm55883')
+
+        self.assertEqual(len(a['offers']), 1)
+        o = a['offers'][0]
+        self.assertEqual(o['@type'], 'Offer')
+        self.assertEqual(o['seller'], 'George Mason')
+        self.assertEqual(o['sku'], 'PR6019.O9 F5')
+
+        # TODO: status shoudn't be None
+        self.assertEqual(o['status'], None)
+
+    def test_availability_georgetown(self):
+        a = get_availability('b10086948')
+        self.assertEqual(a['wrlc'], '4218864')
+        self.assertEqual(a['summon'], 'b10086948')
+
+        self.assertEqual(len(a['offers']), 1)
         o = a['offers'][0]
         self.assertEqual(o['@type'], 'Offer')
         self.assertEqual(o['seller'], 'Georgetown')
-        # TODO: this should be something else once z39.50 lookup is working
-        self.assertEqual(o['sku'], None)
+
+        # TODO: where is the call number
+        # self.assertEqual(o['sku'], None)
+
+        # TODO: status shoudn't be None
+        self.assertEqual(o['status'], None)
