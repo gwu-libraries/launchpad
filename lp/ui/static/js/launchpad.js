@@ -56,7 +56,9 @@ function add_availability(availability) {
     var msg = a.seller;
     if (a.status == "http://schema.org/InStock") {
       msg += " (Available) "
-    } else if (a.availabilityAtOrFrom) {
+    } else if (a.availabilityStarts == '2382-12-31') {
+      msg += " (Offsite) "
+    } else if (a.availabilityStarts) {
       msg += " (Due: " + a.availabilityStarts + ")";
     } else {
       msg += " (Checked Out)";
