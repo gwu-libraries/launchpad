@@ -36,7 +36,7 @@ def get_marc(bibid):
     return record
 
 
-def get_availability(bibid, hostname='findit.library.gwu.edu'):
+def get_availability(bibid):
     """
     Get availability information as JSON-LD for a given bibid.
     """
@@ -94,6 +94,7 @@ def get_availability(bibid, hostname='findit.library.gwu.edu'):
 
     cursor = connection.cursor()
     cursor.execute(query, [bibid])
+    hostname = get_hostname()
 
     results = {
         '@context': {
@@ -214,7 +215,6 @@ def get_bibid_from_summonid(id):
 
 
 def get_bibid_from_gtid(id):
-    id = id.strip("X")
     query = \
         """
         SELECT bib_index.bib_id
@@ -248,9 +248,7 @@ def get_bibid_from_gmid(id):
     return str(results[0]) if results else None
 
 
-"""
-def get_z3950_availability(bib_id, library):
-    result = get_z3950_holdings(holding['BIB_ID'],
-                                holding['LIBRARY_NAME'], 'bib',
-                                '', bib_data, translate_bib)
-"""
+def get_hostname():
+    if len(settings.ALLOWED_HOSTS) > 0:
+        return settings.ALLOWED_HOSTS[0]
+    return 'localhost'
