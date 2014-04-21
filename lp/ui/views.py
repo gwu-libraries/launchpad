@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
-from ui import voyager, apis, marc, summon
+from ui import voyager, apis, marc, summon, db
 from ui.sort import libsort, availsort, elecsort, templocsort, \
     splitsort, enumsort, callnumsort, strip_bad_holdings, holdsort
 
@@ -413,8 +413,8 @@ def search(request):
         raise Http404
 
     # summon can't return results for pages > 50 with page size of 20
-    max_pages = 20
-    page_size = 50
+    max_pages = 50
+    page_size = 20
     if page > max_pages:
         raise Http404
 
@@ -533,3 +533,14 @@ def search(request):
             "json_url": request.get_full_path() + "&format=json",
             "raw_url": request.get_full_path() + "&raw=true",
         })
+
+
+def availability(request):
+    """
+    API call for getting the availability for a particular bibid.
+    """
+    bibid = request.GET.get('bibid')
+    return HttpResponse(
+        json.dumps(db.get_availability(bibid), indent=2),
+        content_type='application/json'
+    )

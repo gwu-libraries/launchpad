@@ -72,8 +72,10 @@ class Summon():
 
         id = doc['ExternalDocumentID'][0]
         i['@id'] = '/item/' + doc['ExternalDocumentID'][0]
-
         i['@type'] = self._get_type(doc)
+
+        # TODO: add bibid to json-ld context document once there is one
+        i['bibid'] = doc['ExternalDocumentID'][0]
 
         if doc.get('Title'):
             i['name'] = doc['Title'][0]
