@@ -5,13 +5,14 @@ do not set up and tear down a test database and schema. Use the dbtest
 management command to run them.
 """
 
-from unittest import TestCase
+import datetime
+import unittest
 
 from ui import db
 from ui.db import get_item, get_availability, fetch_one
 
 
-class DbTests(TestCase):
+class DbTests(unittest.TestCase):
 
     def test_book(self):
         i = get_item('12278722')
@@ -73,13 +74,25 @@ class DbTests(TestCase):
         self.assertTrue(found)
 
     def test_georgetown_id(self):
+        # lookup should run at subsecond speed but if encoding is messed up
+        # they can turn into a full table scan which taks multiple seconds
+        t0 = datetime.datetime.now()
         bibid = db.get_bibid_from_summonid('b10086948')
+        t1 = datetime.datetime.now()
+        self.assertEqual((t1 - t0).seconds, 0)
         self.assertEqual(bibid, '4218864')
+
+        # make sure trailing x works
         bibid = db.get_bibid_from_summonid('b1268708x')
         self.assertEqual(bibid, '4467824')
 
     def test_georgemason_id(self):
+        # lookup should run at subsecond speed but if encoding is messed up
+        # they can turn into a full table scan which taks multiple seconds
+        t0 = datetime.datetime.now()
         bibid = db.get_bibid_from_summonid('m55883')
+        t1 = datetime.datetime.now()
+        self.assertEqual((t1 - t0).seconds, 0)
         self.assertEqual(bibid, '1560207')
 
     def test_bad_bibd(self):

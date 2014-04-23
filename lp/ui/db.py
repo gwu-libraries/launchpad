@@ -6,10 +6,32 @@ more fully developed.
 
 import re
 import pymarc
+import django.db.backends.oracle.base
 
 from django.db import connection
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils.encoding import force_bytes
+
+# adjust because Voyager in Oracle *requires* ASCII-encoded connections
+
+django.db.backends.oracle.base._setup_environment([
+    ('NLS_LANG', '.US7ASCII'),
+])
+
+# django's oracle backend converts bound string parameters to unicode before
+# passing them off to cx_oracle, which makes oracle think it can't use
+# an ascii index, causes a full table scan, and results in slower queries. 
+# The line below forces django not to do that. 
+#
+# If removed the get_bibid_from_gtid and get_bibid_from_gmid functions below
+# will run slowly. Another way of solving this would be to do the binding 
+# ourselves, with string interpolation but this would open us up to 
+# sql-injection attacks unless done properly.
+#
+# see: https://github.com/gwu-libraries/launchpad/issues/611
+
+django.db.backends.oracle.base.convert_unicode = force_bytes
 
 
 def get_item(bibid):

@@ -180,7 +180,7 @@ def non_wrlc_item(request, num, num_type):
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gtitem(request, gtbibid):
     try:
-        bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
+        bibid = db.get_bibid_from_gtid(gtbibid)
         if bibid:
             return redirect('item', bibid=bibid)
         else:
@@ -222,7 +222,7 @@ def gtitem(request, gtbibid):
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gtitem_json(request, gtbibid):
     try:
-        bibid = voyager.get_wrlcbib_from_gtbib(gtbibid)
+        bibid = db.get_bibid_from_gtid(gtbibid)
         if bibid:
             return redirect('item_json', bibid=bibid)
         else:
@@ -274,7 +274,7 @@ def unicode_data(bib_data):
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gmitem(request, gmbibid):
     try:
-        bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
+        bibid = db.get_bibid_from_gmid(gmbibid)
         if bibid:
             return redirect('item', bibid=bibid)
         else:
@@ -316,7 +316,7 @@ def gmitem(request, gmbibid):
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gmitem_json(request, gmbibid):
     try:
-        bibid = voyager.get_wrlcbib_from_gmbib(gmbibid)
+        bibid = voyager.get_bibid_from_gmid(gmbibid)
         if bibid:
             return redirect('item_json', bibid=bibid)
         else:
