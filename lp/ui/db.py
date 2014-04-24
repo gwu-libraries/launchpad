@@ -11,6 +11,20 @@ from django.db import connection
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
+# oracle specific configuration since Voyager's Oracle requires ASCII
+
+if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.oracle':
+    import django.utils.encoding
+    import django.db.backends.oracle.base
+    # connections are in ascii
+    django.db.backends.oracle.base._setup_environment([
+        ('NLS_LANG', '.US7ASCII'),
+    ])
+    # string bind parameters must not be promoted to Unicode in order to use
+    # Oracle indexes properly
+    # https://github.com/gwu-libraries/launchpad/issues/611
+    django.db.backends.oracle.base.convert_unicode = \
+        django.utils.encoding.force_bytes
 
 def get_item(bibid):
     """
