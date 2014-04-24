@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 
 # oracle specific configuration since Voyager's Oracle requires ASCII
 
-if settings.DATABASES['default']['engine'] == 'django.db.backends.oracle':
+if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.oracle':
     import django.utils.encoding
     import django.db.backends.oracle.base
     # connections are in ascii
