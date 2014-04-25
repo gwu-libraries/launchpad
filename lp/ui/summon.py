@@ -66,7 +66,7 @@ class Summon():
     def _convert(self, doc):
         i = {}
 
-        # must have a bibid and a type
+        # must have an id and a type
         if 'ExternalDocumentID' not in doc or 'ContentType' not in doc:
             return None
 
@@ -74,8 +74,8 @@ class Summon():
         i['@id'] = '/item/' + doc['ExternalDocumentID'][0]
         i['@type'] = self._get_type(doc)
 
-        # TODO: add bibid to json-ld context document once there is one
-        i['bibid'] = doc['ExternalDocumentID'][0]
+        # TODO: add summon to json-ld context document once there is one
+        i['summon'] = doc['ExternalDocumentID'][0]
 
         if doc.get('Title'):
             i['name'] = doc['Title'][0]
@@ -120,8 +120,12 @@ class Summon():
             # George Mason and Georgetown load into Summon with their own ids.
             # Launchpad handles these with the the m & b prefixes
 
+            # TODO: make @id into absolute URL?
             if inst  == 'George Mason University':
                 i['@id'] = '/item/m' + id
+                # make sure summon id starts with 'm'
+                if not id.startswith('m'):
+                    i['summon'] = 'm' + i['summon']
             elif inst == 'Georgetown':
                 i['@id'] = '/item/b' + id
 

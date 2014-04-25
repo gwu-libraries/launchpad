@@ -30,7 +30,7 @@ class SummonTests(unittest.TestCase):
         i = search['results'][0]
         self.assertEqual(i['@id'], '/item/m2402189')
         self.assertEqual(i['@type'], 'Book')
-        self.assertEqual(i['bibid'], '2402189')
+        self.assertEqual(i['summon'], 'm2402189')
         self.assertEqual(i['name'], 'The web of knowledge : a festschrift in honor of Eugene Garfield')
         self.assertEqual(i['isbn'], ["9781573870993", "1573870994"])
 
@@ -78,3 +78,27 @@ class SummonTests(unittest.TestCase):
         counts = search['facets'][0]['counts']
         self.assertEqual(counts[0]['name'], 'Book / eBook')
         self.assertTrue(counts[0]['count'] > 0)
+
+    def test_georgemason_summon_id(self):
+        search = self.summon.search(
+            'information',
+            ps=50,
+            fq='SourceType:("Library Catalog")', 
+            fvf='%s,%s,%s' % ('Institution', 'George Mason University (GM)', 'false')
+        )
+        for item in search['results']:
+            if len(item['offers']) == 1 \
+                and item['offers'][0]['seller'] == 'George Mason University':
+                self.assertEqual(item['summon'][0], 'm')
+
+    def test_georgetown_summon_id(self):
+        search = self.summon.search(
+            'information',
+            ps=50,
+            fq='SourceType:("Library Catalog")', 
+            fvf='%s,%s,%s' % ('Institution', 'Georgetown University (GT)', 'false')
+        )
+        for item in search['results']:
+            if len(item['offers']) == 1 \
+                and item['offers'][0]['seller'] == 'Georgetown University':
+                self.assertEqual(item['summon'][0], 'b')
