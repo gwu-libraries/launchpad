@@ -41,12 +41,12 @@ function cittogtxt(elemid) {
 }
 
 function check_availability() {
-    $(".search-result").each(function(i, e) {
-      var item = $(e);
-      var bibid = item.attr('id');
-      var url = '/availability?bibid=' + bibid;
-      $.ajax(url).done(add_availability);
-    });
+  $(".search-result").each(function(i, e) {
+    var item = $(e);
+    var bibid = item.attr('id');
+    var url = '/availability?bibid=' + bibid;
+    $.ajax(url).done(add_availability);
+  });
 }
 
 function add_availability(availability) {
