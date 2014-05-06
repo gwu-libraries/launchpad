@@ -9,7 +9,6 @@ import pymarc
 
 from django.db import connection
 from django.conf import settings
-from django.core.urlresolvers import reverse
 
 # oracle specific configuration since Voyager's Oracle requires ASCII
 
@@ -25,6 +24,7 @@ if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.oracle':
     # https://github.com/gwu-libraries/launchpad/issues/611
     django.db.backends.oracle.base.convert_unicode = \
         django.utils.encoding.force_bytes
+
 
 def get_item(bibid):
     """
@@ -54,8 +54,6 @@ def get_availability(bibid):
     """
     Get availability information as JSON-LD for a given bibid.
     """
-    # TODO: add all parameter to get related bibids from other institutions?
-
     if not isinstance(bibid, basestring):
         raise Exception("supplied a non-string: %s" % bibid)
 
@@ -64,7 +62,8 @@ def get_availability(bibid):
         summon_id = bibid
         bibid = get_bibid_from_summonid(bibid)
         if not bibid:
-            return None
+            # TODO: not all georgetown ids have bib records e.g. b29950983
+            bibid = summon_id
     else:
         summon_id = None
 
@@ -74,19 +73,22 @@ def get_availability(bibid):
           display_call_no,
           item_status_desc,
           item_status.item_status,
-          permLocation.location_display_name as PermLocation,
-          tempLocation.location_display_name as TempLocation,
+          perm_location.location_display_name as PermLocation,
+          temp_location.location_display_name as TempLocation,
           mfhd_item.item_enum,
           mfhd_item.chron,
           item.item_id,
           item_status_date,
           to_char(CIRC_TRANSACTIONS.CHARGE_DUE_DATE, 'yyyy-mm-dd') AS DUE,
-          library.library_display_name
+          library.library_display_name,
+          holding_location.location_display_name as HoldingLocation
         FROM bib_master
         JOIN library ON library.library_id = bib_master.library_id
         JOIN bib_mfhd ON bib_master.bib_id = bib_mfhd.bib_id
         JOIN mfhd_master ON mfhd_master.mfhd_id = bib_mfhd.mfhd_id
         JOIN library ON bib_master.library_id = library.library_id
+        JOIN location holding_location 
+          ON mfhd_master.location_id = holding_location.location_id
         LEFT OUTER JOIN mfhd_item
           ON mfhd_item.mfhd_id = mfhd_master.mfhd_id
         LEFT OUTER JOIN item
@@ -95,10 +97,10 @@ def get_availability(bibid):
           ON item_status.item_id = item.item_id
         LEFT OUTER JOIN item_status_type
           ON item_status.item_status = item_status_type.item_status_type
-        LEFT OUTER JOIN location permLocation
-          ON permLocation.location_id = item.perm_location
-        LEFT OUTER JOIN location tempLocation
-          ON tempLocation.location_id = item.temp_location
+        LEFT OUTER JOIN location perm_location
+          ON perm_location.location_id = item.perm_location
+        LEFT OUTER JOIN location temp_location
+          ON temp_location.location_id = item.temp_location
         LEFT OUTER JOIN circ_transactions
           ON item.item_id = circ_transactions.item_id
         WHERE bib_master.bib_id = %s
@@ -108,13 +110,13 @@ def get_availability(bibid):
 
     cursor = connection.cursor()
     cursor.execute(query, [bibid])
-    hostname = get_hostname()
+    hostname = _get_hostname()
 
     results = {
         '@context': {
             '@vocab': 'http://schema.org/',
         },
-        '@id': 'http://' + hostname + reverse('item', args=[bibid]),
+        '@id': 'http://' + hostname + '/item/' + bibid,
         'offers': [],
         # TODO: make sure wrlc is defined in json-ld @context
         'wrlc': bibid,
@@ -126,9 +128,12 @@ def get_availability(bibid):
     if summon_id:
         results['summon'] = summon_id
 
+    # this will get set to true for libraries that require a z39.50 lookup
+    need_z3950_lookup = False
+
     for row in cursor.fetchall():
         seller = settings.LIB_LOOKUP.get(row[10], '?')
-        a = {
+        o = {
             '@type': 'Offer',
             'seller': seller,
             'sku': row[0],
@@ -136,20 +141,35 @@ def get_availability(bibid):
         }
 
         # use temp location if there is one, otherwise use perm location
+        # or the holding location in cases where there is no item record
         if row[4]:
-            a['availabilityAtOrFrom'] = _normalize_location(row[4])
+            o['availabilityAtOrFrom'] = _normalize_location(row[4])
+        elif row[3]:
+            o['availabilityAtOrFrom'] = _normalize_location(row[3])
         else:
-            a['availabilityAtOrFrom'] = _normalize_location(row[3])
+            o['availabilityAtOrFrom'] = _normalize_location(row[11])
 
         # serial number can be null, apparently
         if row[7]:
-            a['serialNumber'] = str(row[7])
+            o['serialNumber'] = str(row[7])
 
         # add due date if we have one
         if row[9]:
-            a['availabilityStarts'] = row[9]
+            o['availabilityStarts'] = row[9]
 
-        results['offers'].append(a)
+        # z39.50 lookups
+        if seller == 'George Mason' or seller == 'Georgetown':
+            need_z3950_lookup = True
+
+        results['offers'].append(o)
+
+    if need_z3950_lookup:
+        library = results['offers'][0]['seller']
+        if summon_id:
+            id = summon_id
+        else:
+            id = bibid
+        results['offers'] = _get_availability_z3950(id, library)
 
     return results
 
@@ -194,15 +214,18 @@ def _normalize_status(status_id):
         return 'http://schema.org/InStock'
     elif status_id:
         return 'http://schema.org/OutOfStock'
+    else:
+        return 'http://schema.org/InStock'
 
 
-def fetch_one(query, params=[]):
+
+def _fetch_one(query, params=[]):
     cursor = connection.cursor()
     cursor.execute(query, params)
     return cursor.fetchone()
 
 
-def fetch_all(query, params):
+def _fetch_all(query, params):
     cursor = connection
     cursor.execute(query, params)
     return cursor.fetchall()
@@ -262,7 +285,78 @@ def get_bibid_from_gmid(id):
     return str(results[0]) if results else None
 
 
-def get_hostname():
+def _get_hostname():
     if len(settings.ALLOWED_HOSTS) > 0:
         return settings.ALLOWED_HOSTS[0]
     return 'localhost'
+
+
+def _get_availability_z3950(id, library):
+    from PyZ3950 import zoom
+    offers = []
+
+    # determine which server to talk to
+    if library == 'Georgetown':
+        conf = settings.Z3950_SERVERS['GT']
+    elif library == 'George Mason':
+        id = id.strip('m')
+        conf = settings.Z3950_SERVERS['GM']
+    else:
+        raise Exception("unrecognized library %s" % library)
+
+    # search for the id, and get the first record
+    z = zoom.Connection(conf['IP'], conf['PORT'])
+    z.databaseName = conf['DB']
+    z.preferredRecordSyntax = conf['SYNTAX']
+    q = zoom.Query('PQF', '@attr 1=12 %s' % id.encode('utf-8'))
+    results = z.search(q)
+    if len(results) == 0:
+        return []
+    rec = results[0]
+
+    # normalize holdings information as schema.org offers
+
+    if not hasattr(rec, 'data') and not hasattr(rec.data, 'holdingsData'):
+        return []
+
+    for holdings_data in rec.data.holdingsData:
+        h = holdings_data[1]
+        o = {'@type': 'Offer', 'seller': library}
+
+        if hasattr(h, 'callNumber'):
+            o['sku'] = h.callNumber.rstrip('\x00').strip()
+
+        if hasattr(h, 'localLocation'):
+            o['availabilityAtOrFrom'] = h.localLocation.rstrip('\x00')
+
+        if hasattr(h, 'publicNote') and library == 'Georgetown':
+            note = h.publicNote.rstrip('\x00')
+            if note == 'AVAILABLE':
+                o['status'] = 'http://schema.org/InStock'
+            else:
+                # set availabilityStarts from "DUE 09-15-14"
+                # try b3635072
+                m = re.match('DUE (\d\d)-(\d\d)-(\d\d)', note)
+                if m:
+                    m, d, y = [int(i) for i in m.groups()]
+                    o['availabilityStarts'] = "20%s-%s-%s" % (y, m, d)
+
+                o['status'] = 'http://schema.org/OutOfStock'
+
+        elif hasattr(h, 'circulationData'):
+            cd = h.circulationData[0]
+            if cd.availableNow is True:
+                o['status'] = 'http://schema.org/InStock'
+            else:
+                if cd.availabilityDate:
+                    o['availabilityStarts'] = cd.availablityDate
+                    # TODO: set availabilityStarts to YYYY-MM-DD
+                o['status'] = 'http://schema.org/OutOfStock'
+
+        else:
+            raise Exception("unknown availability: bibid=%s library=%s" %
+                            (id, library))
+
+        offers.append(o)
+
+    return offers

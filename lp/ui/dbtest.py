@@ -9,7 +9,9 @@ import datetime
 import unittest
 
 from ui import db
-from ui.db import get_item, get_availability, fetch_one
+from ui.db import get_item, get_availability, _fetch_one
+
+status = ['http://schema.org/InStock', 'http://schema.org/OutOfStock']
 
 
 class DbTests(unittest.TestCase):
@@ -28,10 +30,7 @@ class DbTests(unittest.TestCase):
         self.assertEqual(o['seller'], 'George Washington')
         self.assertEqual(o['availabilityAtOrFrom'].lower(), 'gelman stacks')
         self.assertEqual(o['sku'], 'PR6019.O9 F5 1999')
-        self.assertTrue(o['status'] in [
-            'http://schema.org/InStock',
-            'http://schema.org/OutOfStock'
-        ])
+        self.assertTrue(o['status'] in status)
         self.assertEqual(o['serialNumber'], '3927007')
 
     def test_temp_location(self):
@@ -45,7 +44,7 @@ class DbTests(unittest.TestCase):
               AND item.item_id = mfhd_item.item_id
               AND mfhd_item.mfhd_id = bib_mfhd.mfhd_id
             """
-        bib_id, item_id = fetch_one(q)
+        bib_id, item_id = _fetch_one(q)
         a = get_availability(str(bib_id))
         for o in a['offers']:
             if 'serialNumber' in o and o['serialNumber'] == str(item_id):
@@ -65,7 +64,7 @@ class DbTests(unittest.TestCase):
               AND item.item_id = mfhd_item.item_id
               AND mfhd_item.mfhd_id = bib_mfhd.mfhd_id
             """
-        bib_id, circ_id = fetch_one(q)
+        bib_id, circ_id = _fetch_one(q)
         a = get_availability(str(bib_id))
         found = False
         for offer in a['offers']:
@@ -95,9 +94,6 @@ class DbTests(unittest.TestCase):
         self.assertEqual((t1 - t0).seconds, 0)
         self.assertEqual(bibid, '1560207')
 
-    def test_bad_bibd(self):
-        self.assertEqual(get_availability('nevermind'), None)
-
     def test_availability_georgemason(self):
         a = get_availability('m55883')
         self.assertEqual(a['wrlc'], '1560207')
@@ -108,9 +104,7 @@ class DbTests(unittest.TestCase):
         self.assertEqual(o['@type'], 'Offer')
         self.assertEqual(o['seller'], 'George Mason')
         self.assertEqual(o['sku'], 'PR6019.O9 F5')
-
-        # TODO: status shoudn't be None
-        self.assertEqual(o['status'], None)
+        self.assertTrue(o['status'] in status)
 
     def test_availability_georgetown(self):
         a = get_availability('b10086948')
@@ -121,9 +115,24 @@ class DbTests(unittest.TestCase):
         o = a['offers'][0]
         self.assertEqual(o['@type'], 'Offer')
         self.assertEqual(o['seller'], 'Georgetown')
+        self.assertEqual(o['sku'], 'PR6019.O9 F45 1959')
+        self.assertTrue(o['status'] in status)
 
-        # TODO: where is the call number
-        # self.assertEqual(o['sku'], None)
+    def test_no_item_record(self):
+        # can we get location from holdings record when no item exists?
+        a = get_availability('12967951')
+        self.assertEqual(a['offers'][0]['status'], 'http://schema.org/InStock')
+        self.assertEqual(a['offers'][0]['availabilityAtOrFrom'],
+                         'Lib special collections')
 
-        # TODO: status shoudn't be None
-        self.assertEqual(o['status'], None)
+    """
+    These should eventually work:
+
+    def test_availability_no_bib_record(self):
+        # this bibid is a legit georgetown id but we have no bib record
+        a = get_availability('b29950983')
+        self.assertEqual(a['offers'][0]['seller'], 'Georgetown')
+
+    def test_bad_bibid(self):
+        self.assertEqual(get_availability('nevermind'), None)
+    """

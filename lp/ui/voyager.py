@@ -424,6 +424,7 @@ ORDER BY library.library_name"""
     illiad_link = get_illiad_link(bib_data)
     eligibility = False
     added_holdings = []
+    print holdings
     for holding in holdings:
         if (holding['LIBRARY_NAME'] == 'GM' or
                 holding['LIBRARY_NAME'] == 'GT' or
