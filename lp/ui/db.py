@@ -7,6 +7,7 @@ more fully developed.
 import re
 import pymarc
 
+from PyZ3950 import zoom
 from django.db import connection
 from django.conf import settings
 
@@ -20,7 +21,7 @@ if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.oracle':
         ('NLS_LANG', '.US7ASCII'),
     ])
     # string bind parameters must not be promoted to Unicode in order to use
-    # Oracle indexes properly
+    # Voyager's antiquated Oracle indexes properly
     # https://github.com/gwu-libraries/launchpad/issues/611
     django.db.backends.oracle.base.convert_unicode = \
         django.utils.encoding.force_bytes
@@ -57,16 +58,88 @@ def get_availability(bibid):
     if not isinstance(bibid, basestring):
         raise Exception("supplied a non-string: %s" % bibid)
 
-    # if bibid isn't numeric it's a temporary summon id that we need to resolve
-    if not re.match('^\d+', bibid):
-        summon_id = bibid
-        bibid = get_bibid_from_summonid(bibid)
-        if not bibid:
-            # TODO: not all georgetown ids have bib records e.g. b29950983
-            bibid = summon_id
-    else:
-        summon_id = None
+    url = 'http://%s/item/%s' % (_get_hostname(), bibid)
+    results = {
+        '@context': {
+            '@vocab': 'http://schema.org/',
+        },
+        '@id': url,
+        'offers': [],
+        'wrlc': bibid,
+    }
 
+    # if the bibid is numeric we can look it up locally in Voyager
+    if re.match('^\d+$', bibid):
+        results['offers'] = _get_offers(bibid)
+
+    # George Mason and Georgetown have special ids in Summon and we need 
+    # to talk to their catalogs to determine availability
+    else:
+        if bibid.startswith('m'):
+            results['offers'] = _get_offers_z3950(bibid, 'George Mason')
+        elif bibid.startswith('b'):
+            results['offers'] = _get_offers_z3950(bibid, 'Georgetown')
+        else:
+            raise Exception("unknown bibid format %s" % bibid)
+
+        # update wrlc id if there is a record in voyager for it
+        wrlc_id = get_bibid_from_summonid(bibid)
+        if wrlc_id:
+            results['wrlc'] = wrlc_id
+            results['summon'] = bibid
+
+    return results
+
+
+def get_bibid_from_summonid(id):
+    """
+    For some reason Georgetown and GeorgeMason loaded Summon with their
+    own IDs so we need to look them up differently.
+    """
+    if id.startswith('b'):
+        return get_bibid_from_gtid(id)
+    elif id.startswith('m'):
+        return get_bibid_from_gmid(id)
+    else:
+        return None
+
+
+def get_bibid_from_gtid(id):
+    query = \
+        """
+        SELECT bib_index.bib_id
+        FROM bib_index, bib_master
+        WHERE bib_index.normal_heading = %s
+        AND bib_index.index_code = '907A'
+        AND bib_index.bib_id = bib_master.bib_id
+        AND bib_master.library_id IN ('14', '15')
+        """
+    cursor = connection.cursor()
+    cursor.execute(query, [id.upper()])
+    results = cursor.fetchone()
+    return str(results[0]) if results else None
+
+
+def get_bibid_from_gmid(id):
+    id = id.lstrip("m")
+    query = \
+        """
+        SELECT bib_index.bib_id
+        FROM bib_index, bib_master
+        WHERE bib_index.index_code = '035A'
+        AND bib_index.bib_id=bib_master.bib_id
+        AND bib_index.normal_heading=bib_index.display_heading
+        AND bib_master.library_id = '6'
+        AND bib_index.normal_heading = %s
+        """
+    cursor = connection.cursor()
+    cursor.execute(query, [id.upper()])
+    results = cursor.fetchone()
+    return str(results[0]) if results else None
+
+
+def _get_offers(bibid):
+    offers = []
     query = \
         """
         SELECT DISTINCT
@@ -87,7 +160,7 @@ def get_availability(bibid):
         JOIN bib_mfhd ON bib_master.bib_id = bib_mfhd.bib_id
         JOIN mfhd_master ON mfhd_master.mfhd_id = bib_mfhd.mfhd_id
         JOIN library ON bib_master.library_id = library.library_id
-        JOIN location holding_location 
+        JOIN location holding_location
           ON mfhd_master.location_id = holding_location.location_id
         LEFT OUTER JOIN mfhd_item
           ON mfhd_item.mfhd_id = mfhd_master.mfhd_id
@@ -110,23 +183,6 @@ def get_availability(bibid):
 
     cursor = connection.cursor()
     cursor.execute(query, [bibid])
-    hostname = _get_hostname()
-
-    results = {
-        '@context': {
-            '@vocab': 'http://schema.org/',
-        },
-        '@id': 'http://' + hostname + '/item/' + bibid,
-        'offers': [],
-        # TODO: make sure wrlc is defined in json-ld @context
-        'wrlc': bibid,
-    }
-
-    # if they asked using the temporary summon id (Georgetown/GeorgeMason)
-    # include that in the response too
-    # TODO: make sure summon is definied in json-ld @context
-    if summon_id:
-        results['summon'] = summon_id
 
     # this will get set to true for libraries that require a z39.50 lookup
     need_z3950_lookup = False
@@ -161,17 +217,82 @@ def get_availability(bibid):
         if seller == 'George Mason' or seller == 'Georgetown':
             need_z3950_lookup = True
 
-        results['offers'].append(o)
+        offers.append(o)
 
     if need_z3950_lookup:
-        library = results['offers'][0]['seller']
-        if summon_id:
-            id = summon_id
-        else:
-            id = bibid
-        results['offers'] = _get_availability_z3950(id, library)
+        library = offers[0]['seller']
+        return _get_offers_z3950(bibid, library)
 
-    return results
+    return offers
+
+
+def _get_offers_z3950(id, library):
+    offers = []
+
+    # determine which server to talk to
+    if library == 'Georgetown':
+        conf = settings.Z3950_SERVERS['GT']
+    elif library == 'George Mason':
+        id = id.strip('m')
+        conf = settings.Z3950_SERVERS['GM']
+    else:
+        raise Exception("unrecognized library %s" % library)
+
+    # search for the id, and get the first record
+    z = zoom.Connection(conf['IP'], conf['PORT'])
+    z.databaseName = conf['DB']
+    z.preferredRecordSyntax = conf['SYNTAX']
+    q = zoom.Query('PQF', '@attr 1=12 %s' % id.encode('utf-8'))
+    results = z.search(q)
+    if len(results) == 0:
+        return []
+    rec = results[0]
+
+    # normalize holdings information as schema.org offers
+
+    if not hasattr(rec, 'data') and not hasattr(rec.data, 'holdingsData'):
+        return []
+
+    for holdings_data in rec.data.holdingsData:
+        h = holdings_data[1]
+        o = {'@type': 'Offer', 'seller': library}
+
+        if hasattr(h, 'callNumber'):
+            o['sku'] = h.callNumber.rstrip('\x00').strip()
+
+        if hasattr(h, 'localLocation'):
+            o['availabilityAtOrFrom'] = h.localLocation.rstrip('\x00')
+
+        if hasattr(h, 'publicNote') and library == 'Georgetown':
+            note = h.publicNote.rstrip('\x00')
+            if note == 'AVAILABLE':
+                o['status'] = 'http://schema.org/InStock'
+            else:
+                # set availabilityStarts from "DUE 09-15-14"
+                m = re.match('DUE (\d\d)-(\d\d)-(\d\d)', note)
+                if m:
+                    m, d, y = [int(i) for i in m.groups()]
+                    o['availabilityStarts'] = "20%s-%s-%s" % (y, m, d)
+
+                o['status'] = 'http://schema.org/OutOfStock'
+
+        elif hasattr(h, 'circulationData'):
+            cd = h.circulationData[0]
+            if cd.availableNow is True:
+                o['status'] = 'http://schema.org/InStock'
+            else:
+                if cd.availabilityDate:
+                    o['availabilityStarts'] = cd.availablityDate
+                    # TODO: set availabilityStarts to YYYY-MM-DD
+                o['status'] = 'http://schema.org/OutOfStock'
+
+        else:
+            raise Exception("unknown availability: bibid=%s library=%s" %
+                            (id, library))
+
+        offers.append(o)
+
+    return offers
 
 
 def _normalize_status(status_id):
@@ -238,125 +359,10 @@ def _normalize_location(location):
     return parts.pop().capitalize()
 
 
-def get_bibid_from_summonid(id):
-    """
-    For some reason Georgetown and GeorgeMason loaded Summon with their
-    own IDs so we need to look them up differently.
-    """
-    if id.startswith('b'):
-        return get_bibid_from_gtid(id)
-    elif id.startswith('m'):
-        return get_bibid_from_gmid(id)
-    else:
-        return None
-
-
-def get_bibid_from_gtid(id):
-    query = \
-        """
-        SELECT bib_index.bib_id
-        FROM bib_index, bib_master
-        WHERE bib_index.normal_heading = %s
-        AND bib_index.index_code = '907A'
-        AND bib_index.bib_id = bib_master.bib_id
-        AND bib_master.library_id IN ('14', '15')
-        """
-    cursor = connection.cursor()
-    cursor.execute(query, [id.upper()])
-    results = cursor.fetchone()
-    return str(results[0]) if results else None
-
-
-def get_bibid_from_gmid(id):
-    id = id.lstrip("m")
-    query = \
-        """
-        SELECT bib_index.bib_id
-        FROM bib_index, bib_master
-        WHERE bib_index.index_code = '035A'
-        AND bib_index.bib_id=bib_master.bib_id
-        AND bib_index.normal_heading=bib_index.display_heading
-        AND bib_master.library_id = '6'
-        AND bib_index.normal_heading = %s
-        """
-    cursor = connection.cursor()
-    cursor.execute(query, [id.upper()])
-    results = cursor.fetchone()
-    return str(results[0]) if results else None
-
-
 def _get_hostname():
     if len(settings.ALLOWED_HOSTS) > 0:
         return settings.ALLOWED_HOSTS[0]
     return 'localhost'
 
 
-def _get_availability_z3950(id, library):
-    from PyZ3950 import zoom
-    offers = []
 
-    # determine which server to talk to
-    if library == 'Georgetown':
-        conf = settings.Z3950_SERVERS['GT']
-    elif library == 'George Mason':
-        id = id.strip('m')
-        conf = settings.Z3950_SERVERS['GM']
-    else:
-        raise Exception("unrecognized library %s" % library)
-
-    # search for the id, and get the first record
-    z = zoom.Connection(conf['IP'], conf['PORT'])
-    z.databaseName = conf['DB']
-    z.preferredRecordSyntax = conf['SYNTAX']
-    q = zoom.Query('PQF', '@attr 1=12 %s' % id.encode('utf-8'))
-    results = z.search(q)
-    if len(results) == 0:
-        return []
-    rec = results[0]
-
-    # normalize holdings information as schema.org offers
-
-    if not hasattr(rec, 'data') and not hasattr(rec.data, 'holdingsData'):
-        return []
-
-    for holdings_data in rec.data.holdingsData:
-        h = holdings_data[1]
-        o = {'@type': 'Offer', 'seller': library}
-
-        if hasattr(h, 'callNumber'):
-            o['sku'] = h.callNumber.rstrip('\x00').strip()
-
-        if hasattr(h, 'localLocation'):
-            o['availabilityAtOrFrom'] = h.localLocation.rstrip('\x00')
-
-        if hasattr(h, 'publicNote') and library == 'Georgetown':
-            note = h.publicNote.rstrip('\x00')
-            if note == 'AVAILABLE':
-                o['status'] = 'http://schema.org/InStock'
-            else:
-                # set availabilityStarts from "DUE 09-15-14"
-                # try b3635072
-                m = re.match('DUE (\d\d)-(\d\d)-(\d\d)', note)
-                if m:
-                    m, d, y = [int(i) for i in m.groups()]
-                    o['availabilityStarts'] = "20%s-%s-%s" % (y, m, d)
-
-                o['status'] = 'http://schema.org/OutOfStock'
-
-        elif hasattr(h, 'circulationData'):
-            cd = h.circulationData[0]
-            if cd.availableNow is True:
-                o['status'] = 'http://schema.org/InStock'
-            else:
-                if cd.availabilityDate:
-                    o['availabilityStarts'] = cd.availablityDate
-                    # TODO: set availabilityStarts to YYYY-MM-DD
-                o['status'] = 'http://schema.org/OutOfStock'
-
-        else:
-            raise Exception("unknown availability: bibid=%s library=%s" %
-                            (id, library))
-
-        offers.append(o)
-
-    return offers

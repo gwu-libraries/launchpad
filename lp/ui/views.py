@@ -45,6 +45,7 @@ def citation_json(request):
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid):
+    print "getting %s" % bibid
     bib = None
     try:
         bib = voyager.get_bib_data(bibid)
