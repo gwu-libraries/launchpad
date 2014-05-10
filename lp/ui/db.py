@@ -6,6 +6,7 @@ more fully developed.
 
 import re
 import pymarc
+import logging
 
 from PyZ3950 import zoom
 from django.db import connection
@@ -471,6 +472,7 @@ def _get_offers_z3950(id, library):
     for holdings_data in rec.data.holdingsData:
         h = holdings_data[1]
         o = {'@type': 'Offer', 'seller': library}
+        o['h'] = str(h)
 
         if hasattr(h, 'callNumber'):
             o['sku'] = h.callNumber.rstrip('\x00').strip()
@@ -502,8 +504,8 @@ def _get_offers_z3950(id, library):
                 o['status'] = 'http://schema.org/OutOfStock'
 
         else:
-            raise Exception("unknown availability: bibid=%s library=%s" %
-                            (id, library))
+            logging.warn("unknown availability: bibid=%s library=%s h=%s",
+                         id, library, h)
 
         offers.append(o)
 
