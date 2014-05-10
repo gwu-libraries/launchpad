@@ -45,7 +45,6 @@ def citation_json(request):
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid):
-    print "getting %s" % bibid
     bib = None
     try:
         bib = voyager.get_bib_data(bibid)
@@ -543,5 +542,21 @@ def availability(request):
     bibid = request.GET.get('bibid')
     return HttpResponse(
         json.dumps(db.get_availability(bibid), indent=2),
+        content_type='application/json'
+    )
+
+
+def related(request):
+    """
+    API call for getting related bibids.
+    """
+    bibid = request.GET.get('bibid')
+    if not bibid:
+        raise Http404()
+    bibid = db.get_bibid_from_summonid(bibid)
+    item = db.get_item(bibid)
+    bibids = db.get_related_bibids(item)
+    return HttpResponse(
+        json.dumps(bibids, indent=2),
         content_type='application/json'
     )

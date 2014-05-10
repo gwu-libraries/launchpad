@@ -31,11 +31,46 @@ def get_item(bibid):
     """
     Get JSON-LD for a given bibid.
     """
-    marc = get_marc(bibid)
-    return {
+    item = {
         '@type': 'Book',
-        'title': marc['245']['a']
     }
+
+    marc = get_marc(bibid)
+
+    item['wrlc'] = bibid
+
+    # get item name (title)
+    item['name'] = marc['245']['a'].strip(' /')
+
+    # get oclc number
+    for f in marc.get_fields('035'):
+        if f['a'] and f['a'].startswith('(OCoLC)'):
+            if 'oclc' not in item:
+                item['oclc'] = []
+            oclc = f['a'].replace('(OCoLC)', '').replace('OCM', '')
+            item['oclc'].append(oclc)
+
+    # get lccn
+    f = marc['010']
+    if f:
+        item['lccn'] = marc['010']['a'].strip()
+
+    # get isbns
+    for f in marc.get_fields('020'):
+        if 'isbn' not in item:
+            item['isbn'] = []
+        isbn = f['a']
+        # extract just the isbn, e.g. "0801883814 (hardcover : alk. paper)"
+        isbn = isbn.split()[0]
+        item['isbn'].append(isbn)
+
+    # get issns
+    for f in marc.get_fields('022'):
+        if 'issn' not in item:
+            item['issn'] = []
+        item['issn'].append(f['a'])
+
+    return item
 
 
 def get_marc(bibid):
@@ -96,6 +131,8 @@ def get_bibid_from_summonid(id):
     For some reason Georgetown and GeorgeMason loaded Summon with their
     own IDs so we need to look them up differently.
     """
+    if re.match('^\d+$', id):
+        return id
     if id.startswith('b'):
         return get_bibid_from_gtid(id)
     elif id.startswith('m'):
@@ -138,6 +175,184 @@ def get_bibid_from_gmid(id):
     return str(results[0]) if results else None
 
 
+def get_related_bibids(item):
+    bibid = item['wrlc']
+    bibids = set([bibid])
+    bibids |= set(get_related_bibids_by_oclc(item))
+    bibids |= set(get_related_bibids_by_lccn(item))
+    bibids |= set(get_related_bibids_by_isbn(item))
+    return list(bibids)
+
+
+def get_related_bibids_by_lccn(item):
+    if 'lccn' not in item:
+        return []
+
+    q = '''
+    SELECT DISTINCT bib_index.bib_id, bib_text.title
+    FROM bib_index, library, bib_master, bib_text
+    WHERE bib_index.bib_id=bib_master.bib_id
+    AND bib_master.library_id=library.library_id
+    AND bib_master.suppress_in_opac='N'
+    AND bib_index.index_code IN ('010A')
+    AND bib_index.normal_heading != 'OCOLC'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+    AND bib_text.bib_id = bib_master.bib_id
+    AND bib_index.normal_heading IN (
+        SELECT bib_index.normal_heading
+        FROM bib_index
+        WHERE bib_index.index_code IN ('010A')
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+        AND bib_id IN (
+            SELECT DISTINCT bib_index.bib_id
+            FROM bib_index
+            WHERE bib_index.index_code IN ('010A')
+            AND bib_index.normal_heading = %s
+            AND bib_index.normal_heading != 'OCOLC'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+            )
+        )
+    ORDER BY bib_index.bib_id
+    '''
+
+    rows = _fetch_all(q, [item['lccn']])
+    rows = _filter_by_title(rows, item['name'])
+
+    return rows
+
+
+def get_related_bibids_by_oclc(item):
+    if 'oclc' not in item or len(item['oclc']) == 0:
+        return []
+
+    binds = ','.join(['%s'] * len(item['oclc']))
+
+    q = u'''
+    SELECT DISTINCT bib_index.bib_id, bib_text.title
+    FROM bib_index, bib_master, bib_text
+    WHERE bib_index.bib_id=bib_master.bib_id
+    AND bib_master.suppress_in_opac='N'
+    AND bib_index.index_code IN ('035A')
+    AND bib_index.normal_heading != 'OCOLC'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+    AND bib_text.bib_id = bib_master.bib_id
+    AND bib_index.normal_heading IN (
+        SELECT bib_index.normal_heading
+        FROM bib_index
+        WHERE bib_index.index_code IN ('035A')
+        AND bib_index.normal_heading != bib_index.display_heading
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+        AND bib_id IN (
+            SELECT DISTINCT bib_index.bib_id
+            FROM bib_index
+            WHERE bib_index.index_code IN ('035A')
+            AND bib_index.normal_heading IN (%s)
+            AND bib_index.normal_heading != 'OCOLC'
+            AND bib_index.normal_heading != bib_index.display_heading
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+            )
+        )
+    ORDER BY bib_index.bib_id
+    ''' % binds
+
+    rows = _fetch_all(q, item['oclc'])
+    rows = _filter_by_title(rows, item['name'])
+
+    return rows
+
+
+def get_related_bibids_by_isbn(item):
+    if 'isbn' not in item or len(item['isbn']) == 0:
+        return []
+
+    binds = ','.join(['%s'] * len(item['isbn']))
+
+    q = '''
+    SELECT DISTINCT bib_index.bib_id, bib_text.title
+    FROM bib_index, bib_master, bib_text
+    WHERE bib_index.bib_id=bib_master.bib_id
+    AND bib_master.suppress_in_opac='N'
+    AND bib_index.index_code IN ('020N','020A','ISB3','020Z')
+    AND bib_index.normal_heading != 'OCOLC'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+    AND bib_text.bib_id = bib_master.bib_id
+    AND bib_index.normal_heading IN (
+        SELECT bib_index.normal_heading
+        FROM bib_index
+        WHERE bib_index.index_code IN ('020N','020A','ISB3','020Z')
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+        AND bib_id IN (
+            SELECT DISTINCT bib_index.bib_id
+            FROM bib_index
+            WHERE bib_index.index_code IN ('020N','020A','ISB3','020Z')
+            AND bib_index.normal_heading IN (%s)
+            AND bib_index.normal_heading != 'OCOLC'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+            )
+        )
+    ORDER BY bib_index.bib_id
+    ''' % binds
+    
+    rows = _fetch_all(q, item['isbn'])
+    rows = _filter_by_title(rows, item['name'])
+
+    return rows
+
+
+def get_related_bibids_by_issn(item):
+    if 'issn' not in item or len(item['issn']) == 0:
+        return []
+
+    binds = ','.join(['%s'] * len(item['issn']))
+
+    q = '''
+    SELECT DISTINCT bib_index.bib_id, bib_text.title
+    FROM bib_index, bib_master, bib_text
+    WHERE bib_index.bib_id=bib_master.bib_id
+    AND bib_master.suppress_in_opac='N'
+    AND bib_index.index_code IN ('022A','022Z','022L')
+    AND bib_index.normal_heading != 'OCOLC'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+    AND bib_text.bib_id = bib_master.bib_id
+    AND bib_index.normal_heading IN (
+        SELECT bib_index.normal_heading
+        FROM bib_index
+        WHERE bib_index.index_code IN ('022A','022Z','022L')
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+        AND bib_id IN (
+            SELECT DISTINCT bib_index.bib_id
+            FROM bib_index
+            WHERE bib_index.index_code IN ('022A','022Z','022L')
+            AND bib_index.normal_heading IN (%s)
+            AND bib_index.normal_heading != 'OCOLC'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+            )
+        )
+    ORDER BY bib_index.bib_id
+    ''' % binds
+   
+    # voyager wants "1059-1028" to look like "1059 1028"
+    issns = [i.replace('-', ' ') for i in item['issn']]
+
+    rows = _fetch_all(q, issns)
+    rows = _filter_by_title(rows, item['name'])
+
+    return rows
+
+
+
 def _get_offers(bibid):
     offers = []
     query = \
@@ -170,7 +385,7 @@ def _get_offers(bibid):
           ON item_status.item_id = item.item_id
         LEFT OUTER JOIN item_status_type
           ON item_status.item_status = item_status_type.item_status_type
-        LEFT OUTER JOIN location perm_location
+        leFT OUTER JOIN location perm_location
           ON perm_location.location_id = item.perm_location
         LEFT OUTER JOIN location temp_location
           ON temp_location.location_id = item.temp_location
@@ -272,7 +487,7 @@ def _get_offers_z3950(id, library):
                 m = re.match('DUE (\d\d)-(\d\d)-(\d\d)', note)
                 if m:
                     m, d, y = [int(i) for i in m.groups()]
-                    o['availabilityStarts'] = "20%s-%s-%s" % (y, m, d)
+                    o['availabilityStarts'] = "20%02i-%02i-%02i" % (y, m, d)
 
                 o['status'] = 'http://schema.org/OutOfStock'
 
@@ -339,16 +554,18 @@ def _normalize_status(status_id):
         return 'http://schema.org/InStock'
 
 
-
 def _fetch_one(query, params=[]):
     cursor = connection.cursor()
     cursor.execute(query, params)
     return cursor.fetchone()
 
 
-def _fetch_all(query, params):
-    cursor = connection
-    cursor.execute(query, params)
+def _fetch_all(query, params=None):
+    cursor = connection.cursor()
+    if params:
+        cursor.execute(query, params)
+    else:
+        cursor.execute(query)
     return cursor.fetchall()
 
 
@@ -365,4 +582,10 @@ def _get_hostname():
     return 'localhost'
 
 
-
+def _filter_by_title(rows, expected):
+    bibids = []
+    for bibid, title in rows:
+        min_len = min(len(expected), len(title))
+        if title.lower()[0:min_len] == expected.lower()[0:min_len]:
+            bibids.append(str(bibid))
+    return bibids

@@ -49,6 +49,14 @@ function check_availability() {
   });
 }
 
+function get_related(bibids) {
+  for (var i = 0; i < bibids.length; i++) {
+    var bibid = bibids[i];
+    var url = '/availability?bibid=' + bibid;
+    $.ajax(url).done(add_availability);
+  }
+}
+
 function add_availability(availability) {
   if (availability.summon) {
     var id = availability.summon;
@@ -64,9 +72,9 @@ function add_availability(availability) {
     } else if (a.availabilityStarts == '2382-12-31') {
       msg += " (Offsite) "
     } else if (a.availabilityStarts) {
-      msg += " (Due: " + a.availabilityStarts + ")";
+      msg += " (Due: " + a.availabilityStarts + ") ";
     } else if (a.status == "http://schema.org/OutOfStock") {
-      msg += " (Checked Out)";
+      msg += " (Checked Out) ";
     } else {
       msg += " (???)";
     }

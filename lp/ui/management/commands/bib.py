@@ -1,8 +1,7 @@
-import pprint
+import json
 
+from ui import db
 from django.core.management.base import BaseCommand
-
-from ui import voyager
 
 
 class Command(BaseCommand):
@@ -11,5 +10,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if len(args) >= 1:
-            bib = voyager.get_bib_data(args[0])
-            pprint.pprint(bib)
+            item = db.get_item(args[0])
+            print json.dumps(item, indent=2)

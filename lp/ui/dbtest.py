@@ -16,9 +16,52 @@ status = ['http://schema.org/InStock', 'http://schema.org/OutOfStock']
 
 class DbTests(unittest.TestCase):
 
-    def test_book(self):
-        i = get_item('12278722')
+    def test_get_item(self):
+        i = get_item('6566525')
         self.assertEqual(i['@type'], 'Book')
+        self.assertEqual(i['name'], 'Annotations to Finnegans wake')
+        self.assertEqual(i['oclc'], ['61456541'])
+        self.assertEqual(i['lccn'], '2005024683')
+        self.assertEqual(i['isbn'], ['0801883814', '0801883822'])
+
+    def test_issn(self):
+        i = get_item('3155728')
+        self.assertEqual(i['issn'], ['1059-1028'])
+
+    def test_get_related_items(self):
+        i = get_item('2281511')
+        expected = set(['2281511', '1278053', '13079375', '4377796',
+                        '5094040'])
+        bibids = set(db.get_related_bibids(i))
+        # we compare as sets because the order can change
+        self.assertEqual(bibids, expected)
+
+    def test_get_related_bibids_by_oclc(self):
+        i = get_item('2281511')
+        expected = ['1278053', '2281511', '13079375']
+        bibids = db.get_related_bibids_by_oclc(i)
+        self.assertEqual(expected, bibids)
+
+        # this item has multiple oclc numbers to lookup
+        i = get_item('12278722')
+        self.assertEqual(db.get_related_bibids_by_oclc(i), ['12278722'])
+
+    def test_get_related_bibids_by_lccn(self):
+        i = get_item('2281511')
+        expected = ['1278053', '2281511', '4377796', '5094040', '13079375']
+        bibids = db.get_related_bibids_by_lccn(i)
+        self.assertEqual(bibids, expected)
+
+    def test_get_related_bibids_by_isbn(self):
+        i = get_item('2281511')
+        bibids = db.get_related_bibids_by_isbn(i)
+        self.assertEqual(bibids, [])
+
+    def test_get_related_bibids_by_issn(self):
+        i = get_item('3155728')
+        expected = ['519894', '1939227', '2946288', '3155728']
+        bibids = db.get_related_bibids_by_issn(i)
+        self.assertEqual(bibids, expected)
 
     def test_availability(self):
         a = get_availability('5769326')
@@ -125,14 +168,11 @@ class DbTests(unittest.TestCase):
         self.assertEqual(a['offers'][0]['availabilityAtOrFrom'],
                          'Lib special collections')
 
-    """
-    These should eventually work:
-
     def test_availability_no_bib_record(self):
         # this bibid is a legit georgetown id but we have no bib record
         a = get_availability('b29950983')
         self.assertEqual(a['offers'][0]['seller'], 'Georgetown')
 
     def test_bad_bibid(self):
-        self.assertEqual(get_availability('nevermind'), None)
-    """
+        self.assertRaisesRegexp(Exception, 'unknown bibid format nevermind',
+                                get_availability, 'nevermind')
