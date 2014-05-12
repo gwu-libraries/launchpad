@@ -505,6 +505,9 @@ def search(request):
             page_query['page'] = page_range_start - 1
             prev_page_range = page_query.urlencode()
 
+        # https://github.com/gwu-libraries/launchpad/issues/603
+        search_results = _remove_genre_ebook_facet(search_results)
+
         # massage facets a bit before passing them off to the template
         # to make them easier to process there
         for f in search_results['facets']:
@@ -521,6 +524,7 @@ def search(request):
             # add spaces to the facet name
             # "ContentType" -> "Content Type"
             f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
+
 
         return render(request, 'search.html', {
             "q": q,
@@ -560,3 +564,14 @@ def related(request):
         json.dumps(bibids, indent=2),
         content_type='application/json'
     )
+
+
+def _remove_genre_ebook_facet(search_results):
+    for facet in search_results['facets']:
+        if facet['name'] == 'Genre':
+            new_counts = []
+            for count in facet['counts']:
+                if count['name'] != 'electronic books':
+                    new_counts.append(count)
+            facet['counts'] = new_counts
+    return search_results
