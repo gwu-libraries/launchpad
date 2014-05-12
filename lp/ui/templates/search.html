@@ -112,6 +112,10 @@
     </section>
 
     <section id="facets" class="span3">
+
+    <h2>{{ search_results.totalResults|intcomma }} items</h2>
+    <hr>
+
     {% for facet in search_results.facets %}
         <h2>{{ facet.name }}</h2>
         <ul>
