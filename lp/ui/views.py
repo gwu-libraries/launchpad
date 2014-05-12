@@ -505,8 +505,8 @@ def search(request):
             page_query['page'] = page_range_start - 1
             prev_page_range = page_query.urlencode()
 
-        # https://github.com/gwu-libraries/launchpad/issues/603
         search_results = _remove_genre_ebook_facet(search_results)
+        search_results = _reorder_facets(search_results)
 
         # massage facets a bit before passing them off to the template
         # to make them easier to process there
@@ -524,7 +524,6 @@ def search(request):
             # add spaces to the facet name
             # "ContentType" -> "Content Type"
             f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
-
 
         return render(request, 'search.html', {
             "q": q,
@@ -567,6 +566,7 @@ def related(request):
 
 
 def _remove_genre_ebook_facet(search_results):
+    # https://github.com/gwu-libraries/launchpad/issues/603
     for facet in search_results['facets']:
         if facet['name'] == 'Genre':
             new_counts = []
@@ -574,4 +574,18 @@ def _remove_genre_ebook_facet(search_results):
                 if count['name'] != 'electronic books':
                     new_counts.append(count)
             facet['counts'] = new_counts
+    return search_results
+
+
+def _reorder_facets(search_results):
+    # facets can come back in different order from summon
+    # this function makes sure we always display them in the same order
+    facets_order = ['Institution', 'ContentType', 'Author', 'Discipline',
+                    'Language', 'Genre']
+    new_facets = []
+    for facet_name in facets_order:
+        for facet in search_results['facets']:
+            if facet['name'] == facet_name:
+                new_facets.append(facet)
+    search_results['facets'] = new_facets
     return search_results
