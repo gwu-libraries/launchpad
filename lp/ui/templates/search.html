@@ -87,6 +87,22 @@
         <br>
         {% endif %}
 
+        {% if doc.isbn %}
+        ISBN: 
+        {% for isbn in doc.isbn %}
+        <span itemprop="isbn">{{ isbn }}</span>
+        {% endfor %}
+        <br>
+        {% endif %}
+
+        {% if doc.issn %}
+        ISSN: 
+        {% for issn in doc.issn %}
+        <span itemprop="issn">{{ issn }}</span>
+        {% endfor %}
+        <br>
+        {% endif %}
+
         <span itemprop="offers" class="offers">
         </span>
 

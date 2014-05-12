@@ -105,6 +105,9 @@ class Summon():
         if doc.get('ISBN'):
             i['isbn'] = doc['ISBN']
 
+        if doc.get('ISSN'):
+            i['issn'] = doc['ISSN']
+
         if doc.get('Edition'):
             i['bookEdition'] = doc['Edition'][0].strip('.')
 
