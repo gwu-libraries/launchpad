@@ -6,10 +6,11 @@ more fully developed.
 
 import re
 import pymarc
+import logging
 
+from PyZ3950 import zoom
 from django.db import connection
 from django.conf import settings
-from django.core.urlresolvers import reverse
 
 # oracle specific configuration since Voyager's Oracle requires ASCII
 
@@ -21,20 +22,56 @@ if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.oracle':
         ('NLS_LANG', '.US7ASCII'),
     ])
     # string bind parameters must not be promoted to Unicode in order to use
-    # Oracle indexes properly
+    # Voyager's antiquated Oracle indexes properly
     # https://github.com/gwu-libraries/launchpad/issues/611
     django.db.backends.oracle.base.convert_unicode = \
         django.utils.encoding.force_bytes
+
 
 def get_item(bibid):
     """
     Get JSON-LD for a given bibid.
     """
-    marc = get_marc(bibid)
-    return {
+    item = {
         '@type': 'Book',
-        'title': marc['245']['a']
     }
+
+    marc = get_marc(bibid)
+
+    item['wrlc'] = bibid
+
+    # get item name (title)
+    item['name'] = marc['245']['a'].strip(' /')
+
+    # get oclc number
+    for f in marc.get_fields('035'):
+        if f['a'] and f['a'].startswith('(OCoLC)'):
+            if 'oclc' not in item:
+                item['oclc'] = []
+            oclc = f['a'].replace('(OCoLC)', '').replace('OCM', '')
+            item['oclc'].append(oclc)
+
+    # get lccn
+    f = marc['010']
+    if f:
+        item['lccn'] = marc['010']['a'].strip()
+
+    # get isbns
+    for f in marc.get_fields('020'):
+        if 'isbn' not in item:
+            item['isbn'] = []
+        isbn = f['a']
+        # extract just the isbn, e.g. "0801883814 (hardcover : alk. paper)"
+        isbn = isbn.split()[0]
+        item['isbn'].append(isbn)
+
+    # get issns
+    for f in marc.get_fields('022'):
+        if 'issn' not in item:
+            item['issn'] = []
+        item['issn'].append(f['a'])
+
+    return item
 
 
 def get_marc(bibid):
@@ -54,165 +91,40 @@ def get_availability(bibid):
     """
     Get availability information as JSON-LD for a given bibid.
     """
-    # TODO: add all parameter to get related bibids from other institutions?
-
     if not isinstance(bibid, basestring):
         raise Exception("supplied a non-string: %s" % bibid)
 
-    # if bibid isn't numeric it's a temporary summon id that we need to resolve
-    if not re.match('^\d+', bibid):
-        summon_id = bibid
-        bibid = get_bibid_from_summonid(bibid)
-        if not bibid:
-            return None
-    else:
-        summon_id = None
-
-    query = \
-        """
-        SELECT DISTINCT
-          display_call_no,
-          item_status_desc,
-          item_status.item_status,
-          permLocation.location_display_name as PermLocation,
-          tempLocation.location_display_name as TempLocation,
-          mfhd_item.item_enum,
-          mfhd_item.chron,
-          item.item_id,
-          item_status_date,
-          to_char(CIRC_TRANSACTIONS.CHARGE_DUE_DATE, 'yyyy-mm-dd') AS DUE,
-          library.library_display_name
-        FROM bib_master
-        JOIN library ON library.library_id = bib_master.library_id
-        JOIN bib_mfhd ON bib_master.bib_id = bib_mfhd.bib_id
-        JOIN mfhd_master ON mfhd_master.mfhd_id = bib_mfhd.mfhd_id
-        JOIN library ON bib_master.library_id = library.library_id
-        LEFT OUTER JOIN mfhd_item
-          ON mfhd_item.mfhd_id = mfhd_master.mfhd_id
-        LEFT OUTER JOIN item
-          ON item.item_id = mfhd_item.item_id
-        LEFT OUTER JOIN item_status
-          ON item_status.item_id = item.item_id
-        LEFT OUTER JOIN item_status_type
-          ON item_status.item_status = item_status_type.item_status_type
-        LEFT OUTER JOIN location permLocation
-          ON permLocation.location_id = item.perm_location
-        LEFT OUTER JOIN location tempLocation
-          ON tempLocation.location_id = item.temp_location
-        LEFT OUTER JOIN circ_transactions
-          ON item.item_id = circ_transactions.item_id
-        WHERE bib_master.bib_id = %s
-        AND mfhd_master.suppress_in_opac != 'Y'
-        ORDER BY PermLocation, TempLocation, item_status_date desc
-        """
-
-    cursor = connection.cursor()
-    cursor.execute(query, [bibid])
-    hostname = get_hostname()
-
+    url = 'http://%s/item/%s' % (_get_hostname(), bibid)
     results = {
         '@context': {
             '@vocab': 'http://schema.org/',
         },
-        '@id': 'http://' + hostname + reverse('item', args=[bibid]),
+        '@id': url,
         'offers': [],
-        # TODO: make sure wrlc is defined in json-ld @context
         'wrlc': bibid,
     }
 
-    # if they asked using the temporary summon id (Georgetown/GeorgeMason)
-    # include that in the response too
-    # TODO: make sure summon is definied in json-ld @context
-    if summon_id:
-        results['summon'] = summon_id
+    # if the bibid is numeric we can look it up locally in Voyager
+    if re.match('^\d+$', bibid):
+        results['offers'] = _get_offers(bibid)
 
-    for row in cursor.fetchall():
-        seller = settings.LIB_LOOKUP.get(row[10], '?')
-        a = {
-            '@type': 'Offer',
-            'seller': seller,
-            'sku': row[0],
-            'status': _normalize_status(row[2]),
-        }
-
-        # use temp location if there is one, otherwise use perm location
-        if row[4]:
-            a['availabilityAtOrFrom'] = _normalize_location(row[4])
+    # George Mason and Georgetown have special ids in Summon and we need 
+    # to talk to their catalogs to determine availability
+    else:
+        if bibid.startswith('m'):
+            results['offers'] = _get_offers_z3950(bibid, 'George Mason')
+        elif bibid.startswith('b'):
+            results['offers'] = _get_offers_z3950(bibid, 'Georgetown')
         else:
-            a['availabilityAtOrFrom'] = _normalize_location(row[3])
+            raise Exception("unknown bibid format %s" % bibid)
 
-        # serial number can be null, apparently
-        if row[7]:
-            a['serialNumber'] = str(row[7])
-
-        # add due date if we have one
-        if row[9]:
-            a['availabilityStarts'] = row[9]
-
-        results['offers'].append(a)
+        # update wrlc id if there is a record in voyager for it
+        wrlc_id = get_bibid_from_summonid(bibid)
+        if wrlc_id:
+            results['wrlc'] = wrlc_id
+            results['summon'] = bibid
 
     return results
-
-
-def _normalize_status(status_id):
-    """
-    This function will turn one of the standard item status codes
-    into a GoodRelations URI:
-
-    http://www.w3.org/community/schemabibex/wiki/Holdings_via_Offer
-
-    Here is a snapshot in time of item_status_ids, their description,
-    and count:
-
-      1 Not Charged                  5897029
-      2 Charged                      1832241
-      3 Renewed                        39548
-     17 Withdrawn                      26613
-      4 Overdue                        22966
-     14 Lost--System Applied           16687
-     12 Missing                        15816
-     19 Cataloging Review              15584
-     20 Circulation Review             11225
-      9 In Transit Discharged           7493
-     13 Lost--Library Applied           7262
-     11 Discharged                      2001
-     18 At Bindery                      1603
-     15 Claims Returned                  637
-     16 Damaged                          525
-     22 In Process                       276
-      6 Hold Request                      39
-     10 In Transit On Hold                24
-      8 In Transit                        23
-      5 Recall Request                    17
-      7 On Hold                            6
-     24 Short Loan Request                 2
-
-    """
-
-    # TODO: more granularity needed?
-    if status_id == 1:
-        return 'http://schema.org/InStock'
-    elif status_id:
-        return 'http://schema.org/OutOfStock'
-
-
-def fetch_one(query, params=[]):
-    cursor = connection.cursor()
-    cursor.execute(query, params)
-    return cursor.fetchone()
-
-
-def fetch_all(query, params):
-    cursor = connection
-    cursor.execute(query, params)
-    return cursor.fetchall()
-
-
-def _normalize_location(location):
-    if not location:
-        return None
-    parts = location.split(': ', 1)
-    return parts.pop().capitalize()
 
 
 def get_bibid_from_summonid(id):
@@ -220,6 +132,8 @@ def get_bibid_from_summonid(id):
     For some reason Georgetown and GeorgeMason loaded Summon with their
     own IDs so we need to look them up differently.
     """
+    if re.match('^\d+$', id):
+        return id
     if id.startswith('b'):
         return get_bibid_from_gtid(id)
     elif id.startswith('m'):
@@ -262,7 +176,418 @@ def get_bibid_from_gmid(id):
     return str(results[0]) if results else None
 
 
-def get_hostname():
+def get_related_bibids(item):
+    bibid = item['wrlc']
+    bibids = set([bibid])
+    bibids |= set(get_related_bibids_by_oclc(item))
+    bibids |= set(get_related_bibids_by_lccn(item))
+    bibids |= set(get_related_bibids_by_isbn(item))
+    return list(bibids)
+
+
+def get_related_bibids_by_lccn(item):
+    if 'lccn' not in item:
+        return []
+
+    q = '''
+    SELECT DISTINCT bib_index.bib_id, bib_text.title
+    FROM bib_index, library, bib_master, bib_text
+    WHERE bib_index.bib_id=bib_master.bib_id
+    AND bib_master.library_id=library.library_id
+    AND bib_master.suppress_in_opac='N'
+    AND bib_index.index_code IN ('010A')
+    AND bib_index.normal_heading != 'OCOLC'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+    AND bib_text.bib_id = bib_master.bib_id
+    AND bib_index.normal_heading IN (
+        SELECT bib_index.normal_heading
+        FROM bib_index
+        WHERE bib_index.index_code IN ('010A')
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+        AND bib_id IN (
+            SELECT DISTINCT bib_index.bib_id
+            FROM bib_index
+            WHERE bib_index.index_code IN ('010A')
+            AND bib_index.normal_heading = %s
+            AND bib_index.normal_heading != 'OCOLC'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+            )
+        )
+    ORDER BY bib_index.bib_id
+    '''
+
+    rows = _fetch_all(q, [item['lccn']])
+    rows = _filter_by_title(rows, item['name'])
+
+    return rows
+
+
+def get_related_bibids_by_oclc(item):
+    if 'oclc' not in item or len(item['oclc']) == 0:
+        return []
+
+    binds = ','.join(['%s'] * len(item['oclc']))
+
+    q = u'''
+    SELECT DISTINCT bib_index.bib_id, bib_text.title
+    FROM bib_index, bib_master, bib_text
+    WHERE bib_index.bib_id=bib_master.bib_id
+    AND bib_master.suppress_in_opac='N'
+    AND bib_index.index_code IN ('035A')
+    AND bib_index.normal_heading != 'OCOLC'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+    AND bib_text.bib_id = bib_master.bib_id
+    AND bib_index.normal_heading IN (
+        SELECT bib_index.normal_heading
+        FROM bib_index
+        WHERE bib_index.index_code IN ('035A')
+        AND bib_index.normal_heading != bib_index.display_heading
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+        AND bib_id IN (
+            SELECT DISTINCT bib_index.bib_id
+            FROM bib_index
+            WHERE bib_index.index_code IN ('035A')
+            AND bib_index.normal_heading IN (%s)
+            AND bib_index.normal_heading != 'OCOLC'
+            AND bib_index.normal_heading != bib_index.display_heading
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+            )
+        )
+    ORDER BY bib_index.bib_id
+    ''' % binds
+
+    rows = _fetch_all(q, item['oclc'])
+    rows = _filter_by_title(rows, item['name'])
+
+    return rows
+
+
+def get_related_bibids_by_isbn(item):
+    if 'isbn' not in item or len(item['isbn']) == 0:
+        return []
+
+    binds = ','.join(['%s'] * len(item['isbn']))
+
+    q = '''
+    SELECT DISTINCT bib_index.bib_id, bib_text.title
+    FROM bib_index, bib_master, bib_text
+    WHERE bib_index.bib_id=bib_master.bib_id
+    AND bib_master.suppress_in_opac='N'
+    AND bib_index.index_code IN ('020N','020A','ISB3','020Z')
+    AND bib_index.normal_heading != 'OCOLC'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+    AND bib_text.bib_id = bib_master.bib_id
+    AND bib_index.normal_heading IN (
+        SELECT bib_index.normal_heading
+        FROM bib_index
+        WHERE bib_index.index_code IN ('020N','020A','ISB3','020Z')
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+        AND bib_id IN (
+            SELECT DISTINCT bib_index.bib_id
+            FROM bib_index
+            WHERE bib_index.index_code IN ('020N','020A','ISB3','020Z')
+            AND bib_index.normal_heading IN (%s)
+            AND bib_index.normal_heading != 'OCOLC'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+            )
+        )
+    ORDER BY bib_index.bib_id
+    ''' % binds
+    
+    rows = _fetch_all(q, item['isbn'])
+    rows = _filter_by_title(rows, item['name'])
+
+    return rows
+
+
+def get_related_bibids_by_issn(item):
+    if 'issn' not in item or len(item['issn']) == 0:
+        return []
+
+    binds = ','.join(['%s'] * len(item['issn']))
+
+    q = '''
+    SELECT DISTINCT bib_index.bib_id, bib_text.title
+    FROM bib_index, bib_master, bib_text
+    WHERE bib_index.bib_id=bib_master.bib_id
+    AND bib_master.suppress_in_opac='N'
+    AND bib_index.index_code IN ('022A','022Z','022L')
+    AND bib_index.normal_heading != 'OCOLC'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+    AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+    AND bib_text.bib_id = bib_master.bib_id
+    AND bib_index.normal_heading IN (
+        SELECT bib_index.normal_heading
+        FROM bib_index
+        WHERE bib_index.index_code IN ('022A','022Z','022L')
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+        AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+        AND bib_id IN (
+            SELECT DISTINCT bib_index.bib_id
+            FROM bib_index
+            WHERE bib_index.index_code IN ('022A','022Z','022L')
+            AND bib_index.normal_heading IN (%s)
+            AND bib_index.normal_heading != 'OCOLC'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SET%%%%'
+            AND UPPER(bib_index.display_heading) NOT LIKE '%%%%SER%%%%'
+            )
+        )
+    ORDER BY bib_index.bib_id
+    ''' % binds
+   
+    # voyager wants "1059-1028" to look like "1059 1028"
+    issns = [i.replace('-', ' ') for i in item['issn']]
+
+    rows = _fetch_all(q, issns)
+    rows = _filter_by_title(rows, item['name'])
+
+    return rows
+
+
+
+def _get_offers(bibid):
+    offers = []
+    query = \
+        """
+        SELECT DISTINCT
+          display_call_no,
+          item_status_desc,
+          item_status.item_status,
+          perm_location.location_display_name as PermLocation,
+          temp_location.location_display_name as TempLocation,
+          mfhd_item.item_enum,
+          mfhd_item.chron,
+          item.item_id,
+          item_status_date,
+          to_char(CIRC_TRANSACTIONS.CHARGE_DUE_DATE, 'yyyy-mm-dd') AS DUE,
+          library.library_display_name,
+          holding_location.location_display_name as HoldingLocation
+        FROM bib_master
+        JOIN library ON library.library_id = bib_master.library_id
+        JOIN bib_mfhd ON bib_master.bib_id = bib_mfhd.bib_id
+        JOIN mfhd_master ON mfhd_master.mfhd_id = bib_mfhd.mfhd_id
+        JOIN library ON bib_master.library_id = library.library_id
+        JOIN location holding_location
+          ON mfhd_master.location_id = holding_location.location_id
+        LEFT OUTER JOIN mfhd_item
+          ON mfhd_item.mfhd_id = mfhd_master.mfhd_id
+        LEFT OUTER JOIN item
+          ON item.item_id = mfhd_item.item_id
+        LEFT OUTER JOIN item_status
+          ON item_status.item_id = item.item_id
+        LEFT OUTER JOIN item_status_type
+          ON item_status.item_status = item_status_type.item_status_type
+        leFT OUTER JOIN location perm_location
+          ON perm_location.location_id = item.perm_location
+        LEFT OUTER JOIN location temp_location
+          ON temp_location.location_id = item.temp_location
+        LEFT OUTER JOIN circ_transactions
+          ON item.item_id = circ_transactions.item_id
+        WHERE bib_master.bib_id = %s
+        AND mfhd_master.suppress_in_opac != 'Y'
+        ORDER BY PermLocation, TempLocation, item_status_date desc
+        """
+
+    cursor = connection.cursor()
+    cursor.execute(query, [bibid])
+
+    # this will get set to true for libraries that require a z39.50 lookup
+    need_z3950_lookup = False
+
+    for row in cursor.fetchall():
+        seller = settings.LIB_LOOKUP.get(row[10], '?')
+        o = {
+            '@type': 'Offer',
+            'seller': seller,
+            'sku': row[0],
+            'status': _normalize_status(row[2]),
+        }
+
+        # use temp location if there is one, otherwise use perm location
+        # or the holding location in cases where there is no item record
+        if row[4]:
+            o['availabilityAtOrFrom'] = _normalize_location(row[4])
+        elif row[3]:
+            o['availabilityAtOrFrom'] = _normalize_location(row[3])
+        else:
+            o['availabilityAtOrFrom'] = _normalize_location(row[11])
+
+        # serial number can be null, apparently
+        if row[7]:
+            o['serialNumber'] = str(row[7])
+
+        # add due date if we have one
+        if row[9]:
+            o['availabilityStarts'] = row[9]
+
+        # z39.50 lookups
+        if seller == 'George Mason' or seller == 'Georgetown':
+            need_z3950_lookup = True
+
+        offers.append(o)
+
+    if need_z3950_lookup:
+        library = offers[0]['seller']
+        return _get_offers_z3950(bibid, library)
+
+    return offers
+
+
+def _get_offers_z3950(id, library):
+    offers = []
+
+    # determine which server to talk to
+    if library == 'Georgetown':
+        conf = settings.Z3950_SERVERS['GT']
+    elif library == 'George Mason':
+        id = id.strip('m')
+        conf = settings.Z3950_SERVERS['GM']
+    else:
+        raise Exception("unrecognized library %s" % library)
+
+    # search for the id, and get the first record
+    z = zoom.Connection(conf['IP'], conf['PORT'])
+    z.databaseName = conf['DB']
+    z.preferredRecordSyntax = conf['SYNTAX']
+    q = zoom.Query('PQF', '@attr 1=12 %s' % id.encode('utf-8'))
+    results = z.search(q)
+    if len(results) == 0:
+        return []
+    rec = results[0]
+
+    # normalize holdings information as schema.org offers
+
+    if not hasattr(rec, 'data') and not hasattr(rec.data, 'holdingsData'):
+        return []
+
+    for holdings_data in rec.data.holdingsData:
+        h = holdings_data[1]
+        o = {'@type': 'Offer', 'seller': library}
+        o['h'] = str(h)
+
+        if hasattr(h, 'callNumber'):
+            o['sku'] = h.callNumber.rstrip('\x00').strip()
+
+        if hasattr(h, 'localLocation'):
+            o['availabilityAtOrFrom'] = h.localLocation.rstrip('\x00')
+
+        if hasattr(h, 'publicNote') and library == 'Georgetown':
+            note = h.publicNote.rstrip('\x00')
+            if note == 'AVAILABLE':
+                o['status'] = 'http://schema.org/InStock'
+            else:
+                # set availabilityStarts from "DUE 09-15-14"
+                m = re.match('DUE (\d\d)-(\d\d)-(\d\d)', note)
+                if m:
+                    m, d, y = [int(i) for i in m.groups()]
+                    o['availabilityStarts'] = "20%02i-%02i-%02i" % (y, m, d)
+
+                o['status'] = 'http://schema.org/OutOfStock'
+
+        elif hasattr(h, 'circulationData'):
+            cd = h.circulationData[0]
+            if cd.availableNow is True:
+                o['status'] = 'http://schema.org/InStock'
+            else:
+                if cd.availabilityDate:
+                    o['availabilityStarts'] = cd.availablityDate
+                    # TODO: set availabilityStarts to YYYY-MM-DD
+                o['status'] = 'http://schema.org/OutOfStock'
+
+        else:
+            logging.warn("unknown availability: bibid=%s library=%s h=%s",
+                         id, library, h)
+
+        offers.append(o)
+
+    return offers
+
+
+def _normalize_status(status_id):
+    """
+    This function will turn one of the standard item status codes
+    into a GoodRelations URI:
+
+    http://www.w3.org/community/schemabibex/wiki/Holdings_via_Offer
+
+    Here is a snapshot in time of item_status_ids, their description,
+    and count:
+
+      1 Not Charged                  5897029
+      2 Charged                      1832241
+      3 Renewed                        39548
+     17 Withdrawn                      26613
+      4 Overdue                        22966
+     14 Lost--System Applied           16687
+     12 Missing                        15816
+     19 Cataloging Review              15584
+     20 Circulation Review             11225
+      9 In Transit Discharged           7493
+     13 Lost--Library Applied           7262
+     11 Discharged                      2001
+     18 At Bindery                      1603
+     15 Claims Returned                  637
+     16 Damaged                          525
+     22 In Process                       276
+      6 Hold Request                      39
+     10 In Transit On Hold                24
+      8 In Transit                        23
+      5 Recall Request                    17
+      7 On Hold                            6
+     24 Short Loan Request                 2
+
+    """
+
+    # TODO: more granularity needed?
+    if status_id == 1:
+        return 'http://schema.org/InStock'
+    elif status_id:
+        return 'http://schema.org/OutOfStock'
+    else:
+        return 'http://schema.org/InStock'
+
+
+def _fetch_one(query, params=[]):
+    cursor = connection.cursor()
+    cursor.execute(query, params)
+    return cursor.fetchone()
+
+
+def _fetch_all(query, params=None):
+    cursor = connection.cursor()
+    if params:
+        cursor.execute(query, params)
+    else:
+        cursor.execute(query)
+    return cursor.fetchall()
+
+
+def _normalize_location(location):
+    if not location:
+        return None
+    parts = location.split(': ', 1)
+    return parts.pop().capitalize()
+
+
+def _get_hostname():
     if len(settings.ALLOWED_HOSTS) > 0:
         return settings.ALLOWED_HOSTS[0]
     return 'localhost'
+
+
+def _filter_by_title(rows, expected):
+    bibids = []
+    for bibid, title in rows:
+        min_len = min(len(expected), len(title))
+        if title.lower()[0:min_len] == expected.lower()[0:min_len]:
+            bibids.append(str(bibid))
+    return bibids

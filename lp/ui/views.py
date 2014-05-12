@@ -544,3 +544,19 @@ def availability(request):
         json.dumps(db.get_availability(bibid), indent=2),
         content_type='application/json'
     )
+
+
+def related(request):
+    """
+    API call for getting related bibids.
+    """
+    bibid = request.GET.get('bibid')
+    if not bibid:
+        raise Http404()
+    bibid = db.get_bibid_from_summonid(bibid)
+    item = db.get_item(bibid)
+    bibids = db.get_related_bibids(item)
+    return HttpResponse(
+        json.dumps(bibids, indent=2),
+        content_type='application/json'
+    )
