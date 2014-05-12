@@ -53,12 +53,6 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(len(i['offers']), 1)
         self.assertEqual(i['offers'][0]['seller'], 'George Mason University')
 
-
-    def test_issn(self):
-        results = self.summon.search('issn:1059-1028')
-        for result in results['results']:
-            print result
-
     def test_raw(self):
         results = self.summon.search("isbn:1573870994", raw=True)
         self.assertEqual(results['documents'][0]['Title'], ['The web of knowledge'])
