@@ -113,4 +113,11 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['author'][0]['alternateName'], 
             u'\u65e5\u66ae\u5409\u5ef6')
 
-
+    def test_web_resource(self):
+        search = self.summon.search(
+            'politics',
+            fq='ContentType:("Web Resource")'
+        )
+        self.assertTrue(len(search['results']) > 0)
+        for result in search['results']:
+            self.assertEqual(result['@type'], 'WebPage')

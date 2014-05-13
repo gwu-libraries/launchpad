@@ -155,5 +155,7 @@ class Summon():
             return 'Book'
         elif content_type == 'Video Recording':
             return 'VideoObject'
+        elif content_type == 'Web Resource':
+            return 'WebPage'
         else:
             return 'Book'
