@@ -521,6 +521,10 @@ def search(request):
                 # "bazzocchi, marco antonio" -> "Bazzocchi, Marco Antonio"
                 fc['name'] = fc['name'].title()
 
+                # remove parenthetical codes from institution facet
+                if f['name'] == 'Institution':
+                    fc['name'] = re.sub('\(.+\)$', '', fc['name'])
+
             # add spaces to the facet name
             # "ContentType" -> "Content Type"
             f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
