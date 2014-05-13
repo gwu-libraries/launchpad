@@ -44,8 +44,28 @@
         <img itemprop="image" class="cover" src={{ doc.thumbnailUrl }}>
         {% endif %}
 
+        {% if doc.alternateName %}
         <a href="{{ doc.id }}">
-            <span class="title" itemprop="name">{{ doc.name }}</span>
+            <span itemprop="alterateName">{{ doc.alternateName }}</span>
+        </a>
+        {% if doc.author %}
+        / 
+        {% for author in doc.author %}
+        {% if author.alternateName %}
+        <span itemprop="author" itemtype="Person" itemscope>
+            {% if forloop.last %}
+            <span itemprop="name">{{ author.alternateName }}.</span>
+            {% else %}
+            <span itemprop="name">{{ author.alternateName }}</span>
+            {% endif %}
+        </span>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+
+        <a href="{{ doc.id }}">
+            <span itemprop="name">{{ doc.name }}</span>
         </a>
 
         {% if doc.author %}
@@ -75,7 +95,7 @@
         {{ doc.datePublished }}.
 
         <br>
-        
+
         {% if doc.about %}
         Subjects:
         <ul class="subjects" itemprop="about">

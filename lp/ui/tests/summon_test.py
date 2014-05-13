@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import summoner
 import unittest
@@ -36,8 +38,8 @@ class SummonTests(unittest.TestCase):
 
         self.assertEqual(len(i['author']), 3)
         self.assertEqual(i['author'][0]['name'], 'Garfield, Eugene')
-        self.assertEqual(i['author'][1]['name'], 'Atkins, Helen Barsky')
-        self.assertEqual(i['author'][2]['name'], 'Cronin, Blaise')
+        self.assertEqual(i['author'][1]['name'], 'Cronin, Blaise')
+        self.assertEqual(i['author'][2]['name'], 'Atkins, Helen Barsky')
 
         self.assertEqual(len(i['about']), 3)
         self.assertEqual(i['about'][0]['name'], 'Science -- Abstracting and indexing')
@@ -94,10 +96,21 @@ class SummonTests(unittest.TestCase):
         search = self.summon.search(
             'information',
             ps=50,
-            fq='SourceType:("Library Catalog")', 
+            fq='SourceType:("Library Catalog")',
             fvf='%s,%s,%s' % ('Institution', 'Georgetown University (GT)', 'false')
         )
         for item in search['results']:
             if len(item['offers']) == 1 \
                 and item['offers'][0]['seller'] == 'Georgetown University':
                 self.assertEqual(item['summon'][0], 'b')
+
+    def test_alternate_name(self):
+        search = self.summon.search('isbn:9784062879248',
+            fq='SourceType:("Library Catalog")')
+        self.assertEqual(len(search['results']), 1)
+        i = search['results'][0]
+        self.assertEqual(i['alternateName'], u'\u6771\u4eac\u88c1\u5224')
+        self.assertEqual(i['author'][0]['alternateName'], 
+            u'\u65e5\u66ae\u5409\u5ef6')
+
+

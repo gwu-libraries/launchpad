@@ -83,8 +83,12 @@ class Summon():
                 i['name'] += " : " + doc['Subtitle'][0]
 
         i['author'] = []
-        for name in doc.get('Author', []):
-            i['author'].append({'name': name})
+        for name in doc.get('Author_xml', []):
+            i['author'].append({'name': name['fullname']})
+        for alt_name in doc.get('Author_FL_xml', []):
+            pos = int(alt_name['sequence']) - 1
+            if pos < len(i['author']):
+                i['author'][pos]['alternateName'] = alt_name['fullname']
 
         i['about'] = []
         for subject in doc.get('SubjectTermsDisplay', []):
@@ -110,6 +114,9 @@ class Summon():
 
         if doc.get('Edition'):
             i['bookEdition'] = doc['Edition'][0].strip('.')
+
+        if doc.get('DocumentTitle_FL'):
+            i['alternateName'] = doc.get('DocumentTitle_FL')[0]
 
         if doc.get('Institution'):
             i['offers'] = []
