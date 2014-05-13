@@ -56,7 +56,7 @@
             {% if forloop.last %}
             <span itemprop="name">{{ author.alternateName }}.</span>
             {% else %}
-            <span itemprop="name">{{ author.alternateName }}</span>
+            <span itemprop="name">{{ author.alternateName }}</span> ; 
             {% endif %}
         </span>
         {% endif %}
@@ -75,7 +75,7 @@
             {% if forloop.last %}
             <span itemprop="name">{{ author.name }}.</span>
             {% else %}
-            <span itemprop="name">{{ author.name }}</span>
+            <span itemprop="name">{{ author.name }}</span> ;
             {% endif %}
         </span>
         {% endfor %}
