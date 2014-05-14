@@ -230,8 +230,7 @@ ul.subjects {
   list-style-type: none;
   display: inline;
   margin: 0;
-  padding: 0;
-  
+  padding-left: 10px;
 }
 
 #active-facets li {
