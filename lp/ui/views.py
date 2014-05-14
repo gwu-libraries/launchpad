@@ -442,6 +442,7 @@ def search(request):
         if ':' not in facet:
             continue
         facet_field, facet_value = facet.split(':', 1)
+
         facet_value = facet_value.replace(',', '\\,')
         if 'fvf' not in kwargs:
             kwargs['fvf'] = []
@@ -521,6 +522,7 @@ def search(request):
 
         return render(request, 'search.html', {
             "q": q,
+            "active_facets": _get_active_facets(request),
             "page": page,
             "page_range": page_range,
             "next_page_range": next_page_range,
@@ -611,3 +613,25 @@ def _format_facets(request, search_results):
         f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
 
     return search_results
+
+
+def _get_active_facets(request):
+    active_facets = []
+
+    for facet in request.GET.getlist('facet'):
+        if ':' not in facet:
+            continue
+        name, value = facet.split(':', 1)
+
+        remove_link = request.GET.copy()
+        removed_facets = list(
+            set(remove_link.getlist('facet')) - set([facet])
+        )
+        remove_link.setlist('facet', removed_facets)
+
+        active_facets.append({
+            "name": name,
+            "value": value,
+            "remove_link": "?" + remove_link.urlencode()
+        })
+    return active_facets

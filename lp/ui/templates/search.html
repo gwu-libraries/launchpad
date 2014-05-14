@@ -28,6 +28,18 @@
         </form>
     </section>
 
+    {% if active_facets %}
+    <section id="active-facets">
+      <ul>
+        {% for facet in active_facets %}
+        <li class="{{ facet.name }}">
+          <a class="btn" title="remove {{ facet.value }} facet" href="{{ facet.remove_link }}">{{ facet.value }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
     <div class="row">
 
     <section id="search-results" class="span9">
