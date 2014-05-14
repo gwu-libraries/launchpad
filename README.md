@@ -29,6 +29,7 @@ only been tested on ubuntu 10.04 LTS.
 3. Download Oracle Instant Client 11.2.0.3 for Linux
 x86-64 or the platform that matches your system from
 http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html
+(accept terms and login to download the files)
 
         * instant-client-basic
         * instant-client-devel
@@ -58,7 +59,7 @@ the path according to your installation of oracle.
         export ORACLE_HOME=/usr/lib/oracle/11.2/client64/
         export LD_LIBRARY_PATH=/usr/lib/oracle/11.2/client64/lib
 
-7. Set environment variables in oracle.conf file
+7. Set environment variables in oracle.conf file (create the file if it does not exist)
 
         vim /etc/ld.so.conf.d/oracle-instantclient11.2-basic.conf
 
@@ -142,6 +143,7 @@ Configure database and other settings in a local_settings file:
 - NOTE: If you are deploying to production, set DEBUG = False.
     Also, set GOOGLE_ANALYTICS_UA to your UA to enable google 
     analytics in production.
+- Comment out CACHES and ITEM_PAGE_CACHE_SECONDS if you are not using memcached
 
 Edit wsgi file:
 
