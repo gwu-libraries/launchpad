@@ -136,14 +136,14 @@
         <br>
         {% endif %}
 
-        <span itemprop="offers" class="offers">
+        <div itemprop="offers" class="offers">
           {% for offer in doc.offers %}
           <span class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
             <span itemprop="seller">{{ offer.seller }}</span>
           </span>
-          {% if not forloop.last %};{% endif %}
+          {% if not forloop.last %} ; {% endif %}
           {% endfor %}
-        </span>
+        </div>
 
     </article>
     {% endfor %}

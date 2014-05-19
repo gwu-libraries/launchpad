@@ -53,9 +53,15 @@ class Summon():
                     })
                 response['facets'].append(facet)
 
+        seen = {}
         for doc in summon_response['documents']:
             item = self._convert(doc)
             if item:
+                # sometimes (rarely) the same item appears more than once?
+                # e.g. search for "statistics"
+                if item['@id'] in seen:
+                    continue
+                seen[item['@id']] = True
                 if for_template:
                     item['id'] = item.pop('@id')
                     item['type'] = item.pop('@type')

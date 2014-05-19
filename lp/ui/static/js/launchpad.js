@@ -58,25 +58,37 @@ function add_availability(availability) {
     var id = availability.wrlc;
   }
 
-  var status_messages = [];
+  var available = 0;
+  var checked_out = 0;
+  var offsite = 0;
+
   for (var i = 0; i < availability.offers.length; i++) {
     a = availability.offers[i];
     if (a.status == "http://schema.org/InStock") {
-      msg = "Available"
-    } else if (a.status = "http://schema.org/InStoreOnly") {
-      msg = "Available"
+      available += 1;
+    } else if (a.status == "http://schema.org/InStoreOnly") {
+      available += 1;
     } else if (a.availabilityStarts == '2382-12-31') {
-      msg = "Offsite"
+      offsite += 1;
     } else if (a.availabilityStarts) {
-      msg = "Due: " + a.availabilityStarts;
+      checked_out += 1;
     } else if (a.status == "http://schema.org/OutOfStock") {
-      msg = "Checked Out";
+      checked_out += 1;
     } else {
-      msg = "???";
+      console.log("unable to determine status: " + a);
     }
-    status_messages.push(msg)
   }
-  $("#offer-" + id).append("(" + status_messages.join(' ; ') + ")");
+  summary = [];
+  if (available > 0) {
+    summary.push(available + " available")
+  }
+  if (checked_out > 0) {
+    summary.push(checked_out + " checked out")
+  }
+  if (offsite > 0) {
+    summary.push(offsite + " offsite")
+  }
+  var o = $("#offer-" + id).append('(' + summary.join('; ') + ')');
 }
 
 $(document).ready(function() {
