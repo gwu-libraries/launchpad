@@ -180,6 +180,10 @@ footer {
     padding-right: 10px;
 }
 
+.search form {
+    height: 1.5em;
+}
+
 .search-result {
   padding: 10px;
   border-bottom: solid thin #cccccc;
@@ -216,4 +220,21 @@ ul.subjects {
 .subjects li {
   display: inline;
   font-size: medium;
+}
+
+#active-facets {
+  margin-bottom: 10px;
+}
+
+#active-facets ul {
+  list-style-type: none;
+  display: inline;
+  margin: 0;
+  padding-left: 10px;
+}
+
+#active-facets li {
+  display: inline;
+  font-size: smaller;
+  padding: 3px;
 }

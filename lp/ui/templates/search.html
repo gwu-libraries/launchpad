@@ -28,24 +28,57 @@
         </form>
     </section>
 
+    {% if active_facets %}
+    <section id="active-facets">
+      <ul>
+        {% for facet in active_facets %}
+        <li class="{{ facet.name }}">
+          <a class="btn" title="remove {{ facet.value }} facet" href="{{ facet.remove_link }}">{{ facet.value }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
     <div class="row">
 
     <section id="search-results" class="span9">
 
     {% for doc in search_results.results %}
-    <article id="{{ doc.summon }}" class="search-result" itemscope itemtype="{{ doc.type }}">
+    <article id="{{ doc.id }}" class="search-result" itemscope itemtype="{{ doc.type }}">
         {% if doc.type == "Book" %}<img title="Book" class="item-type" src="{{ STATIC_URL }}img/book.png">{%endif %}
         {% if doc.type == "VideoObject" %}<img title="Video" class="item-type" src="{{ STATIC_URL }}img/video.png">{% endif %}
         {% if doc.type == "AudioObject" %}<img title="Audio" class="item-type" src="{{ STATIC_URL }}img/audio.png">{% endif %}
         {% if doc.type == "Map" %}<img title="Map" class="item-type" src="{{ STATIC_URL }}img/map.png">{% endif %}
-        {% if doc.type == "Periodical" %}<img title="Map" class="item-type" src="{{ STATIC_URL }}img/periodical.png">{% endif %}
+        {% if doc.type == "Periodical" %}<img title="Periodical" class="item-type" src="{{ STATIC_URL }}img/periodical.png">{% endif %}
+        {% if doc.type == "WebPage" %}<img title="Web Page" class="item-type" src="{{ STATIC_URL }}img/webpage.png">{% endif %}
 
         {% if doc.thumbnailUrl %}
         <img itemprop="image" class="cover" src={{ doc.thumbnailUrl }}>
         {% endif %}
 
+        {% if doc.alternateName %}
         <a href="{{ doc.id }}">
-            <span class="title" itemprop="name">{{ doc.name }}</span>
+            <span itemprop="alterateName">{{ doc.alternateName }}</span>
+        </a>
+        {% if doc.author %}
+        / 
+        {% for author in doc.author %}
+        {% if author.alternateName %}
+        <span itemprop="author" itemtype="Person" itemscope>
+            {% if forloop.last %}
+            <span itemprop="name">{{ author.alternateName }}.</span>
+            {% else %}
+            <span itemprop="name">{{ author.alternateName }}</span> ; 
+            {% endif %}
+        </span>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+
+        <a href="{{ doc.id }}">
+            <span itemprop="name">{{ doc.name }}</span>
         </a>
 
         {% if doc.author %}
@@ -55,7 +88,7 @@
             {% if forloop.last %}
             <span itemprop="name">{{ author.name }}.</span>
             {% else %}
-            <span itemprop="name">{{ author.name }}</span>
+            <span itemprop="name">{{ author.name }}</span> ;
             {% endif %}
         </span>
         {% endfor %}
@@ -75,7 +108,7 @@
         {{ doc.datePublished }}.
 
         <br>
-        
+
         {% if doc.about %}
         Subjects:
         <ul class="subjects" itemprop="about">
@@ -87,8 +120,30 @@
         <br>
         {% endif %}
 
-        <span itemprop="offers" class="offers">
-        </span>
+        {% if doc.isbn %}
+        ISBN: 
+        {% for isbn in doc.isbn %}
+        <span itemprop="isbn">{{ isbn }}</span>
+        {% endfor %}
+        <br>
+        {% endif %}
+
+        {% if doc.issn %}
+        ISSN: 
+        {% for issn in doc.issn %}
+        <span itemprop="issn">{{ issn }}</span>
+        {% endfor %}
+        <br>
+        {% endif %}
+
+        <div itemprop="offers" class="offers">
+          {% for offer in doc.offers %}
+          <span class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
+            <span itemprop="seller">{{ offer.seller }}</span>
+          </span>
+          {% if not forloop.last %} ; {% endif %}
+          {% endfor %}
+        </div>
 
     </article>
     {% endfor %}
@@ -96,14 +151,20 @@
     </section>
 
     <section id="facets" class="span3">
+
+    <h2>{{ search_results.totalResults|intcomma }} items</h2>
+    <hr>
+
     {% for facet in search_results.facets %}
         <h2>{{ facet.name }}</h2>
         <ul>
             {% for f in facet.counts %}
+            {% if f.name != "Book / Ebook" %}
             <li>
               <a href="{% url "search" %}?{{ f.url }}">{{ f.name }}</a>
               ({{ f.count|intcomma }})
             </li> 
+            {% endif %}
             {% endfor %}
         </ul>
         <hr>

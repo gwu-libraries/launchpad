@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import summoner
 import unittest
@@ -30,14 +32,14 @@ class SummonTests(unittest.TestCase):
         i = search['results'][0]
         self.assertEqual(i['@id'], '/item/m2402189')
         self.assertEqual(i['@type'], 'Book')
-        self.assertEqual(i['summon'], 'm2402189')
+        self.assertEqual(i['wrlc'], 'm2402189')
         self.assertEqual(i['name'], 'The web of knowledge : a festschrift in honor of Eugene Garfield')
         self.assertEqual(i['isbn'], ["9781573870993", "1573870994"])
 
         self.assertEqual(len(i['author']), 3)
         self.assertEqual(i['author'][0]['name'], 'Garfield, Eugene')
-        self.assertEqual(i['author'][1]['name'], 'Atkins, Helen Barsky')
-        self.assertEqual(i['author'][2]['name'], 'Cronin, Blaise')
+        self.assertEqual(i['author'][1]['name'], 'Cronin, Blaise')
+        self.assertEqual(i['author'][2]['name'], 'Atkins, Helen Barsky')
 
         self.assertEqual(len(i['about']), 3)
         self.assertEqual(i['about'][0]['name'], 'Science -- Abstracting and indexing')
@@ -50,9 +52,9 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['thumbnailUrl'], 'http://covers-cdn.summon.serialssolutions.com/index.aspx?isbn=9781573870993/mc.gif&client=summon&freeimage=true')
         self.assertEqual(i['bookEdition'], '1. print')
 
-        self.assertEqual(len(i['offers']), 1)
+        self.assertEqual(len(i['offers']), 2)
         self.assertEqual(i['offers'][0]['seller'], 'George Mason University')
-
+        self.assertEqual(i['offers'][1]['seller'], 'Howard University')
 
     def test_raw(self):
         results = self.summon.search("isbn:1573870994", raw=True)
@@ -89,16 +91,34 @@ class SummonTests(unittest.TestCase):
         for item in search['results']:
             if len(item['offers']) == 1 \
                 and item['offers'][0]['seller'] == 'George Mason University':
-                self.assertEqual(item['summon'][0], 'm')
+                self.assertEqual(item['wrlc'][0], 'm')
 
     def test_georgetown_summon_id(self):
         search = self.summon.search(
             'information',
             ps=50,
-            fq='SourceType:("Library Catalog")', 
+            fq='SourceType:("Library Catalog")',
             fvf='%s,%s,%s' % ('Institution', 'Georgetown University (GT)', 'false')
         )
         for item in search['results']:
             if len(item['offers']) == 1 \
                 and item['offers'][0]['seller'] == 'Georgetown University':
-                self.assertEqual(item['summon'][0], 'b')
+                self.assertEqual(item['wrlc'][0], 'b')
+
+    def test_alternate_name(self):
+        search = self.summon.search('isbn:9784062879248',
+            fq='SourceType:("Library Catalog")')
+        self.assertEqual(len(search['results']), 1)
+        i = search['results'][0]
+        self.assertEqual(i['alternateName'], u'\u6771\u4eac\u88c1\u5224')
+        self.assertEqual(i['author'][0]['alternateName'], 
+            u'\u65e5\u66ae\u5409\u5ef6')
+
+    def test_web_resource(self):
+        search = self.summon.search(
+            'politics',
+            fq='ContentType:("Web Resource")'
+        )
+        self.assertTrue(len(search['results']) > 0)
+        for result in search['results']:
+            self.assertEqual(result['@type'], 'WebPage')
