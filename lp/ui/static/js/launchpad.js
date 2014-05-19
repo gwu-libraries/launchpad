@@ -41,20 +41,14 @@ function cittogtxt(elemid) {
 }
 
 function check_availability() {
-  $(".search-result").each(function(i, e) {
-    var item = $(e);
-    var bibid = item.attr('id');
+  $(".offer").each(function(i, e) {
+    var offer = $(e);
+    var bibid = offer.attr('id');
+    // the id looks like offer-{bibid}
+    bibid = bibid.split('-')[1];
     var url = '/availability?bibid=' + bibid;
     $.ajax(url).done(add_availability);
   });
-}
-
-function get_related(bibids) {
-  for (var i = 0; i < bibids.length; i++) {
-    var bibid = bibids[i];
-    var url = '/availability?bibid=' + bibid;
-    $.ajax(url).done(add_availability);
-  }
 }
 
 function add_availability(availability) {
@@ -64,22 +58,23 @@ function add_availability(availability) {
     var id = availability.wrlc;
   }
 
+  var status_messages = [];
   for (var i = 0; i < availability.offers.length; i++) {
     a = availability.offers[i];
-    var msg = a.seller;
     if (a.status == "http://schema.org/InStock") {
-      msg += " (Available) "
+      msg = "Available"
     } else if (a.availabilityStarts == '2382-12-31') {
-      msg += " (Offsite) "
+      msg = "Offsite"
     } else if (a.availabilityStarts) {
-      msg += " (Due: " + a.availabilityStarts + ") ";
+      msg = "Due: " + a.availabilityStarts;
     } else if (a.status == "http://schema.org/OutOfStock") {
-      msg += " (Checked Out) ";
+      msg = "Checked Out";
     } else {
-      msg += " (???)";
+      msg = "???";
     }
-    $("#" + id + " .offers").append(msg);
+    status_messages.push(msg)
   }
+  $("#offer-" + id).append("(" + status_messages.join(' ; ') + ")");
 }
 
 $(document).ready(function() {

@@ -71,11 +71,9 @@ class Summon():
             return None
 
         id = doc['ExternalDocumentID'][0]
+        i['wrlc'] = id
         i['@id'] = '/item/' + doc['ExternalDocumentID'][0]
         i['@type'] = self._get_type(doc)
-
-        # TODO: add summon to json-ld context document once there is one
-        i['summon'] = doc['ExternalDocumentID'][0]
 
         if doc.get('Title'):
             i['name'] = doc['Title'][0]
@@ -118,28 +116,47 @@ class Summon():
         if doc.get('DocumentTitle_FL'):
             i['alternateName'] = doc.get('DocumentTitle_FL')[0]
 
+        i['offers'] = []
         if doc.get('Institution'):
-            i['offers'] = []
-            inst = doc.get('Institution')[0]
-            inst = re.sub(' \(.+\)', '', inst)
-            i['offers'].append({
-                'seller': inst,
-                'serialNumber': id
-            })
-
-            # George Mason and Georgetown load into Summon with their own ids.
-            # Launchpad handles these with the the m & b prefixes
-
-            # TODO: make @id into absolute URL?
-            if inst  == 'George Mason University':
-                i['@id'] = '/item/m' + id
-                # make sure summon id starts with 'm'
-                if not id.startswith('m'):
-                    i['summon'] = 'm' + i['summon']
-            elif inst == 'Georgetown':
-                i['@id'] = '/item/b' + id
+            i['offers'].append(self._get_offer(doc))
+        if doc.get('peerDocuments'):
+            for peer_doc in doc.get('peerDocuments'):
+                offer = self._get_offer(peer_doc)
+                if offer:
+                    i['offers'].append(offer)
+        i = self._rewrite_id(i)
 
         return i
+
+    def _get_offer(self, doc):
+        offer = None
+        if doc.get('Institution'):
+            id = doc['ExternalDocumentID'][0]
+            inst = doc.get('Institution')[0]
+            inst = re.sub(' \(.+\)', '', inst)
+            offer = {
+                'seller': inst,
+                'serialNumber': id
+            }
+        return offer
+
+    def _rewrite_id(self, item):
+        # launchpad urls need to be massaged when the primary holding
+        # (the first) for the item is from George Mason and Georgetown
+
+        if len(item['offers']) == 0:
+            return item
+
+        offer = item['offers'][0]
+        if offer['seller'] == 'George Mason University':
+            # sometimes they have the 'm' prefix sometimes they don't
+            if not item['wrlc'].startswith('m'):
+                item['wrlc'] = 'm' + item['wrlc']
+            item['@id'] = '/item/' + item['wrlc']
+        elif offer['seller'] == 'Georgetown':
+            item['@id'] = '/item/b' + item['wrlc']
+
+        return item
 
     def _get_type(self, doc):
         content_type = doc['ContentType'][0]
