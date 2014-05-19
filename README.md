@@ -61,7 +61,7 @@ the path according to your installation of oracle.
 
 7. Set environment variables in oracle.conf file (create the file if it does not exist)
 
-        vim /etc/ld.so.conf.d/oracle-instantclient11.2-basic.conf
+        sudo vim /etc/ld.so.conf.d/oracle-instantclient11.2-basic.conf
 
     Add the following lines
 
