@@ -484,6 +484,8 @@ def _get_offers_z3950(id, library):
             note = h.publicNote.rstrip('\x00')
             if note == 'AVAILABLE':
                 o['status'] = 'http://schema.org/InStock'
+            elif note == 'SPC USE ONLY':
+                o['status'] = 'http://schema.org/InStoreOnly'
             else:
                 # set availabilityStarts from "DUE 09-15-14"
                 m = re.match('DUE (\d\d)-(\d\d)-(\d\d)', note)

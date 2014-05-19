@@ -63,6 +63,8 @@ function add_availability(availability) {
     a = availability.offers[i];
     if (a.status == "http://schema.org/InStock") {
       msg = "Available"
+    } else if (a.status = "http://schema.org/InStoreOnly") {
+      msg = "Available"
     } else if (a.availabilityStarts == '2382-12-31') {
       msg = "Offsite"
     } else if (a.availabilityStarts) {
