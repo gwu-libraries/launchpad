@@ -46,11 +46,11 @@ class SummonTests(unittest.TestCase):
 
         self.assertEqual(len(i['about']), 3)
         self.assertEqual(i['about'][0]['name'], 'Science -- Abstracting and indexing')
-        self.assertEqual(i['about'][0]['url'], '/search?q=Subject%3A%22Science+--+Abstracting+and+indexing%22')
+        self.assertEqual(i['about'][0]['url'], '/search?q=SubjectTerms%3A%22Science+--+Abstracting+and+indexing%22')
         self.assertEqual(i['about'][1]['name'], 'Indexing')
-        self.assertEqual(i['about'][1]['url'], '/search?q=Subject%3A%22Indexing%22')
+        self.assertEqual(i['about'][1]['url'], '/search?q=SubjectTerms%3A%22Indexing%22')
         self.assertEqual(i['about'][2]['name'], 'Garfield, Eugene')
-        self.assertEqual(i['about'][2]['url'], '/search?q=Subject%3A%22Garfield%2C+Eugene%22')
+        self.assertEqual(i['about'][2]['url'], '/search?q=SubjectTerms%3A%22Garfield%2C+Eugene%22')
 
         self.assertEqual(i['publisher']['name'], 'Information Today')
         self.assertEqual(i['publisher']['address'], 'Medford, N.J')
