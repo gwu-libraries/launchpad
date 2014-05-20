@@ -11,7 +11,8 @@
 
     <section class="search row pagination">
         <form class="span12" action="{% url "search" %}" method="get">
-            <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
+            <input style="float: left; margin-right: 10px;" name="q" type="text"
+            placeholder="Search" value="{{ q }}" size="60"></input>
             <ul>
                 {% if prev_page_range %}
                 <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
@@ -66,11 +67,8 @@
         {% for author in doc.author %}
         {% if author.alternateName %}
         <span itemprop="author" itemtype="Person" itemscope>
-            {% if forloop.last %}
-            <span itemprop="name">{{ author.alternateName }}.</span>
-            {% else %}
-            <span itemprop="name">{{ author.alternateName }}</span> ; 
-            {% endif %}
+            <span itemprop="alternateName">{{ author.alternateName }}</span>
+            {% if forloop.last %}<span class="trailing-period">.</span>{% else %} ; {% endif %}
         </span>
         {% endif %}
         {% endfor %}
@@ -82,16 +80,14 @@
         </a>
 
         {% if doc.author %}
-        / 
+        /
         {% for author in doc.author %}
         <span itemprop="author" itemtype="Person" itemscope>
-            {% if forloop.last %}
-            <span itemprop="name">{{ author.name }}.</span>
-            {% else %}
-            <span itemprop="name">{{ author.name }}</span> ;
-            {% endif %}
+            <a href="{{ author.url }}" itemprop="name">{{ author.name }}</a>
+            {% if forloop.last %}<span class="trailing-period">.</span>{% else %} ; {% endif %}
         </span>
         {% endfor %}
+        {% else %}<span class="trailing-period">.</span>
         {% endif %}
 
         {% if doc.bookEdition %}
@@ -113,7 +109,9 @@
         Subjects:
         <ul class="subjects" itemprop="about">
             {% for subject in doc.about %}
-            <li itemprop="about">{{ subject.name }}</li>
+            <li itemprop="about">
+                <a href="{{ subject.url }}">{{ subject.name }}</a>
+            </li>
             {% if not forloop.last %} ; {% endif %}
             {% endfor %}
         </ul>
@@ -123,7 +121,9 @@
         {% if doc.isbn %}
         ISBN: 
         {% for isbn in doc.isbn %}
-        <span itemprop="isbn">{{ isbn }}</span>
+        <a href="?q=ISBN:{{ isbn }}">
+          <span itemprop="isbn">{{ isbn }}</span>
+        </a>
         {% endfor %}
         <br>
         {% endif %}
@@ -131,7 +131,9 @@
         {% if doc.issn %}
         ISSN: 
         {% for issn in doc.issn %}
-        <span itemprop="issn">{{ issn }}</span>
+        <a href="?q=ISSN:{{ issn }}">
+          <span itemprop="issn">{{ issn }}</span>
+        </a>
         {% endfor %}
         <br>
         {% endif %}

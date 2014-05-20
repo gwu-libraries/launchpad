@@ -95,19 +95,11 @@
                         {% for contributor in bib.AUTHORS %}
                             {% if forloop.first %}
                                 <span itemprop="author">
-                                {% if contributor|is_non_roman %}
-                                {{ contributor }}
-                                {% else %}
-                                <a target="_explorewindow" href="{% explore_author contributor %}">{{ contributor }}</a>
-                                {% endif %}
+                                <a href="{% url "search" %}?q=Author:%22{{ contributor }}%22">{{ contributor }}</a>
                                 </span>
                             {% else %}
                                 <span itemprop="contributor">
-                                {% if contributor|is_non_roman %} 
-                                {{ contributor }}
-                                {% else %}
-                                <a target="_explorewindow" href="{% explore_author contributor %}">{{ contributor }}</a>
-                                {% endif %}
+                                <a href="{% url "search" %}?q=Author:%22{{ contributor }}%22">{{ contributor }}</a>
                                 </span>
                             {% endif %}
                             {% if not forloop.last %}; {% endif %}
@@ -115,11 +107,7 @@
                     {% else %}
                         {% if bib.AUTHOR %}
                         <span itemprop="author">
-                            {% if bib.AUTHOR|is_non_roman %}
-                            {{ bib.AUTHOR }}
-                            {% else %}
-                            <a target="_explorewindow" href="{% explore_author bib.AUTHOR %}">{{ bib.AUTHOR }}</a>
-                            {% endif %}
+                            <a href="{% url "search" %}?q=Author:%22{{ bib.AUTHOR }}%22">{{ bib.AUTHOR }}</a>
                         </span>
                         {% endif %}
                     {% endif %}
@@ -510,12 +498,11 @@
                 {% if val|is_non_roman %}
                 {{ val }}
                 {% elif name == "Other Authors" %}
-                <a href="{% explore_author val %}" target='_explorewindow'>{{ val }}</a>
+                <a href="{% url 'search' %}?q=Author:%22{{ val }}%22">{{ val }}</a>
                 {% elif name == "Series" %}
-                <a href="{% explore_series val %}" target='_explorewindow'>{{ val }}</a>
-
+                <a href="{% url 'search' %}?q=PublicationSeriesTitle:%22{{ val }}%22">{{ val }}</a>
                 {% elif name == "Subjects" or name == "Genre" %}
-                <a href="{% explore_subject val %}" target='_explorewindow'>{{ val }}</a>
+                <a href="{% url 'search' %}?q=SubjectTerms:%22{{ val }}%22">{{ val }}</a>
                 {% else %}
                 {{ val }}
                 {% endif %}
