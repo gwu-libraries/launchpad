@@ -1,6 +1,9 @@
 import re
 import summoner
 
+from urllib import urlencode
+from django.core.urlresolvers import reverse
+
 
 class Summon():
     """
@@ -88,7 +91,11 @@ class Summon():
 
         i['author'] = []
         for name in doc.get('Author_xml', []):
-            i['author'].append({'name': name['fullname']})
+            q = ('Author:"%s"' % name['fullname']).encode('utf8')
+            i['author'].append({
+                'name': name['fullname'],
+                'url': reverse('search') + '?' + urlencode({'q': q})
+            })
         for alt_name in doc.get('Author_FL_xml', []):
             pos = int(alt_name['sequence']) - 1
             if pos < len(i['author']):
@@ -97,7 +104,11 @@ class Summon():
         i['about'] = []
         for subject in doc.get('SubjectTermsDisplay', []):
             subject = subject.strip('.')
-            i['about'].append({'name': subject})
+            q = ('SubjectTerms:"%s"' % subject).encode('utf8')
+            i['about'].append({
+                'name': subject,
+                'url': reverse('search') + '?' + urlencode({'q': q})
+            })
 
         if doc.get('PublicationYear'):
             i['datePublished'] = doc['PublicationYear'][0]
