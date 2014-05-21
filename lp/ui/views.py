@@ -443,11 +443,10 @@ def search(request):
             continue
         facet_field, facet_value = facet.split(':', 1)
 
-        facet_value = facet_value.replace(',', '\\,')
         if 'fvf' not in kwargs:
             kwargs['fvf'] = []
 
-        # TODO: maybe summoner should do these escapes?
+        # TODO: maybe summoner should do these escapes somehow?
         def escape(m):
             return '\\' + m.group(1)
         facet_value = re.sub('([,:\()${}])', escape, facet_value)
@@ -581,7 +580,8 @@ def _reorder_facets(search_results):
     new_facets = []
     for facet_name in facets_order:
         for facet in search_results['facets']:
-            if facet['name'] == facet_name:
+            # only add facet if there are more than one values for it
+            if facet['name'] == facet_name and len(facet['counts']) > 1:
                 new_facets.append(facet)
     search_results['facets'] = new_facets
     return search_results
