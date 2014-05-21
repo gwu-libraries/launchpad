@@ -184,6 +184,10 @@ footer {
     height: 1.5em;
 }
 
+.search input {
+    width: 400px;
+}
+
 .search-result {
   padding: 10px;
   border-bottom: solid thin #cccccc;
@@ -237,4 +241,8 @@ ul.subjects {
   display: inline;
   font-size: smaller;
   padding: 3px;
+}
+
+.trailing-period {
+  margin-left: -4px;
 }
