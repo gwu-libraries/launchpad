@@ -10,6 +10,12 @@
     margin-bottom: 35px;
 }
 
+/* override bootstrap to keep footer stuck to bottom for all views */
+.navbar-fixed-bottom {
+    position: fixed;
+    margin-bottom: 0;
+}
+
 #libfooter {
     width: auto;
     max-width: 1170px;
