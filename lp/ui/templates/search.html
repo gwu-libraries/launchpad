@@ -161,12 +161,10 @@
         <h2>{{ facet.name }}</h2>
         <ul>
             {% for f in facet.counts %}
-            {% if f.name != "Book / Ebook" %}
             <li>
               <a href="{% url "search" %}?{{ f.url }}">{{ f.name }}</a>
               ({{ f.count|intcomma }})
             </li> 
-            {% endif %}
             {% endfor %}
         </ul>
         <hr>
