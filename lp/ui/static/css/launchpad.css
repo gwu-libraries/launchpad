@@ -201,6 +201,7 @@ footer {
 .search-result img.cover {
   height: 65px;
   float: right;
+  padding-left: .2em;
 }
 
 img.item-type {
