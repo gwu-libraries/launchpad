@@ -125,6 +125,7 @@
         {% for isbn in doc.isbn %}
         <a href="?q=ISBN:{{ isbn }}">
           <span itemprop="isbn">{{ isbn }}</span>
+          {% if not forloop.last %}<span class="trailing-period">,</span>{% endif %}
         </a>
         {% endfor %}
         <br>
