@@ -156,7 +156,8 @@
 
     <section id="facets" class="span3">
 
-    <h2>{{ search_results.totalResults|intcomma }} items</h2>
+    <h2>Refine Results</h2>
+    <h3>{{ search_results.totalResults|intcomma }} items</h3>
     <hr>
 
     {% for facet in search_results.facets %}
