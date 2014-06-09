@@ -244,6 +244,15 @@ ul.subjects {
   padding: 3px;
 }
 
+#facets {
+  background-color: #EAEAEA;
+  padding: 15px;
+}
+
+#facets hr {
+    border-top: 1px solid gray;
+}
+
 .trailing-period {
   margin-left: -4px;
 }

@@ -43,7 +43,7 @@
 
     <div class="row">
 
-    <section id="search-results" class="span9">
+    <section id="search-results" class="span8">
 
     {% for doc in search_results.results %}
     <article id="{{ doc.id }}" class="search-result" itemscope itemtype="{{ doc.type }}">
@@ -125,6 +125,7 @@
         {% for isbn in doc.isbn %}
         <a href="?q=ISBN:{{ isbn }}">
           <span itemprop="isbn">{{ isbn }}</span>
+          {% if not forloop.last %}<span class="trailing-period">,</span>{% endif %}
         </a>
         {% endfor %}
         <br>
@@ -156,7 +157,8 @@
 
     <section id="facets" class="span3">
 
-    <h2>{{ search_results.totalResults|intcomma }} items</h2>
+    <h2>Refine Results</h2>
+    <h3>{{ search_results.totalResults|intcomma }} items</h3>
     <hr>
 
     {% for facet in search_results.facets %}
