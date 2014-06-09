@@ -92,6 +92,7 @@ function add_availability(availability) {
 }
 
 $(document).ready(function() {
+
     $('#cover-image').load(function() {
         if ($('#cover-image').width() == 1) {
             $('#cover').toggle(200);
@@ -101,9 +102,20 @@ $(document).ready(function() {
             $(this).next(".item_body").slideToggle(250);
          });
     });
+
+    $('img.cover-thumbnail').load(function(e) {
+        var img = $(this);
+        // sometimes summon api returns empty images with this width
+        if (img.width() != 99.79999995231628) {
+            $(this).show();
+            $(this).parents("article").css("min-height", "80px");
+        }
+    });
+
     $("#citation_toggle").click(function() {
         $("#citation_data").toggle('fast', function() { });
         cittogtxt("#citation_toggle");
     });
+
     check_availability();
 });
