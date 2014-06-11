@@ -59,7 +59,7 @@ class DbTests(unittest.TestCase):
 
     def test_get_related_bibids_by_issn(self):
         i = get_item('3155728')
-        expected = ['519894', '1939227', '2946288', '3155728']
+        expected = ['519894', '1939227', '2946288', '3155728', '4990328']
         bibids = db.get_related_bibids_by_issn(i)
         self.assertEqual(bibids, expected)
 
