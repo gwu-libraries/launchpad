@@ -128,3 +128,12 @@ class SummonTests(unittest.TestCase):
         self.assertTrue(len(search['results']) > 0)
         for result in search['results']:
             self.assertEqual(result['@type'], 'WebPage')
+
+    def test_offer_ids(self):
+        search = self.summon.search('isbn:9780596007973',
+            fq='SourceType:("Library Catalog")')
+        self.assertEqual(len(search['results']), 1)
+        i = search['results'][0]
+        self.assertEqual(len(i['offers']), 2)
+        self.assertEqual(i['offers'][0]['serialNumber'], 'm1240674')
+        self.assertEqual(i['offers'][1]['serialNumber'], 'b27682912')

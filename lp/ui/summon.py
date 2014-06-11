@@ -91,15 +91,17 @@ class Summon():
 
         i['author'] = []
         for name in doc.get('Author_xml', []):
-            q = ('Author:"%s"' % name['fullname']).encode('utf8')
-            i['author'].append({
-                'name': name['fullname'],
-                'url': reverse('search') + '?' + urlencode({'q': q})
-            })
+            if 'fullname' in name:
+                q = ('Author:"%s"' % name['fullname']).encode('utf8')
+                i['author'].append({
+                    'name': name['fullname'],
+                    'url': reverse('search') + '?' + urlencode({'q': q})
+                })
         for alt_name in doc.get('Author_FL_xml', []):
-            pos = int(alt_name['sequence']) - 1
-            if pos < len(i['author']):
-                i['author'][pos]['alternateName'] = alt_name['fullname']
+            if 'fullname' in alt_name:
+                pos = int(alt_name['sequence']) - 1
+                if pos < len(i['author']):
+                    i['author'][pos]['alternateName'] = alt_name['fullname']
 
         i['about'] = []
         for subject in doc.get('SubjectTermsDisplay', []):
@@ -141,7 +143,7 @@ class Summon():
                 offer = self._get_offer(peer_doc)
                 if offer:
                     i['offers'].append(offer)
-        i = self._rewrite_id(i)
+        i = self._rewrite_ids(i)
 
         return i
 
@@ -157,21 +159,39 @@ class Summon():
             }
         return offer
 
-    def _rewrite_id(self, item):
+    def _rewrite_ids(self, item):
         # launchpad urls need to be massaged when the primary holding
         # (the first) for the item is from George Mason and Georgetown
+        #
+        # Both institutions loaded into Summon using their own ILS 
+        # record identifiers, which we can look up, but are not 
+        # Voygager bibids that we can look up directly. The 'm' and 'b'
+        # prefixes to the ids are an indicator to launchpad to look them
+        # up indirectly.
 
         if len(item['offers']) == 0:
             return item
 
+        # rewrite @id based on the first offer's institution
         offer = item['offers'][0]
         if offer['seller'] == 'George Mason University':
             # sometimes they have the 'm' prefix sometimes they don't
             if not item['wrlc'].startswith('m'):
                 item['wrlc'] = 'm' + item['wrlc']
             item['@id'] = '/item/' + item['wrlc']
-        elif offer['seller'] == 'Georgetown':
-            item['@id'] = '/item/b' + item['wrlc']
+        elif offer['seller'] == 'Georgetown University':
+            if not item['wrlc'].startswith('b'):
+                item['@id'] = '/item/b' + item['wrlc']
+
+        # rewrite offer serialNumbers which are used to look up holdings
+        for offer in item['offers']:
+            seller = offer.get('seller')
+            sn = offer.get('serialNumber')
+
+            if seller == 'George Mason University' and not sn.startswith('m'):
+                offer['serialNumber'] = 'm' + sn
+            elif seller == 'Georgetown University' and not sn.startswith('b'):
+                offer['serialNumber'] = 'b' + sn
 
         return item
 
