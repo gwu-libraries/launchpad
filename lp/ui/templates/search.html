@@ -146,7 +146,18 @@
         <ul itemprop="offers" class="offers">
           {% for offer in doc.offers %}
           <li class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
-            <span class="availability">{{ doc.type }} Available</span>:
+            <span class="availability">
+              {% if doc.type == "VideoObject" %}
+              Video
+              {% elif doc.type == "AudioObject" %}
+              Audio
+              {% elif doc.type == "WebPage" %}
+              Website
+              {% else %}
+              doc.type
+              {% endif %}
+              Available
+            </span>:
             <span itemprop="seller">{{ offer.seller }}</span> 
             / 
             <span itemprop="availabilityAtOrFrom"></span>
