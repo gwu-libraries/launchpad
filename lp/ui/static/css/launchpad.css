@@ -198,8 +198,9 @@ footer {
   font-size: 12pt;
 }
 
-.search-result img.cover {
-  height: 65px;
+.search-result img.cover-thumbnail {
+  display: none;
+  height: 100px;
   float: right;
   padding-left: .2em;
 }
