@@ -93,10 +93,12 @@
         {% endif %}
 
         {% if doc.bookEdition %}
+        <br>
         <span itemprop="bookEdition">{{ doc.bookEdition }}</span>.
         {% endif %}
 
         {% if doc.publisher %}
+        <br>
         <span itemprop="publisher" itemscope itemtype="Person">
             <span itemprop="address">{{ doc.publisher.address }}</span> :
             <span itemprop="name">{{ doc.publisher.name }}</span>
