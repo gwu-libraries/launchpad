@@ -93,12 +93,16 @@
         {% endif %}
 
         {% if doc.bookEdition %}
+        <br>
         <span itemprop="bookEdition">{{ doc.bookEdition }}</span>.
         {% endif %}
 
+        <br>
         {% if doc.publisher %}
         <span itemprop="publisher" itemscope itemtype="Person">
+            {% if doc.publishers.address %}
             <span itemprop="address">{{ doc.publisher.address }}</span> :
+            {% endif %}
             <span itemprop="name">{{ doc.publisher.name }}</span>
         </span>
         {% endif %}
@@ -141,14 +145,27 @@
         <br>
         {% endif %}
 
-        <div itemprop="offers" class="offers">
+        <ul itemprop="offers" class="offers">
           {% for offer in doc.offers %}
-          <span class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
-            <span itemprop="seller">{{ offer.seller }}</span>
-          </span>
-          {% if not forloop.last %} ; {% endif %}
+          <li class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
+            <span class="availability">
+              {% if doc.type == "VideoObject" %}
+              Video
+              {% elif doc.type == "AudioObject" %}
+              Audio
+              {% elif doc.type == "WebPage" %}
+              Website
+              {% else %}
+              {{ doc.type }}
+              {% endif %}
+              Available
+            </span>:
+            <span itemprop="seller">{{ offer.seller }}</span> 
+            / 
+            <span itemprop="availabilityAtOrFrom"></span>
+          </li>
           {% endfor %}
-        </div>
+        </ul>
 
     </article>
     {% endfor %}

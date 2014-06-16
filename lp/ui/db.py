@@ -508,6 +508,9 @@ def _get_offers_z3950(id, library):
             logging.warn("unknown availability: bibid=%s library=%s h=%s",
                          id, library, h)
 
+        # some locations have a weird period before the name
+        o['availabilityAtOrFrom'] = o['availabilityAtOrFrom'].lstrip('.')
+
         offers.append(o)
 
     return offers

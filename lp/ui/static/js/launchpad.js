@@ -58,37 +58,39 @@ function add_availability(availability) {
     var id = availability.wrlc;
   }
 
-  var available = 0;
-  var checked_out = 0;
-  var offsite = 0;
-
+  // tally the number of items per location
+  var locations = {};
   for (var i = 0; i < availability.offers.length; i++) {
     a = availability.offers[i];
+    var loc = a.availabilityAtOrFrom;
+    if (! locations[loc]) {
+      locations[loc] = 0
+    }
     if (a.status == "http://schema.org/InStock") {
-      available += 1;
+      locations[loc] += 1;
     } else if (a.status == "http://schema.org/InStoreOnly") {
-      available += 1;
+      locations[loc] += 1;
     } else if (a.availabilityStarts == '2382-12-31') {
-      offsite += 1;
-    } else if (a.availabilityStarts) {
-      checked_out += 1;
-    } else if (a.status == "http://schema.org/OutOfStock") {
-      checked_out += 1;
-    } else {
-      console.log("unable to determine status: " + a);
+      locations[loc] += 1;
     }
   }
-  summary = [];
-  if (available > 0) {
-    summary.push(available + " available")
+
+  var offer = $("#offer-" + id);
+
+  var locationCount = 0;
+  for (loc in locations) {
+    locationCount += 1;
+    if (locationCount > 1) {
+      var o = offer.clone();
+      offer.after(o);
+      offer = o;
+    }
+    if (locations[loc] > 1) {
+      offer.find(".availability").append("(" + locations[loc] + ")");
+    }
+    offer.find('span[itemprop="availabilityAtOrFrom"]').text(loc);
   }
-  if (checked_out > 0) {
-    summary.push(checked_out + " checked out")
-  }
-  if (offsite > 0) {
-    summary.push(offsite + " offsite")
-  }
-  var o = $("#offer-" + id).append('(' + summary.join('; ') + ')');
+
 }
 
 $(document).ready(function() {
