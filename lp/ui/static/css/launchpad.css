@@ -257,3 +257,15 @@ ul.subjects {
 .trailing-period {
   margin-left: -4px;
 }
+
+ul.offers {
+  list-style-type: none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  font-size: medium;
+}
+
+.offers li {
+  font-size: medium;
+}

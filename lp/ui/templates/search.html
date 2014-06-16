@@ -141,14 +141,16 @@
         <br>
         {% endif %}
 
-        <div itemprop="offers" class="offers">
+        <ul itemprop="offers" class="offers">
           {% for offer in doc.offers %}
-          <span class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
-            <span itemprop="seller">{{ offer.seller }}</span>
-          </span>
-          {% if not forloop.last %} ; {% endif %}
+          <li class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
+            <span class="availability">{{ doc.type }} Available</span>:
+            <span itemprop="seller">{{ offer.seller }}</span> 
+            / 
+            <span itemprop="availabilityAtOrFrom"></span>
+          </li>
           {% endfor %}
-        </div>
+        </ul>
 
     </article>
     {% endfor %}
