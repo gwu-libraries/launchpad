@@ -471,7 +471,6 @@ def _get_offers_z3950(id, library):
     for holdings_data in rec.data.holdingsData:
         h = holdings_data[1]
         o = {'@type': 'Offer', 'seller': library}
-        o['h'] = str(h)
 
         if hasattr(h, 'callNumber'):
             o['sku'] = h.callNumber.rstrip('\x00').strip()
@@ -499,9 +498,10 @@ def _get_offers_z3950(id, library):
             if cd.availableNow is True:
                 o['status'] = 'http://schema.org/InStock'
             else:
-                if cd.availabilityDate:
-                    o['availabilityStarts'] = cd.availablityDate
-                    # TODO: set availabilityStarts to YYYY-MM-DD
+                if cd.availablityDate:
+                    m = re.match("^(\d{4}-\d{2}-\d{2}).+", cd.availablityDate)
+                    if m:
+                        o['availabilityStarts'] = m.group(1)
                 o['status'] = 'http://schema.org/OutOfStock'
 
         else:

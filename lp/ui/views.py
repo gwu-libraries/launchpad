@@ -538,6 +538,8 @@ def availability(request):
     API call for getting the availability for a particular bibid.
     """
     bibid = request.GET.get('bibid')
+    if not bibid:
+        raise Http404
     return HttpResponse(
         json.dumps(db.get_availability(bibid), indent=2),
         content_type='application/json'

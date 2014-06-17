@@ -25,7 +25,7 @@ class Summon():
         t = datetime.now()
         summon_response = self._summon.search(q, *args, **kwargs)
         elapsed = datetime.now() - t
-        logging.info("summon search %s: %s: %s - %s", q, args, kwargs, elapsed)
+        logging.debug("summon %s: %s: %s - %s", q, args, kwargs, elapsed)
 
         # calculate some things to include in our response that Summon
         # responses don't explicitly include
