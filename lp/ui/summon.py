@@ -1,7 +1,9 @@
 import re
+import logging
 import summoner
 
 from urllib import urlencode
+from datetime import datetime
 from django.core.urlresolvers import reverse
 
 
@@ -20,7 +22,10 @@ class Summon():
         Performs the search and massages data into schema.org JSON-LD. If
         you pass in raw=True you will get the raw summon response instead.
         """
+        t = datetime.now()
         summon_response = self._summon.search(q, *args, **kwargs)
+        elapsed = datetime.now() - t
+        logging.info("summon search %s: %s: %s - %s", q, args, kwargs, elapsed)
 
         # calculate some things to include in our response that Summon
         # responses don't explicitly include
@@ -163,8 +168,8 @@ class Summon():
         # launchpad urls need to be massaged when the primary holding
         # (the first) for the item is from George Mason and Georgetown
         #
-        # Both institutions loaded into Summon using their own ILS 
-        # record identifiers, which we can look up, but are not 
+        # Both institutions loaded into Summon using their own ILS
+        # record identifiers, which we can look up, but are not
         # Voygager bibids that we can look up directly. The 'm' and 'b'
         # prefixes to the ids are an indicator to launchpad to look them
         # up indirectly.

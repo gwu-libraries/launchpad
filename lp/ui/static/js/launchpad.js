@@ -60,6 +60,7 @@ function add_availability(availability) {
 
   // tally the number of items per location
   var locations = {};
+  var callnumbers = {};
   for (var i = 0; i < availability.offers.length; i++) {
     a = availability.offers[i];
     var loc = a.availabilityAtOrFrom;
@@ -73,6 +74,7 @@ function add_availability(availability) {
     } else if (a.availabilityStarts == '2382-12-31') {
       locations[loc] += 1;
     }
+    callnumbers[loc] = a.sku;
   }
 
   var offer = $("#offer-" + id);
@@ -88,7 +90,7 @@ function add_availability(availability) {
     if (locations[loc] > 1) {
       offer.find(".availability").append("(" + locations[loc] + ")");
     }
-    offer.find('span[itemprop="availabilityAtOrFrom"]').text(loc);
+    offer.find('span[itemprop="availabilityAtOrFrom"]').text(loc + ' ' + callnumbers[loc]);
   }
 
 }
