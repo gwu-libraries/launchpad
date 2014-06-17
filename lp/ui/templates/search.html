@@ -124,27 +124,6 @@
         <br>
         {% endif %}
 
-        {% if doc.isbn %}
-        ISBN: 
-        {% for isbn in doc.isbn %}
-        <a href="?q=ISBN:{{ isbn }}">
-          <span itemprop="isbn">{{ isbn }}</span>
-          {% if not forloop.last %}<span class="trailing-period">,</span>{% endif %}
-        </a>
-        {% endfor %}
-        <br>
-        {% endif %}
-
-        {% if doc.issn %}
-        ISSN: 
-        {% for issn in doc.issn %}
-        <a href="?q=ISSN:{{ issn }}">
-          <span itemprop="issn">{{ issn }}</span>
-        </a>
-        {% endfor %}
-        <br>
-        {% endif %}
-
         <ul itemprop="offers" class="offers">
           {% for offer in doc.offers %}
           <li class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
