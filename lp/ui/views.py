@@ -432,7 +432,7 @@ def search(request):
             'Institution,or',
             'Discipline,or',
         ],
-        "ho": "f",
+        "ho": "t",
         "light": "t",
         "raw": raw,
     }
