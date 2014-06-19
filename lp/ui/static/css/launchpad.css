@@ -269,3 +269,11 @@ ul.offers {
 .offers li {
   font-size: medium;
 }
+
+
+/* branch changes t697-UI-tweaks */
+.cover-thumbnail {
+  float: right;
+  height: 120px;
+  padding-left: .4em;
+}
