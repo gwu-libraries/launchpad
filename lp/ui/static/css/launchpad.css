@@ -272,13 +272,22 @@ ul.offers {
 
 
 /* branch changes t697-UI-tweaks */
+p, li {line-height: 1.3em;}
+
 .cover-thumbnail {
   float: right;
   height: 120px;
   padding-left: .4em;
 }
 
-.search-result-title {
+ul .offers {} 
+.offers li {font-size: .9em;}
+
+#search-results {
+  font-size: .9em;
+}
+
+#search-results .search-result-title {
   line-height: 1.6em;
-  font-size: 1.2em;
+  font-size: 1.4em;
 }
