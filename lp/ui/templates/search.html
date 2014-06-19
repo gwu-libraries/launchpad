@@ -78,11 +78,12 @@
         {% endif %}
 
         <a href="{{ doc.id }}">
-            <span itemprop="name">{{ doc.name }}</span>
+	    <!-- changed to div and added class (christian 6-19-14) -->
+            <div class="search-result-title" itemprop="name">{{ doc.name }}</div>
         </a>
 
         {% if doc.author %}
-        /
+        <!-- / removed christian 6-19-14 -->
         {% for author in doc.author %}
         <span itemprop="author" itemtype="Person" itemscope>
             <a href="{{ author.url }}" itemprop="name">{{ author.name }}</a>
