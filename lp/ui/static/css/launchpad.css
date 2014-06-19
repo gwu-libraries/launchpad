@@ -291,3 +291,8 @@ ul .offers {}
   line-height: 1.6em;
   font-size: 1.4em;
 }
+
+@media screen and (max-width: 534px) {
+  section.search {padding-bottom:1em;}
+}
+
