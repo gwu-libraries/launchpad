@@ -277,3 +277,8 @@ ul.offers {
   height: 120px;
   padding-left: .4em;
 }
+
+.search-result-title {
+  line-height: 1.6em;
+  font-size: 1.2em;
+}
