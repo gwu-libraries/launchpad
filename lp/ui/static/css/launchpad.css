@@ -2,6 +2,8 @@ body {
     font-family: Helvetica, Arial, sans-serif;
 }
 
+p, li {line-height: 1.3em;}
+
 .library-has {
     color: gray;
     font-size: small;
@@ -225,7 +227,7 @@ ul.subjects {
 
 .subjects li {
   display: inline;
-  font-size: medium;
+  font-size: inherit;
 }
 
 #active-facets {
@@ -263,9 +265,33 @@ ul.offers {
   display: inline;
   margin: 0;
   padding: 0;
-  font-size: medium;
+  font-size: .9em;
 }
 
 .offers li {
-  font-size: medium;
+  font-size: 1.1em;
+}
+
+#search-results {
+  font-size: .9em;
+}
+
+#search-results .search-result-title {
+  line-height: 1.6em;
+  font-size: 1.4em;
+}
+
+#facets li {color:#555;}
+
+#active-facets .fa-times-circle {padding-left:.5em; padding-right:0;}
+
+/* overriding bootstrap so that facet buttons don't bump when stacked */
+#active-facets .btn {margin-bottom:.4em;}
+
+@media screen and (max-width: 979px) {
+  #active-facets ul {padding-left: 0;}
+}
+
+@media screen and (max-width: 680px) {
+  section.search {padding-bottom:1em;}
 }
