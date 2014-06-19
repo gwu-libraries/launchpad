@@ -2,6 +2,8 @@ body {
     font-family: Helvetica, Arial, sans-serif;
 }
 
+p, li {line-height: 1.3em;}
+
 .library-has {
     color: gray;
     font-size: small;
@@ -225,7 +227,7 @@ ul.subjects {
 
 .subjects li {
   display: inline;
-  font-size: .9em;
+  font-size: inherit;
 }
 
 #active-facets {
@@ -263,25 +265,12 @@ ul.offers {
   display: inline;
   margin: 0;
   padding: 0;
-  font-size: medium;
+  font-size: .9em;
 }
 
 .offers li {
-  font-size: medium;
+  font-size: 1.1em;
 }
-
-
-/* branch changes t697-UI-tweaks */
-p, li {line-height: 1.3em;}
-
-.cover-thumbnail {
-  float: right;
-  height: 120px;
-  padding-left: .4em;
-}
-
-ul .offers {} 
-.offers li {font-size: .9em;}
 
 #search-results {
   font-size: .9em;
@@ -290,10 +279,6 @@ ul .offers {}
 #search-results .search-result-title {
   line-height: 1.6em;
   font-size: 1.4em;
-}
-
-@media screen and (max-width: 680px) {
-  section.search {padding-bottom:1em;}
 }
 
 #facets li {color:#555;}
@@ -305,4 +290,8 @@ ul .offers {}
 
 @media screen and (max-width: 979px) {
   #active-facets ul {padding-left: 0;}
+}
+
+@media screen and (max-width: 680px) {
+  section.search {padding-bottom:1em;}
 }
