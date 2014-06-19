@@ -296,3 +296,4 @@ ul .offers {}
   section.search {padding-bottom:1em;}
 }
 
+#active-facets .fa-times-circle {padding-left:.5em; padding-right:0;}
