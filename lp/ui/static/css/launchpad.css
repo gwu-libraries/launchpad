@@ -296,4 +296,6 @@ ul .offers {}
   section.search {padding-bottom:1em;}
 }
 
+#facets li {color:#555;}
+
 #active-facets .fa-times-circle {padding-left:.5em; padding-right:0;}
