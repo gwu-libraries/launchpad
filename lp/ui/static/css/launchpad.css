@@ -225,7 +225,7 @@ ul.subjects {
 
 .subjects li {
   display: inline;
-  font-size: medium;
+  font-size: .9em;
 }
 
 #active-facets {
