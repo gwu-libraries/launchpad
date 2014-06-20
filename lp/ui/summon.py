@@ -148,6 +148,12 @@ class Summon():
                 offer = self._get_offer(peer_doc)
                 if offer:
                     i['offers'].append(offer)
+        if doc.get('LCCallNum') == ['Shared Electronic Book']:
+            i['offers'].append({
+                'seller': 'WRLC',
+                'serialNumber': doc['ExternalDocumentID'][0]
+            })
+
         i = self._rewrite_ids(i)
 
         return i

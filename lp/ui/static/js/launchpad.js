@@ -120,7 +120,7 @@ function add_availability(availability) {
     
     av_at = offer.find('span[itemprop="availabilityAtOrFrom"]');
     if (callnumbers[loc]) {
-      av_at.text(loc + ' ' + callnumbers[loc])
+      av_at.text(loc + ' / ' + callnumbers[loc])
     } else {
       av_at.text(loc);
     }
