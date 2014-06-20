@@ -426,7 +426,11 @@ def _get_offers(bibid):
 
         # add due date if we have one
         if row[9]:
-            o['availabilityStarts'] = row[9]
+            # due date of 2382-12-31 means it's in offsite storage
+            if row[9] == '2382-12-31':
+                o['status'] = 'http://schema.org/InStock'
+            else:
+                o['availabilityStarts'] = row[9]
 
         # z39.50 lookups
         if seller == 'George Mason' or seller == 'Georgetown':

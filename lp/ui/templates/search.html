@@ -34,7 +34,6 @@
       <ul>
         {% for facet in active_facets %}
         <li class="{{ facet.name }}">
-          <!-- added x circle (christian 6-19-14) -->
           <a class="btn" title="remove {{ facet.value }} facet" href="{{ facet.remove_link }}">{{ facet.value }} <i class="fa fa-times-circle"></i></a>
         </li>
         {% endfor %}
@@ -79,19 +78,16 @@
         {% endif %}
 
         <a href="{{ doc.id }}">
-	    <!-- changed to div and added class (christian 6-19-14) -->
             <div class="search-result-title" itemprop="name">{{ doc.name }}</div>
         </a>
 
         {% if doc.author %}
-        <!-- / removed christian 6-19-14 -->
         {% for author in doc.author %}
         <span itemprop="author" itemtype="Person" itemscope>
             <a href="{{ author.url }}" itemprop="name">{{ author.name }}</a>
             {% if forloop.last %}<span class="trailing-period">.</span>{% else %} ; {% endif %}
         </span>
         {% endfor %}
-        {% else %}<span class="trailing-period">.</span>
         {% endif %}
 
         {% if doc.bookEdition %}

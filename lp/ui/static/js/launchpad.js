@@ -52,6 +52,7 @@ function check_availability() {
 }
 
 function add_availability(availability) {
+
   if (availability.summon) {
     var id = availability.summon;
   } else {
@@ -61,6 +62,7 @@ function add_availability(availability) {
   // tally the number of items per location
   var locations = {};
   var callnumbers = {};
+  var due = {};
   for (var i = 0; i < availability.offers.length; i++) {
     a = availability.offers[i];
     var loc = a.availabilityAtOrFrom;
@@ -71,26 +73,57 @@ function add_availability(availability) {
       locations[loc] += 1;
     } else if (a.status == "http://schema.org/InStoreOnly") {
       locations[loc] += 1;
-    } else if (a.availabilityStarts == '2382-12-31') {
-      locations[loc] += 1;
+    } else if (a.availabilityStarts) {
+      // convert date from 2013-01-01 to 01-01-2013
+      var parts = a.availabilityStarts.split('-');
+      due[loc] = parts[1] + '-' + parts[2] + '-' + parts[0];
     }
+
     callnumbers[loc] = a.sku;
   }
 
+  // update the offer HTML element with the availability information
   var offer = $("#offer-" + id);
 
   var locationCount = 0;
   for (loc in locations) {
+
+    // if there are more thane one locations at a given institution then 
+    // we need to duplicate the availability element so we can 
+    // list the other location
+    
     locationCount += 1;
     if (locationCount > 1) {
       var o = offer.clone();
       offer.after(o);
       offer = o;
     }
+   
+    // massage the initial 'Book Available' text to reflect if there
+    // are multiple copies and if the item is actually checked out
+    
+    var av = offer.find('.availability');
+    var text = av.text();
     if (locations[loc] > 1) {
-      offer.find(".availability").append("(" + locations[loc] + ")");
+      if (text.match(/\(\d+\)/)) {
+        text = text.replace(/\(\d+\)/, '(' + locations[loc] + ')');
+      } else {
+        text += "(" + locations[loc] + ")";
+      }
+    } else if (locations[loc] == 0) {
+      text = text.replace('Available', 'Checked Out');
+      text += ' (DUE ' + due[loc] + ')';
     }
-    offer.find('span[itemprop="availabilityAtOrFrom"]').text(loc + ' ' + callnumbers[loc]);
+    av.text(text);
+
+    // add location and call number information (when we have it)
+    
+    av_at = offer.find('span[itemprop="availabilityAtOrFrom"]');
+    if (callnumbers[loc]) {
+      av_at.text(loc + ' / ' + callnumbers[loc])
+    } else {
+      av_at.text(loc);
+    }
   }
 
 }

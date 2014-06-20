@@ -94,28 +94,30 @@ class Summon():
             if doc.get('Subtitle'):
                 i['name'] += " : " + doc['Subtitle'][0]
 
-        i['author'] = []
-        for name in doc.get('Author_xml', []):
-            if 'fullname' in name:
-                q = ('Author:"%s"' % name['fullname']).encode('utf8')
-                i['author'].append({
-                    'name': name['fullname'],
+        if 'Author_xml' in doc: 
+            i['author'] = []
+            for name in doc.get('Author_xml', []):
+                if 'fullname' in name:
+                    q = ('Author:"%s"' % name['fullname']).encode('utf8')
+                    i['author'].append({
+                        'name': name['fullname'],
+                        'url': reverse('search') + '?' + urlencode({'q': q})
+                    })
+            for alt_name in doc.get('Author_FL_xml', []):
+                if 'fullname' in alt_name:
+                    p = int(alt_name['sequence']) - 1
+                    if p < len(i['author']):
+                        i['author'][p]['alternateName'] = alt_name['fullname']
+
+        if 'SubjectTermsDisplay' in doc:
+            i['about'] = []
+            for subject in doc.get('SubjectTermsDisplay', []):
+                subject = subject.strip('.')
+                q = ('SubjectTerms:"%s"' % subject).encode('utf8')
+                i['about'].append({
+                    'name': subject,
                     'url': reverse('search') + '?' + urlencode({'q': q})
                 })
-        for alt_name in doc.get('Author_FL_xml', []):
-            if 'fullname' in alt_name:
-                pos = int(alt_name['sequence']) - 1
-                if pos < len(i['author']):
-                    i['author'][pos]['alternateName'] = alt_name['fullname']
-
-        i['about'] = []
-        for subject in doc.get('SubjectTermsDisplay', []):
-            subject = subject.strip('.')
-            q = ('SubjectTerms:"%s"' % subject).encode('utf8')
-            i['about'].append({
-                'name': subject,
-                'url': reverse('search') + '?' + urlencode({'q': q})
-            })
 
         if doc.get('PublicationYear'):
             i['datePublished'] = doc['PublicationYear'][0]
@@ -148,6 +150,12 @@ class Summon():
                 offer = self._get_offer(peer_doc)
                 if offer:
                     i['offers'].append(offer)
+        if doc.get('LCCallNum') == ['Shared Electronic Book']:
+            i['offers'].append({
+                'seller': 'WRLC',
+                'serialNumber': doc['ExternalDocumentID'][0]
+            })
+
         i = self._rewrite_ids(i)
 
         return i
