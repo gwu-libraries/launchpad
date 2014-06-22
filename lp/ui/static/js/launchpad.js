@@ -111,8 +111,7 @@ function add_availability(availability) {
         text += "(" + locations[loc] + ")";
       }
     } else if (locations[loc] == 0) {
-      text = text.replace('Available', 'Checked Out');
-      text += ' (DUE ' + due[loc] + ')';
+      text = text.replace('Available', 'DUE ' + due[loc]);
     }
     av.text(text);
 
