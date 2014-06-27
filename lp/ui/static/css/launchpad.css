@@ -281,7 +281,7 @@ ul.offers {
   font-size: 1.4em;
 }
 
-#facets li {color:#555;}
+#facets li {color:#555; font-size:.814em;}
 
 #active-facets .fa-times-circle {padding-left:.5em; padding-right:0;}
 
