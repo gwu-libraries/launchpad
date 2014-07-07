@@ -1,21 +1,33 @@
 @charset "utf-8";
 
 /* Libraries site styles */
+/* use libheader7_lite_dropin.css instead if you don't need to alter the main content/body styles */
+/* mods for Bootstrap swatch are in linheader-lite_bootswatch.css */
 
 html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
 body { margin: 0; font-size: 100%; font-family: Helvetica, Arial, sans-serif; line-height: 1.231; }
 /* optionally set page background color inside body tag: "background-color: #ccc" etc  */
 
+article {}
+
+div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {font-family: Helvetica, Arial, sans-serif;}
+
 p, li {
-	line-height: 1.125em; /* 18px; */
-	font-size: .814em; /* 14px; */
+	line-height: 1.25em; /* 20px; */
+	font-size: 1em; /* 16px; */
 	color: #333;
 }
 
 h1, h2 {
 	font-size: 1.25em; /* 20px; */
-	font-family: Helvetica, Arial, sans-serif;
 	color: #333;
 	font-weight: normal;
 	line-height: 1.5em; /* 24px; */
@@ -24,7 +36,6 @@ h1, h2 {
 
 h3 {
 	font-size: 1em; /* 16px; */
-	font-family: Helvetica, Arial, sans-serif;
 	color: #333;
 	font-weight: normal;
 	line-height: 1.25em; /* 20px; */
@@ -32,7 +43,6 @@ h3 {
 
 h4 {
 	font-size: .75em; /* 12px; */
-	font-family: Helvetica, Arial, sans-serif;
 	color: #333;
 	font-weight: bold;
 	line-height: 1em; /* 16px; */
@@ -103,8 +113,9 @@ input[type=submit], button {
 #libheader a:hover {color:#fff; text-decoration:underline;} 
 
 .libheader-link {float:left; font-size:.9em; padding-top:.6em; margin-left:1em;}
+.libheader-icon {float:right; font-size:.9em; padding-top:.6em; margin-left:1em;}
 .libheader-liblink {float:left; font-size: 1.1em; padding-top:.3em; margin-right:2em; margin-left:.5em;}
-.libheader-logo {float:right; overflow:hidden; height:2em; margin-right:.5em;}
+.libheader-logo {float:right; overflow:hidden; height:2em; margin-right:.5em; margin-left:1em;}
 .libfooter-text {margin: 0 .5em .5em; font-size:.7em; padding-top:.75em; overflow:hidden;}
 
 .bullet {float:left; padding:.6em 0 0 .75em; color:#fff;}
@@ -156,8 +167,8 @@ input[type=submit], button {
     /* optionally set page background color inside body tag: "background-color: #ccc" etc  */
 
     p, li {
-        line-height: 1.125em; /* 18px; */
-        font-size: .814em; /* 14px; */
+        line-height: 1.125em; 
+        font-size: .814em; 
         color: #000;
     }
 
@@ -276,4 +287,3 @@ input[type=submit], button {
       .hide-lo {display:none; visibility:hidden;}
 
 }
-

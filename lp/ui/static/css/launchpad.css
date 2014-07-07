@@ -281,14 +281,14 @@ ul.offers {
   font-size: 1.4em;
 }
 
-#facets li {color:#555;}
+#facets li {color:#555; font-size:.814em;}
 
 #active-facets .fa-times-circle {padding-left:.5em; padding-right:0;}
 
 /* overriding bootstrap so that facet buttons don't bump when stacked */
 #active-facets .btn {margin-bottom:.4em;}
 
-@media screen and (max-width: 979px) {
+@media screen and (max-width: 1200px) {
   #active-facets ul {padding-left: 0;}
 }
 
