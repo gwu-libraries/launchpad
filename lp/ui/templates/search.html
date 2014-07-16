@@ -11,7 +11,8 @@
 
     <section class="search row pagination">
         <form class="span12" action="{% url "search" %}" method="get">
-            <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
+            <input style="float: left; margin-right: 10px;" name="q" type="text"
+            placeholder="Search" value="{{ q }}" size="60"></input>
             <ul>
                 {% if prev_page_range %}
                 <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
@@ -28,46 +29,78 @@
         </form>
     </section>
 
+    {% if active_facets %}
+    <section id="active-facets">
+      <ul>
+        {% for facet in active_facets %}
+        <li class="{{ facet.name }}">
+          <a class="btn" title="remove {{ facet.value }} facet" href="{{ facet.remove_link }}">{{ facet.value }} <i class="fa fa-times-circle"></i></a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
     <div class="row">
 
-    <section id="search-results" class="span9">
+    <section id="search-results" class="span8">
 
     {% for doc in search_results.results %}
-    <article id="{{ doc.summon }}" class="search-result" itemscope itemtype="{{ doc.type }}">
+    <article id="{{ doc.id }}" class="search-result" itemscope itemtype="{{ doc.type }}">
         {% if doc.type == "Book" %}<img title="Book" class="item-type" src="{{ STATIC_URL }}img/book.png">{%endif %}
         {% if doc.type == "VideoObject" %}<img title="Video" class="item-type" src="{{ STATIC_URL }}img/video.png">{% endif %}
         {% if doc.type == "AudioObject" %}<img title="Audio" class="item-type" src="{{ STATIC_URL }}img/audio.png">{% endif %}
         {% if doc.type == "Map" %}<img title="Map" class="item-type" src="{{ STATIC_URL }}img/map.png">{% endif %}
-        {% if doc.type == "Periodical" %}<img title="Map" class="item-type" src="{{ STATIC_URL }}img/periodical.png">{% endif %}
+        {% if doc.type == "Periodical" %}<img title="Periodical" class="item-type" src="{{ STATIC_URL }}img/periodical.png">{% endif %}
+        {% if doc.type == "WebPage" %}<img title="Web Page" class="item-type" src="{{ STATIC_URL }}img/webpage.png">{% endif %}
 
         {% if doc.thumbnailUrl %}
-        <img itemprop="image" class="cover" src={{ doc.thumbnailUrl }}>
+        <a href="{{ doc.id }}">
+            <img itemprop="image" class="cover-thumbnail" src={{ doc.thumbnailUrl }}>
+        </a>
         {% endif %}
 
+        {% if doc.alternateName %}
         <a href="{{ doc.id }}">
-            <span class="title" itemprop="name">{{ doc.name }}</span>
+            <span itemprop="alterateName">{{ doc.alternateName }}</span>
         </a>
-
         {% if doc.author %}
         / 
         {% for author in doc.author %}
+        {% if author.alternateName %}
         <span itemprop="author" itemtype="Person" itemscope>
-            {% if forloop.last %}
-            <span itemprop="name">{{ author.name }}.</span>
-            {% else %}
-            <span itemprop="name">{{ author.name }}</span>
-            {% endif %}
+            <span itemprop="alternateName">{{ author.alternateName }}</span>
+            {% if forloop.last %}<span class="trailing-period">.</span>{% else %} ; {% endif %}
+        </span>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+
+        <a href="{{ doc.id }}">
+            <div class="search-result-title" itemprop="name">{{ doc.name }}</div>
+        </a>
+
+        {% if doc.author %}
+        {% for author in doc.author %}
+        <span itemprop="author" itemtype="Person" itemscope>
+            <a href="{{ author.url }}" itemprop="name">{{ author.name }}</a>
+            {% if forloop.last %}<span class="trailing-period">.</span>{% else %} ; {% endif %}
         </span>
         {% endfor %}
         {% endif %}
 
         {% if doc.bookEdition %}
+        <br>
         <span itemprop="bookEdition">{{ doc.bookEdition }}</span>.
         {% endif %}
 
+        <br>
         {% if doc.publisher %}
         <span itemprop="publisher" itemscope itemtype="Person">
+            {% if doc.publishers.address %}
             <span itemprop="address">{{ doc.publisher.address }}</span> :
+            {% endif %}
             <span itemprop="name">{{ doc.publisher.name }}</span>
         </span>
         {% endif %}
@@ -75,27 +108,53 @@
         {{ doc.datePublished }}.
 
         <br>
-        
+
         {% if doc.about %}
         Subjects:
         <ul class="subjects" itemprop="about">
             {% for subject in doc.about %}
-            <li itemprop="about">{{ subject.name }}</li>
+            <li itemprop="about">
+                <a href="{{ subject.url }}">{{ subject.name }}</a>
+            </li>
             {% if not forloop.last %} ; {% endif %}
             {% endfor %}
         </ul>
         <br>
         {% endif %}
 
-        <span itemprop="offers" class="offers">
-        </span>
+        <ul itemprop="offers" class="offers">
+          {% for offer in doc.offers %}
+          <li class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
+            <span class="availability">
+              {% if doc.type == "VideoObject" %}
+              Video
+              {% elif doc.type == "AudioObject" %}
+              Audio
+              {% elif doc.type == "WebPage" %}
+              Website
+              {% else %}
+              {{ doc.type }}
+              {% endif %}
+              Available
+            </span>:
+            <span itemprop="seller">{{ offer.seller }}</span> 
+            / 
+            <span itemprop="availabilityAtOrFrom"></span>
+          </li>
+          {% endfor %}
+        </ul>
 
     </article>
     {% endfor %}
 
     </section>
 
-    <section id="facets" class="span3">
+    <section id="facets" class="span3 pull-right">
+
+    <h2>Refine Results</h2>
+    <h3>{{ search_results.totalResults|intcomma }} items</h3>
+    <hr>
+
     {% for facet in search_results.facets %}
         <h2>{{ facet.name }}</h2>
         <ul>

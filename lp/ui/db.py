@@ -108,7 +108,7 @@ def get_availability(bibid):
     if re.match('^\d+$', bibid):
         results['offers'] = _get_offers(bibid)
 
-    # George Mason and Georgetown have special ids in Summon and we need 
+    # George Mason and Georgetown have special ids in Summon and we need
     # to talk to their catalogs to determine availability
     else:
         if bibid.startswith('m'):
@@ -302,7 +302,7 @@ def get_related_bibids_by_isbn(item):
         )
     ORDER BY bib_index.bib_id
     ''' % binds
-    
+
     rows = _fetch_all(q, item['isbn'])
     rows = _filter_by_title(rows, item['name'])
 
@@ -343,7 +343,7 @@ def get_related_bibids_by_issn(item):
         )
     ORDER BY bib_index.bib_id
     ''' % binds
-   
+
     # voyager wants "1059-1028" to look like "1059 1028"
     issns = [i.replace('-', ' ') for i in item['issn']]
 
@@ -351,7 +351,6 @@ def get_related_bibids_by_issn(item):
     rows = _filter_by_title(rows, item['name'])
 
     return rows
-
 
 
 def _get_offers(bibid):
@@ -427,7 +426,11 @@ def _get_offers(bibid):
 
         # add due date if we have one
         if row[9]:
-            o['availabilityStarts'] = row[9]
+            # due date of 2382-12-31 means it's in offsite storage
+            if row[9] == '2382-12-31':
+                o['status'] = 'http://schema.org/InStock'
+            else:
+                o['availabilityStarts'] = row[9]
 
         # z39.50 lookups
         if seller == 'George Mason' or seller == 'Georgetown':
@@ -472,7 +475,6 @@ def _get_offers_z3950(id, library):
     for holdings_data in rec.data.holdingsData:
         h = holdings_data[1]
         o = {'@type': 'Offer', 'seller': library}
-        o['h'] = str(h)
 
         if hasattr(h, 'callNumber'):
             o['sku'] = h.callNumber.rstrip('\x00').strip()
@@ -484,6 +486,8 @@ def _get_offers_z3950(id, library):
             note = h.publicNote.rstrip('\x00')
             if note == 'AVAILABLE':
                 o['status'] = 'http://schema.org/InStock'
+            elif note in ('SPC USE ONLY', 'LIB USE ONLY'):
+                o['status'] = 'http://schema.org/InStoreOnly'
             else:
                 # set availabilityStarts from "DUE 09-15-14"
                 m = re.match('DUE (\d\d)-(\d\d)-(\d\d)', note)
@@ -498,14 +502,18 @@ def _get_offers_z3950(id, library):
             if cd.availableNow is True:
                 o['status'] = 'http://schema.org/InStock'
             else:
-                if cd.availabilityDate:
-                    o['availabilityStarts'] = cd.availablityDate
-                    # TODO: set availabilityStarts to YYYY-MM-DD
+                if cd.availablityDate:
+                    m = re.match("^(\d{4}-\d{2}-\d{2}).+", cd.availablityDate)
+                    if m:
+                        o['availabilityStarts'] = m.group(1)
                 o['status'] = 'http://schema.org/OutOfStock'
 
         else:
             logging.warn("unknown availability: bibid=%s library=%s h=%s",
                          id, library, h)
+
+        # some locations have a weird period before the name
+        o['availabilityAtOrFrom'] = o['availabilityAtOrFrom'].lstrip('.')
 
         offers.append(o)
 
@@ -550,6 +558,8 @@ def _normalize_status(status_id):
     # TODO: more granularity needed?
     if status_id == 1:
         return 'http://schema.org/InStock'
+    elif status_id in (19, 20):
+        return 'http://schema.org/PreOrder'
     elif status_id:
         return 'http://schema.org/OutOfStock'
     else:

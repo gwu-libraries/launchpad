@@ -59,7 +59,7 @@ class DbTests(unittest.TestCase):
 
     def test_get_related_bibids_by_issn(self):
         i = get_item('3155728')
-        expected = ['519894', '1939227', '2946288', '3155728']
+        expected = ['519894', '1939227', '2946288', '3155728', '4990328']
         bibids = db.get_related_bibids_by_issn(i)
         self.assertEqual(bibids, expected)
 
@@ -98,11 +98,14 @@ class DbTests(unittest.TestCase):
 
     def test_checked_out(self):
         # get a bib_id for something that's checked out
+        # 2382-12-31 due dates are indicators that the item
+        # is in offsite storage
         q = """
             SELECT bib_id, circ_transactions.circ_transaction_id
             FROM bib_mfhd, mfhd_item, item, circ_transactions
             WHERE ROWNUM = 1
               AND circ_transactions.charge_due_date IS NOT NULL
+              AND circ_transactions.charge_due_date < TO_DATE('2382-12-31', 'YYYY-MM-DD')
               AND circ_transactions.item_id = item.item_id
               AND item.item_id = mfhd_item.item_id
               AND mfhd_item.mfhd_id = bib_mfhd.mfhd_id

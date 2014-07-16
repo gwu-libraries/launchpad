@@ -132,61 +132,6 @@ def is_non_roman(s):
         return True
 
 
-@register.simple_tag
-def explore_author(s):
-    s = encode_str(s)
-    et = _get_explore_type()
-    if et == 'surveyor':
-        url = 'http://surveyor.gelman.gwu.edu/'
-        q = [
-                ('q', 'author:"' + s + '"')
-            ]
-    elif et == 'summon':
-        url = 'http://gw.summon.serialssolutions.com/search'
-        q = [
-                ('s.cmd', 'addTextFilter(SourceType\:\("Library Catalog"\))'),
-                ('s.q', 'author:"' + s + '"')
-            ]
-    return url + '?' + urlencode(q)
-
-
-@register.simple_tag
-def explore_subject(s):
-    s = encode_str(s)
-    et = _get_explore_type()
-    if et == 'surveyor':
-        url = 'http://surveyor.gelman.gwu.edu/'
-        q = [
-                ('q', 'subject:"' + s + '"')
-            ]
-    elif et == 'summon':
-        url = 'http://gw.summon.serialssolutions.com/search'
-        parts = ['subjectterms:"' + t + '"' for t in s.split(' -- ')]
-        q = [
-                ('s.cmd', 'addTextFilter(SourceType\:\("Library Catalog"\))'),
-                ('s.q', ' AND '.join(parts))
-            ]
-    return url + '?' + urlencode(q)
-
-
-@register.simple_tag
-def explore_series(s):
-    s = encode_str(s)
-    et = _get_explore_type()
-    if et == 'surveyor':
-        url = 'http://surveyor.gelman.gwu.edu/'
-        q = [
-                ('q', 'series:"' + s + '"')
-            ]
-    elif et == 'summon':
-        url = 'http://gw.summon.serialssolutions.com/search'
-        q = [
-                ('s.cmd', 'addTextFilter(SourceType\:\("Library Catalog"\))'),
-                ('s.q', '"' + s + '"')
-            ]
-    return url + '?' + urlencode(q)
-
-
 def listelement(key, citation_json):
     value = citation_json[key]
     if key == 'journal':

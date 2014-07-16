@@ -143,7 +143,7 @@ Configure database and other settings in a local_settings file:
 - NOTE: If you are deploying to production, set DEBUG = False.
     Also, set GOOGLE_ANALYTICS_UA to your UA to enable google 
     analytics in production.
-- Comment out CACHES and ITEM_PAGE_CACHE_SECONDS if you are not using memcached
+- Comment out CACHES if you are not using memcached
 
 Edit wsgi file:
 

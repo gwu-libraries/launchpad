@@ -2,17 +2,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>{% block title %}{% endblock title %} - GWU Libraries</title>
+<title>{% block title %}{% endblock title %} - GW Libraries</title>
 <link rel="icon" href="{{ STATIC_URL}}img/favicon.ico" type="image/x-icon" />
 <!-- 'viewport' helps mobile devices scale appropriately -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
 
 {% block styles %}
 <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet" media="all">
+<!-- Font Awesome! http://fontawesome.io/get-started -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/libheader7_lite.css" type="text/css" media="all" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/libheader7_lite_bootswatch.css" type="text/css" media="all" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/launchpad.css" type="text/css" media="all" />
-    <!--[if lt IE 9]>
+<!--[if lt IE 9]>
 <link rel="stylesheet" href="{{ STATIC_URL }}css/libheader7_lite_ie.css" type="text/css" />
 <![endif]-->
 

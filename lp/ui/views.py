@@ -432,7 +432,7 @@ def search(request):
             'Institution,or',
             'Discipline,or',
         ],
-        "ho": "f",
+        "ho": "t",
         "light": "t",
         "raw": raw,
     }
@@ -441,16 +441,26 @@ def search(request):
     for facet in params.getlist('facet'):
         if ':' not in facet:
             continue
-        facet_field, facet_value = facet.split(':', 2)
-        facet_value = facet_value.replace(',', '\\,')
+        facet_field, facet_value = facet.split(':', 1)
+
         if 'fvf' not in kwargs:
             kwargs['fvf'] = []
+
+        # TODO: maybe summoner should do these escapes somehow?
+        def escape(m):
+            return '\\' + m.group(1)
+        facet_value = re.sub('([,:\()${}])', escape, facet_value)
+
         kwargs['fvf'].append('%s,%s,false' % (facet_field, facet_value))
+
+        # add Library facet field if user is faceting by Institution
+        if facet_field == 'Institution' and 'Library,or' not in kwargs['ff']:
+            kwargs['ff'].append('Library,or')
 
     if fmt == "html":
         kwargs['for_template'] = True
 
-    # TODO: catch Summon API errors here?
+    # TODO: catch/retry when there are Summon API errors here?
     search_results = api.search(q, **kwargs)
 
     # json-ld
@@ -505,25 +515,13 @@ def search(request):
             page_query['page'] = page_range_start - 1
             prev_page_range = page_query.urlencode()
 
-        # massage facets a bit before passing them off to the template
-        # to make them easier to process there
-        for f in search_results['facets']:
-            for fc in f['counts']:
-                fq = request.GET.copy()
-                fq.update({'facet': "%s:%s" % (f['name'], fc['name'])})
-                fq['page'] = 1
-                fc['url'] = fq.urlencode()
-
-                # make sure the facet name is capitalized
-                # "bazzocchi, marco antonio" -> "Bazzocchi, Marco Antonio"
-                fc['name'] = fc['name'].title()
-
-            # add spaces to the facet name
-            # "ContentType" -> "Content Type"
-            f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
+        search_results = _remove_genre_ebook_facet(search_results)
+        search_results = _reorder_facets(search_results)
+        search_results = _format_facets(request, search_results)
 
         return render(request, 'search.html', {
             "q": q,
+            "active_facets": _get_active_facets(request),
             "page": page,
             "page_range": page_range,
             "next_page_range": next_page_range,
@@ -540,6 +538,8 @@ def availability(request):
     API call for getting the availability for a particular bibid.
     """
     bibid = request.GET.get('bibid')
+    if not bibid:
+        raise Http404
     return HttpResponse(
         json.dumps(db.get_availability(bibid), indent=2),
         content_type='application/json'
@@ -560,3 +560,80 @@ def related(request):
         json.dumps(bibids, indent=2),
         content_type='application/json'
     )
+
+
+def _remove_genre_ebook_facet(search_results):
+    # https://github.com/gwu-libraries/launchpad/issues/603
+    for facet in search_results['facets']:
+        if facet['name'] == 'Genre':
+            new_counts = []
+            for count in facet['counts']:
+                if count['name'] != 'electronic books':
+                    new_counts.append(count)
+            facet['counts'] = new_counts
+    return search_results
+
+
+def _reorder_facets(search_results):
+    # facets can come back in different order from summon
+    # this function makes sure we always display them in the same order
+    facets_order = ['Institution', 'Library', 'ContentType', 'Author',
+                    'Discipline', 'Language', 'Genre']
+    new_facets = []
+    for facet_name in facets_order:
+        for facet in search_results['facets']:
+            # only add facet if there are more than one values for it
+            if facet['name'] == facet_name and len(facet['counts']) > 1:
+                new_facets.append(facet)
+    search_results['facets'] = new_facets
+    return search_results
+
+
+def _format_facets(request, search_results):
+    # massage facets a bit before passing them off to the template
+    # to make them easier to process there
+    for f in search_results['facets']:
+        for fc in f['counts']:
+
+            # add a url property to each facet to activate facet
+            fq = request.GET.copy()
+            fq.update({'facet': "%s:%s" % (f['name'], fc['name'])})
+            fq['page'] = 1
+            fc['url'] = fq.urlencode()
+
+            # make sure the facet name is capitalized
+            # "bazzocchi, marco antonio" -> "Bazzocchi, Marco Antonio"
+            # but leave Library locations alone
+            if f['name'] not in ('Library', 'Institution'):
+                fc['name'] = fc['name'].title()
+
+            # remove codes from Institution name
+            if f['name'] == 'Institution':
+                fc['name'] = re.sub('\(.+\)$', '', fc['name'])
+
+        # add spaces to the facet name: "ContentType" -> "Content Type"
+        f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
+
+    return search_results
+
+
+def _get_active_facets(request):
+    active_facets = []
+
+    for facet in request.GET.getlist('facet'):
+        if ':' not in facet:
+            continue
+        name, value = facet.split(':', 1)
+
+        remove_link = request.GET.copy()
+        removed_facets = list(
+            set(remove_link.getlist('facet')) - set([facet])
+        )
+        remove_link.setlist('facet', removed_facets)
+
+        active_facets.append({
+            "name": name,
+            "value": value,
+            "remove_link": "?" + remove_link.urlencode()
+        })
+    return active_facets

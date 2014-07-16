@@ -2,6 +2,8 @@ body {
     font-family: Helvetica, Arial, sans-serif;
 }
 
+p, li {line-height: 1.3em;}
+
 .library-has {
     color: gray;
     font-size: small;
@@ -180,8 +182,16 @@ footer {
     padding-right: 10px;
 }
 
+.search form {
+    height: 1.5em;
+}
+
+.search input {
+    width: 400px;
+}
+
 .search-result {
-  padding: 10px;
+  padding: 10px 10px 30px;
   border-bottom: solid thin #cccccc;
   clear: both;
 }
@@ -190,9 +200,11 @@ footer {
   font-size: 12pt;
 }
 
-.search-result img.cover {
-  height: 65px;
+.search-result img.cover-thumbnail {
+  display: none;
+  height: 100px;
   float: right;
+  padding-left: .2em;
 }
 
 img.item-type {
@@ -215,5 +227,71 @@ ul.subjects {
 
 .subjects li {
   display: inline;
-  font-size: medium;
+  font-size: inherit;
+}
+
+#active-facets {
+  margin-bottom: 10px;
+}
+
+#active-facets ul {
+  list-style-type: none;
+  display: inline;
+  margin: 0;
+  padding-left: 10px;
+}
+
+#active-facets li {
+  display: inline;
+  font-size: smaller;
+  padding: 3px;
+}
+
+#facets {
+  background-color: #EAEAEA;
+  padding: 15px;
+}
+
+#facets hr {
+    border-top: 1px solid gray;
+}
+
+.trailing-period {
+  margin-left: -4px;
+}
+
+ul.offers {
+  list-style-type: none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  font-size: .9em;
+}
+
+.offers li {
+  font-size: 1.1em;
+}
+
+#search-results {
+  font-size: .9em;
+}
+
+#search-results .search-result-title {
+  line-height: 1.6em;
+  font-size: 1.4em;
+}
+
+#facets li {color:#555; font-size:.814em;}
+
+#active-facets .fa-times-circle {padding-left:.5em; padding-right:0;}
+
+/* overriding bootstrap so that facet buttons don't bump when stacked */
+#active-facets .btn {margin-bottom:.4em;}
+
+@media screen and (max-width: 1200px) {
+  #active-facets ul {padding-left: 0;}
+}
+
+@media screen and (max-width: 680px) {
+  section.search {padding-bottom:1em;}
 }
