@@ -204,7 +204,8 @@ footer {
   display: none;
   height: 100px;
   float: right;
-  padding-left: .2em;
+  padding-left: .3em;
+  padding-bottom: .3em;
 }
 
 img.item-type {
@@ -277,21 +278,36 @@ ul.offers {
 }
 
 #search-results .search-result-title {
-  line-height: 1.6em;
+  line-height: 1.25em;
   font-size: 1.4em;
+  padding-bottom: .5em;
 }
 
 #facets li {color:#555; font-size:.814em;}
 
 #active-facets .fa-times-circle {padding-left:.5em; padding-right:0;}
 
+#home-search-box-form {
+  margin-top: 20%;
+}
+
+#home-search-box {
+  width: 45%;
+  line-height: 25px;
+  height: 30px;
+  font-size: 25px;
+}
+
 /* overriding bootstrap so that facet buttons don't bump when stacked */
 #active-facets .btn {margin-bottom:.4em;}
 
 @media screen and (max-width: 1200px) {
-  #active-facets ul {padding-left: 0;}
+  #active-facets ul {padding-left:0;}
+  #home-search-box {width:80%;}
 }
 
 @media screen and (max-width: 680px) {
   section.search {padding-bottom:1em;}
+  #home-search-box {width:95%; font-size:20px; line-height:30px;}
+  #home-search-box-form {margin-top:10%;}
 }
