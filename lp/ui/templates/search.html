@@ -34,7 +34,7 @@
       <ul>
         {% for facet in active_facets %}
         <li class="{{ facet.name }}">
-          <a class="btn" title="remove {{ facet.value }} facet" href="{{ facet.remove_link }}">{{ facet.value }} <i class="fa fa-times-circle"></i></a>
+          <a class="btn" title="remove {{ facet.value }} facet" href="{{ facet.remove_link }}">{{ facet.value }}<i class="fa fa-ellipsis-v"></i><i class="fa fa-times-circle"></i></a>
         </li>
         {% endfor %}
       </ul>
