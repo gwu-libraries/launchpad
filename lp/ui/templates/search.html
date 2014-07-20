@@ -45,6 +45,27 @@
 
     <section id="search-results" class="span8">
 
+    {% if not search_results.results %}
+    <p>
+    We're sorry, no results were found for your search.
+    </p>
+
+    <p>
+    Here are a few things you could try:
+    <ul>
+      <li>check your spelling</li>
+      <li>try different keywords</li>
+      <li>try more general keywords</li>
+      <li>try fewer keywords</li>
+    </ul>
+
+    If you continue to have trouble please feel free to  
+    <a href="http://library.gwu.edu/help/reference/ask-a-librarian">ask a
+      librarian</a> for assistance.
+
+    </p>
+    {% endif %} 
+
     {% for doc in search_results.results %}
     <article id="{{ doc.id }}" class="search-result" itemscope itemtype="{{ doc.type }}">
         {% if doc.type == "Book" %}<img title="Book" class="item-type" src="{{ STATIC_URL }}img/book.png">{%endif %}
