@@ -59,9 +59,10 @@ function add_availability(availability) {
     var id = availability.wrlc;
   }
 
-  // tally the number of items per location
+  // collect some stuff up by location
   var locations = {};
   var callnumbers = {};
+  var descriptions = {}
   var due = {};
   for (var i = 0; i < availability.offers.length; i++) {
     a = availability.offers[i];
@@ -69,9 +70,8 @@ function add_availability(availability) {
     if (! locations[loc]) {
       locations[loc] = 0
     }
-    if (a.status == "http://schema.org/InStock") {
-      locations[loc] += 1;
-    } else if (a.status == "http://schema.org/InStoreOnly") {
+    if (a.availability == "http://schema.org/InStock" || 
+        a.availability == "http://schema.org/InStoreOnly") {
       locations[loc] += 1;
     } else if (a.availabilityStarts) {
       // convert date from 2013-01-01 to 01-01-2013
@@ -80,6 +80,7 @@ function add_availability(availability) {
     }
 
     callnumbers[loc] = a.sku;
+    descriptions[loc] = a.description;
   }
 
   // update the offer HTML element with the availability information
@@ -89,7 +90,7 @@ function add_availability(availability) {
   for (loc in locations) {
 
     // if there are more thane one locations at a given institution then 
-    // we need to duplicate the availability element so we can 
+    // we need to duplicate the availability element so we can also
     // list the other location
     
     locationCount += 1;
@@ -111,7 +112,8 @@ function add_availability(availability) {
         text += "(" + locations[loc] + ")";
       }
     } else if (locations[loc] == 0) {
-      text = text.replace('Available', 'DUE ' + due[loc]);
+      text = text.replace('Available', descriptions[loc])
+      if (due[loc]) text += " " + due[loc];
     }
     av.text(text);
 
@@ -123,6 +125,8 @@ function add_availability(availability) {
     } else {
       av_at.text(loc);
     }
+
+    console.log(loc + ' ' + descriptions[loc]);
   }
 
 }
