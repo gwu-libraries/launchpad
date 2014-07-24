@@ -82,6 +82,11 @@ function add_availability(availability) {
     var offer = $('#offer-' + availability.wrlc);
   }
 
+  // if no availability information was available then hide the offer
+  if (availability.offers.length == 0) {
+    offer.hide();
+  }
+
   // update the offer with the availability information
   
   var locationCount = 0;

@@ -473,7 +473,7 @@ def _get_offers_z3950(id, library):
 
     # normalize holdings information as schema.org offers
 
-    if not hasattr(rec, 'data') and not hasattr(rec.data, 'holdingsData'):
+    if hasattr(rec, 'data') and not hasattr(rec.data, 'holdingsData'):
         return []
 
     for holdings_data in rec.data.holdingsData:
@@ -510,7 +510,7 @@ def _get_offers_z3950(id, library):
                 o['availability'] = 'http://schema.org/InStock'
                 o['description'] = 'Available'
             else:
-                if cd.availablityDate:
+                if hasattr(cd, 'availabilityDate') and cd.availablityDate:
                     m = re.match("^(\d{4}-\d{2}-\d{2}).+", cd.availablityDate)
                     if m:
                         o['availabilityStarts'] = m.group(1)
