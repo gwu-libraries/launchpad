@@ -404,12 +404,15 @@ def _get_offers(bibid):
 
     for row in cursor.fetchall():
         seller = settings.LIB_LOOKUP.get(row[10], '?')
+        desc = row[1] or 'Available'
+        if desc == 'Not Charged':
+            desc = 'Available'
         o = {
             '@type': 'Offer',
             'seller': seller,
             'sku': row[0],
             'availability': _normalize_status(row[2]),
-            'description': row[1],
+            'description': desc,
         }
 
         # use temp location if there is one, otherwise use perm location

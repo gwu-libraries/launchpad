@@ -53,17 +53,13 @@ function check_availability() {
 
 function add_availability(availability) {
 
-  if (availability.summon) {
-    var id = availability.summon;
-  } else {
-    var id = availability.wrlc;
-  }
-
-  // collect some stuff up by location
+  // first we need to collect up some of the availability information
+  // by location so we can have single lines for multiple items at the
+  // same location
+  
   var locations = {};
   var callnumbers = {};
   var descriptions = {}
-  var due = {};
   for (var i = 0; i < availability.offers.length; i++) {
     a = availability.offers[i];
     var loc = a.availabilityAtOrFrom;
@@ -73,60 +69,50 @@ function add_availability(availability) {
     if (a.availability == "http://schema.org/InStock" || 
         a.availability == "http://schema.org/InStoreOnly") {
       locations[loc] += 1;
-    } else if (a.availabilityStarts) {
-      // convert date from 2013-01-01 to 01-01-2013
-      var parts = a.availabilityStarts.split('-');
-      due[loc] = parts[1] + '-' + parts[2] + '-' + parts[0];
     }
-
     callnumbers[loc] = a.sku;
     descriptions[loc] = a.description;
   }
 
-  // update the offer HTML element with the availability information
-  var offer = $("#offer-" + id);
+  // get the offer element on the page
 
+  if (availability.summon) {
+    var offer = $('#offer-' + availability.summon);
+  } else {
+    var offer = $('#offer-' + availability.wrlc);
+  }
+
+  // update the offer with the availability information
+  
   var locationCount = 0;
   for (loc in locations) {
-
-    // if there are more thane one locations at a given institution then 
-    // we need to duplicate the availability element so we can also
-    // list the other location
+    
+    // if there are more than one locations then the original needs to 
+    // be copied and added to the DOM so we can have a separate line 
+    // for each unique location
     
     locationCount += 1;
     if (locationCount > 1) {
       var o = offer.clone();
+      o.attr('id', o.attr('id') + '-' + locationCount);
       offer.after(o);
       offer = o;
     }
-   
-    // massage the initial 'Book Available' text to reflect if there
-    // are multiple copies and if the item is actually checked out
-    
-    var av = offer.find('.availability');
-    var text = av.text();
+
     if (locations[loc] > 1) {
-      if (text.match(/\(\d+\)/)) {
-        text = text.replace(/\(\d+\)/, '(' + locations[loc] + ')');
-      } else {
-        text += "(" + locations[loc] + ")";
-      }
-    } else if (locations[loc] == 0) {
-      text = text.replace('Available', descriptions[loc])
-      if (due[loc]) text += " " + due[loc];
-    }
-    av.text(text);
-
-    // add location and call number information (when we have it)
-    
-    av_at = offer.find('span[itemprop="availabilityAtOrFrom"]');
-    if (callnumbers[loc]) {
-      av_at.text(loc + ' / ' + callnumbers[loc])
+      var il = '(' + locations[loc] + ')';
+      offer.find('span[itemprop="description"]').text('Available');
+      offer.find('span[itemprop="inventoryLevel"]').text(il);
     } else {
-      av_at.text(loc);
+      offer.find('span[itemprop="description"]').text(descriptions[loc]);
     }
 
-    console.log(loc + ' ' + descriptions[loc]);
+    offer.find('span[itemprop="availabilityAtOrFrom"]').text(loc);
+
+    if (callnumbers[loc]) {
+      offer.find('span[itemprop="sku"]').text(callnumbers[loc]);
+    }
+
   }
 
 }
