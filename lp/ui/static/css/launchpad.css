@@ -191,7 +191,7 @@ footer {
 }
 
 .search-result {
-  padding: 10px 10px 30px;
+  padding: 10px 10px 10px 10px;
   border-bottom: solid thin #cccccc;
   clear: both;
 }
