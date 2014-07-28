@@ -224,5 +224,7 @@ class Summon():
             return 'VideoObject'
         elif content_type == 'Web Resource':
             return 'WebPage'
+        elif content_type == 'Archival Material':
+            return 'Manuscript'
         else:
             return 'Book'

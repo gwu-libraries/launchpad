@@ -11,7 +11,7 @@ import unittest
 from ui import db
 from ui.db import get_item, get_availability, _fetch_one
 
-status = ['http://schema.org/InStock', 'http://schema.org/OutOfStock']
+availability = ['http://schema.org/InStock', 'http://schema.org/OutOfStock']
 
 
 class DbTests(unittest.TestCase):
@@ -30,7 +30,7 @@ class DbTests(unittest.TestCase):
 
     def test_get_related_items(self):
         i = get_item('2281511')
-        expected = set(['2281511', '1278053', '13079375', '4377796',
+        expected = set(['2281511', '1278053', '4377796',
                         '5094040'])
         bibids = set(db.get_related_bibids(i))
         # we compare as sets because the order can change
@@ -38,7 +38,7 @@ class DbTests(unittest.TestCase):
 
     def test_get_related_bibids_by_oclc(self):
         i = get_item('2281511')
-        expected = ['1278053', '2281511', '13079375']
+        expected = ['1278053', '2281511']
         bibids = db.get_related_bibids_by_oclc(i)
         self.assertEqual(expected, bibids)
 
@@ -48,7 +48,7 @@ class DbTests(unittest.TestCase):
 
     def test_get_related_bibids_by_lccn(self):
         i = get_item('2281511')
-        expected = ['1278053', '2281511', '4377796', '5094040', '13079375']
+        expected = ['1278053', '2281511', '4377796', '5094040']
         bibids = db.get_related_bibids_by_lccn(i)
         self.assertEqual(bibids, expected)
 
@@ -73,8 +73,9 @@ class DbTests(unittest.TestCase):
         self.assertEqual(o['seller'], 'George Washington')
         self.assertEqual(o['availabilityAtOrFrom'].lower(), 'gelman stacks')
         self.assertEqual(o['sku'], 'PR6019.O9 F5 1999')
-        self.assertTrue(o['status'] in status)
+        self.assertTrue(o['availability'] in availability)
         self.assertEqual(o['serialNumber'], '3927007')
+        self.assertTrue(o['description'])
 
     def test_temp_location(self):
         # get a bib_id for something that's in temp location to make sure
@@ -150,7 +151,7 @@ class DbTests(unittest.TestCase):
         self.assertEqual(o['@type'], 'Offer')
         self.assertEqual(o['seller'], 'George Mason')
         self.assertEqual(o['sku'], 'PR6019.O9 F5')
-        self.assertTrue(o['status'] in status)
+        self.assertTrue(o['availability'] in availability)
 
     def test_availability_georgetown(self):
         a = get_availability('b10086948')
@@ -162,12 +163,12 @@ class DbTests(unittest.TestCase):
         self.assertEqual(o['@type'], 'Offer')
         self.assertEqual(o['seller'], 'Georgetown')
         self.assertEqual(o['sku'], 'PR6019.O9 F45 1959')
-        self.assertTrue(o['status'] in status)
+        self.assertTrue(o['availability'] in availability)
 
     def test_no_item_record(self):
         # can we get location from holdings record when no item exists?
         a = get_availability('12967951')
-        self.assertEqual(a['offers'][0]['status'], 'http://schema.org/InStock')
+        self.assertEqual(a['offers'][0]['availability'], 'http://schema.org/InStock')
         self.assertEqual(a['offers'][0]['availabilityAtOrFrom'],
                          'Lib special collections')
 

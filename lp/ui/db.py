@@ -385,7 +385,7 @@ def _get_offers(bibid):
           ON item_status.item_id = item.item_id
         LEFT OUTER JOIN item_status_type
           ON item_status.item_status = item_status_type.item_status_type
-        leFT OUTER JOIN location perm_location
+        LEFT OUTER JOIN location perm_location
           ON perm_location.location_id = item.perm_location
         LEFT OUTER JOIN location temp_location
           ON temp_location.location_id = item.temp_location
@@ -404,11 +404,15 @@ def _get_offers(bibid):
 
     for row in cursor.fetchall():
         seller = settings.LIB_LOOKUP.get(row[10], '?')
+        desc = row[1] or 'Available'
+        if desc == 'Not Charged':
+            desc = 'Available'
         o = {
             '@type': 'Offer',
             'seller': seller,
             'sku': row[0],
-            'status': _normalize_status(row[2]),
+            'availability': _normalize_status(row[2]),
+            'description': desc,
         }
 
         # use temp location if there is one, otherwise use perm location
@@ -428,7 +432,7 @@ def _get_offers(bibid):
         if row[9]:
             # due date of 2382-12-31 means it's in offsite storage
             if row[9] == '2382-12-31':
-                o['status'] = 'http://schema.org/InStock'
+                o['availability'] = 'http://schema.org/InStock'
             else:
                 o['availabilityStarts'] = row[9]
 
@@ -469,7 +473,7 @@ def _get_offers_z3950(id, library):
 
     # normalize holdings information as schema.org offers
 
-    if not hasattr(rec, 'data') and not hasattr(rec.data, 'holdingsData'):
+    if hasattr(rec, 'data') and not hasattr(rec.data, 'holdingsData'):
         return []
 
     for holdings_data in rec.data.holdingsData:
@@ -485,9 +489,11 @@ def _get_offers_z3950(id, library):
         if hasattr(h, 'publicNote') and library == 'Georgetown':
             note = h.publicNote.rstrip('\x00')
             if note == 'AVAILABLE':
-                o['status'] = 'http://schema.org/InStock'
+                o['availability'] = 'http://schema.org/InStock'
+                o['description'] = 'Available'
             elif note in ('SPC USE ONLY', 'LIB USE ONLY'):
-                o['status'] = 'http://schema.org/InStoreOnly'
+                o['availability'] = 'http://schema.org/InStoreOnly'
+                o['description'] = 'Available'
             else:
                 # set availabilityStarts from "DUE 09-15-14"
                 m = re.match('DUE (\d\d)-(\d\d)-(\d\d)', note)
@@ -495,18 +501,21 @@ def _get_offers_z3950(id, library):
                     m, d, y = [int(i) for i in m.groups()]
                     o['availabilityStarts'] = "20%02i-%02i-%02i" % (y, m, d)
 
-                o['status'] = 'http://schema.org/OutOfStock'
+                o['availability'] = 'http://schema.org/OutOfStock'
+                o['description'] = 'Checked Out'
 
         elif hasattr(h, 'circulationData'):
             cd = h.circulationData[0]
             if cd.availableNow is True:
-                o['status'] = 'http://schema.org/InStock'
+                o['availability'] = 'http://schema.org/InStock'
+                o['description'] = 'Available'
             else:
-                if cd.availablityDate:
+                if hasattr(cd, 'availabilityDate') and cd.availablityDate:
                     m = re.match("^(\d{4}-\d{2}-\d{2}).+", cd.availablityDate)
                     if m:
                         o['availabilityStarts'] = m.group(1)
-                o['status'] = 'http://schema.org/OutOfStock'
+                o['availability'] = 'http://schema.org/OutOfStock'
+                o['description'] = 'Checked Out'
 
         else:
             logging.warn("unknown availability: bibid=%s library=%s h=%s",
