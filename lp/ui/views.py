@@ -24,6 +24,10 @@ def home(request):
         'title': 'launchpad home',
     })
 
+def advanced_search(request):
+    return render(request, 'advanced_search.html', {
+        'title': 'Advanced Search',
+    })
 
 def _openurl_dict(request):
     params = request.GET

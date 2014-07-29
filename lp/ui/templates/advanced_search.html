@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load launchpad_extras humanize %}
+
+{% block javascript_extra %}
+<script>
+  $(function() {
+    $("#adv").submit(search);
+  });
+
+  function search(event) {
+    var query = [];
+
+    getKeyword("title", query);
+    getPhrase("title", query);
+
+    getKeyword("subject", query);
+    getPhrase("subject", query);
+
+    getKeyword("publisher", query);
+    getPhrase("publisher", query);
+
+    url = "/search?q=" + query.join(" AND ");
+    console.log(url);
+    location.href = url;
+    return false;
+  }
+
+  function getKeyword(name, query) {
+    var p = $("#" + name + "-keywords").val();
+    if (p) {
+      query.push(name + ":" + "(" + p + ")")
+    }
+  }
+  
+  function getPhrase(name, query) {
+    var p = $("#" + name + "-phrase").val();
+    if (p) {
+      query.push(name + ":" + '"' + p + '"')
+    }
+  }
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="libsite-container container">
+
+  <form id="adv" class="form-horizontal" onsubmit="search">
+
+    <fieldset>
+
+      <legend>Title</legend>
+
+      <div class="control-group">
+        <label class="control-label" for="title-keywords">Keywords</label>
+        <div class="controls">
+          <input class="input-xxlarge" type="text" id="title-keywords">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="title-phrase">Exact Phrase</label>
+        <div class="controls">
+          <input class="input-xxlarge" type="text" id="title-phrase">
+        </div>
+      </div>
+
+    </fieldset>
+
+    <fieldset>
+
+      <legend>Subject</legend>
+
+      <div class="control-group">
+        <label class="control-label" for="subject-keywords">Keywords</label>
+        <div class="controls">
+          <input class="input-xxlarge" type="text" id="subject-keywords">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="subject-phrase">Exact Phrase</label>
+        <div class="controls">
+          <input class="input-xxlarge" type="text" id="subject-phrase">
+        </div>
+      </div>
+
+    </fieldset>
+
+    <fieldset>
+
+      <legend>Publisher</legend>
+
+      <div class="control-group">
+        <label class="control-label" for="publisher-keywords">Keywords</label>
+        <div class="controls">
+          <input class="input-xxlarge" type="text" id="publisher-keywords">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="publisher-phrase">Exact Phrase</label>
+        <div class="controls">
+          <input class="input-xxlarge" type="text" id="publisher-phrase">
+        </div>
+      </div>
+
+    </fieldset>
+
+
+    <br>
+    <br>
+    <button>Advanced Search</button>
+
+  </form>
+
+</div>
+
+{% endblock %}
