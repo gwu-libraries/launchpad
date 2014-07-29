@@ -47,7 +47,7 @@ td {
     padding-top: .4em;
     padding-bottom: .4em;
     margin: 0px;
-    color: #000000;
+    /*color: #000000;*/
 }
 
 td.field-label {
@@ -95,7 +95,7 @@ td.field-label {
 }
 
 .itemrow{
-    padding-left: 0em;
+    padding-left: 1em;
 }
 
 .linkresolverlist{
