@@ -304,6 +304,11 @@ ul.offers {
   color: #999;
 }
 
+#footer-utility {
+  float: right;
+  margin-top: inherit;
+}
+
 /* overriding bootstrap so that facet buttons don't bump when stacked */
 #active-facets .btn {margin-bottom:.4em;}
 
@@ -313,7 +318,8 @@ ul.offers {
 }
 
 @media screen and (max-width: 760px) {
-  #libfooter-container {height: 2.9em;}
+  #libfooter-container {height:2.9em;}
+  #footer-utility {float:none; margin-top:.6em;}
 }
 
 @media screen and (max-width: 680px) {
