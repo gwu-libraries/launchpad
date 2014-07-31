@@ -568,7 +568,8 @@ def related(request):
 
 
 def _remove_facets(search_results):
-    to_delete = ['ContentType:Journal Article', 'Genre:electronic books', 'ContentType:Book Chapter']
+    to_delete = ['ContentType:Journal Article', 'Genre:electronic books', 'ContentType:Book Chapter'
+            , 'ContentType:Book Rewiew']
     for facet in search_results['facets']:
         new_counts = []
         for count in facet['counts']:
