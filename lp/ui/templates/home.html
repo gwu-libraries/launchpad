@@ -3,8 +3,8 @@
 {% block content %}
 <div class="libsite-container container">
   <div class="span12 text-center">
-    <form action="{% url "search" %}" method="get" style="font-size: 30pt; margin-top: 25%;">
-      <input autofocus style="width: 45%; line-height: 25px; height: 30px; font-size: 25px;" name="q" type="text" placeholder="e.g. Huckleberry Finn" value="{{ q }}"></input>
+    <form action="{% url "search" %}" method="get" id="home-search-box-form">
+      <input autofocus id="home-search-box" name="q" type="text" placeholder="e.g. Huckleberry Finn" value="{{ q }}"></input>
       <button style="vertical-align: center; margin-bottom: 10px; height: 40px; font-size: 25px;" class="btn">Search</button>
     </form>
   </div>

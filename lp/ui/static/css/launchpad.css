@@ -47,7 +47,7 @@ td {
     padding-top: .4em;
     padding-bottom: .4em;
     margin: 0px;
-    color: #000000;
+    /*color: #000000;*/
 }
 
 td.field-label {
@@ -95,7 +95,7 @@ td.field-label {
 }
 
 .itemrow{
-    padding-left: 0em;
+    padding-left: 1em;
 }
 
 .linkresolverlist{
@@ -191,7 +191,7 @@ footer {
 }
 
 .search-result {
-  padding: 10px 10px 30px;
+  padding: 10px 10px 10px 10px;
   border-bottom: solid thin #cccccc;
   clear: both;
 }
@@ -204,14 +204,15 @@ footer {
   display: none;
   height: 100px;
   float: right;
-  padding-left: .2em;
+  margin-left: .3em;
+  margin-bottom: .3em;
 }
 
 img.item-type {
   float: left;
   vertical-align: top;
   margin-right: 10px;
-  height: 30px;
+  height: 15px;
 }
 
 section.search {
@@ -277,7 +278,7 @@ ul.offers {
 }
 
 #search-results .search-result-title {
-  line-height: 1.6em;
+  line-height: 1.25em;
   font-size: 1.4em;
 }
 
@@ -285,13 +286,34 @@ ul.offers {
 
 #active-facets .fa-times-circle {padding-left:.5em; padding-right:0;}
 
+#home-search-box-form {
+  margin-top: 20%;
+}
+
+#home-search-box {
+  width: 45%;
+  line-height: 25px;
+  height: 30px;
+  font-size: 25px;
+}
+
+#active-facets .fa-ellipsis-v {
+  padding-left: .5em;
+  /*top: .5px;
+  position: relative;*/
+  color: #999;
+}
+
 /* overriding bootstrap so that facet buttons don't bump when stacked */
 #active-facets .btn {margin-bottom:.4em;}
 
 @media screen and (max-width: 1200px) {
-  #active-facets ul {padding-left: 0;}
+  #active-facets ul {padding-left:0;}
+  #home-search-box {width:80%;}
 }
 
 @media screen and (max-width: 680px) {
   section.search {padding-bottom:1em;}
+  #home-search-box {width:95%; font-size:20px; line-height:30px;}
+  #home-search-box-form {margin-top:10%;}
 }
