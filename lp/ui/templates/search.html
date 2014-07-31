@@ -120,8 +120,9 @@
             <span itemprop="name">{{ doc.publisher.name }}</span>
         </span>
         {% endif %}
-
-        {{ doc.datePublished }}.
+        {% if doc.type != "Periodical" %}
+            {{ doc.datePublished }}.
+        {% endif %}
 
         {% if doc.about %}
         <br>

@@ -94,7 +94,7 @@ class Summon():
             if doc.get('Subtitle'):
                 i['name'] += " : " + doc['Subtitle'][0]
 
-        if 'Author_xml' in doc: 
+        if 'Author_xml' in doc:
             i['author'] = []
             for name in doc.get('Author_xml', []):
                 if 'fullname' in name:
@@ -216,7 +216,7 @@ class Summon():
             return 'AudioObject'
         elif content_type == 'Map':
             return 'Map'
-        elif content_type == 'Journal':
+        elif content_type == 'Journal' or content_type == 'Newspaper':
             return 'Periodical'
         elif content_type == 'eBook':
             return 'Book'
