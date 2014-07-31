@@ -5,6 +5,8 @@
 <script src=""></script>
 {% endblock %}
 
+{% block title %}Search Results{% endblock %}
+
 {% block content %}
 
 <div class="libsite-container container">
@@ -91,39 +93,39 @@
         {% endif %}
         {% endif %}
 
-        <a href="{{ doc.id }}">
-            <div class="search-result-title" itemprop="name">{{ doc.name }}</div>
-        </a>
+        <div class="search-result-title">
+          <a href="{{ doc.id }}" itemprop="name">{{ doc.name }}</a>
+        </div>
 
-        {% if doc.author %}
+        {% if doc.author and doc.type != "Periodical" %}
         {% for author in doc.author %}
         <span itemprop="author" itemtype="Person" itemscope>
             <a href="{{ author.url }}" itemprop="name">{{ author.name }}</a>
             {% if forloop.last %}<span class="trailing-period">.</span>{% else %} ; {% endif %}
         </span>
         {% endfor %}
+        <br>
         {% endif %}
 
         {% if doc.bookEdition %}
-        <br>
         <span itemprop="bookEdition">{{ doc.bookEdition }}</span>.
+        <br>
         {% endif %}
 
-        <br>
         {% if doc.publisher %}
-        <span itemprop="publisher" itemscope itemtype="Person">
+        <span itemprop="publisher" itemscope itemtype="Organization">
             {% if doc.publishers.address %}
             <span itemprop="address">{{ doc.publisher.address }}</span> :
             {% endif %}
             <span itemprop="name">{{ doc.publisher.name }}</span>
         </span>
         {% endif %}
-
-        {{ doc.datePublished }}.
-
-        <br>
+        {% if doc.type != "Periodical" %}
+            {{ doc.datePublished }}.
+        {% endif %}
 
         {% if doc.about %}
+        <br>
         Subjects:
         <ul class="subjects" itemprop="about">
             {% for subject in doc.about %}
