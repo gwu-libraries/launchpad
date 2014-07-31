@@ -515,7 +515,7 @@ def search(request):
             page_query['page'] = page_range_start - 1
             prev_page_range = page_query.urlencode()
 
-        search_results = _remove_genre_ebook_facet(search_results)
+        search_results = _remove_facets(search_results)
         search_results = _reorder_facets(search_results)
         search_results = _format_facets(request, search_results)
 
@@ -562,15 +562,15 @@ def related(request):
     )
 
 
-def _remove_genre_ebook_facet(search_results):
-    # https://github.com/gwu-libraries/launchpad/issues/603
+def _remove_facets(search_results):
+    to_delete = ['ContentType:Journal Article', 'Genre:electronic books']
     for facet in search_results['facets']:
-        if facet['name'] == 'Genre':
-            new_counts = []
-            for count in facet['counts']:
-                if count['name'] != 'electronic books':
-                    new_counts.append(count)
-            facet['counts'] = new_counts
+        new_counts = []
+        for count in facet['counts']:
+            s = "%s:%s" % (facet['name'], count['name'])
+            if s not in to_delete:
+                new_counts.append(count)
+        facet['counts'] = new_counts
     return search_results
 
 
