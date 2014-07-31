@@ -108,6 +108,7 @@ the path according to your installation of oracle.
 6. Install django, cx_Oracle, and other python dependencies
 
         pip install -r requirements.txt
+        easy_install pytz
 
 7. *Note*: Voyager's Oracle implementation *requires* ASCII encoding on
    database connections.  Django strictly mandates UTF8 encodings on 
@@ -152,7 +153,9 @@ Edit wsgi file:
 - Change parameter for site.addsitedir() to your local path. You
   will need to change the path and possibly the Python version number.
 
-If you want to use memcached, configure and ensure it has started:
+If you want to use memcached, uncomment the example CACHES and
+ITEM_PAGE_CACHE_SECONDS settings. Configure memcached and ensure it has
+started:
 
         sudo vim /etc/memcached.conf
         sudo /etc/init.d/memcached start
