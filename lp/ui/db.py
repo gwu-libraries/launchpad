@@ -594,7 +594,7 @@ def _normalize_location(location):
     if not location:
         return None
     parts = location.split(': ', 1)
-    return parts.pop().capitalize()
+    return parts.pop().title()
 
 
 def _get_hostname():

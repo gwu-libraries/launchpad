@@ -33,6 +33,7 @@ urlpatterns = patterns('ui.views',
     url(r'^robots.txt$', 'robots', name='robots'),
     url(r'^503.html$', 'error503', name='error503'),
     url(r'^search$', 'search', name='search'),
+    url(r'^advanced$', 'advanced_search', name='advanced_search'),
     url(r'^availability$', 'availability', name='availability'),
     url(r'^related$', 'related', name='related')
 )

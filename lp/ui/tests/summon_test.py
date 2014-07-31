@@ -57,10 +57,15 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['datePublished'], '2000')
         self.assertEqual(i['thumbnailUrl'], 'http://covers-cdn.summon.serialssolutions.com/index.aspx?isbn=9781573870993/mc.gif&client=summon&freeimage=true')
         self.assertEqual(i['bookEdition'], '1. print')
-
         self.assertEqual(len(i['offers']), 2)
         self.assertEqual(i['offers'][0]['seller'], 'George Mason University')
         self.assertEqual(i['offers'][1]['seller'], 'Howard University')
+
+    def test_newspaper(self):
+        search = self.summon.search("2269371 new york times")
+        i = search['results'][0]
+        self.assertEqual(search['totalResults'], 1)
+        self.assertEqual(i['@type'], 'Periodical')
 
     def test_raw(self):
         results = self.summon.search("isbn:1573870994", raw=True)
@@ -91,7 +96,7 @@ class SummonTests(unittest.TestCase):
         search = self.summon.search(
             'information',
             ps=50,
-            fq='SourceType:("Library Catalog")', 
+            fq='SourceType:("Library Catalog")',
             fvf='%s,%s,%s' % ('Institution', 'George Mason University (GM)', 'false')
         )
         for item in search['results']:
@@ -117,7 +122,7 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(len(search['results']), 1)
         i = search['results'][0]
         self.assertEqual(i['alternateName'], u'\u6771\u4eac\u88c1\u5224')
-        self.assertEqual(i['author'][0]['alternateName'], 
+        self.assertEqual(i['author'][0]['alternateName'],
             u'\u65e5\u66ae\u5409\u5ef6')
 
     def test_web_resource(self):
