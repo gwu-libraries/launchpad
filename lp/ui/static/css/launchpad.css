@@ -306,7 +306,7 @@ ul.offers {
 
 #footer-utility {
   float: right;
-  margin-top: inherit;
+  margin-top: 0;
 }
 
 /* overriding bootstrap so that facet buttons don't bump when stacked */
