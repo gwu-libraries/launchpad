@@ -108,7 +108,6 @@ the path according to your installation of oracle.
 6. Install django, cx_Oracle, and other python dependencies
 
         pip install -r requirements.txt
-        easy_install pytz
 
 7. *Note*: Voyager's Oracle implementation *requires* ASCII encoding on
    database connections.  Django strictly mandates UTF8 encodings on 
