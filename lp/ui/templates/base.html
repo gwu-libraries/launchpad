@@ -73,6 +73,11 @@
 
 <!--<div id="content-container" style="max-width:940px; margin:0 auto 0;">
     <div id="content" style="margin: 0 .5em;">-->
+
+<article class="libsite-container container">        
+  <div class="row-fluid">
+    <div class="span12"> 
+
 {% block content %}
         <h2>Example Page</h2>
         <p>This is just an example of how the header might look in a simple page.  The code for this page (page.html) has comments and examples of how to call the css files or embed the css in the page.</p>
@@ -86,8 +91,9 @@
         </ul>
         <p>If you have to include the css in the &lt;head&gt; or inline as as 'style=' give #libheader and #libfooter a min-width of 700px.</p>
 {% endblock content %}
-<!--    </div>
-</div>-->
+    </div>
+  </div>
+</article>
 
 {% include "footer.html" %}
 </body>
