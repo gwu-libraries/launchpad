@@ -517,6 +517,7 @@ def search(request):
 
         search_results = _remove_genre_ebook_facet(search_results)
         search_results = _reorder_facets(search_results)
+        search_results = _remove_active_facets(request, search_results)
         search_results = _format_facets(request, search_results)
 
         return render(request, 'search.html', {
@@ -571,6 +572,21 @@ def _remove_genre_ebook_facet(search_results):
                 if count['name'] != 'electronic books':
                     new_counts.append(count)
             facet['counts'] = new_counts
+    return search_results
+
+
+def _remove_active_facets(request, search_results):
+    facets = request.GET.getlist('facet', [])
+    print facets
+    for facet in search_results['facets']:
+        new_counts = []
+        for count in facet['counts']:
+            print "%s:%s" % (facet['name'], count['name'])
+            if "%s:%s" % (facet['name'], count['name']) not in facets:
+                new_counts.append(count)
+            else:
+                print "dupe", count
+        facet['counts'] = new_counts
     return search_results
 
 
