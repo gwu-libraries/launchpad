@@ -10,6 +10,9 @@
   function search(event) {
     var query = [];
 
+    getKeyword("author", query);
+    getPhrase("author", query);
+
     getKeyword("title", query);
     getPhrase("title", query);
 
@@ -48,6 +51,24 @@
   <form id="adv" class="form-horizontal" onsubmit="search">
 
     <fieldset>
+
+      <legend>Author</legend>
+
+      <div class="control-group">
+        <label class="control-label" for="author-keywords">Keywords</label>
+        <div class="controls">
+          <input class="input-xxlarge" type="text" id="author-keywords">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="author-phrase">Exact Phrase</label>
+        <div class="controls">
+          <input class="input-xxlarge" type="text" id="author-phrase">
+        </div>
+      </div>
+
+    </fieldset>
 
       <legend>Title</legend>
 
