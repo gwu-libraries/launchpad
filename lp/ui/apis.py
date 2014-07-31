@@ -38,7 +38,7 @@ def googlebooks(num, num_type, url, key):
     bib['TITLE_ALL'] = bib['TITLE']
     bib['AUTHORS'] = volinfo.get('authors', '')
     bib['PUBLISHER'] = volinfo.get('publisher', '')
-    if volinfo['industryIdentifiers']:
+    if 'industryIdentifiers' in volinfo:
         std_nums = set()
         std_nums.update([num, ])
         for std_num in volinfo['industryIdentifiers']:
