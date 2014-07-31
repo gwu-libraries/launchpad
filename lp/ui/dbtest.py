@@ -170,7 +170,7 @@ class DbTests(unittest.TestCase):
         a = get_availability('12967951')
         self.assertEqual(a['offers'][0]['availability'], 'http://schema.org/InStock')
         self.assertEqual(a['offers'][0]['availabilityAtOrFrom'],
-                         'Lib special collections')
+                         'Lib Special Collections')
 
     def test_availability_no_bib_record(self):
         # this bibid is a legit georgetown id but we have no bib record
