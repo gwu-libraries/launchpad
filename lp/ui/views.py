@@ -466,10 +466,11 @@ def search(request):
 
     # TODO: catch/retry when there are Summon API errors here?
     search_results = api.search(q, **kwargs)
-    search_results = _remove_facets(search_results)
-    search_results = _reorder_facets(search_results)
-    search_results = _remove_active_facets(request, search_results)
-    search_results = _format_facets(request, search_results)
+    if not raw:
+        search_results = _remove_facets(search_results)
+        search_results = _reorder_facets(search_results)
+        search_results = _remove_active_facets(request, search_results)
+        search_results = _format_facets(request, search_results)
 
 
     # json-ld
