@@ -398,13 +398,13 @@ def _get_offers(bibid):
 
     cursor = connection.cursor()
     cursor.execute(query, [bibid])
-
     # this will get set to true for libraries that require a z39.50 lookup
     need_z3950_lookup = False
-
     for row in cursor.fetchall():
         seller = settings.LIB_LOOKUP.get(row[10], '?')
         desc = row[1] or 'Available'
+        if row[9] == '2382-12-31':
+            desc = 'Off Site'
         if desc == 'Not Charged':
             desc = 'Available'
         o = {
