@@ -594,7 +594,12 @@ def _normalize_location(location):
     if not location:
         return None
     parts = location.split(': ', 1)
-    return parts.pop().title()
+    norm_location = parts.pop().title()
+    if parts:
+        tmp = parts.pop()
+        if tmp == "GW Law" or tmp == "GW Medical":
+            norm_location = "%s: %s" % (tmp,norm_location)
+    return norm_location
 
 
 def _get_hostname():
