@@ -304,12 +304,22 @@ ul.offers {
   color: #999;
 }
 
+#footer-utility {
+  float: right;
+  margin-top: 0;
+}
+
 /* overriding bootstrap so that facet buttons don't bump when stacked */
 #active-facets .btn {margin-bottom:.4em;}
 
 @media screen and (max-width: 1200px) {
   #active-facets ul {padding-left:0;}
   #home-search-box {width:80%;}
+}
+
+@media screen and (max-width: 760px) {
+  #libfooter-container {height:2.9em;}
+  #footer-utility {float:none; margin-top:.6em;}
 }
 
 @media screen and (max-width: 680px) {
