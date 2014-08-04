@@ -107,7 +107,6 @@ function add_availability(availability) {
     if (locations[loc] > 1) {
       var il = '(' + locations[loc] + ')';
       offer.find('span[itemprop="description"]').text('Available');
-      offer.find('span[itemprop="inventoryLevel"]').text(il);
     } else {
       offer.find('span[itemprop="description"]').text(descriptions[loc]);
     }
