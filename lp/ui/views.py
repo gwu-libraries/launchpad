@@ -24,10 +24,12 @@ def home(request):
         'title': 'launchpad home',
     })
 
+
 def advanced_search(request):
     return render(request, 'advanced_search.html', {
         'title': 'Advanced Search',
     })
+
 
 def _openurl_dict(request):
     params = request.GET
@@ -429,12 +431,12 @@ def search(request):
         "ps": page_size,
         "fq": ['SourceType:("Library Catalog")'],
         "ff": [
-            'ContentType,or',
-            'Author,or',
-            'Language,or',
-            'Genre,or',
-            'Institution,or',
-            'Discipline,or',
+            'ContentType,or,1,' + _get_facet_count(request, 'ContentType'),
+            'Author,or,1,' + _get_facet_count(request, 'Author'),
+            'Language,or,1,' + _get_facet_count(request, 'Language'),
+            'Genre,or,1,' + _get_facet_count(request, 'Genre'),
+            'Institution,or,1,' + _get_facet_count(request, 'Institution'),
+            'Discipline,or,1,' + _get_facet_count(request, 'Discipline'),
         ],
         "ho": "t",
         "light": "t",
@@ -471,7 +473,6 @@ def search(request):
         search_results = _reorder_facets(search_results)
         search_results = _remove_active_facets(request, search_results)
         search_results = _format_facets(request, search_results)
-
 
     # json-ld
     if fmt == "json":
@@ -569,8 +570,12 @@ def related(request):
 
 
 def _remove_facets(search_results):
-    to_delete = ['ContentType:Journal Article', 'Genre:electronic books', 'ContentType:Book Chapter'
-            , 'ContentType:Book Review']
+    to_delete = [
+        'ContentType:Journal Article',
+        'Genre:electronic books',
+        'ContentType:Book Chapter',
+        'ContentType:Book Review'
+    ]
     for facet in search_results['facets']:
         new_counts = []
         for count in facet['counts']:
@@ -595,7 +600,7 @@ def _remove_active_facets(request, search_results):
 def _reorder_facets(search_results):
     # facets can come back in different order from summon
     # this function makes sure we always display them in the same order
-    facets_order = ['Institution', 'Library', 'ContentType', 'Author',
+    facets_order = ['ContentType', 'Institution', 'Library', 'Author',
                     'Discipline', 'Language', 'Genre']
     new_facets = []
     for facet_name in facets_order:
@@ -632,6 +637,17 @@ def _format_facets(request, search_results):
         # add spaces to the facet name: "ContentType" -> "Content Type"
         f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
 
+        # for adding more/less facet urls to increase/decrease number of
+        # facets returned
+        facet_count_name = f['name'] + '-count'
+        current_count = int(request.GET.get(facet_count_name, 10))
+        fq = request.GET.copy()
+        fq[facet_count_name] = current_count + 10
+        f['more'] = fq.urlencode()
+        if current_count > 10:
+            fq[facet_count_name] = current_count - 10
+            f['less'] = fq.urlencode()
+
     return search_results
 
 
@@ -655,3 +671,7 @@ def _get_active_facets(request):
             "remove_link": "?" + remove_link.urlencode()
         })
     return active_facets
+
+
+def _get_facet_count(request, name):
+    return request.GET.get(name + '-count', '10')

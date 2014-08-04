@@ -40,6 +40,7 @@
         </li>
         {% endfor %}
       </ul>
+
     </section>
     {% endif %}
 
@@ -185,6 +186,21 @@
             </li> 
             {% endfor %}
         </ul>
+
+        {% if facet.less %}
+        <a href="{% url "search" %}?{{ facet.less }}">
+          <button type="button" class="btn btn-default btn-mini">
+            <span class="icon-minus"></span> Less
+          </button>
+        </a>
+        {% endif %}
+
+        <a href="{% url "search" %}?{{ facet.more }}">
+          <button type="button" class="btn btn-default btn-mini">
+            <span class="icon-plus"></span> More 
+          </button>
+        </a>
+        
         <hr>
     {% endfor %}
     </section>
