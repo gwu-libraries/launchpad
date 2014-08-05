@@ -403,7 +403,7 @@ def _get_offers(bibid):
     for row in cursor.fetchall():
         seller = settings.LIB_LOOKUP.get(row[10], '?')
         desc = row[1] or 'Available'
-        if row[9] == '2382-12-31':
+        if row[9] == '2382-12-31' or (row[9] == None and row[11] == 'WRLC Shared Collections Facility'):
             desc = 'Off Site'
         if desc == 'Not Charged':
             desc = 'Available'
