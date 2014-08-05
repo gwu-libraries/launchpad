@@ -142,7 +142,6 @@ Configure database and other settings in a local_settings file:
 - NOTE: If you are deploying to production, set DEBUG = False.
     Also, set GOOGLE_ANALYTICS_UA to your UA to enable google 
     analytics in production.
-- Comment out CACHES if you are not using memcached
 
 Edit wsgi file:
 
@@ -152,7 +151,9 @@ Edit wsgi file:
 - Change parameter for site.addsitedir() to your local path. You
   will need to change the path and possibly the Python version number.
 
-If you want to use memcached, configure and ensure it has started:
+If you want to use memcached, uncomment the example CACHES and
+ITEM_PAGE_CACHE_SECONDS settings. Configure memcached and ensure it has
+started:
 
         sudo vim /etc/memcached.conf
         sudo /etc/init.d/memcached start

@@ -9,6 +9,15 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+#Default cache settings, for testing purposes
+CACHES = {
+    'default' : {
+        'BACKEND' : 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
+
+ITEM_PAGE_CACHE_SECONDS = 0; #cache directives require this value to be populated
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
