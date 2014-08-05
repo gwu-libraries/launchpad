@@ -66,7 +66,6 @@
 {% endif %}
 </head>
 <body>
-
 {% block header %}
 {% include "header.html" %}
 {% endblock header %}
@@ -75,10 +74,15 @@
   <div class="row-fluid">
     <div class="span12"> 
 
+{% block back_to_top %}
+{% include "back_to_top.html" %}
+{% endblock back_to_top %}
+
 {% block content %}
         <h2>Example Page</h2>
         <p>What is this? This is a "swatch" for Twitter Bootstrap <a href="http://twitter.github.com/bootstrap/index.html">http://twitter.github.com/bootstrap/index.html</a>. You can use the basic html structure of this page and the Bootstrap files to deploy responsive, branded pages/sites for GW Libraries. The repo for the Libheader-Lite bootswatch is here: <a href="https://github.com/gwu-libraries/Libsite-Header-Lite">https://github.com/gwu-libraries/Libsite-Header-Lite</a></p>
 {% endblock content %}
+
     </div>
   </div>
 </article>
