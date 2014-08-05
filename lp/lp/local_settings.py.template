@@ -164,15 +164,17 @@ GOVT_DOC_LINK = 'purl.access.gpo.gov'
 
 BOUND_WITH_ITEM_LINK = 'findit.library.gwu.edu/item/'
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-        'TIMEOUT': 60 * 60,  # default to one hour
-        }
-    }
+# Uncomment CACHES and ITEM_PAGE_CACHE_SECONDS to override default (dummy) caching
 
-ITEM_PAGE_CACHE_SECONDS = 60 * 60 # one hour
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#        'LOCATION': '127.0.0.1:11211',
+#        'TIMEOUT': 60 * 60,  # default to one hour
+#        }
+#    }
+#
+#ITEM_PAGE_CACHE_SECONDS = 60 * 60 # one hour
 
 # If this value is present (not empty), GA bug will be added to html
 GOOGLE_ANALYTICS_UA = ''
