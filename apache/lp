@@ -60,5 +60,12 @@
     #ProxyPassMatch /humans.txt !
     #ProxyPassMatch /sitemap.* !
     #ProxyPassMatch /503.html !
+    #ProxyPassMatch /search/?.* !
+    #ProxyPassMatch /advanced/?.* !
+    #ProxyPassMatch /availability/?.* !   
+    #ProxyPassMatch /related/?.* !
+    #ProxyPassMatch /catalog/?.* !
+
+
 
 </VirtualHost>
