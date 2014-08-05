@@ -403,7 +403,7 @@ def _get_offers(bibid):
     for row in cursor.fetchall():
         seller = settings.LIB_LOOKUP.get(row[10], '?')
         desc = row[1] or 'Available'
-        if row[9] == '2382-12-31':
+        if row[9] == '2382-12-31' or (row[9] == None and row[11] == 'WRLC Shared Collections Facility'):
             desc = 'Off Site'
         if desc == 'Not Charged':
             desc = 'Available'
@@ -427,7 +427,6 @@ def _get_offers(bibid):
         # serial number can be null, apparently
         if row[7]:
             o['serialNumber'] = str(row[7])
-
         # add due date if we have one
         if row[9]:
             # due date of 2382-12-31 means it's in offsite storage
