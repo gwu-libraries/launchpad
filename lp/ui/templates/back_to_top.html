@@ -1,0 +1,18 @@
+<!-- floating navigation "top" button -->
+<script>
+  function someScroll(ev){
+    if(window.pageYOffset>160 && window.innerWidth>1220)document.getElementById("backToTopContainer").style.display = "block";
+    if(window.pageYOffset<160 && window.innerWidth>1220)document.getElementById("backToTopContainer").style.display = "none";
+  }
+  function winResize(ev){
+    if(window.innerWidth<1340)document.getElementById("backToTopContainer").style.display = "none";
+    if(window.innerWidth>1339 && window.pageYOffset>160)document.getElementById("backToTopContainer").style.display = "block";
+  }
+  window.onscroll=someScroll
+  window.onresize=winResize
+</script>
+
+    <div style="position:fixed; top:60%; display:none;" id="backToTopContainer">
+      <a href="#" title="top of page"><div class="back-to-top" id="backToTop" style="background-position:0 -40px;" onmouseover="javascript:document.getElementById('backToTop').style.backgroundPosition='0 0px';" onmouseout="javascript:document.getElementById('backToTop').style.backgroundPosition='0 -40px';"></div></a>
+    </div>
+<!-- end floating navigation -->
