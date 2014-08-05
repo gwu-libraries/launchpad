@@ -427,6 +427,7 @@ def _get_offers(bibid):
         # serial number can be null, apparently
         if row[7]:
             o['serialNumber'] = str(row[7])
+
         # add due date if we have one
         if row[9]:
             # due date of 2382-12-31 means it's in offsite storage
