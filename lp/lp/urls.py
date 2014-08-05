@@ -7,6 +7,7 @@ handler500 = 'ui.views.error500'
 
 urlpatterns = patterns('ui.views',
     url(r'^$', 'home', name='home'),
+    url(r'^catalog/$', 'home', name='catalog'),
     url(r'^item/(?P<bibid>\d{2,8})$', 'item', name='item'),
     url(r'^item/(?P<bibid>\d{2,8}).json$', 'item_json', name='item_json'),
     url(r'^item/(?P<bibid>\d{2,8})/marc.json$', 'item_marc', name='item_marc'),
@@ -33,7 +34,7 @@ urlpatterns = patterns('ui.views',
     url(r'^robots.txt$', 'robots', name='robots'),
     url(r'^503.html$', 'error503', name='error503'),
     url(r'^search$', 'search', name='search'),
-    url(r'^advanced$', 'advanced_search', name='advanced_search'),
+    url(r'^advanced/$', 'advanced_search', name='advanced_search'),
     url(r'^availability$', 'availability', name='availability'),
     url(r'^related$', 'related', name='related')
 )
