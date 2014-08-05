@@ -309,6 +309,17 @@ ul.offers {
   margin-top: 0;
 }
 
+.back-to-top {
+	position:relative; 
+	left:1200px; 
+	background-color: rgba(0,0,0,0); 
+	height: 40px; 
+	width: 40px; 
+	background-image: url(/static/img/back-to-top-sprite.png); 
+	z-index: 1000;
+	display: block;
+}
+
 /* overriding bootstrap so that facet buttons don't bump when stacked */
 #active-facets .btn {margin-bottom:.4em;}
 
