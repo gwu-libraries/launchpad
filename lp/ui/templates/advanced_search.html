@@ -23,7 +23,8 @@
     getPhrase("publisher", query);
 
     url = "/search?q=" + query.join(" AND ");
-    console.log(url);
+    url = addPublicationDate(url);
+
     location.href = url;
     return false;
   }
@@ -41,6 +42,25 @@
       query.push(name + ":" + '"' + p + '"')
     }
   }
+
+  function addPublicationDate(url) {
+    var year = $("#publication-year").val();
+    var start = $("#publication-year-start").val();
+    var end = $("#publication-year-end").val();
+
+    if (start && end) {
+      url += '&pubyear=' + start + ':' + end;
+    } else if (start) {
+      url += '&pubyear=' + start + ':'
+    } else if (end) {
+      url += '&pubyear=:' + end; 
+    } else if (year) {
+      url += '&pubyear=' + year
+    }
+
+    return url;
+  }
+
 </script>
 {% endblock %}
 
@@ -128,6 +148,27 @@
 
     </fieldset>
 
+    <fieldset>
+
+      <legend>Publication Date</legend>
+
+      <div class="control-group">
+        <label class="control-label" for="publication-year">Year</label>
+        <div class="controls">
+          <input class="span1" min="1000" type="number" id="publication-year">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="publication-year-start">Year Range</label>
+        <div class="controls">
+          <input class="span1" min="1000" type="number" id="publication-year-start">
+          &nbsp; to &nbsp;
+          <input class="span1" min="1000" type="number" id="publication-year-end">
+        </div>
+      </div>
+
+    </fieldset>
 
     <br>
     <br>

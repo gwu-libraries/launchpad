@@ -191,7 +191,7 @@ footer {
 }
 
 .search-result {
-  padding: 10px 10px 10px 10px;
+  padding: 10px 10px 10px 0px;
   border-bottom: solid thin #cccccc;
   clear: both;
 }
@@ -206,6 +206,11 @@ footer {
   float: right;
   margin-left: .3em;
   margin-bottom: .3em;
+}
+
+.advanced-search {
+  clear: left;
+  font-size: smaller;
 }
 
 img.item-type {

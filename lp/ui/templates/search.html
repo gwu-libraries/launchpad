@@ -28,11 +28,16 @@
                 <li><a href="{% url "search" %}?{{ next_page_range }}">&#x00bb;</a>
                 {% endif %}
             </ul> 
+            <div class="advanced-search">
+              <a href="{% url "advanced_search" %}">Advanced Search</a>
+              /
+              <a href="{% url "tips" %}">Search Tips</a>
+            </div>
         </form>
     </section>
 
     {% if active_facets %}
-    <section id="active-facets">
+    <section class="row" id="active-facets">
       <ul>
         {% for facet in active_facets %}
         <li class="{{ facet.name }}">
