@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load launchpad_extras humanize %}
+
+{% block content %}
+
+<div class="container">
+
+  <h2>To narrow the search results</h2>
+  <p>After your search results display you may make selections from the
+  <em>Refine Results</em> list which will narrow your search results. Refine options include library, content type, language, and other characteristics.</p>
+
+  <h2>Click on a title in the search results to:</h2>
+
+  <p>
+  <ul>
+    <li>view more details about a title</li>
+    <li>access an electronic resource (eBook, Streaming Audio, Streaming Video, etc.)</li>
+    <li>request a title through the consortium loan service (CLS)</li>
+    <li>request a title through the interlibrary loan service</li>
+  </ul>
+  </p>
+
+  <h2>Examples of how to search a specific field or combination of fields</h2>
+
+  <dl>
+
+    <dt>a title</dt>
+    <dd>title:"envisioning information"</dd>
+
+    <dt>an author name
+    <dd>author:"tufte, edward"<br>
+        Or, click on an author name in the search result to perform a new search by that author name</dd>
+
+    <dt>a title and author</dt>
+    <dd>title:"envisioning information" AND author:"tufte, edward"</dd>
+
+    <dt>a subject</dt>
+    <dd>subjectterms:"data visualization"<br>
+        Or, click on a subject term in the search results to perform a new search by that subject term</dd>
+
+    <dt>an ISBN number</dt>
+    <dd>isbn:9781449379100</dd>
+
+    <dt>an ISSN number</dt>
+    <dd>issn:1144-0546</dd>
+
+    <dt>publication decade</dt>
+    <dd>publicationdecade:2010</dd>
+
+    <dt>publication date</dt>
+    <dd>publicationdate:2013</dd>
+
+    <dt>a call number</dt>
+    <dd>lccallnum:PN1993.5.E8 E9748</dd>
+
+    <dt>a GW Electronic Book</dt>
+    <dd>lccallnum:"gw: electronic book"</dd>
+
+    <dt>a GW Electronic Journal</dt>
+    <dd>lccallnum:"gw: electronic journal"</dd>
+
+    <dt>the Electronic Books shared by the consortium libraries</dt>
+    <dd>lccallnum:"shared electronic book"</dd>
+
+    <dt>a new GW Electronic Book</dt>
+    <dd>lccallnum:"gw: electronic book" AND publicationdate:2014</dd>
+
+  </dl>
+
+</div>
+
+{% endblock %}
+

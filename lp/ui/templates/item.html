@@ -45,6 +45,11 @@
   <section class="search">
     <form class="span12" action="{% url "search" %}" method="get">
       <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
+      <div class="advanced-search">
+        <a href="{% url "advanced_search" %}">Advanced Search</a>
+        /
+        <a href="{% url "tips" %}">Search Tips</a>
+      </div>
     </form>
   </section>
 </div>

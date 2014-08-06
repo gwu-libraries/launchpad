@@ -1,5 +1,6 @@
 import re
 import logging
+import datetime
 import urlparse
 
 import bibjsontools
@@ -441,6 +442,18 @@ def search(request):
         "raw": raw,
     }
 
+    # filter by publication year if necessary
+    pubyear = params.get("pubyear", "")
+    if ":" in pubyear:
+        start, end = pubyear.split(":", 2)
+        if start == '':
+            start = -1000
+        if end == '':
+            end = datetime.datetime.now().year
+        kwargs["rf"] = "PublicationDate,%s:%s" % (start, end)
+    elif pubyear != "":
+        kwargs["rf"] = "PublicationDate,%s:%s" % (pubyear, pubyear)
+
     # add selected facets to the query
     for facet in params.getlist('facet'):
         if ':' not in facet:
@@ -566,6 +579,10 @@ def related(request):
         json.dumps(bibids, indent=2),
         content_type='application/json'
     )
+
+def tips(request):
+    return render(request, 'tips.html', {'title': 'search tips'})
+
 
 
 def _remove_facets(search_results):

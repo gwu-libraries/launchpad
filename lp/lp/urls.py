@@ -5,7 +5,8 @@ from django.views.generic import TemplateView
 
 handler500 = 'ui.views.error500'
 
-urlpatterns = patterns('ui.views',
+urlpatterns = patterns(
+    'ui.views',
     url(r'^$', 'home', name='home'),
     url(r'^catalog/$', 'home', name='catalog'),
     url(r'^item/(?P<bibid>\d{2,8})$', 'item', name='item'),
@@ -36,10 +37,12 @@ urlpatterns = patterns('ui.views',
     url(r'^search$', 'search', name='search'),
     url(r'^advanced/$', 'advanced_search', name='advanced_search'),
     url(r'^availability$', 'availability', name='availability'),
-    url(r'^related$', 'related', name='related')
+    url(r'^related$', 'related', name='related'),
+    url(r'^tips/$', 'tips', name='tips')
 )
 
 if settings.ENABLE_HUMANS:
-    urlpatterns += patterns('ui.views',
+    urlpatterns += patterns(
+        'ui.views',
         url(r'^humans.txt$', 'humans', name='humans'),
     )
