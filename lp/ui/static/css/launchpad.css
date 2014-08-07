@@ -344,7 +344,7 @@ ul.offers {
 
 @media screen and (max-width: 760px) {
   #libfooter-container {height:2.9em;}
-  #footer-utility {float:none; clear:left; margin-top:.6em;}
+  #footer-utility {float:none; clear:left; margin-top:1.6em;}
 }
 
 @media screen and (max-width: 680px) {
