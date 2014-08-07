@@ -287,6 +287,8 @@ ul.offers {
   font-size: 1.4em;
 }
 
+#search-results .search-result-title-alt, #search-results .search-result-author-alt {font-size: 1.6em;} 
+
 #facets li {color:#555; font-size:.814em;}
 
 #active-facets .fa-times-circle {padding-left:.5em; padding-right:0;}
@@ -307,6 +309,10 @@ ul.offers {
   /*top: .5px;
   position: relative;*/
   color: #999;
+}
+
+#footer-contact {
+  float: left;
 }
 
 #footer-utility {
@@ -340,7 +346,7 @@ ul.offers {
 
 @media screen and (max-width: 760px) {
   #libfooter-container {height:2.9em;}
-  #footer-utility {float:none; margin-top:.6em;}
+  #footer-utility {float:none; clear:left; margin-top:1.6em;}
 }
 
 @media screen and (max-width: 680px) {
