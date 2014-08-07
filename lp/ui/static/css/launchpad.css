@@ -309,6 +309,10 @@ ul.offers {
   color: #999;
 }
 
+#footer-contact {
+  float: left;
+}
+
 #footer-utility {
   float: right;
   margin-top: 0;
