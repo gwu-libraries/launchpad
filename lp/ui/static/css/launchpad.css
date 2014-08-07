@@ -336,6 +336,8 @@ ul.offers {
 
 /* overriding bootstrap so that facet buttons don't bump when stacked */
 #active-facets .btn {margin-bottom:.4em;}
+/* overriding bootstrap to avoid content pushing off screen in some views */
+.row {margin-left:0}
 
 @media screen and (max-width: 1200px) {
   #active-facets ul {padding-left:0;}
