@@ -22,8 +22,8 @@
 <h1>Try a keyword search:</h1>
 
 <p>
-    <form class='form-inline' name="search" action="http://gw.summon.serialssolutions.com/search" method="get">
-        <input autocorrect="off" autocapitalize="off" type="text" name="s.q">
+    <form class='form-inline' name="search" action="{% url "search" %}" method="get">
+        <input autocorrect="off" autocapitalize="off" type="text" name="q">
         <input type="submit" value="Search" />
     </form>
 </p>

@@ -36,7 +36,7 @@ Really, I did!  They'll be on it soon.
 <h2>Try a keyword search:</h2>
 
 <p>
-    <form class='form-inline' name="input" action="http://surveyor.gelman.gwu.edu/" method="get">
+    <form class='form-inline' name="input" action="{% url "search" %}" method="get">
         <input autocorrect="off" autocapitalize="off" type="text" name="q">
         <input type="submit" value="Search" />
     </form>
