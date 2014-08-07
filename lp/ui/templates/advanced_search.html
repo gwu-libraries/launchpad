@@ -22,9 +22,9 @@
     getKeyword("publisher", query);
     getPhrase("publisher", query);
 
-    url = "/search?q=" + query.join(" AND ");
-    url = addPublicationDate(url);
+    getPublicationDate(query)
 
+    url = "/search?q=" + query.join(" AND ");
     location.href = url;
     return false;
   }
@@ -43,22 +43,19 @@
     }
   }
 
-  function addPublicationDate(url) {
+  function getPublicationDate(query) {
     var year = $("#publication-year").val();
     var start = $("#publication-year-start").val();
     var end = $("#publication-year-end").val();
-
     if (start && end) {
-      url += '&pubyear=' + start + ':' + end;
+      query.push('publicationdate:[' + start + '-' + end + ']')
     } else if (start) {
-      url += '&pubyear=' + start + ':'
+      query.push('publicationdate:[' + start + '-]')
     } else if (end) {
-      url += '&pubyear=:' + end; 
+      query.push('publicationdate:[-' + end + ']')
     } else if (year) {
-      url += '&pubyear=' + year
+      query.push('publicationdate:' + year)
     }
-
-    return url;
   }
 
 </script>

@@ -25,10 +25,12 @@ def home(request):
         'title': 'launchpad home',
     })
 
+
 def advanced_search(request):
     return render(request, 'advanced_search.html', {
         'title': 'Advanced Search',
     })
+
 
 def _openurl_dict(request):
     params = request.GET
@@ -442,17 +444,7 @@ def search(request):
         "raw": raw,
     }
 
-    # filter by publication year if necessary
-    pubyear = params.get("pubyear", "")
-    if ":" in pubyear:
-        start, end = pubyear.split(":", 2)
-        if start == '':
-            start = -1000
-        if end == '':
-            end = datetime.datetime.now().year
-        kwargs["rf"] = "PublicationDate,%s:%s" % (start, end)
-    elif pubyear != "":
-        kwargs["rf"] = "PublicationDate,%s:%s" % (pubyear, pubyear)
+    q, kwargs = _filter_by_pubdate(q, kwargs)
 
     # add selected facets to the query
     for facet in params.getlist('facet'):
@@ -484,7 +476,6 @@ def search(request):
         search_results = _reorder_facets(search_results)
         search_results = _remove_active_facets(request, search_results)
         search_results = _format_facets(request, search_results)
-
 
     # json-ld
     if fmt == "json":
@@ -539,7 +530,7 @@ def search(request):
             prev_page_range = page_query.urlencode()
 
         return render(request, 'search.html', {
-            "q": q,
+            "q": params.get('q'),
             "active_facets": _get_active_facets(request),
             "page": page,
             "page_range": page_range,
@@ -550,6 +541,30 @@ def search(request):
             "json_url": request.get_full_path() + "&format=json",
             "raw_url": request.get_full_path() + "&raw=true",
         })
+
+
+def _filter_by_pubdate(q, q_options):
+    """
+    Summon API doesn't support passing in PublicationDate directly in the
+    query. But it does support querying PublicationDate using a range filter.
+    This function accepts a query string and the query options and removes
+    PublicationDate query into the query options. Allowing the
+    PublicationDate to be expressed in launchpad query lets people play
+    with it directly in the query form.
+    """
+    new_q = q
+    new_q_options = q_options.copy()
+    p = ' *(and)? *publicationdate:\[(\d+)?-(\d+)?]'
+    for m in re.finditer(p, q, flags=re.IGNORECASE):
+        start = m.group(2)
+        end = m.group(3)
+        if start is None:
+            start = 1000
+        if end is None:
+            end = datetime.datetime.now().year
+        new_q = q.replace(m.group(0), '')
+        new_q_options["rf"] = "PublicationDate,%s:%s" % (start, end)
+    return new_q, new_q_options
 
 
 def availability(request):
@@ -580,14 +595,18 @@ def related(request):
         content_type='application/json'
     )
 
+
 def tips(request):
     return render(request, 'tips.html', {'title': 'search tips'})
 
 
-
 def _remove_facets(search_results):
-    to_delete = ['ContentType:Journal Article', 'Genre:electronic books', 'ContentType:Book Chapter'
-            , 'ContentType:Book Review']
+    to_delete = [
+        'ContentType:Journal Article',
+        'Genre:electronic books',
+        'ContentType:Book Chapter',
+        'ContentType:Book Review'
+    ]
     for facet in search_results['facets']:
         new_counts = []
         for count in facet['counts']:
