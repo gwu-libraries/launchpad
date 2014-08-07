@@ -846,7 +846,7 @@ def get_z3950_bib_data(bibid, lib):
                 bib['EDITION'] = rec['250']['a']
             else:
                 bib['EDITION'] = None
-            bib['IMPRINT'] = rec['260'].value()
+            bib['IMPRINT'] = rec['260'].format_field()
             bib['LANGUAGE'] = rec['008'].value()[35:38]
             if rec['856']:
                 bib['LINK'] = rec['856']['u']
