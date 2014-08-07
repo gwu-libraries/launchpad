@@ -5,7 +5,7 @@ django-nose
 lxml
 ply
 pycountry
-pymarc
+pymarc==2.9.0
 python-memcached
 git+https://github.com/asl2/PyZ3950.git
 summoner>=0.0.4
