@@ -83,14 +83,14 @@
 
         {% if doc.alternateName %}
         <a href="{{ doc.id }}">
-            <span itemprop="alternateName">{{ doc.alternateName }}</span>
+            <span class="search-result-title-alt" itemprop="alternateName">{{ doc.alternateName }}</span>
         </a>
         {% if doc.author %}
         / 
         {% for author in doc.author %}
         {% if author.alternateName %}
         <span itemprop="author" itemtype="Person" itemscope>
-            <span itemprop="alternateName">{{ author.alternateName }}</span>
+            <span class="search-result-author-alt" itemprop="alternateName">{{ author.alternateName }}</span>
             {% if forloop.last %}<span class="trailing-period">.</span>{% else %} ; {% endif %}
         </span>
         {% endif %}
