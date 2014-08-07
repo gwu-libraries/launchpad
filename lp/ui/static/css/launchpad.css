@@ -336,6 +336,10 @@ ul.offers {
   display: block;
 }
 
+#publication-year, #publication-year-start, #publication-year-end {
+  max-width: 100px;
+}
+
 /* overriding bootstrap so that facet buttons don't bump when stacked */
 #active-facets .btn {margin-bottom:.4em;}
 /* overriding bootstrap to avoid content pushing off screen in some views */
