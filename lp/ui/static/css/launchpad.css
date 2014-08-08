@@ -187,7 +187,8 @@ footer {
 }
 
 .search input {
-    width: 400px;
+  max-width: 400px;
+  width: 95%;  
 }
 
 .search-result {
