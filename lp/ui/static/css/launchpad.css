@@ -351,6 +351,10 @@ ul.offers {
   #home-search-box {width:80%;}
 }
 
+@media screen and (min-width: 980px) {
+  .libsite-container {margin-top:2em;}
+}
+
 @media screen and (max-width: 760px) {
   #libfooter-container {height:2.9em;}
   #footer-utility {float:none; clear:left; margin-top:1.6em;}
