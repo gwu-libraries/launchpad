@@ -187,7 +187,8 @@ footer {
 }
 
 .search input {
-    width: 400px;
+  max-width: 400px;
+  width: 95%;  
 }
 
 .search-result {
@@ -348,6 +349,10 @@ ul.offers {
 @media screen and (max-width: 1200px) {
   #active-facets ul {padding-left:0;}
   #home-search-box {width:80%;}
+}
+
+@media screen and (min-width: 980px) {
+  .libsite-container {margin-top:2em;}
 }
 
 @media screen and (max-width: 760px) {
