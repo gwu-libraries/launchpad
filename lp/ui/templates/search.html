@@ -125,20 +125,6 @@
             {{ doc.datePublished }}.
         {% endif %}
 
-        {% if doc.about %}
-        <br>
-        Subjects:
-        <ul class="subjects" itemprop="about">
-            {% for subject in doc.about %}
-            <li itemprop="about">
-                <a href="{{ subject.url }}">{{ subject.name }}</a>
-            </li>
-            {% if not forloop.last %} ; {% endif %}
-            {% endfor %}
-        </ul>
-        <br>
-        {% endif %}
-
         <ul itemprop="offers" class="offers">
           {% for offer in doc.offers %}
           <li class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
