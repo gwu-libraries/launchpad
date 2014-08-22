@@ -665,6 +665,14 @@ def _format_facets(request, search_results):
             if f['name'] == 'Institution':
                 fc['name'] = re.sub('\(.+\)$', '', fc['name'])
 
+            if f['name'] == "ContentType":
+                if fc['name'] == "Audio Recording":
+                    fc['name'] = "Audio"
+
+                if fc['name'] == "Video Recording":
+                    fc['name'] = "Video"
+
+
         # add spaces to the facet name: "ContentType" -> "Content Type"
         f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
 
