@@ -97,8 +97,7 @@ BOTTOM_LIBS = []
 
 INELIGIBLE_LIBRARIES = ['JB', 'HL', 'HS', 'AL']
 
-SHARED_LIBRARY_NAMES = ['WR', 'E-Resources', 'E-GovDoc',
-    'Internet Archive', 'IA']
+SHARED_LIBRARY_NAMES = ['WR', 'E-Resources', 'E-GovDoc', 'Internet Archive', 'IA']
 
 INELIGIBLE_PERM_LOCS = ['REFERENCE', 'REF', 'RESERVE', 'NON-CIRC', 
     'RESTRICTED', 'ONLY', 'IN LIBRARY', 'MICRO', 'ARCHIVES', 'KIEV', 'SPEC',
