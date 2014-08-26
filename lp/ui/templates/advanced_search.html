@@ -34,8 +34,15 @@
 
   function getKeyword(name, query) {
     var p = $("#" + name + "-keywords").val();
-    if (p) {
-      query.push(name + ":" + "(" + p + ")")
+    if (p == "") return;
+
+    var kw = p.split(" ");
+    var fieldPrefix = name == "any" ? "" : name + ":";
+
+    if (kw.length == 1) {
+      query.push(fieldPrefix + kw[0]);
+    } else if (kw.length > 1) {
+      query.push(fieldPrefix + "(" + kw.join(" OR ") + ")")
     }
   }
   
