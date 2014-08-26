@@ -320,10 +320,10 @@ ORDER BY bib_index.bib_id"""
             title = ''
         result = get_title(row['BIB_ID'])
         new_title = result.get('TITLE', '')
-        # remove the holding if titles are different
+        # remove the holding if titles are different. No more than 8 chars
         if new_title is None:
             continue
-        if title[0:12].lower() != new_title[0:12].lower():
+        if title[0:8].lower() != new_title[0:8].lower():
             results.remove(row)
     output_keys = ('BIB_ID', 'LIBRARY_NAME')
     if num_type == 'oclc':
