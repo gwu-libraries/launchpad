@@ -63,45 +63,49 @@
 
 {% block content %}
 
-<!--<div class="libsite-container container">-->
+<div class="libsite-container container">
 
-  <form id="adv" class="form-horizontal" onsubmit="search">
+<form id="adv" class="form-horizontal" onsubmit="search">
 
-    <fieldset>
-
-      <legend>Author</legend>
-
+<div class="row-fluid">
+  <div class="span2">
+    <h2>Author</h2>
+  </div>
+  <div class="span10">
       <div class="control-group">
         <label class="control-label" for="author-keywords">Keywords</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="author-keywords">
         </div>
       </div>
-
       <div class="control-group">
         <label class="control-label" for="author-phrase">Exact Phrase</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="author-phrase">
         </div>
       </div>
+  </div>
+</div>
 
-    </fieldset>
-
-      <legend>Title</legend>
-
+<div class="row-fluid">
+  <div class="span2">
+    Title
+  </div>
+  <div class="span10">
       <div class="control-group">
         <label class="control-label" for="title-keywords">Keywords</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="title-keywords">
         </div>
       </div>
-
       <div class="control-group">
         <label class="control-label" for="title-phrase">Exact Phrase</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="title-phrase">
         </div>
       </div>
+  </div>
+</div>
 
     </fieldset>
 
@@ -173,6 +177,6 @@
 
   </form>
 
-<!--</div>-->
+</div>
 
 {% endblock %}
