@@ -10,11 +10,14 @@
   function search(event) {
     var query = [];
 
-    getKeyword("author", query);
-    getPhrase("author", query);
+    getKeyword("any", query);
+    getPhrase("any", query);
 
     getKeyword("title", query);
     getPhrase("title", query);
+
+    getKeyword("author", query);
+    getPhrase("author", query);
 
     getKeyword("subject", query);
     getPhrase("subject", query);
