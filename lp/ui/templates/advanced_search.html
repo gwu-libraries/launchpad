@@ -10,11 +10,14 @@
   function search(event) {
     var query = [];
 
-    getKeyword("author", query);
-    getPhrase("author", query);
+    getKeyword("any", query);
+    getPhrase("any", query);
 
     getKeyword("title", query);
     getPhrase("title", query);
+
+    getKeyword("author", query);
+    getPhrase("author", query);
 
     getKeyword("subject", query);
     getPhrase("subject", query);
@@ -31,8 +34,15 @@
 
   function getKeyword(name, query) {
     var p = $("#" + name + "-keywords").val();
-    if (p) {
-      query.push(name + ":" + "(" + p + ")")
+    if (p == "") return;
+
+    var kw = p.split(" ");
+    var fieldPrefix = name == "any" ? "" : name + ":";
+
+    if (kw.length == 1) {
+      query.push(fieldPrefix + kw[0]);
+    } else if (kw.length > 1) {
+      query.push(fieldPrefix + "(" + kw.join(" OR ") + ")")
     }
   }
   
@@ -69,23 +79,26 @@
 
     <fieldset>
 
-      <legend>Author</legend>
+      <legend>Any Field</legend>
 
       <div class="control-group">
-        <label class="control-label" for="author-keywords">Keywords</label>
+        <label class="control-label" for="any-keywords">Keywords</label>
         <div class="controls">
-          <input class="input-xxlarge" type="text" id="author-keywords">
+          <input class="input-xxlarge" type="text" id="any-keywords">
         </div>
       </div>
 
       <div class="control-group">
-        <label class="control-label" for="author-phrase">Exact Phrase</label>
+        <label class="control-label" for="title-phrase">Exact Phrase</label>
         <div class="controls">
-          <input class="input-xxlarge" type="text" id="author-phrase">
+          <input class="input-xxlarge" type="text" id="any-phrase">
         </div>
       </div>
 
     </fieldset>
+
+
+    <fieldset>
 
       <legend>Title</legend>
 
@@ -100,6 +113,26 @@
         <label class="control-label" for="title-phrase">Exact Phrase</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="title-phrase">
+        </div>
+      </div>
+
+    </fieldset>
+
+    <fieldset>
+
+      <legend>Author</legend>
+
+      <div class="control-group">
+        <label class="control-label" for="author-keywords">Keywords</label>
+        <div class="controls">
+          <input class="input-xxlarge" type="text" id="author-keywords">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="author-phrase">Exact Phrase</label>
+        <div class="controls">
+          <input class="input-xxlarge" type="text" id="author-phrase">
         </div>
       </div>
 

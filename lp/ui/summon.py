@@ -65,6 +65,9 @@ class Summon():
         for doc in summon_response['documents']:
             item = self._convert(doc)
             if item:
+                # only include items that are held by a library
+                if len(item['offers']) == 0:
+                    continue
                 # sometimes (rarely) the same item appears more than once?
                 # e.g. search for "statistics"
                 if item['@id'] in seen:
