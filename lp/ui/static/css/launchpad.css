@@ -220,6 +220,10 @@ footer {
   font-size: .9em;
 }
 
+#adv .row-fluid {
+  margin-bottom: 2em;
+}
+
 img.item-type {
   float: left;
   vertical-align: top;
@@ -376,5 +380,5 @@ ul.offers {
 }
 
 @media screen and (max-width: 480px) {
-  .reduce {height:0; margin-bottom:0;}
+  #adv .row-fluid {margin-bottom: 0;}
 }
