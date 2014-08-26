@@ -165,15 +165,19 @@ $(document).ready(function(){
       input.addClass('placeholder');
       input.val(input.attr('placeholder'));
      }
-   }).blur();
-   $('[placeholder]').parents('form').submit(function() {
-     $(this).find('[placeholder]').each(function() {
-       var input = $(this);
-       if (input.val() == input.attr('placeholder')) {
-         input.val('');
-       }
-     })
-   });     
-        
+  }).blur();
+  $('[placeholder]').parents('form').submit(function() {
+    $(this).find('[placeholder]').each(function() {
+      var input = $(this);
+      if (input.val() == input.attr('placeholder')) {
+        input.val('');
+      }
+    });
   });
+
+  $('#online').click(function() {
+    $('#search').submit();
+  });
+        
+});
         
