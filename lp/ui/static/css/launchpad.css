@@ -153,6 +153,13 @@ td.field-label {
     margin-right: 0.5em;*
 }
 
+.home-search-button {
+  vertical-align: center;
+  margin-bottom: 10px;
+  height: 40px;
+  font-size: 25px;
+}
+
 #cover {
     float: left;
     padding: 1.2em 1em .5em 0;
@@ -212,6 +219,16 @@ footer {
 .advanced-search {
   clear: left;
   font-size: smaller;
+}
+
+.standard-search {
+  float: right;
+  padding-top: .8em;
+  font-size: .9em;
+}
+
+#adv .row-fluid {
+  margin-bottom: 2em;
 }
 
 img.item-type {
@@ -366,4 +383,10 @@ ul.offers {
   section.search {padding-bottom:1em;}
   #home-search-box {width:95%; font-size:20px; line-height:30px;}
   #home-search-box-form {margin-top:10%;}
+  .standard-search {float:left; padding-top:0;}
+  .home-search-button {height:inherit; font-size:1em;}
+}
+
+@media screen and (max-width: 480px) {
+  #adv .row-fluid {margin-bottom: 0;}
 }

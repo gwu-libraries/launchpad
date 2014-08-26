@@ -7,7 +7,8 @@
   <div class="span12 text-center">
     <form action="{% url "search" %}" method="get" id="home-search-box-form">
       <input autofocus id="home-search-box" name="q" type="text" placeholder="e.g. Huckleberry Finn" value="{{ q }}"></input>
-      <button style="vertical-align: center; margin-bottom: 10px; height: 40px; font-size: 25px;" class="btn">Search</button>
+      <button class="btn home-search-button">Search</button>
+      <div class="advanced-search"><a href="/advanced/">Advanced Search</a> / <a href="/tips/">Search Tips</a></div>
     </form>
   </div>
 </div>

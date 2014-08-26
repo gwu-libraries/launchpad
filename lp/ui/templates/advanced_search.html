@@ -76,120 +76,131 @@
 
 <div class="libsite-container container">
 
-  <form id="adv" class="form-horizontal" onsubmit="search">
+<div class="row-fluid">
+  <div class="span6">
+    <h2>Advanced Search</h2>
+  </div>
+  <div class="span6">
+    <div class="standard-search"><a href="/catalog/">Standard Search</a> / <a href="/tips">Search Tips</a></div>
+  </div>
+  <div class="span12">
+    <hr />
+  </div>
+</div>
 
-    <fieldset>
+<form id="adv" class="form-horizontal" onsubmit="search">
 
-      <legend>Any Field</legend>
-
+<div class="row-fluid">
+  <div class="span1">
+    <h2>Any Field</h2>
+  </div>
+  <div class="span11">
       <div class="control-group">
         <label class="control-label" for="any-keywords">Keywords</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="any-keywords">
         </div>
       </div>
-
       <div class="control-group">
         <label class="control-label" for="title-phrase">Exact Phrase</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="any-phrase">
         </div>
       </div>
+  </div>
+</div>
 
-    </fieldset>
-
-
-    <fieldset>
-
-      <legend>Title</legend>
-
+<div class="row-fluid">
+  <div class="span1">
+    <h2>Title</h2>
+  </div>
+  <div class="span11">
       <div class="control-group">
         <label class="control-label" for="title-keywords">Keywords</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="title-keywords">
         </div>
       </div>
-
       <div class="control-group">
         <label class="control-label" for="title-phrase">Exact Phrase</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="title-phrase">
         </div>
       </div>
+  </div>
+</div>
 
-    </fieldset>
-
-    <fieldset>
-
-      <legend>Author</legend>
-
+<div class="row-fluid">
+  <div class="span1">
+    <h2>Author</h2>
+  </div>
+  <div class="span11">
       <div class="control-group">
         <label class="control-label" for="author-keywords">Keywords</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="author-keywords">
         </div>
       </div>
-
       <div class="control-group">
         <label class="control-label" for="author-phrase">Exact Phrase</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="author-phrase">
         </div>
       </div>
+  </div>
+</div>
 
-    </fieldset>
-
-    <fieldset>
-
-      <legend>Subject</legend>
-
+<div class="row-fluid">
+  <div class="span1">
+    <h2>Subject</h2>
+  </div>
+  <div class="span11">
       <div class="control-group">
         <label class="control-label" for="subjectterms-keywords">Keywords</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="subjectterms-keywords">
         </div>
       </div>
-
       <div class="control-group">
         <label class="control-label" for="subjectterms-phrase">Exact Phrase</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="subjectterms-phrase">
         </div>
       </div>
+  </div>
+</div>
 
-    </fieldset>
-
-    <fieldset>
-
-      <legend>Publisher</legend>
-
+<div class="row-fluid">
+  <div class="span1">
+    <h2>Publisher</h2>
+  </div>
+  <div class="span11">
       <div class="control-group">
         <label class="control-label" for="publisher-keywords">Keywords</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="publisher-keywords">
         </div>
       </div>
-
       <div class="control-group">
         <label class="control-label" for="publisher-phrase">Exact Phrase</label>
         <div class="controls">
           <input class="input-xxlarge" type="text" id="publisher-phrase">
         </div>
       </div>
+  </div>
+</div>
 
-    </fieldset>
-
-    <fieldset>
-
-      <legend>Publication Date</legend>
-
+<div class="row-fluid">
+  <div class="span1">
+    <h2>Publication Date</h2>
+  </div>
+  <div class="span11">
       <div class="control-group">
         <label class="control-label" for="publication-year">Year</label>
         <div class="controls">
           <input min="1000" type="number" id="publication-year">
         </div>
       </div>
-
       <div class="control-group">
         <label class="control-label" for="publication-year-start">Year Range</label>
         <div class="controls">
@@ -198,15 +209,14 @@
           <input min="1000" type="number" id="publication-year-end">
         </div>
       </div>
-
-    </fieldset>
+  </div>
+</div>
 
     <br>
     <br>
     <button>Advanced Search</button>
 
-  </form>
-
+</form>
 </div>
 
 {% endblock %}
