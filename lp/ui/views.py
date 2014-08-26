@@ -654,30 +654,12 @@ def _format_facets(request, search_results):
             fq.update({'facet': "%s:%s" % (f['name'], fc['name'])})
             fq['page'] = 1
             fc['url'] = fq.urlencode()
-
-            # make sure the facet name is capitalized
-            # "bazzocchi, marco antonio" -> "Bazzocchi, Marco Antonio"
-            # but leave Library locations alone
-            if f['name'] not in ('Library', 'Institution'):
-                fc['name'] = fc['name'].title()
-
-            # remove codes from Institution name
-            if f['name'] == 'Institution':
-                fc['name'] = re.sub('\(.+\)$', '', fc['name'])
-
-            if f['name'] == "ContentType":
-                if fc['name'] == "Audio Recording":
-                    fc['name'] = "Audio"
-
-                if fc['name'] == "Video Recording":
-                    fc['name'] = "Video"
-
+            fc['name'] = _normalize_facet_name(f['name'], fc['name'])
 
         # add spaces to the facet name: "ContentType" -> "Content Type"
         f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
 
     return search_results
-
 
 def _get_active_facets(request):
     active_facets = []
@@ -695,7 +677,20 @@ def _get_active_facets(request):
 
         active_facets.append({
             "name": name,
-            "value": value,
+            "value": _normalize_facet_name(name, value),
             "remove_link": "?" + remove_link.urlencode()
         })
     return active_facets
+
+def _normalize_facet_name(f_name, fc_name):
+    if f_name == 'ContentType':
+        if fc_name == 'Audio Recording':
+            fc_name = 'Audio'
+        elif fc_name == 'Video Recording':
+            fc_name = 'Video'
+    elif f_name == 'Institution':
+        fc_name = re.sub('\(.+\)$', '', fc_name)
+    if f_name not in ('Library', 'Institution'):
+        fc_name = fc_name.title()
+
+    return fc_name

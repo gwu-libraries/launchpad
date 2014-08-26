@@ -1,7 +1,7 @@
 notifications: 
   email: 
-  - darshan@email.gwu.edu
-  - sgilani@email.gwu.edu
+  - michaelc@email.gwu.edu
+  - dchud@email.gwu.edu
 branches: 
   only: 
   - master

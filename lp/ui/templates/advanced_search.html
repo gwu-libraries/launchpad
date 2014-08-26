@@ -19,13 +19,13 @@
     getKeyword("author", query);
     getPhrase("author", query);
 
-    getKeyword("subject", query);
-    getPhrase("subject", query);
+    getKeyword("subjectterms", query);
+    getPhrase("subjectterms", query);
 
     getKeyword("publisher", query);
     getPhrase("publisher", query);
 
-    getPublicationDate(query)
+    getPublicationDate(query);
 
     url = "/search?q=" + query.join(" AND ");
     location.href = url;
@@ -48,8 +48,9 @@
   
   function getPhrase(name, query) {
     var p = $("#" + name + "-phrase").val();
+    var fieldPrefix = name == "any" ? "" : name + ":";
     if (p) {
-      query.push(name + ":" + '"' + p + '"')
+      query.push(fieldPrefix + '"' + p + '"')
     }
   }
 
@@ -155,15 +156,15 @@
   </div>
   <div class="span11">
       <div class="control-group">
-        <label class="control-label" for="subject-keywords">Keywords</label>
+        <label class="control-label" for="subjectterms-keywords">Keywords</label>
         <div class="controls">
-          <input class="input-xxlarge" type="text" id="subject-keywords">
+          <input class="input-xxlarge" type="text" id="subjectterms-keywords">
         </div>
       </div>
       <div class="control-group">
-        <label class="control-label" for="subject-phrase">Exact Phrase</label>
+        <label class="control-label" for="subjectterms-phrase">Exact Phrase</label>
         <div class="controls">
-          <input class="input-xxlarge" type="text" id="subject-phrase">
+          <input class="input-xxlarge" type="text" id="subjectterms-phrase">
         </div>
       </div>
   </div>

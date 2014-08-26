@@ -65,6 +65,9 @@ class Summon():
         for doc in summon_response['documents']:
             item = self._convert(doc)
             if item:
+                # only include items that are held by a library
+                if len(item['offers']) == 0:
+                    continue
                 # sometimes (rarely) the same item appears more than once?
                 # e.g. search for "statistics"
                 if item['@id'] in seen:
@@ -143,19 +146,13 @@ class Summon():
             i['alternateName'] = doc.get('DocumentTitle_FL')[0]
 
         i['offers'] = []
-        if doc.get('Institution'):
-            i['offers'].append(self._get_offer(doc))
-        if doc.get('peerDocuments'):
-            for peer_doc in doc.get('peerDocuments'):
-                offer = self._get_offer(peer_doc)
-                if offer:
-                    i['offers'].append(offer)
-        if doc.get('LCCallNum') == ['Shared Electronic Book']:
-            i['offers'].append({
-                'seller': 'WRLC',
-                'serialNumber': doc['ExternalDocumentID'][0]
-            })
-
+        offer = self._get_offer(doc)
+        if offer:
+            i['offers'].append(offer)
+        for peer_doc in doc.get('peerDocuments', []):
+            offer = self._get_offer(peer_doc)
+            if offer:
+                i['offers'].append(offer)
         i = self._rewrite_ids(i)
 
         return i
@@ -170,6 +167,12 @@ class Summon():
                 'seller': inst,
                 'serialNumber': id
             }
+        elif doc.get('LCCallNum') == ['Shared Electronic Book']:
+            offer = {
+                'seller': 'WRLC',
+                'serialNumber': doc['ExternalDocumentID'][0]
+            }
+
         return offer
 
     def _rewrite_ids(self, item):
