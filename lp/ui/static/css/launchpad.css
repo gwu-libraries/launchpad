@@ -153,6 +153,13 @@ td.field-label {
     margin-right: 0.5em;*
 }
 
+.home-search-button {
+  vertical-align: center;
+  margin-bottom: 10px;
+  height: 40px;
+  font-size: 25px;
+}
+
 #cover {
     float: left;
     padding: 1.2em 1em .5em 0;
