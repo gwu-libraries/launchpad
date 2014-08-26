@@ -186,7 +186,7 @@ footer {
     height: 1.5em;
 }
 
-.search input {
+#q {
   max-width: 400px;
   width: 95%;  
 }

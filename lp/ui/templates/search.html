@@ -9,8 +9,7 @@
 
     <section class="search row pagination">
         <form id="search" class="span12" action="{% url "search" %}" method="get">
-            <input style="float: left; margin-right: 10px;" name="q" type="text"
-            placeholder="Search" value="{{ q }}" size="60"></input>
+            <input id="q" style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}" size="60"></input>
             <ul>
                 {% if prev_page_range %}
                 <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
