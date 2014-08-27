@@ -413,6 +413,7 @@ def search(request):
     page = params.get('page', 1)
     fmt = params.get('format', 'html')
     raw = params.get('raw', False)
+    online = params.get('online', False)
 
     try:
         page = int(page)
@@ -445,6 +446,12 @@ def search(request):
     }
 
     q, kwargs = _filter_by_pubdate(q, kwargs)
+
+    # add to the query if they want online resources only
+    if online:
+        if q:
+            q += " AND"
+        q += " lccallnum:('gw electronic' OR 'shared+electronic' OR 'e-resources' OR 'streaming')"
 
     # add selected facets to the query
     for facet in params.getlist('facet'):
@@ -531,6 +538,7 @@ def search(request):
 
         return render(request, 'search.html', {
             "q": params.get('q'),
+            "original_facets": params.getlist('facet'),
             "active_facets": _get_active_facets(request),
             "page": page,
             "page_range": page_range,
@@ -538,6 +546,7 @@ def search(request):
             "prev_page_range": prev_page_range,
             "search_results": search_results,
             "debug": settings.DEBUG,
+            "online": online,
             "json_url": request.get_full_path() + "&format=json",
             "raw_url": request.get_full_path() + "&raw=true",
         })

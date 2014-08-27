@@ -8,9 +8,8 @@
 <div class="libsite-container container">
 
     <section class="search row pagination">
-        <form class="span12" action="{% url "search" %}" method="get">
-            <input style="float: left; margin-right: 10px;" name="q" type="text"
-            placeholder="Search" value="{{ q }}" size="60"></input>
+        <form id="search" class="span12" action="{% url "search" %}" method="get">
+            <input id="q" style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}" size="60"></input>
             <ul>
                 {% if prev_page_range %}
                 <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
@@ -28,7 +27,14 @@
               <a href="{% url "advanced_search" %}">Advanced Search</a>
               /
               <a href="{% url "tips" %}">Search Tips</a>
+              /
+              Online Resources <input id="online" name="online" type="checkbox" {% if online %}checked{% endif %}>
             </div>
+
+            {% for facet in original_facets %}
+            <input type="hidden" name="facet" value="{{ facet }}">
+            {% endfor %}
+            
         </form>
     </section>
 
@@ -159,12 +165,6 @@
 
     <h2>Refine Results</h2>
     <h3>{{ search_results.totalResults|intcomma }} items</h3>
-    <hr>
-    <ul>
-        <li>
-        <a href="{% url "search" %}?q={{ q }}+AND+lccallnum%3A%28'gw+electronic'+OR+'shared+electronic'+OR+'e-resources'%29&page=1">Online Resources</a>
-        </li>
-    </ul>
     <hr>
 
     {% for facet in search_results.facets %}
