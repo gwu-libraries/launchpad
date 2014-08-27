@@ -95,7 +95,7 @@ BOTTOM_LIBS = []
 
 # Eligibility Options
 
-INELIGIBLE_LIBRARIES = ['JB', 'HL', 'HS', 'AL']
+INELIGIBLE_LIBRARIES = ['JB', 'HL', 'HS', 'AL', 'HI']
 
 SHARED_LIBRARY_NAMES = ['WR', 'E-Resources', 'E-GovDoc', 'Internet Archive', 'IA']
 
