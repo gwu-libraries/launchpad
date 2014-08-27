@@ -28,7 +28,7 @@
               /
               <a href="{% url "tips" %}">Search Tips</a>
               /
-              Online Resources Only <input id="online" name="online" type="checkbox" {% if online %}checked{% endif %}>
+              Online Resources <input id="online" name="online" type="checkbox" {% if online %}checked{% endif %}>
             </div>
 
             {% for facet in original_facets %}
