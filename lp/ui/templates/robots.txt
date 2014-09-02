@@ -6,6 +6,9 @@
 
 User-agent: *{% if enable_sitemaps %}
 Sitemap: {{ sitemaps_base_url }}/sitemap-index.xml
+Disallow: /search
+Disallow: /availability
+Disallow: /related
 Disallow: /go
 Disallow: /log
 Disallow: /alEJPStatic
