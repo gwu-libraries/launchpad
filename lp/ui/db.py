@@ -595,6 +595,8 @@ def _normalize_location(location):
         return None
     parts = location.split(': ', 1)
     norm_location = parts.pop().title()
+    if norm_location == "Wrlc Shared Collections Facility":
+        norm_location = norm_location.replace('Wrlc', 'WRLC')
     if parts:
         tmp = parts.pop()
         if tmp == "GW Law" or tmp == "GW Medical":
