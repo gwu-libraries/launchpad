@@ -42,7 +42,7 @@
     if (kw.length == 1) {
       query.push(fieldPrefix + kw[0]);
     } else if (kw.length > 1) {
-      query.push(fieldPrefix + "(" + kw.join(" OR ") + ")")
+      query.push(fieldPrefix + "(" + kw.join(" AND ") + ")")
     }
   }
   
