@@ -41,7 +41,7 @@ mapping = (
     ('DESCRIPTION', 'Description', ['300', '351', '516', '344', '345', '346', '347']),
     ('COPYRIGHT_DATE', 'Copyright Date', [('264', None, None, 'c')]),
     ('NOTES', 'Notes', ['500', '501', '504', '507', '521', '530', '546', '547',
-                        '550', '586', '590']),
+                        '550', '586', '590', '541']),
     ('SUMMARY', 'Summary', ['520']),
     ('BIOGRAPHICAL NOTES', 'Biographical Notes', ['545']),
     ('CURRENT_FREQUENCY', 'Current Frequency', ['310', '321', '362']),
