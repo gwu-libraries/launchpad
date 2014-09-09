@@ -17,7 +17,7 @@
 {% block link_extra %}
 {% if bibid %}
     {% if non_wrlc_item %}
-        {% if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
+        {% if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'DA' %}
             <link rel='canonical' href='{% url "gtitem" bib.BIB_ID %}' />
             <link title="JSON" rel='alternate' type='application/json' href='{% url "gtitem_json" bib.BIB_ID %}' />
             <link title="MARC JSON" rel='alternate' type='application/json' href='{% url "item_marc" bib.BIB_ID %}' />
