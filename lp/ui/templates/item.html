@@ -332,7 +332,7 @@
                            {% else %}
                                {% if item.ITEM_STATUS_DESC == 'Not Charged' and not bib.FINDING_AID %}
                                    <span style='color: green'>Available</span>
-                                   <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a>
+                                   <!-- <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")'><img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' /></a> -->
                                {% else %}
                                    {% if item.TEMPLOCATION == 'WRLC Center' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID %}
                                        <span class='off-site'>Off-site </span>
