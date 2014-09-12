@@ -373,10 +373,6 @@ ul.offers {
   #home-search-box {width:80%;}
 }
 
-@media screen and (min-width: 980px) {
-  .libsite-container {/* margin-top:2em; */}
-}
-
 @media screen and (max-width: 780px) {
   #libfooter-container {height:2.9em;}
   #footer-utility {float:none; clear:left; margin-top:1.6em;}
@@ -384,6 +380,7 @@ ul.offers {
 
 @media screen and (max-width: 680px) {
   section.search {padding-bottom:3em;}
+  section.item-search {padding-bottom:1em} 
   #home-search-box {width:95%; font-size:20px; line-height:30px;}
   #home-search-box-form {margin-top:10%;}
   .standard-search {float:left; padding-top:0;}
