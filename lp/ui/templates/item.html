@@ -39,11 +39,9 @@
 {% assign_settings_value "STREAMING_VIDEO_TAGS" as video_tags %}
 {% assign_settings_value "MAX_ITEMS" as max_items %}
 {% assign_settings_value "BOUND_WITH_ITEM_LINK" as bound_item_link %}
-<article class="libsite-container container" >
 
-<div class="row-fluid">
-  <section class="search">
-    <form class="span12" action="{% url "search" %}" method="get">
+  <section class="search item-search">
+    <form class="" action="{% url "search" %}" method="get">
       <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
       <div class="advanced-search">
         <a href="{% url "advanced_search" %}">Advanced Search</a>
@@ -53,11 +51,10 @@
     </form>
   </section>
 </div>
-
-<br>
+</div>
 
 <div class="row-fluid">
-
+<div class="span12">
 <div itemscope itemtype="{{bib.MICRODATA_TYPE}}">
 
 <table id='desc-table' border='0' style='width:100%;'>
@@ -194,11 +191,13 @@
         </td>
     </tr>
 </table>
-
+</div>
+</div>
 </div>
 
 {% if holdings %}
-
+<div class="row-fluid">
+<div class="span12">
 <ul class="nav nav-tabs">
   <li class="active"><a href="#holdings" data-toggle="tab" onclick="_gaq.push(['_trackEvent','Tabs','Availability']);">Availability</a></li>
   <li><a href="#details" data-toggle="tab" onclick="_gaq.push(['_trackEvent','Tabs','Details']);">Details</a></li>
