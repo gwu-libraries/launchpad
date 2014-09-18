@@ -19,6 +19,8 @@ from ui.templatetags.launchpad_extras import cjk_info
 from ui.templatetags.launchpad_extras import clean_isbn
 from ui.templatetags.launchpad_extras import clean_lccn
 from ui.templatetags.launchpad_extras import clean_oclc
+from django.utils.encoding import iri_to_uri
+from django.utils.http import urlquote
 
 GW_LIBRARY_IDS = [7, 11, 18, 21]
 
@@ -422,6 +424,8 @@ ORDER BY library.library_name"""
     if not translate_bib:
         holdings = init_z3950_holdings(bib_data['BIB_ID'], lib)
     illiad_link = get_illiad_link(bib_data)
+    refworks_link = get_refworks_link(bib_data)
+    bib_data.update({'REFWORKS_LINK': refworks_link})
     eligibility = False
     added_holdings = []
     for holding in holdings:
@@ -1516,6 +1520,63 @@ def get_illiad_link(bib_data):
     url += encoded_args
     url = urllib.unquote(url)
     return url
+
+def get_refworks_link(bib_data):
+    title = ''
+    ind = 0
+    query_args = {}
+    url = settings.REFWORKS_URL
+    if bib_data.get('BIB_FORMAT') and bib_data.get('BIB_FORMAT')[1:] == 's':
+        query_args['genre'] = 'journal'
+    else:
+        query_args['genre'] = 'book'
+    if bib_data.get('AUTHORS', []):
+        authors = unicode_encode(bib_data['AUTHORS'])
+        #query_args['aulast'] = ";".join(bib_data['AUTHORS'])
+        query_args['aulast'] = ";".join(authors)
+    if bib_data.get('ISBN', ''):
+        query_args['isbn'] = ",".join(bib_data['NORMAL_ISBN_LIST'])
+        if bib_data['ISBN'][-1:] == ':':
+            query_args['isbn'] = bib_data['ISBN'][:-1]
+    if bib_data.get('PUBLISHER_DATE', ''):
+        query_args['date'] = re.findall('\d+',bib_data['PUBLISHER_DATE'])[0]
+    if bib_data.get('PUBLISHER',''):
+        query_args['pub'] = unicode_encode(bib_data['PUBLISHER'][:-1])
+    if bib_data.get('PUB_PLACE',''):
+        query_args['place'] = unicode_encode(bib_data['PUB_PLACE'][:-1])
+    if bib_data.get('LANGUAGE_DISPLAY',''):
+        query_args['language'] = unicode_encode(bib_data['LANGUAGE_DISPLAY'])
+    if bib_data.get('SUBJECTS',''):
+        sub = unicode_encode(bib_data['SUBJECTS'])
+        query_args['subject'] = ",".join(sub)
+    if bib_data.get('TITLE', ''):
+        ind = bib_data['TITLE'].find('/')
+        if ind != -1:
+            title = unicode_encode(bib_data['TITLE'][0:ind])
+        else:
+            title = unicode_encode(bib_data['TITLE'])
+        query_args['title'] = title
+        if bib_data.get('openurl', {}).get('params', {}).get('rfr_id'):
+            query_args['sid'] = bib_data['openurl']['params']['rfr_id']\
+                + ':' + settings.ILLIAD_SID
+        elif bib_data.get('openurl', {}).get('params', {}).get('sid'):
+            query_args['sid'] = bib_data['openurl']['params']['sid']\
+                + ':' + settings.ILLIAD_SID
+        else:
+            query_args['sid'] = settings.ILLIAD_SID
+    for k, v in  query_args.iteritems():
+        url += iri_to_uri("&%s=%s" % (k,v))
+    return url
+
+def unicode_encode(data):
+    if isinstance(data, basestring):
+        data = urlquote(data)
+    else:
+        tmp_list = []
+        for var in data:
+            tmp_list.append(urlquote(var))
+        data = tmp_list
+    return data
 
 
 def insert_sid(qs):

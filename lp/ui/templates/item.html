@@ -169,6 +169,11 @@
                 You are looking for:  
                 {{bib.citation_json|citationlist|safe}}</p>
                 {% endif %}
+                <p>
+                {% if bib.REFWORKS_LINK %}
+                    <span>Export To: <a href="{{ bib.REFWORKS_LINK }}" target="_blank">RefWorks</a></span><br/>
+                {% endif %}
+                </p>
                 <!---<p>
                     <span class="catlink" >
                     {% if bib.BIB_ID %}

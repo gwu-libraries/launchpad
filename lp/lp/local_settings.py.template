@@ -147,6 +147,8 @@ ILLIAD_URL = 'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
 
 ILLIAD_SID = 'GWLP'
 
+REFWORKS_URL = 'http://www.refworks.com/express/expressimport.asp?'
+
 TITLE_CHARS = 255
 
 FEEDBACK_FORM_URL = 'https://docs.google.com/spreadsheet/viewform?formkey=dDVfMTNIT0tneVFvNFZoQkNXc01SN2c6MQ'

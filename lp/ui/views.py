@@ -161,6 +161,7 @@ def non_wrlc_item(request, num, num_type):
     bib['openurl'] = _openurl_dict(request)
     bib['citation_json'] = citation_json(request)
     bib['ILLIAD_LINK'] = voyager.get_illiad_link(bib)
+    bib['REFWORKS_LINK'] = voyager.get_refworks_link(bib)
     bib['MICRODATA_TYPE'] = voyager.get_microdata_type(bib)
     holdings = []
     # get free electronic book link from open library
