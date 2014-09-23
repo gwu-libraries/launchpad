@@ -169,11 +169,12 @@
                 You are looking for:  
                 {{bib.citation_json|citationlist|safe}}</p>
                 {% endif %}
-                <p>
+                <br>
+                <!-- <p>
                 {% if bib.REFWORKS_LINK %}
                     <span>Export To: <a href="{{ bib.REFWORKS_LINK }}" target="_blank">RefWorks</a></span><br/>
                 {% endif %}
-                </p>
+                </p> -->
                 <!---<p>
                     <span class="catlink" >
                     {% if bib.BIB_ID %}
@@ -539,29 +540,36 @@
 {% assign_settings_value "DEBUG" as debug %}
 {% if debug %}
 <br>
-<h3>Debugging info</h3>
+<h1> Services </h1>
+<p>
+{% if bib.REFWORKS_LINK %}
+    Export to: <a href="{{ bib.REFWORKS_LINK }}" target="_blank">RefWorks</a>
+{% endif %}
+</p>
+<br>
+<!--<h3>Debugging info</h3> 
 
 <p>
 {% if bibid %}
     {% if non_wrlc_item %}
         {% if bib.LIBRARY_NAME == 'GT' or bib.LIBRARY_NAME == 'GA' %}
-        View JSON: <a href='{% url "gtitem_json" bib.BIB_ID %}?{{ bib.openurl.query_string|escape }}'>{% url "gtitem_json" bib.BIB_ID %}</a>
+          View JSON: <a href='{% url "gtitem_json" bib.BIB_ID %}?{{ bib.openurl.query_string|escape }}'>{% url "gtitem_json" bib.BIB_ID %}</a> 
         &nbsp;
         {% endif %}
         {% if bib.LIBRARY_NAME == 'GM' %}
-        View JSON: <a href='{% url "gmitem_json" bib.BIB_ID %}?{{ bib.openurl.query_string|escape }}'>{% url "gmitem_json" bib.BIB_ID %}</a>
+        View JSON: <a href='{% url "gmitem_json" bib.BIB_ID %}?{{ bib.openurl.query_string|escape }}'>{% url "gmitem_json" bib.BIB_ID %}</a> 
         &nbsp;
         {% endif %}
 
     {% else %}
-        View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
+    View JSON: <a href='{% url "item_json" bibid %}?{{ bib.openurl.query_string|escape }}'>{% url "item_json" bibid %}</a>
         &nbsp;
-        View MARC: <a href="{% url "item_marc" bibid %}">{% url "item_marc" bibid %}</a>
+        View MARC: <a href="{% url "item_marc" bibid %}">{% url "item_marc" bibid %}</a> 
     {% endif %}
 {% endif %}
 
 {% if bib.ISBN|clean_isbn %}
-ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a>
+ ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clean_isbn %}</a> 
 &nbsp;
     {% assign_settings_value "LINK_RESOLVER" as link_resolver %}
     {% if link_resolver.base_url and link_resolver.name %}
@@ -570,7 +578,7 @@ ISBN: <a href='{% url "isbn" bib.ISBN|clean_isbn %}'>{% url "isbn" bib.ISBN|clea
     {% endif %}
 {% endif %}
 {% if bib.ISSN|clean_issn %}
-ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}?{{ bib.openurl.query_string|escape }}'>{% url "issn" bib.ISSN|clean_issn %}</a>
+ ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}?{{ bib.openurl.query_string|escape }}'>{% url "issn" bib.ISSN|clean_issn %}</a>
 &nbsp;
     {% if link_resolver.base_url and link_resolver.name %}
     (<a href='{{ link_resolver.base_url }}?issn={{ bib.ISSN|clean_issn }}&amp;{{ bib.openurl.query_string|escape }}'>{{ link_resolver.name }}</a>)
@@ -578,7 +586,7 @@ ISSN: <a href='{% url "issn" bib.ISSN|clean_issn %}?{{ bib.openurl.query_string|
     {% endif %}
 {% endif %}
 </p>
-
+-->
 
 {% endif %}
 </div>

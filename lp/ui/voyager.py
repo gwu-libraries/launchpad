@@ -1531,9 +1531,14 @@ def get_refworks_link(bib_data):
     else:
         query_args['genre'] = 'book'
     if bib_data.get('AUTHORS', []):
-        authors = unicode_encode(bib_data['AUTHORS'])
-        #query_args['aulast'] = ";".join(bib_data['AUTHORS'])
-        query_args['aulast'] = ";".join(authors)
+        pattern = re.compile('\d{4}')
+        authors = ''
+        for auth in bib_data['AUTHORS']:
+            if pattern.search(auth):
+                auth = auth[0:auth.rfind(',')]
+            authors = authors +';'+ unicode_encode(auth);
+        query_args['aulast'] = authors
+
     if bib_data.get('ISBN', ''):
         query_args['isbn'] = ",".join(bib_data['NORMAL_ISBN_LIST'])
         if bib_data['ISBN'][-1:] == ':':
