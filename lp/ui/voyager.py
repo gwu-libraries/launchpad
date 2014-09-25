@@ -1525,19 +1525,28 @@ def get_refworks_link(bib_data):
     title = ''
     ind = 0
     query_args = {}
+    pattern = re.compile('\d{4}')
     url = settings.REFWORKS_URL
     if bib_data.get('BIB_FORMAT') and bib_data.get('BIB_FORMAT')[1:] == 's':
         query_args['genre'] = 'journal'
     else:
         query_args['genre'] = 'book'
-    if bib_data.get('AUTHORS', []):
-        pattern = re.compile('\d{4}')
-        authors = ''
-        for auth in bib_data['AUTHORS']:
-            if pattern.search(auth):
-                auth = auth[0:auth.rfind(',')]
-            authors = authors +';'+ unicode_encode(auth);
-        query_args['aulast'] = authors
+    if bib_data.get('THESIS_DISSERTATION',''):
+        author = ''
+        if bib_data.get('AUTHOR',''):
+            author = bib_data['AUTHOR']
+            if pattern.search(author):
+                author = author[0:author.rfind(',')]
+            query_args['aulast'] = author
+
+    else:
+        if bib_data.get('AUTHORS', []):
+            authors = ''
+            for auth in bib_data['AUTHORS']:
+                if pattern.search(auth):
+                    auth = auth[0:auth.rfind(',')]
+                authors = authors +';'+ unicode_encode(auth);
+            query_args['aulast'] = authors
 
     if bib_data.get('ISBN', ''):
         query_args['isbn'] = ",".join(bib_data['NORMAL_ISBN_LIST'])
