@@ -424,8 +424,11 @@ ORDER BY library.library_name"""
     if not translate_bib:
         holdings = init_z3950_holdings(bib_data['BIB_ID'], lib)
     illiad_link = get_illiad_link(bib_data)
-    refworks_link = get_refworks_link(bib_data)
-    bib_data.update({'REFWORKS_LINK': refworks_link})
+    try:
+        refworks_link = get_refworks_link(bib_data)
+        bib_data.update({'REFWORKS_LINK': refworks_link})
+    except:
+        bib_data.update({'REFWORKS_LINK': ''})
     eligibility = False
     added_holdings = []
     for holding in holdings:
@@ -1553,7 +1556,8 @@ def get_refworks_link(bib_data):
         if bib_data['ISBN'][-1:] == ':':
             query_args['isbn'] = bib_data['ISBN'][:-1]
     if bib_data.get('PUBLISHER_DATE', ''):
-        query_args['date'] = re.findall('\d+',bib_data['PUBLISHER_DATE'])[0]
+        if len(re.findall('\d+',bib_data['PUBLISHER_DATE']))>0:
+            query_args['date'] = re.findall('\d+',bib_data['PUBLISHER_DATE'])[0]
     if bib_data.get('PUBLISHER',''):
         query_args['pub'] = unicode_encode(bib_data['PUBLISHER'][:-1])
     if bib_data.get('PUB_PLACE',''):
