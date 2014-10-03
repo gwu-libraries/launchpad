@@ -156,30 +156,10 @@
                 {% endif %}
                 {% if bib.citation_json %}
                 <p>
-                <!-- The
-                {% if bib.citation_json.type %}
-                        {{ bib.citation_json.type }} 
-                {%else%}
-                    item
-                {%endif%}
-                -->
                 You are looking for:  
                 {{bib.citation_json|citationlist|safe}}</p>
                 {% endif %}
                 <br>
-                <!-- <p>
-                {% if bib.REFWORKS_LINK %}
-                    <span>Export To: <a href="{{ bib.REFWORKS_LINK }}" target="_blank">RefWorks</a></span><br/>
-                {% endif %}
-                </p> -->
-                <!---<p>
-                    <span class="catlink" >
-                    {% if bib.BIB_ID %}
-                        View detailed description of this title in the <a href='http://catalog.wrlc.org/cgi-bin/Pwebrecon.cgi?DB=local&BBID={{ bib.BIB_ID }}' target='interlibrarywindow'>WRLC Catalog</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
-                    {% endif %}
-                </span>
-                Commented this out due to this issue https://github.com/gwu-libraries/launchpad/issues/433
-                    </p>-->
                     {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID and show_ill_link %}
                     <p>
                      <span class = "catlink"> 
@@ -460,21 +440,6 @@
                     </td>
                 </tr>
           {% endif %}
-            <!-- Add Link Resolver Data
-            {% if holding.LinkResolverData %}
-            <tr>
-            <td colspan="4">
-                <div class="linkresolverdata" style="padding-left:1em; font-size:small; color:gray;">
-                {% for link in holding.LinkResolverData %}
-                    {% if not forloop.first %}<br/>{% endif %}
-                    from {{link.start}}
-                    to {% if link.end %}{{link.end}}{% else %}present{% endif %}
-                    <a href="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">{{link.dbname}}</a>
-                {% endfor %}
-                </div>
-            <td>
-            {% endif %}
-            -->
         {% endfor %}
     {% endfor %}
     {% if bib.BIB_FORMAT == 'as' and show_ill_link%}
@@ -536,8 +501,6 @@
 
 {% endif %}
 
-{% assign_settings_value "DEBUG" as debug %}
-{% if debug %}
 <br>
 <h1> Services </h1>
 <p>
@@ -545,6 +508,9 @@
     Export to: <a href="{{ bib.REFWORKS_LINK }}" target="_blank">RefWorks</a>
 {% endif %}
 </p>
+
+{% assign_settings_value "DEBUG" as debug %}
+{% if debug %}
 <br>
 <h3>Debugging info</h3> 
 
