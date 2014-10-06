@@ -312,7 +312,6 @@ ul.offers {
 
 /* unvisited link */
 #search-results .search-result-title a:link    {
-    color: green;
 }
 
 /* visited link */
@@ -322,14 +321,11 @@ ul.offers {
 
 /* mouse over link */
 #search-results .search-result-title a:hover   {
-    color: yellow;
 }
 
 /* selected link */
 #search-results .search-result-title a:active  {
-    color: blue;
 }
-
 
 #search-results .search-result-title-alt, #search-results .search-result-author-alt {font-size: 1.6em;} 
 
