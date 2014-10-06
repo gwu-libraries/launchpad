@@ -310,6 +310,27 @@ ul.offers {
   font-size: 1.4em;
 }
 
+/* unvisited link */
+a:link    {
+    color: green;
+}
+
+/* visited link */
+a:visited {
+    color: red;
+}
+
+/* mouse over link */
+a:hover   {
+    color: yellow;
+}
+
+/* selected link */
+a:active  {
+    color: blue;
+}
+
+
 #search-results .search-result-title-alt, #search-results .search-result-author-alt {font-size: 1.6em;} 
 
 #facets li {color:#555; font-size:.814em;}
