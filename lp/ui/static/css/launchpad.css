@@ -311,20 +311,20 @@ ul.offers {
 }
 
 /* unvisited link */
-#search-results .search-result-title a:link    {
+#search-results a:link    {
 }
 
 /* visited link */
-#search-results .search-result-title a:visited {
-    color: red;
+#search-results a:visited {
+    color: #663366;
 }
 
 /* mouse over link */
-#search-results .search-result-title a:hover   {
+#search-results a:hover   {
 }
 
 /* selected link */
-#search-results .search-result-title a:active  {
+#search-results a:active  {
 }
 
 #search-results .search-result-title-alt, #search-results .search-result-author-alt {font-size: 1.6em;} 
