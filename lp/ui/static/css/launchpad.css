@@ -311,22 +311,22 @@ ul.offers {
 }
 
 /* unvisited link */
-a:link    {
+#search-results .search-result-title a:link    {
     color: green;
 }
 
 /* visited link */
-a:visited {
+#search-results .search-result-title a:visited {
     color: red;
 }
 
 /* mouse over link */
-a:hover   {
+#search-results .search-result-title a:hover   {
     color: yellow;
 }
 
 /* selected link */
-a:active  {
+#search-results .search-result-title a:active  {
     color: blue;
 }
 
