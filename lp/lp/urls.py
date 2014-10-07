@@ -2,22 +2,29 @@ from django.conf import settings
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from ui import views
-
+from django.views.decorators.cache import cache_page
 
 handler500 = 'ui.views.error500'
+
+cache_seconds = getattr(settings, 'ITEM_PAGE_CACHE_SECONDS', 0)
+cache_wrap = cache_page(cache_seconds) #returns a function to wrap a view w/ cache
 
 urlpatterns = patterns(
     'ui.views',
     url(r'^$', views.home, name='home'),
     url(r'^catalog/$', views.home, name='catalog'),
-    url(r'^item/(?P<bibid>\d{2,8})$', views.item, name='item'),
-    url(r'^item/(?P<bibid>\d{2,8}).json$', views.item_json, name='item_json'),
-    url(r'^item/(?P<bibid>\d{2,8})/marc.json$', views.item_marc, name='item_marc'),
-    url(r'^item/\.?(?P<gtbibid>b\d{2,8}x?)$', views.gtitem, name='gtitem'),
-    url(r'^item/\.?(?P<gtbibid>b\d{2,8}x?).json$', views.gtitem_json,
+    url(r'^item/(?P<bibid>\d{2,8})$', cache_wrap(views.item), name='item'),
+    url(r'^item/(?P<bibid>\d{2,8}).json$', cache_wrap(views.item_json), 
+        name='item_json'),
+    url(r'^item/(?P<bibid>\d{2,8})/marc.json$', cache_wrap(views.item_marc), 
+        name='item_marc'),
+    url(r'^item/\.?(?P<gtbibid>b\d{2,8}x?)$', cache_wrap(views.gtitem), 
+        name='gtitem'),
+    url(r'^item/\.?(?P<gtbibid>b\d{2,8}x?).json$', cache_wrap(views.gtitem_json),
         name='gtitem_json'),
-    url(r'^item/m(?P<gmbibid>\d{2,8})$', views.gmitem, name='gmitem'),
-    url(r'^item/m(?P<gmbibid>\d{2,8}).json$', views.gmitem_json,
+    url(r'^item/m(?P<gmbibid>\d{2,8})$', cache_wrap(views.gmitem), 
+        name='gmitem'),
+    url(r'^item/m(?P<gmbibid>\d{2,8}).json$', cache_wrap(views.gmitem_json),
         name='gmitem_json'),
     url(r'^issn/(?P<issn>\d{4}-?\d{3}[0-9Xx])$', views.issn, name='issn'),
     url(r'^isbn/(?P<isbn>[0-9-xX]+)$', views.isbn, name='isbn'),
