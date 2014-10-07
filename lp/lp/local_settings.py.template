@@ -81,7 +81,7 @@ INDEX_CODES = {
 
 # Preferred library for bib record and top of the holdings list
 # ex.: 'GW'
-PREF_LIB = ''  
+PREF_LIB = ''
 
 # Institution name, link, etc. to display in HTML header
 INSTITUTION_NAME = 'GW Libraries'
@@ -196,7 +196,7 @@ API_LIST = [
     ]
 
 # Show covers from openlibrary.org?
-ENABLE_OPENLIBRARY_COVERS = False
+ENABLE_OPENLIBRARY_COVERS = True
 
 # Show humans.txt?
 ENABLE_HUMANS = False
@@ -217,10 +217,8 @@ SER_SOL_API_MAX_ATTEMPTS = 3
 SER_SOL_DBID_TEXT = 'TN5'
 
 # where to link to for subject, author links
-
 EXPLORE_TYPE = 'summon'
 
 # summon api
 SUMMON_ID = "gw"
 SUMMON_SECRET_KEY = "you-will-need-this-to-do-searches"
-
