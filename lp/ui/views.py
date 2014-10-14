@@ -418,15 +418,16 @@ def search(request):
     fmt = params.get('format', 'html')
     raw = params.get('raw', False)
     online = params.get('online', False)
+    page_size = params.get('page_size', 20)
 
     try:
         page = int(page)
+        page_size = int(page_size)
     except ValueError:
         raise Http404
 
     # summon can't return results for pages > 50 with page size of 20
     max_pages = 50
-    page_size = 20
     if page > max_pages:
         raise Http404
 
