@@ -147,7 +147,7 @@ ILLIAD_URL = 'https://www.aladin.wrlc.org/Z-WEB/ILLAuthClient?'
 
 ILLIAD_SID = 'GWLP'
 
-REFWORKS_URL = 'http://www.refworks.com/express/expressimport.asp?'
+REFWORKS_URL = 'http://proxygw.wrlc.org/login?url=http://www.refworks.com/express/expressimport.asp?'
 
 TITLE_CHARS = 255
 
