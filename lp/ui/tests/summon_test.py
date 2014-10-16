@@ -34,7 +34,7 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['@type'], 'Book')
         self.assertEqual(i['wrlc'], 'm2402189')
         self.assertEqual(i['name'], 'The web of knowledge : a festschrift in honor of Eugene Garfield')
-        self.assertEqual(i['isbn'], ["9781573870993", "1573870994"])
+        self.assertEqual(i['isbn'], ["1573870994", "9781573870993"])
 
         self.assertEqual(len(i['author']), 3)
         self.assertEqual(i['author'][0]['name'], 'Garfield, Eugene')
