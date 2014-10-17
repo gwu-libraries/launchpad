@@ -1545,10 +1545,16 @@ def get_refworks_link(bib_data):
     else:
         if bib_data.get('AUTHORS', []):
             authors = ''
+            count = 0
             for auth in bib_data['AUTHORS']:
-                if pattern.search(auth):
-                    auth = auth[0:auth.rfind(',')]
-                authors = authors +';'+ unicode_encode(auth);
+                count = count+1
+                if count < 6 :
+                    if pattern.search(auth):
+                        auth = auth[0:auth.rfind(',')]
+                    authors = authors +';'+ unicode_encode(auth);
+                else:
+                    authors = authors +';'+unicode_encode("et al.")
+                    break
             query_args['aulast'] = authors
 
     if bib_data.get('ISBN', ''):
