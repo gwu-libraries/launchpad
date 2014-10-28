@@ -234,21 +234,21 @@ class Summon():
 
     def _id(self, doc):
         """
-        _id determines the Voyager id for a document which is used when 
-        linking to launchpad for a specific item. If the id cannot be 
+        _id determines the Voyager id for a document which is used when
+        linking to launchpad for a specific item. If the id cannot be
         determined None is returned.
-        
-        The id is determined using the availabilityId value. availaibilityId 
-        usually has a value like "Z6W 13691563", the second part of which is 
-        our Voyager record id. 
-        
-        Ocasionally the availiabilityId key isn't present in the Summon 
-        JSON, in which case we fall back to looking for the availaibilityId 
-        found in the first document in the peerDocuments stanza, if one is
-        available.
-        
-        Historical note: we initially used the first value in ExternalDocumentId
-        but it was not entirely reliable.
+
+        The id is determined using the availabilityId value. availaibilityId
+        usually has a value like "Z6W 13691563", the second part of which is
+        the Voyager record id.
+
+        Occasionally the availiabilityId key isn't directly present in the
+        document, in which case we fall back to looking for the
+        availaibilityId found in the first document in the peerDocuments
+        stanza, if one is available.
+
+        Historical note: we initially used the first value in
+        ExternalDocumentId but it was not entirely reliable.
 
         See: https://github.com/gwu-libraries/launchpad/issues/897
         """
@@ -259,4 +259,3 @@ class Summon():
         if 'peerDocuments' in doc and len(doc['peerDocuments']) > 0:
             return self._id(doc['peerDocuments'][0])
         return None
-
