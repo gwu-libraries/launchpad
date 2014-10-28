@@ -456,7 +456,7 @@ def search(request):
     if online:
         if q:
             q += " AND"
-        q += " lccallnum:('gw electronic' OR 'shared+electronic' OR 'e-resources' OR 'streaming')"
+        q += " lccallnum:('gw electronic' OR 'shared+electronic' OR 'e-resources' OR 'e-govpub' OR 'streaming')"
 
     # add selected facets to the query
     for facet in params.getlist('facet'):
