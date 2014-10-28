@@ -84,12 +84,12 @@ class Summon():
         i = {}
 
         # must have an id and a type
-        if 'ExternalDocumentID' not in doc or 'ContentType' not in doc:
+        id = self._id(doc)
+        if id is None or 'ContentType' not in doc:
             return None
 
-        id = doc['ExternalDocumentID'][0]
         i['wrlc'] = id
-        i['@id'] = '/item/' + doc['ExternalDocumentID'][0]
+        i['@id'] = '/item/' + id
         i['@type'] = self._get_type(doc)
 
         if doc.get('Title'):
@@ -159,8 +159,8 @@ class Summon():
 
     def _get_offer(self, doc):
         offer = None
+        id = self._id(doc)
         if doc.get('Institution'):
-            id = doc['ExternalDocumentID'][0]
             inst = doc.get('Institution')[0]
             inst = re.sub(' \(.+\)', '', inst)
             offer = {
@@ -170,7 +170,7 @@ class Summon():
         elif doc.get('LCCallNum') == ['Shared Electronic Book']:
             offer = {
                 'seller': 'WRLC',
-                'serialNumber': doc['ExternalDocumentID'][0]
+                'serialNumber': id
             }
 
         return offer
@@ -231,3 +231,32 @@ class Summon():
             return 'Manuscript'
         else:
             return 'Book'
+
+    def _id(self, doc):
+        """
+        _id determines the Voyager id for a document which is used when 
+        linking to launchpad for a specific item. If the id cannot be 
+        determined None is returned.
+        
+        The id is determined using the availabilityId value. availaibilityId 
+        usually has a value like "Z6W 13691563", the second part of which is 
+        our Voyager record id. 
+        
+        Ocasionally the availiabilityId key isn't present in the Summon 
+        JSON, in which case we fall back to looking for the availaibilityId 
+        found in the first document in the peerDocuments stanza, if one is
+        available.
+        
+        Historical note: we initially used the first value in ExternalDocumentId
+        but it was not entirely reliable.
+
+        See: https://github.com/gwu-libraries/launchpad/issues/897
+        """
+
+        parts = doc.get('availabilityId', '').split(' ')
+        if len(parts) == 2:
+            return parts[1]
+        if 'peerDocuments' in doc and len(doc['peerDocuments']) > 0:
+            return self._id(doc['peerDocuments'][0])
+        return None
+
