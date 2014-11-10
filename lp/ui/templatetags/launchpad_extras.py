@@ -153,12 +153,6 @@ def listelement(key, citation_json):
     return '%s ' % value
 
 
-def _get_explore_type():
-    target = getattr(settings, 'EXPLORE_TYPE', 'surveyor')
-    if target not in ('summon', 'surveyor'):
-        raise Exception("unknown EXPLORE_TYPE in settings: %s" % target)
-    return target
-
 
 def encode_str(s):
     try:
