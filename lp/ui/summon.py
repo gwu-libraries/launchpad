@@ -229,6 +229,8 @@ class Summon():
             return 'WebPage'
         elif content_type == 'Archival Material':
             return 'Manuscript'
+        elif content_type == 'Music Score':
+            return 'Music Score'
         else:
             return 'Book'
 
