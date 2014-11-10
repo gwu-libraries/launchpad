@@ -163,12 +163,12 @@
                     {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID and show_ill_link %}
                     <p>
                      <span class = "catlink"> 
-                         Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='interlibrarywindow'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
+                         Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="ga('send', 'event', 'Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}');" target='interlibrarywindow'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/> 
                   </span></p>
                   {%elif bib.ILLIAD_LINK and show_ill_link and bib.BIB_FORMAT == 'as' and not bib.FINDING_AID and non_gw%}
                   <p>
                     <span class = "catlink">
-                        Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='interlibrarywindow'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
+                        Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="ga('send', 'event', 'Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}');" target='interlibrarywindow'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/>
                     </span></p>
 
                    {% endif %}
@@ -185,8 +185,8 @@
 <div class="row-fluid">
 <div class="span12">
 <ul class="nav nav-tabs">
-  <li class="active"><a href="#holdings" data-toggle="tab" onclick="_gaq.push(['_trackEvent','Tabs','Availability']);">Availability</a></li>
-  <li><a href="#details" data-toggle="tab" onclick="_gaq.push(['_trackEvent','Tabs','Details']);">Details</a></li>
+  <li class="active"><a href="#holdings" data-toggle="tab" onclick="ga('send', 'event', 'Tabs', 'Availability');">Availability</a></li>
+  <li><a href="#details" data-toggle="tab" onclick="ga('send', 'event', 'Tabs', 'Details');">Details</a></li>
 </ul>
 
 <div class="tab-content">
