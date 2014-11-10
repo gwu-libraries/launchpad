@@ -76,7 +76,7 @@
     {% endif %} 
 
     {% for doc in search_results.results %}
-    <article id="{{ doc.id }}" class="search-result" itemscope itemtype="{{ doc.type }}">
+    <article id="{{ doc.id }}" class="search-result clearfix" itemscope itemtype="{{ doc.type }}">
         {% if doc.thumbnailUrl %}
         <a href="{{ doc.id }}">
             <img itemprop="image" class="cover-thumbnail" src={{ doc.thumbnailUrl }}>
