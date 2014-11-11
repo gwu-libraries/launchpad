@@ -534,7 +534,7 @@ def search(request):
 
         # create links for going to the next set of page results
         next_page_range = prev_page_range = None
-        if page_range_end-1 < actual_pages and page_range_end - 1 < max_pages:
+        if page_range_end - 1 < actual_pages and page_range_end - 1 < max_pages:
             page_query['page'] = page_range_end
             next_page_range = page_query.urlencode()
         if page_range_start > page_links:
