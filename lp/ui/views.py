@@ -433,7 +433,7 @@ def search(request):
 
     api = summon.Summon(settings.SUMMON_ID, settings.SUMMON_SECRET_KEY)
     kwargs = {
-        "hl": True,
+        "hl": False,
         "pn": page,
         "ps": page_size,
         "fq": ['SourceType:("Library Catalog")'],
