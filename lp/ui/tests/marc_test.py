@@ -118,11 +118,6 @@ class MarcExtractTests(unittest.TestCase):
         bib_data = extract(r)
         self.assertEqual(bib_data["FUNDING_SPONSORS"], ['District of Columbia contract 82-1289'])
 
-    def test_publication_history_362(self):
-        r = self.get_record("362.mrc")
-        bib_data = extract(r)
-        self.assertEqual(bib_data["PUBLICATION_HISTORY"], ['Vol. 1-'])
-
     def test_copyright_542(self):
         r = self.get_record("542.mrc")
         bib_data = extract(r)
