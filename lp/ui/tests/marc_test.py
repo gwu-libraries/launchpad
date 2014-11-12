@@ -118,11 +118,6 @@ class MarcExtractTests(unittest.TestCase):
         bib_data = extract(r)
         self.assertEqual(bib_data["FUNDING_SPONSORS"], ['District of Columbia contract 82-1289'])
 
-    def test_publication_history_362(self):
-        r = self.get_record("362.mrc")
-        bib_data = extract(r)
-        self.assertEqual(bib_data["PUBLICATION_HISTORY"], ['Vol. 1-'])
-
     def test_copyright_542(self):
         r = self.get_record("542.mrc")
         bib_data = extract(r)
@@ -167,21 +162,6 @@ class MarcExtractTests(unittest.TestCase):
         r = self.get_record("247.mrc")
         bib_data = extract(r)
         self.assertEqual(bib_data["OTHER_TITLE"], ['[Oxford] regional economic atlases. 1954', 'Oxford regional atlases. 1959-'])
-
-    def test_current_frequency_310(self):
-        r = self.get_record("310.mrc")
-        bib_data = extract(r)
-        self.assertEqual(bib_data["CURRENT_FREQUENCY"], ['Annual, <2005->', 'Irregular', 'Vol. 1-'])
-
-    def test_current_frequency_321(self):
-        r = self.get_record("321.mrc")
-        bib_data = extract(r)
-        self.assertEqual(bib_data["CURRENT_FREQUENCY"], ['Annual, <2005->', 'Irregular', 'Vol. 1-'])
-
-    def test_current_frequency_362(self):
-        r = self.get_record("362.mrc")
-        bib_data = extract(r)
-        self.assertEqual(bib_data["CURRENT_FREQUENCY"], ['Annual, <2005->', 'Irregular', 'Vol. 1-'])
 
     def test_original_version_534(self):
         r = self.get_record("534.mrc")

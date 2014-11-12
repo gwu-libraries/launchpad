@@ -44,7 +44,7 @@ mapping = (
                         '550', '586', '590', '541']),
     ('SUMMARY', 'Summary', ['520']),
     ('BIOGRAPHICAL NOTES', 'Biographical Notes', ['545']),
-    ('CURRENT_FREQUENCY', 'Current Frequency', ['310', '321', '362']),
+    ('CURRENT_FREQUENCY', 'Current Frequency', ['310', '321']),
     ('PUBLICATION_HISTORY', 'Publication History', ['362']),
     ('IN_COLLECTION', 'In Collection', [
         ('773', None, None, 'abdghikmnopqrstuwxyz')
