@@ -163,21 +163,6 @@ class MarcExtractTests(unittest.TestCase):
         bib_data = extract(r)
         self.assertEqual(bib_data["OTHER_TITLE"], ['[Oxford] regional economic atlases. 1954', 'Oxford regional atlases. 1959-'])
 
-    def test_current_frequency_310(self):
-        r = self.get_record("310.mrc")
-        bib_data = extract(r)
-        self.assertEqual(bib_data["CURRENT_FREQUENCY"], ['Irregular'])
-
-    def test_current_frequency_321(self):
-        r = self.get_record("321.mrc")
-        bib_data = extract(r)
-        self.assertEqual(bib_data["CURRENT_FREQUENCY"], ['Irregular'])
-
-    def test_current_frequency_362(self):
-        r = self.get_record("362.mrc")
-        bib_data = extract(r)
-        self.assertEqual(bib_data["CURRENT_FREQUENCY"], ['Irregular'])
-
     def test_original_version_534(self):
         r = self.get_record("534.mrc")
         bib_data = extract(r)
