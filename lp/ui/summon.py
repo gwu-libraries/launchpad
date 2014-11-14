@@ -210,29 +210,25 @@ class Summon():
                 offer['serialNumber'] = 'b' + sn
 
         return item
-
+    # Only list rewritten values; some are used for class names and icons, in search.html e.g., AudioObject
+    # Default to original value. Issues: 637 web resource; 692 archival material; 818 video; 839 audio;
+    # 881 newspaper
     def _get_type(self, doc):
         content_type = doc['ContentType'][0]
-        if content_type == "Book":
+        if content_type == "eBook":
             return 'Book'
         elif content_type == "Audio Recording":
             return 'AudioObject'
-        elif content_type == 'Map':
-            return 'Map'
         elif content_type == 'Journal' or content_type == 'Newspaper':
             return 'Periodical'
-        elif content_type == 'eBook':
-            return 'Book'
         elif content_type == 'Video Recording':
             return 'VideoObject'
         elif content_type == 'Web Resource':
             return 'WebPage'
         elif content_type == 'Archival Material':
             return 'Manuscript'
-        elif content_type == 'Music Score':
-            return 'Music Score'
         else:
-            return 'Book'
+            return content_type
 
     def _id(self, doc):
         """
