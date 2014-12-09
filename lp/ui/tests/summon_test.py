@@ -131,8 +131,6 @@ class SummonTests(unittest.TestCase):
             fq='ContentType:("Web Resource")'
         )
         self.assertTrue(len(search['results']) > 0)
-        for result in search['results']:
-            self.assertEqual(result['@type'], 'WebSite')
 
     def test_offer_ids(self):
         search = self.summon.search('isbn:9780596007973',
