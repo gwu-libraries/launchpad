@@ -316,8 +316,8 @@
                              </div>
                            {% else %}
                                {% if item.ITEM_STATUS_DESC == 'Not Charged' and not bib.FINDING_AID %}
-                                   <span style='color: green'>Available319</span>
-                                    <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")'><!--<img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' />--><i class="fa fa-mobile"></i></a> 
+                                   <span style='color: green'>Available</span>
+                                    <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")'><!--<img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' />--><i class="fa fa-mobile fa-lg"></i></a> 
                                {% else %}
                                    {% if item.TEMPLOCATION == 'WRLC Center' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID %}
                                        <span class='off-site'>Off-site </span>
@@ -424,8 +424,8 @@
                         {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME == 'WRLC Center' or holding.LOCATION_DISPLAY_NAME == 'WRLC Shared Collections Facility' %}
                             <span class='off-site'>Off-site </span>
                         {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
-                            <span style='color: green'>Available427</span>
-                            <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")'><!--<img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' />--><i class="fa icon-mobile-phone"></i></a>
+                            <span style='color: green'>Available</span>
+                            <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")'><!--<img border='0' src='{{ STATIC_URL }}img/txt.png' alt='text/email this to me' />--><i class="fa fa-mobile fa-lg"></i></a>
 
                         {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center' or holding.AVAILABILITY.TEMPLOCATION == 'WRLC Shared Collections Facility' %}
                             <span class='off-site'>Off-site </span>
