@@ -380,6 +380,9 @@ ul.offers {
   max-width: 100px;
 }
 
+/* modifying spacing of font awesome external link icon */
+.fa-external-link {padding-left:.3em;}
+
 /* overriding bootstrap so that facet buttons don't bump when stacked */
 #active-facets .btn {margin-bottom:.4em;}
 /* overriding bootstrap to avoid content pushing off screen in some views */
