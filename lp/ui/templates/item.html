@@ -163,12 +163,12 @@
                     {% if bib.ILLIAD_LINK and bib.BIB_FORMAT != 'as' and not bib.FINDING_AID and show_ill_link %}
                     <p>
                      <span class = "catlink"> 
-                         Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="ga('send', 'event', 'Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}');" target='interlibrarywindow'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i> 
+                         Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="ga('send', 'event', 'Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}');" target='interlibrarywindow'> Interlibrary Loan </a><i class="fa fa-external-link"></i> 
                   </span></p>
                   {%elif bib.ILLIAD_LINK and show_ill_link and bib.BIB_FORMAT == 'as' and not bib.FINDING_AID and non_gw%}
                   <p>
                     <span class = "catlink">
-                        Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="ga('send', 'event', 'Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}');" target='interlibrarywindow'> Interlibrary Loan </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i>
+                        Request this title through  <a href= "{{bib.ILLIAD_LINK}}" onClick="ga('send', 'event', 'Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}');" target='interlibrarywindow'> Interlibrary Loan </a><i class="fa fa-external-link"></i>
                     </span></p>
 
                    {% endif %}
@@ -293,7 +293,7 @@
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
                                  <div class="marc856resource">
                                    {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' and not link.govt_doc%}
-                                       <a href="{{link.u}}" target="eresourcewindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i>
+                                       <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                        <br />
                                        <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
                                        {{holding.LIBRARY_NAME}} only
@@ -305,7 +305,7 @@
                                        {% elif not link.bound_item%}
                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
                                        {% else %}
-                                            <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i>
+                                            <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><i class="fa fa-external-link"></i>
                                        {% endif %}
                                    {% endif %}
                                    {% if link.3 %}
@@ -331,7 +331,7 @@
                        {% endif %}
                        <td>
                            {% if item.ELIGIBLE %}
-                           <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="_gaq.push(['Document Delivery', 'CLS', '{{bib.BIB_FORMAT}}']);" target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i>
+                           <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="_gaq.push(['Document Delivery', 'CLS', '{{bib.BIB_FORMAT}}']);" target='clswindow'>Request</a><i class="fa fa-external-link"></i>
                            {% endif %}
                        </td>
                   </tr>
@@ -384,7 +384,7 @@
                                 <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
                             {% endif %}
                             {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not holding.ELECTRONIC_DATA.govt_doc%}
-                                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i>
+                                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                 <br />
                                 <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img>
                                 {{holding.LIBRARY_NAME}} only
@@ -396,7 +396,7 @@
                                 {% elif not holding.ELECTRONIC_DATA.bound_item%}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
                                 {% else %}
-                                    <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i>
+                                    <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Bound with item</a><i class="fa fa-external-link"></i>
                                 {% endif %}
                             {% endif %}
                         {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list and holding.MFHD_DATA.marc856list.strip %}
@@ -405,7 +405,7 @@
                         <span class="link-volumes">[{{ link.3 }}]</span>
                 {% endif %}
                 {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not link.govt_doc%}
-                        <a href="{{link.u}}" target="eresourcewindow">Full text online</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i>
+                        <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                         <br />
                         <img style='height:1em;' src='{{ STATIC_URL }}img/lock.png'></img>
                         {{holding.LIBRARY_NAME}} only
@@ -417,7 +417,7 @@
                                     {% elif not link.bound_item%}
                                         <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
                                     {% else %}
-                                        <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i>
+                                        <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><i class="fa fa-external-link"></i>
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
@@ -435,7 +435,7 @@
                     </td>
                     <td>
                         {% if holding.ELIGIBLE %}
-                        <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="_gaq.push(['Document Delivery', 'CLS', '{{bib.BIB_FORMAT}}']);" target='clswindow'>Request</a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i>
+                        <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="_gaq.push(['Document Delivery', 'CLS', '{{bib.BIB_FORMAT}}']);" target='clswindow'>Request</a><i class="fa fa-external-link"></i>
                         {% endif %}
                     </td>
                 </tr>
@@ -456,7 +456,7 @@
                </td>
                <td>                   </td>
                <td> 
-                   <a href= "{{bib.ILLIAD_LINK }}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='interlibrarywindow'> Request a copy from another library </a><img src='{{ STATIC_URL }}img/external-link.jpg' width='16' height='10'/><i class="fa fa-external-link"></i> 
+                   <a href= "{{bib.ILLIAD_LINK }}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='interlibrarywindow'> Request a copy from another library </a><i class="fa fa-external-link"></i> 
                 </td>
                <td> </td>
            </tr>
