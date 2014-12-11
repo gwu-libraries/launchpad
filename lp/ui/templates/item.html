@@ -219,7 +219,7 @@
                         <tr>
                         <td >
                         <div>
-                            {% if item.TEMPLOCATION %}
+                            {% if item.TEMPLOCATION and item.PERMLOCATION != 'GW: GELMAN Special Collections' %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
                             {% else %}
@@ -243,7 +243,8 @@
                 {% endif %}
                     <tr>
                     <td>
-                        {% if bib.FINDING_AID %}Gelman Special Collections<br />
+                        {% if bib.FINDING_AID or item.TRIMMED_LOCATION_DISPLAY_NAME == 'GELMAN Special Collections'%}
+                           Gelman Special Collections 
                         {% else %}
                         <div class='itemrow'>
                             {% if item.TEMPLOCATION %}
