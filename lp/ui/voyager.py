@@ -251,6 +251,16 @@ AND bib_master.library_id=library.library_id"""
     result = _make_dict(cursor)
     return result[0]['LIBRARY_NAME']
 
+def get_item_recalls(itemid):
+    query = """
+SELECT Count(hold_recall_items.item_id) AS recalls
+FROM hold_recall_items
+GROUP BY hold_recall_items.item_id
+HAVING hold_recall_items.item_id = %s """
+    cursor = connection.cursor()
+    cursor.execute(query, [itemid])
+    result = _make_dict(cursor)
+    return result[0]['RECALLS'] if result else 0
 
 def _normalize_num(num, num_type):
     if num_type == 'isbn':
@@ -495,6 +505,11 @@ ORDER BY library.library_name"""
                 item['TRIMMED_LOCATION_DISPLAY_NAME'] = \
                     trim_item_display_name(item)
                 item['TEMPLOCATION'] = trim_item_temp_location(item)
+                # WRLC items have an id, check if there are recall notices 
+                if item['ITEM_ID'] is not 0:
+                    item['RECALLS'] = get_item_recalls(item['ITEM_ID'])
+                else:
+                    item['RECALLS'] = 0
                 remove_duplicate_items(i, holding['ITEMS'])
                 i = i + 1
             holding['LIBRARY_FULL_NAME'] = \
