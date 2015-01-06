@@ -149,6 +149,69 @@ def make_openlib_holding(book):
         holding['MFHD_DATA']['marc856list'][0]['u'] = book.get('url', '')
     return holding
 
+def hathitrust(num, num_type):
+    # ensure we're dealing with a proper identifier type and value
+    try:
+        if num_type.upper() not in ('ISBN', 'OCLC', 'LCCN', 'OLID'):
+            raise
+        if num_type.upper() == 'ISBN':
+            num = clean_isbn(num)
+            if len(num) not in (10, 13):
+                raise
+    except:
+        return {}
+    params = '%s/%s' % (num_type, num)
+    # url = 'http://catalog.hathitrust.org/api/volumes/brief/OCLC/10055598.json' 
+    url = 'http://catalog.hathitrust.org/api/volumes/brief/%s.json' % params
+    try:
+        response = urlopen(url)
+        json_data = json.loads(response.read())
+        for item in json_data.get('items', []):
+            if item.get('usRightsString', '') == 'Full view':
+                return make_hathi_holding(item.get('itemURL',''),item.get('fromRecord','')) 
+    except:
+        return {}
+
+def make_hathi_holding(url,fromRecord):
+# use library name IA
+    holding = {
+        'LIBRARY_NAME': 'IA',
+        'LOCATION_NAME': 'HT',
+        'LOCATION_DISPLAY_NAME': 'HT: Hathi Trust',
+        'MFHD_DATA': {
+            "marc866list": [],
+            "marc856list": [
+                {"3": "",
+                "z": "",
+                "u": url}],
+            "marc852": ""
+        },
+        'MFHD_ID': None,
+        'ITEMS': [
+            {'ITEM_ENUM': None,
+            'ITEM_STATUS': None,
+            'TEMPLOCATION': None,
+            "ITEM_STATUS_DESC": None,
+            "ITEM_ID": 0,
+            "PERMLOCATION": None,
+            "LIBRARY_FULL_NAME": "Hathi Trust",
+            "ELIGIBLE": False,
+            "TRIMMED_LOCATION_DISPLAY_NAME": "Hathi Trust Digital Library",
+            "CHRON": None,
+            "DISPLAY_CALL_NO": "Record " + fromRecord,
+            "BIB_ID": None},
+        ],
+        'ELIGIBLE': False,
+        'LIBRARY_FULL_NAME': 'Hathi Trust',
+        'TRIMMED_LOCATION_DISPLAY_NAME': 'Hathi Trust Digital Library',
+        'ELECTRONIC_DATA': {},
+        'LIBRARY_HAS': [],
+        'LOCATION_ID': None,
+        'AVAILABILITY': {},
+        'DISPLAY_CALL_NO': 'Record ' + fromRecord,
+        'BIB_ID': None,
+        }
+    return holding
 
 def sersol360link(num, num_type, count=0):
     try:

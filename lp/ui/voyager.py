@@ -579,7 +579,7 @@ ORDER BY library.library_name"""
                     linkdata = apis.sersol360link(num, num_type)
                     for ld in linkdata:
                         holding['LinkResolverData'].append(ld)
-    # get free electronic book link from open library
+    # get free electronic book link from open library and/or hathi trust
     for numformat in ('LCCN', 'ISBN', 'OCLC'):
         if bib_data.get(numformat):
             if numformat == 'OCLC':
@@ -591,19 +591,28 @@ ORDER BY library.library_name"""
                 num = bib_data['NORMAL_ISBN_LIST'][0]
             else:
                 num = bib_data[numformat]
+
+            # Internet Archive / Open Library
             openlibhold = apis.openlibrary(num, numformat)
             title = ''
             if openlibhold.get('MFHD_DATA', None):
                 title = get_open_library_item_title(openlibhold['MFHD_DATA']
                                                     ['marc856list'][0]['u'])
             if openlibhold:
+                # Compare the title. Can't trust Open Library match.
                 bib_title = bib_data['TITLE'][0:10].lower()
                 open_title = title[0:10].lower()
                 ratio = difflib.SequenceMatcher(None, bib_title,
                                                 open_title).ratio()
                 if ratio >= settings.TITLE_SIMILARITY_RATIO:
                     holdings.append(openlibhold)
-                    break
+                    
+            # HathiTrust. No need to check title, and OCLC match is sufficient. 
+            if numformat == 'OCLC': 
+                hathitrusthold = apis.hathitrust(num, numformat)
+                if hathitrusthold:
+                    holdings.append(hathitrusthold)
+                
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
