@@ -303,8 +303,11 @@
                                            <button onclick="window.open('{{link.u}}')" > Listen online </button>
                                        {% elif item.DISPLAY_CALL_NO in video_tags %}
                                            <button onclick="window.open('{{link.u}}')" > Watch online </button>
+                                       {% elif 'https://docs.google.com/forms' in link.u %}
+                                           <!-- DDA request form link (entry = form element id)-->
+                                           <a href="{{link.u}}&entry_992004012=ID:{{bib.BIB_ID}} TITLE:{{bib.TITLE}} ISBN:{{bib.ISBN}}" target="DDArequestwindow">Request print copy</a><i class="fa fa-external-link"></i>
                                        {% elif not link.bound_item%}
-                                           <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
+                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
                                        {% else %}
                                             <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><i class="fa fa-external-link"></i>
                                        {% endif %}
@@ -320,7 +323,7 @@
                                    <span style='color: green'>Available</span>
                                     <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")'><i class="fa fa-mobile fa-lg"></i></a>
                                {% else %}
-                                   {% if item.TEMPLOCATION == 'WRLC Center' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID %}
+                                   {% if item.TEMPLOCATION == 'WRLC Shared Collections Facility (Restricted Use)' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID %}
                                        <span class='off-site'>Off-site </span>
                                        <br />
                                    {% else %}
@@ -425,13 +428,13 @@
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
-                        {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME == 'WRLC Center' or holding.LOCATION_DISPLAY_NAME == 'WRLC Shared Collections Facility' %}
+                        {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME in 'WRLC' %}
                             <span class='off-site'>Off-site </span>
                         {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
                             <span style='color: green'>Available</span>
                             <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")'><i class="fa fa-mobile fa-lg"></i></a>
 
-                        {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Center' or holding.AVAILABILITY.TEMPLOCATION == 'WRLC Shared Collections Facility' %}
+                        {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Shared Collections Facility (Restricted Use)' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' %}
                             <span class='off-site'>Off-site </span>
                         {% else %}
                             {{ holding.AVAILABILITY.ITEM_STATUS_DESC }}
