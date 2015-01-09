@@ -57,7 +57,6 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['datePublished'], '2000')
         self.assertEqual(i['thumbnailUrl'], 'http://covers-cdn.summon.serialssolutions.com/index.aspx?isbn=9781573870993/mc.gif&client=summon&freeimage=true')
         self.assertEqual(i['bookEdition'], '1. print')
-        self.assertEqual(len(i['offers']), 1)
         self.assertEqual(i['offers'][0]['seller'], 'George Mason University')
        
 
