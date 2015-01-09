@@ -327,7 +327,11 @@
                                        <span class='off-site'>Off-site </span>
                                        <br />
                                    {% else %}
-                                       {{ item.ITEM_STATUS_DESC }}
+                                        {% if item.ITEM_STATUS > 11 %}
+                                            Missing
+                                        {% else %}
+                                            {{ item.ITEM_STATUS_DESC }}
+                                        {% endif %}
                                    {% endif %}
                                {% endif %}
                            {% endif %}
