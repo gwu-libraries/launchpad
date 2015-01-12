@@ -321,7 +321,7 @@
                            {% else %}
                                {% if item.ITEM_STATUS_DESC == 'Not Charged' and not bib.FINDING_AID %}
                                    <span style='color: green'>Available</span>
-                                    <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")'><i class="fa fa-mobile fa-lg"></i></a>
+                                    <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")' onClick='ga("send","event","title-info","link","sms-link");' ><i class="fa fa-mobile fa-lg"></i></a>
                                {% else %}
                                    {% if item.TEMPLOCATION == 'WRLC Shared Collections Facility (Restricted Use)' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID %}
                                        <span class='off-site'>Off-site </span>
@@ -342,7 +342,7 @@
                        {% endif %}
                        <td>
                            {% if item.ELIGIBLE %}
-                           <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="_gaq.push(['Document Delivery', 'CLS', '{{bib.BIB_FORMAT}}']);" target='clswindow'>Request</a><i class="fa fa-external-link"></i>
+                           <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="ga('send','event','Document Delivery','CLS','{{bib.BIB_FORMAT}}');" target='clswindow'>Request</a><i class="fa fa-external-link"></i>
                            {% endif %}
                        </td>
                   </tr>
@@ -436,7 +436,7 @@
                             <span class='off-site'>Off-site </span>
                         {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
                             <span style='color: green'>Available</span>
-                            <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")'><i class="fa fa-mobile fa-lg"></i></a>
+                            <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")' onClick='ga("send","event","title-info","link","sms-link");'><i class="fa fa-mobile fa-lg"></i></a>
 
                         {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Shared Collections Facility (Restricted Use)' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' %}
                             <span class='off-site'>Off-site </span>
@@ -446,7 +446,7 @@
                     </td>
                     <td>
                         {% if holding.ELIGIBLE %}
-                        <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="_gaq.push(['Document Delivery', 'CLS', '{{bib.BIB_FORMAT}}']);" target='clswindow'>Request</a><i class="fa fa-external-link"></i>
+                        <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="ga('send','event','Document Delivery','CLS','{{bib.BIB_FORMAT}}');" target='clswindow'>Request</a><i class="fa fa-external-link"></i>
                         {% endif %}
                     </td>
                 </tr>
@@ -467,7 +467,7 @@
                </td>
                <td>                   </td>
                <td> 
-                   <a href= "{{bib.ILLIAD_LINK }}" onClick="_gaq.push(['Document Delivery', 'Interlibrary Loan', '{{bib.BIB_FORMAT}}']);" target='interlibrarywindow'> Request a copy from another library </a><i class="fa fa-external-link"></i> 
+                   <a href= "{{bib.ILLIAD_LINK }}" onClick="ga('send','event','Document Delivery','Interlibrary Loan','{{bib.BIB_FORMAT}}');" target='interlibrarywindow'> Request a copy from another library </a><i class="fa fa-external-link"></i> 
                 </td>
                <td> </td>
            </tr>
@@ -516,7 +516,7 @@
 <h1> Services </h1>
 <p>
 {% if bib.REFWORKS_LINK %}
-    Export to: <a href="{{ bib.REFWORKS_LINK }}" target="_blank">RefWorks</a>
+    Export to: <a href="{{ bib.REFWORKS_LINK }}" target="_blank" onClick="ga('send','event','title-info','link','refworks-export');">RefWorks</a>
 {% endif %}
 </p>
 
