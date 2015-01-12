@@ -516,7 +516,7 @@
 <h1> Services </h1>
 <p>
 {% if bib.REFWORKS_LINK %}
-    Export to: <a href="{{ bib.REFWORKS_LINK }}" target="_blank">RefWorks</a>
+    Export to: <a href="{{ bib.REFWORKS_LINK }}" target="_blank" onClick="ga('send','event','title-info','link','refworks-export');">RefWorks</a>
 {% endif %}
 </p>
 
