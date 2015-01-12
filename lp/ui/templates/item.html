@@ -305,7 +305,7 @@
                                            <button onclick="window.open('{{link.u}}')" > Watch online </button>
                                        {% elif 'https://docs.google.com/forms' in link.u %}
                                            <!-- DDA request form link (entry = form element id)-->
-                                           <a href="{{link.u}}&entry_992004012=ID:{{bib.BIB_ID}} TITLE:{{bib.TITLE}} ISBN:{{bib.ISBN}}" target="DDArequestwindow">Request print copy</a><i class="fa fa-external-link"></i>
+                                           <a href="{{link.u}}&entry_994442820=ID:{{bib.BIB_ID}} TITLE:{{bib.TITLE}} ISBN:{{bib.ISBN}}" target="DDArequestwindow">Request print copy</a><i class="fa fa-external-link"></i>
                                        {% elif not link.bound_item%}
                                             <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
                                        {% else %}
