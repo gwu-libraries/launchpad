@@ -5,7 +5,7 @@
     function feedback() { var fbform="{% settings_value 'FEEDBACK_FORM_URL' %}"; fbform += "&entry_3=" + window.location; window.open(fbform); }
 </script>
     <div id="libheader-container">
-        <div id="libheader" >
+        <div id="libheader" class="container">
             <div class="libheader-logo hide-lo"><a href="{% settings_value 'HOST_INSTITUTION_LINK' %}" target="_blank" title="{% settings_value 'HOST_INSTITUTION_NAME' %} website"><img src="{{ STATIC_URL }}img/gwheaderlogo.png" alt="logo: {% settings_value 'HOST_INSTITUTION_NAME' %}" /></a></div>
             <div class="libheader-liblink"><a href="{% settings_value 'INSTITUTION_LINK' %}" target="_blank" title="{% settings_value 'INSTITUTION_NAME' %} website">{% settings_value 'INSTITUTION_NAME' %}</a></div>
             <div class="libheader-link"><a href="{% url 'about' %}" target="_blank" title="about">About</a></div>

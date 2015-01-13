@@ -91,9 +91,7 @@ input[type=submit], button {
 	height: 2em; 
 	padding: 0 0 .3em;
     background-color: #005581; 
-	background-image: url(../img/bg-local-nav-bottom.png);
-	background-position: bottom;
-	background-repeat: repeat-x;
+    border-bottom: 4px solid #b2a38f;
 }
 
 #libheader {
@@ -112,10 +110,10 @@ input[type=submit], button {
 #libheader a:visited {color:#fff;}
 #libheader a:hover {color:#fff; text-decoration:underline;} 
 
-.libheader-link {float:left; font-size:.9em; padding-top:.6em; margin-left:1em;}
+.libheader-link {float:left; font-size:.9em; padding-top:.8em; margin-left:1em;}
 .libheader-icon {float:right; font-size:.9em; padding-top:.6em; margin-left:1em;}
-.libheader-liblink {float:left; font-size: 1.1em; padding-top:.3em; margin-right:2em; margin-left:.5em;}
-.libheader-logo {float:right; overflow:hidden; height:2em; margin-right:.5em; margin-left:1em;}
+.libheader-liblink {float:left; font-size: 1.1em; padding-top:.5em; margin-right:2em; margin-left:.5em;}
+.libheader-logo {float:right; overflow:hidden; height:2em; margin-right:.5em; margin-left:1em; margin-top:.1em;}
 .libfooter-text {margin: 0 .5em .5em; font-size:.7em; padding-top:.75em; overflow:hidden;}
 
 .bullet {float:left; padding:.6em 0 0 .75em; color:#fff;}
@@ -137,6 +135,15 @@ input[type=submit], button {
 	overflow: hidden;
 }
 
+#footer-contact {
+  float: left;
+}
+
+#footer-utility {
+  float: right;
+  margin-top: 0;
+}
+
 #libfooter a:link {color:#fff; text-decoration:none;}
 #libfooter a:visited {color:#fff;}
 #libfooter a:hover {color:#fff; text-decoration:underline;} 
@@ -152,6 +159,12 @@ input[type=submit], button {
 		display: block;
 		visibility: visible;  
 	}
+}
+
+/* responsive class to prevent utility links from bumping contact block in smaller views */
+@media screen and (max-width: 760px) {
+  #libfooter-container {height:2.9em;}
+  #footer-utility {float:none; clear:left; margin-top:1.6em;}
 }
 
 
