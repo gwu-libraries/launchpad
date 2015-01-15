@@ -296,8 +296,12 @@
                                    {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' and not link.govt_doc%}
                                        <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                        <br />
-                                       <i class="fa fa-lock"></i>
-                                       {{holding.LIBRARY_NAME}} only
+                                       {% if not 'proxy' in link.u and not 'serialssolutions' in link.u %}
+                                            Available to all
+                                       {% else %}
+                                            <i class="fa fa-lock"></i>
+                                            {{holding.LIBRARY_NAME}} only
+                                       {% endif %}
                                    {% else %}
                                        {% if item.DISPLAY_CALL_NO in audio_tags %}
                                            <button onclick="window.open('{{link.u}}')" > Listen online </button>
@@ -397,8 +401,12 @@
                             {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not holding.ELECTRONIC_DATA.govt_doc%}
                                 <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                 <br />
-                                <i class="fa fa-lock"></i>
-                                {{holding.LIBRARY_NAME}} only
+                                {% if not 'proxy' in holding.ELECTRONIC_DATA.LINK856U and not 'serialssolutions' in holding.ELECTRONIC_DATA.LINK856U %}
+                                    Available to all 
+                                {% else %}
+                                    <i class="fa fa-lock"></i>
+                                    {{holding.LIBRARY_NAME}} only
+                                {% endif %}
                             {% else %}
                                 {% if holding.DISPLAY_CALL_NO in audio_tags %}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Listen online </button>
@@ -418,8 +426,12 @@
                 {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not link.govt_doc%}
                         <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                         <br />
-                        <i class="fa fa-lock"></i>
-                        {{holding.LIBRARY_NAME}} only
+                        {% if not 'proxy' in link.u and not 'serialssolutions' in link.u %}
+                            Available to all 
+                        {% else %}
+                            <i class="fa fa-lock"></i>
+                            {{holding.LIBRARY_NAME}} only
+                        {% endif %}
                                 {% else %}
                                     {% if holding.DISPLAY_CALL_NO in audio_tags %}
                                         <button onclick="window.open('{{link.u}}')" > Listen online </button>
