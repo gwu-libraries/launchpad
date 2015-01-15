@@ -296,7 +296,7 @@
                                    {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' and not link.govt_doc%}
                                        <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                        <br />
-                                       <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'></img>
+                                       <i class="fa fa-lock"></i>
                                        {{holding.LIBRARY_NAME}} only
                                    {% else %}
                                        {% if item.DISPLAY_CALL_NO in audio_tags %}
@@ -397,7 +397,7 @@
                             {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not holding.ELECTRONIC_DATA.govt_doc%}
                                 <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                 <br />
-                                <img style = 'height:1em;' src = '{{ STATIC_URL }}img/lock.png'> </img>
+                                <i class="fa fa-lock"></i>
                                 {{holding.LIBRARY_NAME}} only
                             {% else %}
                                 {% if holding.DISPLAY_CALL_NO in audio_tags %}
@@ -418,7 +418,7 @@
                 {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not link.govt_doc%}
                         <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                         <br />
-                        <img style='height:1em;' src='{{ STATIC_URL }}img/lock.png'></img>
+                        <i class="fa fa-lock"></i>
                         {{holding.LIBRARY_NAME}} only
                                 {% else %}
                                     {% if holding.DISPLAY_CALL_NO in audio_tags %}
