@@ -481,6 +481,12 @@ ORDER BY library.library_name"""
                 holding['DISPLAY_CALL_NO'] = \
                     holding['AVAILABILITY']['DISPLAY_CALL_NO']
         else:
+            if holding['LIBRARY_NAME'] == 'HI':
+                # check for eresource link on the bib linked to this holding
+                print get_himmelfarb_bib_and_link(holding['MFHD_ID'])
+                # this works, now how do you update this LINK856U of the holding?
+                #holding.update({['ELECTRONIC_DATA']: 
+                                 # get_himmelfarb_bib_and_link(holding['MFHD_ID'])})
             holding.update({'ELECTRONIC_DATA':
                             get_electronic_data(holding['MFHD_ID']),
                             'AVAILABILITY':
@@ -795,6 +801,45 @@ WHERE mfhd_master.mfhd_id=%s"""
     return {'marc852': marc852, 'marc856list': marc856,
             'marc866list': marc866}
 
+def get_himmelfarb_bib_and_link(mfhdid):
+# Get the bibid of the bib record associated with a Himmelfarb holding,
+# then call get_himmelfarb_linkonbib to get the eresource link, if any,
+# from Himmelfarb bib record.
+        query = """
+        SELECT 
+        BIB_MASTER.BIB_ID
+        FROM 
+        BIB_MFHD INNER JOIN BIB_MASTER ON BIB_MFHD.BIB_ID = BIB_MASTER.BIB_ID
+        WHERE 
+        BIB_MFHD.MFHD_ID= %s"""
+        cursor = connection.cursor()
+        cursor.execute(query, [mfhdid])
+        result = _make_dict(cursor, first=True)
+        himmelfarb_bib = result['BIB_ID']
+        link = get_himmelfarb_linkonbib(himmelfarb_bib)
+        if link:
+            return link
+        else:
+            return []
+
+def get_himmelfarb_linkonbib(bibid):
+# Himmelfarb may have a second 856 on the bib record with a link.
+# This GetMarcField retrieves that specific link. The bibid param
+# should be the bibid of the bib owned by library 'HI'
+        query = """
+        SELECT
+        wrlcdb.GetMarcField(%s,0,0,'856','','u',2) as LINK856U
+        FROM BIB_MASTER
+        WHERE 
+        BIB_MASTER.BIB_ID= %s"""
+        cursor = connection.cursor()
+        cursor.execute(query, [bibid]*2)
+        bib856result = _make_dict(cursor, first=True)
+        if bib856result:
+            link = bib856result.values()
+            return link[0][9:]
+        else:
+            return []
 
 def get_marc856(marc856_field):
     marc856 = []
