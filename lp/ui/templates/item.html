@@ -296,7 +296,7 @@
                                    {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' and not link.govt_doc%}
                                        <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                        <br />
-                                       {% if not 'proxy' in link.u and not 'serialssolutions' in link.u %}
+                                       {% if not 'proxy' in link.u and not 'serialssolutions' in link.u and 'eblib' not in link.u %}
                                             Available to all
                                        {% else %}
                                             <i class="fa fa-lock"></i>
@@ -401,7 +401,7 @@
                             {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not holding.ELECTRONIC_DATA.govt_doc%}
                                 <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                 <br />
-                                {% if not 'proxy' in holding.ELECTRONIC_DATA.LINK856U and not 'serialssolutions' in holding.ELECTRONIC_DATA.LINK856U %}
+                                {% if not 'proxy' in holding.ELECTRONIC_DATA.LINK856U and not 'serialssolutions' in holding.ELECTRONIC_DATA.LINK856U and not 'eblib' in holding.ELECTRONIC_DATA.LINK856U %}
                                     Available to all 
                                 {% else %}
                                     <i class="fa fa-lock"></i>
@@ -426,7 +426,7 @@
                 {% if holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not link.govt_doc%}
                         <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                         <br />
-                        {% if not 'proxy' in link.u and not 'serialssolutions' in link.u %}
+                        {% if not 'proxy' in link.u and not 'serialssolutions' in link.u and not 'eblib' in link.u %}
                             Available to all 
                         {% else %}
                             <i class="fa fa-lock"></i>
@@ -444,6 +444,8 @@
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
+                        {% elif not holding.ITEM and  holding.LIBRARY_NAME == 'HI' %}
+                        <span>himmelfarb</span>
                         {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME in 'WRLC' %}
                             <span class='off-site'>Off-site </span>
                         {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
