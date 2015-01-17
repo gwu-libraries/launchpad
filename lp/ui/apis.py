@@ -161,7 +161,6 @@ def hathitrust(num, num_type):
     except:
         return {}
     params = '%s/%s' % (num_type, num)
-    # url = 'http://catalog.hathitrust.org/api/volumes/brief/OCLC/10055598.json' 
     url = 'http://catalog.hathitrust.org/api/volumes/brief/%s.json' % params
     try:
         response = urlopen(url)
@@ -173,7 +172,7 @@ def hathitrust(num, num_type):
         return {}
 
 def make_hathi_holding(url,fromRecord):
-# use library name IA
+    # use library name IA
     holding = {
         'LIBRARY_NAME': 'IA',
         'LOCATION_NAME': 'HT',
