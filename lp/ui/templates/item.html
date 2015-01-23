@@ -445,8 +445,6 @@
                                     {% endif %}
                                 {% endif %}
                             {% endfor %}
-                        {% elif not holding.ITEM and  holding.LIBRARY_NAME == 'HI' %}
-                        <span>himmelfarb</span>
                         {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME in 'WRLC' %}
                             <span class='off-site'>Off-site </span>
                         {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
