@@ -484,18 +484,16 @@ ORDER BY library.library_name"""
         else:
             if holding['LIBRARY_NAME'] == 'HI':
                 # check for eresource link on the bib linked to this holding
-                # and override the generic Himmelfarb location statement.
                 HI_link = get_himmelfarb_bib_and_link(holding['MFHD_ID'])
             holding.update({'ELECTRONIC_DATA':
                             get_electronic_data(holding['MFHD_ID']),
                             'AVAILABILITY':
                             get_items(holding['MFHD_ID'], first=True)})
             holding.update({'MFHD_DATA': get_mfhd_data(holding['MFHD_ID']),
-                            'ITEMS': get_items(holding['MFHD_ID']),
-                            'LOCATION_DISPLAY_NAME':'Online Resources'})
+                            'ITEMS': get_items(holding['MFHD_ID'])}),
             if HI_link and not holding['ELECTRONIC_DATA']['LINK856U']:
-                holding['ELECTRONIC_DATA']['LINK856U'] = HI_link
-                HI_link = ''
+                    holding['ELECTRONIC_DATA']['LINK856U'] = HI_link
+                    HI_link = ''
         if holding.get('ITEMS', []):
             i = 0
             for item in holding['ITEMS']:
