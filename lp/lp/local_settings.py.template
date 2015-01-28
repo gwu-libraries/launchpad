@@ -134,6 +134,8 @@ SCREAMING_LOCATIONS = [
     ('Stacks', 'stacks'),
     ('UNBOUND', 'unbound'),
     ('VAN NESS', 'Van Ness'),
+    ('INTERNET', 'Online'),
+    ('GW Medical: Restricted Circ - Borrowing through ILL only','Restricted Borrowing')
     ]
 
 MAX_ITEMS = 6
