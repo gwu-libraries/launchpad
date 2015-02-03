@@ -36,7 +36,8 @@
     var p = $("#" + name + "-keywords").val();
     if (p == "") return;
 
-    var kw = p.split(" ");
+    var clean = p.replace(/-- /g,"");
+    var kw = clean.split(" ");
     var fieldPrefix = name == "any" ? "" : name + ":";
 
     if (kw.length == 1) {
