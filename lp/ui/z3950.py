@@ -42,15 +42,20 @@ class Z3950Catalog():
                 holdmeta['url'] = ''
                 holdmeta['note'] = ''
                 holdmeta['msg'] = ''
+                holdmeta['location'] = ''
                 if hasattr(rec[1], 'callNumber'):
                     holdmeta['callnum'] = rec[1].callNumber.rstrip('\x00')
-                else:
-                    holdmeta['callnum'] = ''
-                holdmeta['location'] = rec[1].localLocation.rstrip('\x00')
+                if school == 'GM':
+                    # use temporaryLocation when present
+                    try:
+                        holdmeta['location'] = 'Temp Location:' + rec[1].circulationData[0].temporaryLocation
+                    except:
+                        holdmeta['location'] = rec[1].localLocation.rstrip('\x00')
+                elif school == 'GT':
+                    holdmeta['location'] = rec[1].localLocation.rstrip('\x00')
                 if hasattr(rec[1], 'publicNote') and school == 'GT':
                     status = rec[1].publicNote.rstrip('\x00')
-                    holdmeta['status'] = self.append_leading_year_digits(
-                        status)
+                    holdmeta['status'] = self.append_leading_year_digits(status)
                 if hasattr(rec[1], 'publicNote') and school == 'GM':
                     holdmeta['note'] = rec[1].publicNote.rstrip('\x00')
                 if hasattr(rec[1], 'circulationData'):
