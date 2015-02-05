@@ -29,6 +29,9 @@ class Z3950Catalog():
             raise
 
     def get_holding(self, bibid=None, zoom_record=None, school=''):
+        # This retrieves and parses both GM and GT z3950 responses, which are
+        # from different systems and have different elements. It would be
+        # simpler to have a different method for each school.
         holdings = []
         if bibid and not zoom_record:
             zoom_record = self.zoom_record(bibid)
@@ -46,35 +49,31 @@ class Z3950Catalog():
                 if hasattr(rec[1], 'callNumber'):
                     holdmeta['callnum'] = rec[1].callNumber.rstrip('\x00')
                 if school == 'GM':
-                    # use temporaryLocation when present
+                    # use temporaryLocation when present 
                     try:
                         holdmeta['location'] = 'Temp Location:' + rec[1].circulationData[0].temporaryLocation
                     except:
                         holdmeta['location'] = rec[1].localLocation.rstrip('\x00')
+                    if hasattr(rec[1], 'publicNote'):
+                        holdmeta['note'] = rec[1].publicNote.rstrip('\x00')
                 elif school == 'GT':
                     holdmeta['location'] = rec[1].localLocation.rstrip('\x00')
-                if hasattr(rec[1], 'publicNote') and school == 'GT':
-                    status = rec[1].publicNote.rstrip('\x00')
-                    holdmeta['status'] = self.append_leading_year_digits(status)
-                if hasattr(rec[1], 'publicNote') and school == 'GM':
-                    holdmeta['note'] = rec[1].publicNote.rstrip('\x00')
+                    if hasattr(rec[1], 'publicNote'):
+                        status = rec[1].publicNote.rstrip('\x00')
+                        holdmeta['status'] = self.append_leading_year_digits(status)
                 if hasattr(rec[1], 'circulationData'):
-                    holdmeta['status'] = rec[1].circulationData[0].availableNow
-                if holdmeta['status'] is True or\
-                        holdmeta['status'].strip() == 'AVAILABLE':
-                    holdmeta['status'] = 'Not Charged'
-                    holdmeta['item_status'] = 1
-                elif holdmeta['status'] is False or\
-                        holdmeta['status'] == ' DUE':
-                    if rec[1].circulationData[0].availablityDate:
+                    try:
+                        holdmeta['status'] = rec[1].circulationData[0].availableNow
                         date_obj = datetime.strptime(rec[1].circulationData[0]
-                                                     .availablityDate,
-                                                     '%Y-%m-%d %H:%M:%S')
+                                                    .availablityDate,
+                                                    '%Y-%m-%d %H:%M:%S')
                         holdmeta['status'] = date_obj.strftime("DUE %m-%d-%Y")
                         holdmeta['item_status'] = 0
-                    else:
-                        holdmeta['status'] = 'Charged'
-                        holdmeta['item_status'] = 0
+                    except:
+                        holdmeta['status'] = 'Not Charged'
+                if holdmeta['status'] is True or holdmeta['status'].strip() == 'AVAILABLE':
+                    holdmeta['status'] = 'Not Charged'
+                    holdmeta['item_status'] = 1
                 marc = pymarc.record.Record(zoom_record.data.
                                             bibliographicRecord.encoding[1])
                 if marc['856']:
