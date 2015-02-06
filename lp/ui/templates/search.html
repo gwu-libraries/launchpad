@@ -140,13 +140,13 @@
         <!-- temporalsubjectterms (time period), geographiclocations (region), -->
         <!-- and genre. Ok to display, but do not hyperlink.                   -->
         <br>
-        ( <ul class="subjects" itemprop="about">
+         <ul class="subjects" itemprop="about">
             {% for subject in doc.about %}
             <li itemprop="about">
-                {{ subject.name }}
+            {{ subject.name }} <br />
             </li>
             {% endfor %}
-        ) </ul>
+         </ul>
         <br>
         {% endif %}
 
