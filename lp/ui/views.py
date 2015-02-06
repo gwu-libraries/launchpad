@@ -444,6 +444,9 @@ def search(request):
             'Genre,or',
             'Institution,or',
             'Discipline,or',
+            'SubjectTerms,or',
+            'TemporalSubjectTerms,or',
+            'GeographicLocations,or',
         ],
         "ho": "t",
         "light": "t",
@@ -646,7 +649,8 @@ def _reorder_facets(search_results):
     # facets can come back in different order from summon
     # this function makes sure we always display them in the same order
     facets_order = ['Institution', 'Library', 'ContentType', 'Author',
-                    'Discipline', 'Language', 'Genre']
+                    'Discipline', 'SubjectTerms', 'TemporalSubjectTerms', 
+                    'GeographicLocations', 'Genre', 'Language']
     new_facets = []
     for facet_name in facets_order:
         for facet in search_results['facets']:
@@ -672,6 +676,14 @@ def _format_facets(request, search_results):
 
         # add spaces to the facet name: "ContentType" -> "Content Type"
         f['name'] = re.sub(r'(.)([A-Z])', r'\1 \2', f['name'])
+
+        # convert certain API facet names -> friendly labels
+        if f['name'] == 'Subject Terms':
+            f['name'] = 'Subjects'
+        if f['name'] == 'Temporal Subject Terms':
+            f['name'] = 'Time Period'
+        if f['name'] == 'Geographic Locations':
+            f['name'] = 'Region'
 
     return search_results
 
