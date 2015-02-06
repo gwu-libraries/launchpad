@@ -135,6 +135,21 @@
             {{ doc.datePublished }}.
         {% endif %}
 
+        {% if doc.about %}
+        <!-- These are actually a combination of subjectterms (subjects), and  -->
+        <!-- temporalsubjectterms (time period), geographiclocations (region), -->
+        <!-- and genre. Ok to display, but do not hyperlink.                   -->
+        <br>
+        ( <ul class="subjects" itemprop="about">
+            {% for subject in doc.about %}
+            <li itemprop="about">
+                {{ subject.name }}
+            </li>
+            {% endfor %}
+        ) </ul>
+        <br>
+        {% endif %}
+
         <ul itemprop="offers" class="offers">
           {% for offer in doc.offers %}
           <li class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
