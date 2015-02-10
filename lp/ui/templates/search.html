@@ -71,6 +71,19 @@
       <li>try more general keywords</li>
       <li>try fewer keywords</li>
     </ul>
+    If you are searching for a subject heading:
+    <ul>
+        <li>No matching results may indicate the subject heading is a combination of  
+        general subject terms and sub-heading(s)</li>
+        <li>use the advanced search form, or the refine facets to search for the
+        sub-headings. Examples:
+        <ul>
+            <li>Time period -- e.g., 20th century</li>
+            <li>Region -- e.g., Iran </li>
+            <li>Genre -- e.g., biography </li>
+        </ul>
+        </li>
+    </ul>
 
     If you continue to have trouble please feel free to  
     <a href="http://library.gwu.edu/help/reference/ask-a-librarian">ask a
@@ -143,8 +156,9 @@
          <ul class="subjects" itemprop="about">
             {% for subject in doc.about %}
             <li itemprop="about">
-            {{ subject.name }} <br />
+            <a href="{{ subject.url }}">{{ subject.name }}</a> 
             </li>
+            {% if not forloop.last %}<br /> {% endif %}
             {% endfor %}
          </ul>
         <br>
