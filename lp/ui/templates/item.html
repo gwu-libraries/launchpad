@@ -287,6 +287,9 @@
                            {% if bib.FINDING_AID %}
                                <br /><a href="{{bib.FINDING_AID}}" target="eresourcewindow">View the Finding Aid</a>
                            {% endif %}
+                           {% if item.LIBRARY_FULL_NAME == 'Hathi Trust' %}
+                                <br /><a href="http://catalog.hathitrust.org/Record/{{ item.DISPLAY_CALL_NO }}" target="hathiwindow">View the Catalog record</a>
+                           {% endif %}
                     </td>
                        <td {% if holding.MFHD_DATA.marc856list|remove_empty_links|length > 0 and not item.eligible %} colspan="2" {% endif %}>
                            {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list and not bib.FINDING_AID %}
