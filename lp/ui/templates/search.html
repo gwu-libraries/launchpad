@@ -7,7 +7,7 @@
 
     <section class="search row pagination">
         <form id="search" class="" action="{% url "search" %}" method="get">
-            <input id="q" style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}" size="60"></input>
+            <input aria-label="Search" id="q" style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}" size="60"></input>
             <ul>
                 {% if prev_page_range %}
                 <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
@@ -26,7 +26,7 @@
               /
               <a href="{% url "tips" %}">Search Tips</a>
               /
-              Online Resources <input id="online" name="online" type="checkbox" {% if online %}checked{% endif %}>
+              Online Resources <input aria-label="Online resources only" id="online" name="online" type="checkbox" {% if online %}checked{% endif %}>
             </div>
 
             {% for facet in original_facets %}
@@ -96,7 +96,7 @@
     <article id="{{ doc.id }}" class="search-result clearfix" itemscope itemtype="{{ doc.type }}">
         {% if doc.thumbnailUrl %}
         <a href="{{ doc.id }}">
-            <img itemprop="image" class="cover-thumbnail" src={{ doc.thumbnailUrl }}>
+            <img itemprop="image" alt="cover image" class="cover-thumbnail" src={{ doc.thumbnailUrl }}>
         </a>
         {% endif %}
 
@@ -218,7 +218,7 @@
 
     <section class="search row pagination">
         <form class="span12" action="{% url "search" %}" method="get">
-            <input style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
+            <input aria-label="Search" style="float: left; margin-right: 10px;" name="q" type="text" placeholder="Search" value="{{ q }}"></input>
             <ul>
                 {% if prev_page_range %}
                 <li><a href="{% url "search" %}?{{ prev_page_range }}">&#x00ab;</a></li>
