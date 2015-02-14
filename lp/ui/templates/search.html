@@ -156,7 +156,7 @@
          <ul class="subjects" itemprop="about">
             {% for subject in doc.about %}
             <li itemprop="about">
-            <a href="{{ subject.url }}">{{ subject.name }}</a> 
+            {{ subject.name }} 
             </li>
             {% if not forloop.last %}<br /> {% endif %}
             {% endfor %}
