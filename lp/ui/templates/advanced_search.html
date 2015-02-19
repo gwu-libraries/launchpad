@@ -42,7 +42,8 @@
     var p = $("#" + name + "-keywords").val();
     if (p == "") return;
 
-    var clean = p.replace(/-- /g,"");
+    var cleandash = p.replace(/-- /g,"");
+    var clean = cleandash.replace(/"/g,"");
     var kw = clean.split(" ");
     var fieldPrefix = name == "any" ? "" : name + ":";
 
