@@ -173,6 +173,7 @@ def hathitrust(num, num_type):
 
 def make_hathi_holding(url,fromRecord):
     # use library name IA
+    # add dummy elements to conform with holding model
     holding = {
         'LIBRARY_NAME': 'IA',
         'LOCATION_NAME': 'HT',
@@ -197,7 +198,7 @@ def make_hathi_holding(url,fromRecord):
             "ELIGIBLE": False,
             "TRIMMED_LOCATION_DISPLAY_NAME": "Hathi Trust Digital Library",
             "CHRON": None,
-            "DISPLAY_CALL_NO": "Record " + fromRecord,
+            "DISPLAY_CALL_NO": fromRecord,
             "BIB_ID": None},
         ],
         'ELIGIBLE': False,
