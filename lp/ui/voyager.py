@@ -1358,7 +1358,8 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
         m852 = ''
     res = []
     if len(links) == 0:
-        if bib_data['LINK']:
+        # follow this, but ignore links on a George Mason bib record
+        if bib_data['LINK'] and school != 'GM':
             if '$u' in bib_data['LINK']:
                 ind = bib_data['LINK'].find('$u')
                 bib_data['LINK'] = bib_data['LINK'][ind + 2:]
