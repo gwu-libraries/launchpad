@@ -398,11 +398,12 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U  %}
+                        {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U %}
                             {% if holding.ELECTRONIC_DATA.LINK8563 %}
                                 <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
                             {% endif %}
-                            {% if holding.LIBRARY_NAME != 'HI' and holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not holding.ELECTRONIC_DATA.govt_doc%}
+                            {% if holding.LIBRARY_NAME != 'HI' and holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not holding.ELECTRONIC_DATA.govt_doc and not 'FOUND' in holding.ELECTRONIC_DATA_LINK856U %}
+                            {% if 'FOUND' not in holding.ELECTRONIC_DATA.LINK856U %}   
                                 <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                 <br />
                                 {% if not 'proxy' in holding.ELECTRONIC_DATA.LINK856U and not 'serialssolutions' in holding.ELECTRONIC_DATA.LINK856U and not 'eblib' in holding.ELECTRONIC_DATA.LINK856U %}
@@ -411,6 +412,7 @@
                                     <i class="fa fa-lock"></i>
                                     {{holding.LIBRARY_NAME}} only
                                 {% endif %}
+                            {% endif %}
                             {% else %}
                                 {% if holding.DISPLAY_CALL_NO in audio_tags %}
                                     <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Listen online </button>
