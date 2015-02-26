@@ -136,6 +136,5 @@ class SummonTests(unittest.TestCase):
             fq='SourceType:("Library Catalog")')
         self.assertEqual(len(search['results']), 1)
         i = search['results'][0]
-        self.assertEqual(len(i['offers']), 2)
-        self.assertEqual(i['offers'][0]['serialNumber'], 'm1240674')
+        self.assertEqual(len(i['offers']), 1)
         self.assertEqual(i['offers'][1]['serialNumber'], 'b27682912')
