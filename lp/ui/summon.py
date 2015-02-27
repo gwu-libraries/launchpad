@@ -121,6 +121,7 @@ class Summon():
                     'name': subject,
                     'url': reverse('search') + '?' + urlencode({'q': q})
                 })
+                i['about'] = sorted(i['about'])
 
         if doc.get('PublicationYear'):
             i['datePublished'] = doc['PublicationYear'][0]

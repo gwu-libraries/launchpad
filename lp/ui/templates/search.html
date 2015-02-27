@@ -148,22 +148,6 @@
             {{ doc.datePublished }}.
         {% endif %}
 
-        {% if doc.about %}
-        <!-- These are actually a combination of subjectterms (subjects), and  -->
-        <!-- temporalsubjectterms (time period), geographiclocations (region), -->
-        <!-- and genre. Ok to display, but do not hyperlink.                   -->
-        <br>
-         <ul class="subjects" itemprop="about">
-            {% for subject in doc.about %}
-            <li itemprop="about">
-            {{ subject.name }} 
-            </li>
-            {% if not forloop.last %}<br /> {% endif %}
-            {% endfor %}
-         </ul>
-        <br>
-        {% endif %}
-
         <ul itemprop="offers" class="offers">
           {% for offer in doc.offers %}
           <li class="offer" id="offer-{{ offer.serialNumber }}" itemtype="Offer" itemscope>
@@ -188,6 +172,20 @@
           </li>
           {% endfor %}
         </ul>
+        {% if doc.about %}
+        <!-- These are actually a combination of subjectterms (subjects), and  -->
+        <!-- temporalsubjectterms (time period), geographiclocations (region), -->
+        <!-- and genre. Ok to display, but do not hyperlink.                   -->
+         <ul class="subjects" itemprop="about">
+            {% for subject in doc.about %}
+            <li itemprop="about">
+            <i class="fa fa-angle-double-right"></i> {{ subject.name }} 
+            </li>
+            {% if not forloop.last %}<br /> {% endif %}
+            {% endfor %}
+         </ul>
+        <br>
+        {% endif %}
 
     </article>
     {% endfor %}

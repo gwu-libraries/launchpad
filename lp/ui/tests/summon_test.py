@@ -45,12 +45,12 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['author'][2]['url'], '/search?q=Author%3A%22Atkins%2C+Helen+Barsky%22')
 
         self.assertEqual(len(i['about']), 3)
-        self.assertEqual(i['about'][0]['name'], 'Science -- Abstracting and indexing')
-        self.assertEqual(i['about'][0]['url'], '/search?q=SubjectTerms%3A%22Science+--+Abstracting+and+indexing%22')
+        self.assertEqual(i['about'][2]['name'], 'Science -- Abstracting and indexing')
+        self.assertEqual(i['about'][2]['url'], '/search?q=SubjectTerms%3A%22Science+--+Abstracting+and+indexing%22')
         self.assertEqual(i['about'][1]['name'], 'Indexing')
         self.assertEqual(i['about'][1]['url'], '/search?q=SubjectTerms%3A%22Indexing%22')
-        self.assertEqual(i['about'][2]['name'], 'Garfield, Eugene')
-        self.assertEqual(i['about'][2]['url'], '/search?q=SubjectTerms%3A%22Garfield%2C+Eugene%22')
+        self.assertEqual(i['about'][0]['name'], 'Garfield, Eugene')
+        self.assertEqual(i['about'][0]['url'], '/search?q=SubjectTerms%3A%22Garfield%2C+Eugene%22')
 
         self.assertEqual(i['publisher']['name'], 'Information Today')
         self.assertEqual(i['publisher']['address'], 'Medford, N.J')
@@ -136,6 +136,5 @@ class SummonTests(unittest.TestCase):
             fq='SourceType:("Library Catalog")')
         self.assertEqual(len(search['results']), 1)
         i = search['results'][0]
-        self.assertEqual(len(i['offers']), 2)
-        self.assertEqual(i['offers'][0]['serialNumber'], 'm1240674')
-        self.assertEqual(i['offers'][1]['serialNumber'], 'b27682912')
+        self.assertEqual(len(i['offers']), 1)
+        self.assertEqual(i['offers'][0]['serialNumber'], 'b27682912')
