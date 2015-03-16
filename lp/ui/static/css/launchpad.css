@@ -341,6 +341,10 @@ button, .button {
   margin-top: -.1em;
 }
 
+.button-lg {
+  font-size: 1em;
+}
+
 #search-results .search-result-title-alt, #search-results .search-result-author-alt {font-size: 1.6em;} 
 
 #facets li {color:#555; font-size:.814em;}
