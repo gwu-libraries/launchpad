@@ -307,7 +307,7 @@
                                        {% endif %}
                                    {% else %}
                                        {% if item.DISPLAY_CALL_NO in audio_tags %}
-                                           <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-headphone"></i></button>
+                                           <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-headphones"></i></button>
                                        {% elif item.DISPLAY_CALL_NO in video_tags %}
                                            <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-film"></i></button>
                                        {% elif 'RushPrintRequest' in link.u %}
@@ -440,7 +440,7 @@
                         {% endif %}
                                 {% else %}
                                     {% if holding.DISPLAY_CALL_NO in audio_tags %}
-                                        <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-headphone"></i></button>
+                                        <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-headphones"></i></button>
                                     {% elif holding.DISPLAY_CALL_NO in video_tags %}
                                         <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-film"></i></button>
                                     {% elif not link.bound_item%}
