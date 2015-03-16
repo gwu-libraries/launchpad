@@ -148,7 +148,7 @@ td.field-label {
 
 
 .smallbuttons{
-    font-size: medium;
+    /*font-size: medium;*/
     float: left;
     margin-right: 0.5em;*
 }
@@ -336,7 +336,6 @@ button, .button {
   font-size: .8em;
   line-height: 1em;
   padding: .4em .4em .3em;
-  /* background: #4081AF; Libsite7 color */
   background: #0088cc;
   border-radius: .2em;
   margin-top: -.2em;
