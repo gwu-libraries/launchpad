@@ -268,7 +268,7 @@
                         <div class="linkresolverlist">
                         {% for link in holding.LinkResolverData %}
                             <div class="linkresolverresource">
-                                <button class="smallbuttons" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Online  <i class="fa fa-book"></i></button>
+                                <button class="smallbuttons" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Full text online</button>
                                     <div class="linkresolverdata">
                                         {% if link.start %}
                                         from <span class="linkresolverdates">{{link.start}}</span>
@@ -307,15 +307,15 @@
                                        {% endif %}
                                    {% else %}
                                        {% if item.DISPLAY_CALL_NO in audio_tags %}
-                                           <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-headphones"></i></button>
+                                           <button onclick="window.open('{{link.u}}')" > Listen online </button>
                                        {% elif item.DISPLAY_CALL_NO in video_tags %}
-                                           <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-film"></i></button>
+                                           <button onclick="window.open('{{link.u}}')" > Watch online </button>
                                        {% elif 'RushPrintRequest' in link.u %}
                                            <!-- DDA request form link (entry = form element id)-->
                                            {% assign_settings_value "DDA_URL" as DDA %}
                                            <a href="{{DDA}}&entry_994442820=ID:{{bib.BIB_ID}} TITLE:{{bib.TITLE}} ISBN:{{bib.ISBN}}" target="DDArequestwindow">Request print edition</a><i class="fa fa-external-link"></i>
                                        {% elif not link.bound_item%}
-                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}>Online <i class="fa fa-book"></i></button>
+                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}> Full text online </button>
                                        {% else %}
                                             <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><i class="fa fa-external-link"></i>
                                        {% endif %}
@@ -415,11 +415,11 @@
                             {% endif %}
                             {% else %}
                                 {% if holding.DISPLAY_CALL_NO in audio_tags %}
-                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" >Online <i class="fa fa-headphones"></i></button>
+                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Listen online </button>
                                 {% elif holding.DISPLAY_CALL_NO in video_tags %}
-                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" >Online <i class="fa fa-film"></i></button>
+                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" > Watch online </button>
                                 {% elif not holding.ELECTRONIC_DATA.bound_item%}
-                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}>Online <i class="fa fa-book"></i></button>
+                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}> Full text online </button>
                                 {% else %}
                                     <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Bound with item</a><i class="fa fa-external-link"></i>
                                 {% endif %}
@@ -440,11 +440,11 @@
                         {% endif %}
                                 {% else %}
                                     {% if holding.DISPLAY_CALL_NO in audio_tags %}
-                                        <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-headphones"></i></button>
+                                        <button onclick="window.open('{{link.u}}')" > Listen online </button>
                                     {% elif holding.DISPLAY_CALL_NO in video_tags %}
-                                        <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-film"></i></button>
+                                        <button onclick="window.open('{{link.u}}')" > Watch online </button>
                                     {% elif not link.bound_item%}
-                                        <button onclick="window.open('{{link.u}}')" title={{link.u}}>Online <i class="fa fa-book"></i></button>
+                                        <button onclick="window.open('{{link.u}}')" title={{link.u}}> Full text online </button>
                                     {% else %}
                                         <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><i class="fa fa-external-link"></i>
                                     {% endif %}
