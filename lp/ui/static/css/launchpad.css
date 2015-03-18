@@ -148,7 +148,7 @@ td.field-label {
 
 
 .smallbuttons{
-    font-size: medium;
+    /*font-size: medium;*/
     float: left;
     margin-right: 0.5em;*
 }
@@ -325,6 +325,24 @@ ul.offers {
 
 /* selected link */
 #search-results a:active  {
+}
+
+/* buttons */
+button, .button {
+  border-width: 0px;
+  color: white;
+  box-shadow: none;
+  text-decoration: none;
+  font-size: .8em;
+  line-height: 1em;
+  padding: .3em .4em .3em;
+  background: #0088cc;
+  border-radius: .2em;
+  margin-top: -.1em;
+}
+
+.button-lg {
+  font-size: 1em;
 }
 
 #search-results .search-result-title-alt, #search-results .search-result-author-alt {font-size: 1.6em;} 
