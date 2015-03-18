@@ -225,3 +225,4 @@ SUMMON_SECRET_KEY = "you-will-need-this-to-do-searches"
 
 #DDA Rush Print Request form URL
 DDA_URL = 'https://docs.google.com/forms/d/1pbd5Ge2zCDMtbGW5SgL-TwsE7wzNuCDNpQUlpa2NvcE/viewform?usp=send_form'
+
