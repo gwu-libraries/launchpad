@@ -46,6 +46,7 @@ LIB_LOOKUP = {
     'GA': 'Gallaudet',
     'GM': 'George Mason',
     'GT': 'Georgetown',
+    'GTL': 'Georgetown Law',
     'GW': 'George Washington',
     # HD is Himmelfarb-Dahlgren items jointly held in storage
     'HD': 'Himmelfarb-Dahlgren',
@@ -95,7 +96,7 @@ BOTTOM_LIBS = []
 
 # Eligibility Options
 
-INELIGIBLE_LIBRARIES = ['JB', 'HL', 'HS', 'AL', 'HI']
+INELIGIBLE_LIBRARIES = ['JB', 'HL', 'HS', 'AL', 'HI', 'GTL']
 
 SHARED_LIBRARY_NAMES = ['WR', 'E-Resources', 'E-GovDoc', 'Internet Archive', 'IA']
 
