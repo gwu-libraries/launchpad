@@ -296,9 +296,14 @@
                              <div class="marc856list">
                                {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
                                  <div class="marc856resource">
-                                   {% if holding.LIBRARY_NAME != 'HI' and holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' and not link.govt_doc%}
-                                       <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
-                                       <br />
+                                     {% if holding.LIBRARY_NAME != 'HI' and holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' and not link.govt_doc%}
+                                       {% if 'mrqe' in link.u %}
+                                            <a href="{{link.u}}" target="eresourcewindow">Movie Review</a><i class="fa fa-external-link"></i>
+                                            <br />
+                                       {% else %}
+                                            <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
+                                            <br />
+                                       {% endif %}
                                        {% if not 'proxy' in link.u and not 'serialssolutions' in link.u and 'eblib' not in link.u %}
                                             Available to all
                                        {% else %}
