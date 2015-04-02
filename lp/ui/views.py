@@ -1,6 +1,7 @@
 import datetime
 import logging
 import re
+import time
 import urlparse
 
 import bibjsontools
@@ -12,6 +13,8 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
+
+from requests import HTTPError
 
 from ui import voyager, apis, marc, summon, db
 from ui.sort import libsort, availsort, elecsort, templocsort, \
@@ -486,8 +489,24 @@ def search(request):
     if fmt == "html":
         kwargs['for_template'] = True
 
-    # TODO: catch/retry when there are Summon API errors here?
-    search_results = api.search(q, **kwargs)
+    # catch and retry up to MAX_ATTEMPTS times if we get errors
+    # from the Summon API?
+    retries = 0
+    while True:
+        try:
+            search_results = api.search(q, **kwargs)
+            break
+        except HTTPError as error:
+            logger.error('Summon error: %s', error)
+            retries += 1
+            if retries <= settings.SER_SOL_API_MAX_ATTEMPTS:
+                logger.error('%s retries, sleeping 1s and retrying' % retries)
+                time.sleep(1)
+                continue
+            else:
+                logger.exception('unable to search Summon: %s' % error)
+                return error500(request)
+
     if not raw:
         search_results = _remove_facets(search_results)
         search_results = _reorder_facets(search_results)
