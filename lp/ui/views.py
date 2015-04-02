@@ -1,9 +1,10 @@
-import re
-import logging
 import datetime
+import logging
+import re
 import urlparse
 
 import bibjsontools
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.utils import DatabaseError
@@ -459,7 +460,8 @@ def search(request):
     if online:
         if q:
             q += " AND"
-        q += " lccallnum:('gw electronic' OR 'shared+electronic' OR 'e-resources' OR 'e-govpub' OR 'streaming')"
+        q += " lccallnum:('gw electronic' OR 'shared+electronic'" + \
+            " OR 'e-resources' OR 'e-govpub' OR 'streaming')"
 
     # add selected facets to the query
     for facet in params.getlist('facet'):
@@ -537,7 +539,8 @@ def search(request):
 
         # create links for going to the next set of page results
         next_page_range = prev_page_range = None
-        if page_range_end - 1 < actual_pages and page_range_end - 1 < max_pages:
+        if page_range_end - 1 < actual_pages \
+                and page_range_end - 1 < max_pages:
             page_query['page'] = page_range_end
             next_page_range = page_query.urlencode()
         if page_range_start > page_links:
@@ -649,7 +652,7 @@ def _reorder_facets(search_results):
     # facets can come back in different order from summon
     # this function makes sure we always display them in the same order
     facets_order = ['Institution', 'Library', 'ContentType', 'Author',
-                    'Discipline', 'SubjectTerms', 'TemporalSubjectTerms', 
+                    'Discipline', 'SubjectTerms', 'TemporalSubjectTerms',
                     'GeographicLocations', 'Genre', 'Language']
     new_facets = []
     for facet_name in facets_order:
@@ -687,6 +690,7 @@ def _format_facets(request, search_results):
 
     return search_results
 
+
 def _get_active_facets(request):
     active_facets = []
 
@@ -707,6 +711,7 @@ def _get_active_facets(request):
             "remove_link": "?" + remove_link.urlencode()
         })
     return active_facets
+
 
 def _normalize_facet_name(f_name, fc_name):
     if f_name == 'ContentType':
