@@ -497,14 +497,13 @@ def search(request):
             search_results = api.search(q, **kwargs)
             break
         except HTTPError as error:
-            logger.error('Summon error: %s', error)
             retries += 1
             if retries <= settings.SER_SOL_API_MAX_ATTEMPTS:
-                logger.error('%s retries, sleeping 1s and retrying' % retries)
                 time.sleep(1)
                 continue
             else:
-                logger.exception('unable to search Summon: %s' % error)
+                logger.exception('unable to search Summon (3 tries): %s' %
+                                 error)
                 return error500(request)
 
     if not raw:
