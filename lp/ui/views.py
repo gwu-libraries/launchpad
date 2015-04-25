@@ -54,7 +54,6 @@ def citation_json(request):
     return bibjsontools.from_openurl(url) if url else None
 
 
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item(request, bibid):
     bib = None
     try:
@@ -128,7 +127,6 @@ def _date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
 
 
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item_json(request, bibid, z3950='False', school=None):
     try:
         bib_data = voyager.get_bib_data(bibid)
@@ -147,7 +145,6 @@ def item_json(request, bibid, z3950='False', school=None):
         return error500(request)
 
 
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def item_marc(request, bibid):
     rec = voyager.get_marc_blob(bibid)
     if not rec:
@@ -156,7 +153,6 @@ def item_marc(request, bibid):
     return HttpResponse(rec.as_json(indent=2), content_type='application/json')
 
 
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def non_wrlc_item(request, num, num_type):
     bib = apis.get_bib_data(num=num, num_type=num_type)
     if not bib:
@@ -192,7 +188,6 @@ def non_wrlc_item(request, num, num_type):
                   })
 
 
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gtitem(request, gtbibid):
     try:
         bibid = db.get_bibid_from_gtid(gtbibid)
@@ -234,7 +229,6 @@ def gtitem(request, gtbibid):
         return error500(request)
 
 
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gtitem_json(request, gtbibid):
     try:
         bibid = db.get_bibid_from_gtid(gtbibid)
@@ -286,7 +280,6 @@ def unicode_data(bib_data):
     return bib_encoded
 
 
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gmitem(request, gmbibid):
     try:
         bibid = db.get_bibid_from_gmid(gmbibid)
@@ -328,7 +321,6 @@ def gmitem(request, gmbibid):
         return error500(request)
 
 
-@cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
 def gmitem_json(request, gmbibid):
     try:
         bibid = voyager.get_bibid_from_gmid(gmbibid)
