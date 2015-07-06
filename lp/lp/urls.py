@@ -9,6 +9,7 @@ urlpatterns = patterns(
     'ui.views',
     url(r'^$', 'home', name='home'),
     url(r'^catalog/$', 'home', name='catalog'),
+    url(r'^item/$', 'home', name='catalog'),
     url(r'^item/(?P<bibid>\d{2,8})$', 'item', name='item'),
     url(r'^item/(?P<bibid>\d{2,8}).json$', 'item_json', name='item_json'),
     url(r'^item/(?P<bibid>\d{2,8})/marc.json$', 'item_marc', name='item_marc'),
