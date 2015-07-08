@@ -73,6 +73,8 @@ def cjk_info(value):
             cjk['AUTHOR'] = val
         elif field.startswith('245'):
             cjk['TITLE'] = val
+        elif field.startswith('250'):
+            cjk['EDITION'] = val
         elif field.startswith('260'):
             cjk['IMPRINT'] = val
         elif field.startswith('600'):
