@@ -117,9 +117,12 @@
                     {% endif %}
                     </span><br />
                 {% endif %}
-
-                {% if bib.EDITION %}
-                    <span class="edition">{{ bib.EDITION }}.</span>
+                {% if bib.CJK_INFO.EDITION %}
+                    <span class="edition">{{ bib.CJK_INFO.EDITION }}
+                {% else %}
+                    {% if bib.EDITION %}
+                        <span class="edition">{{ bib.EDITION }}.</span>
+                    {% endif %}
                 {% endif %}
                 <span class="imprint">
                     {% if bib.CJK_INFO.IMPRINT %}
@@ -300,6 +303,8 @@
                                        {% if 'mrqe' in link.u %}
                                             <a href="{{link.u}}" target="eresourcewindow">Movie Review</a><i class="fa fa-external-link"></i>
                                             <br />
+                                       {% elif 'endowment' in link.u %}
+                                            <br />
                                        {% else %}
                                             <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                             <br />
@@ -408,7 +413,7 @@
                                 <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
                             {% endif %}
                             {% if holding.LIBRARY_NAME != 'HI' and holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not holding.ELECTRONIC_DATA.govt_doc and not 'FOUND' in holding.ELECTRONIC_DATA_LINK856U %}
-                            {% if 'FOUND' not in holding.ELECTRONIC_DATA.LINK856U %}   
+                            {% if 'FOUND' not in holding.ELECTRONIC_DATA.LINK856U and 'endowment' not in holding.ELECTRONIC_DATA.LINK856U %}   
                                 <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
                                 <br />
                                 {% if not 'proxy' in holding.ELECTRONIC_DATA.LINK856U and not 'serialssolutions' in holding.ELECTRONIC_DATA.LINK856U and not 'eblib' in holding.ELECTRONIC_DATA.LINK856U %}
