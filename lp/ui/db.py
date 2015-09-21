@@ -524,7 +524,8 @@ def _get_offers_z3950(id, library):
                          id, library, h)
 
         # some locations have a weird period before the name
-        o['availabilityAtOrFrom'] = o['availabilityAtOrFrom'].lstrip('.')
+        o['availabilityAtOrFrom'] = o.get('availabilityAtOrFrom',
+                                          '').lstrip('.')
 
         offers.append(o)
 
