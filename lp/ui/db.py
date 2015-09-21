@@ -403,7 +403,9 @@ def _get_offers(bibid):
     for row in cursor.fetchall():
         seller = settings.LIB_LOOKUP.get(row[10], '?')
         desc = row[1] or 'Available'
-        if row[9] == '2382-12-31' or (row[9] == None and row[11] == 'WRLC Shared Collections Facility'):
+        if row[9] == '2382-12-31' or \
+                (row[9] is None and
+                 row[11] == 'WRLC Shared Collections Facility'):
             desc = 'Off Site'
         if desc == 'Not Charged':
             desc = 'Available'
@@ -600,7 +602,7 @@ def _normalize_location(location):
     if parts:
         tmp = parts.pop()
         if tmp == "GW Law" or tmp == "GW Medical":
-            norm_location = "%s: %s" % (tmp,norm_location)
+            norm_location = "%s: %s" % (tmp, norm_location)
     return norm_location
 
 

@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import re
 import time
@@ -11,7 +12,6 @@ from django.core.urlresolvers import reverse
 from django.db.utils import DatabaseError
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
-from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 
 from requests import HTTPError

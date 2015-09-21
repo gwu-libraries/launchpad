@@ -1,3 +1,4 @@
+import json
 from lxml import etree
 
 from urllib2 import urlopen
@@ -5,7 +6,6 @@ from urllib2 import urlopen
 from pymarc import marcxml
 
 from django.conf import settings
-from django.utils import simplejson as json
 
 from ui.templatetags.launchpad_extras import clean_isbn
 
@@ -13,7 +13,8 @@ from ui.templatetags.launchpad_extras import clean_isbn
 def get_bib_data(num, num_type):
     for api in settings.API_LIST:
         bib = globals()[api['name']](num=num, num_type=num_type,
-            url=api.get('url', ''), key=api.get('key', ''))
+                                     url=api.get('url', ''),
+                                     key=api.get('key', ''))
         if bib:
             return bib
     return None
@@ -114,24 +115,24 @@ def make_openlib_holding(book):
             "marc866list": [],
             "marc856list": [
                 {"3": "",
-                "z": "",
-                "u": ""}],
+                 "z": "",
+                 "u": ""}],
             "marc852": ""
         },
         'MFHD_ID': None,
         'ITEMS': [
             {'ITEM_ENUM': None,
-            'ITEM_STATUS': None,
-            'TEMPLOCATION': None,
-            "ITEM_STATUS_DESC": None,
-            "ITEM_ID": 0,
-            "PERMLOCATION": None,
-            "LIBRARY_FULL_NAME": "Internet Archive",
-            "ELIGIBLE": False,
-            "TRIMMED_LOCATION_DISPLAY_NAME": "Open Library",
-            "CHRON": None,
-            "DISPLAY_CALL_NO": None,
-            "BIB_ID": None},
+             'ITEM_STATUS': None,
+             'TEMPLOCATION': None,
+             "ITEM_STATUS_DESC": None,
+             "ITEM_ID": 0,
+             "PERMLOCATION": None,
+             "LIBRARY_FULL_NAME": "Internet Archive",
+             "ELIGIBLE": False,
+             "TRIMMED_LOCATION_DISPLAY_NAME": "Open Library",
+             "CHRON": None,
+             "DISPLAY_CALL_NO": None,
+             "BIB_ID": None},
         ],
         'ELIGIBLE': False,
         'LIBRARY_FULL_NAME': 'Internet Archive',
@@ -142,12 +143,13 @@ def make_openlib_holding(book):
         'AVAILABILITY': {},
         'DISPLAY_CALL_NO': None,
         'BIB_ID': None,
-        }
+    }
     if book.keys():
         holding['ITEMS'][0]['DISPLAY_CALL_NO'] = \
             book.get('identifiers', {}).get('openlibrary', [])[0]
         holding['MFHD_DATA']['marc856list'][0]['u'] = book.get('url', '')
     return holding
+
 
 def hathitrust(num, num_type):
     # ensure we're dealing with a proper identifier type and value
@@ -167,11 +169,13 @@ def hathitrust(num, num_type):
         json_data = json.loads(response.read())
         for item in json_data.get('items', []):
             if item.get('usRightsString', '') == 'Full view':
-                return make_hathi_holding(item.get('itemURL',''),item.get('fromRecord','')) 
+                return make_hathi_holding(item.get('itemURL', ''),
+                                          item.get('fromRecord', ''))
     except:
         return {}
 
-def make_hathi_holding(url,fromRecord):
+
+def make_hathi_holding(url, fromRecord):
     # use library name IA
     # add dummy elements to conform with holding model
     holding = {
@@ -182,24 +186,24 @@ def make_hathi_holding(url,fromRecord):
             "marc866list": [],
             "marc856list": [
                 {"3": "",
-                "z": "",
-                "u": url}],
+                 "z": "",
+                 "u": url}],
             "marc852": ""
         },
         'MFHD_ID': None,
         'ITEMS': [
             {'ITEM_ENUM': None,
-            'ITEM_STATUS': None,
-            'TEMPLOCATION': None,
-            "ITEM_STATUS_DESC": None,
-            "ITEM_ID": 0,
-            "PERMLOCATION": None,
-            "LIBRARY_FULL_NAME": "Hathi Trust",
-            "ELIGIBLE": False,
-            "TRIMMED_LOCATION_DISPLAY_NAME": "Hathi Trust Digital Library",
-            "CHRON": None,
-            "DISPLAY_CALL_NO": fromRecord,
-            "BIB_ID": None},
+             'ITEM_STATUS': None,
+             'TEMPLOCATION': None,
+             "ITEM_STATUS_DESC": None,
+             "ITEM_ID": 0,
+             "PERMLOCATION": None,
+             "LIBRARY_FULL_NAME": "Hathi Trust",
+             "ELIGIBLE": False,
+             "TRIMMED_LOCATION_DISPLAY_NAME": "Hathi Trust Digital Library",
+             "CHRON": None,
+             "DISPLAY_CALL_NO": fromRecord,
+             "BIB_ID": None},
         ],
         'ELIGIBLE': False,
         'LIBRARY_FULL_NAME': 'Hathi Trust',
@@ -210,8 +214,9 @@ def make_hathi_holding(url,fromRecord):
         'AVAILABILITY': {},
         'DISPLAY_CALL_NO': 'Record ' + fromRecord,
         'BIB_ID': None,
-        }
+    }
     return holding
+
 
 def sersol360link(num, num_type, count=0):
     try:
@@ -224,31 +229,32 @@ def sersol360link(num, num_type, count=0):
     output = []
     ns = 'http://xml.serialssolutions.com/ns/openurl/v1.0'
     openurls = tree.xpath('/sso:openURLResponse/sso:results/sso:result/sso' +
-        ':linkGroups/sso:linkGroup[@type="holding"]', namespaces={'sso': ns})
+                          ':linkGroups/sso:linkGroup[@type="holding"]',
+                          namespaces={'sso': ns})
     if not openurls and count < settings.SER_SOL_API_MAX_ATTEMPTS:
         return sersol360link(num, num_type, count)
     for openurl in openurls:
         dbid = openurl.xpath('sso:holdingData/sso:databaseId',
-            namespaces={'sso': ns})
+                             namespaces={'sso': ns})
         if not dbid:
             continue
         dbid = dbid[0]
         if dbid.text != settings.SER_SOL_DBID_TEXT:
             data = {}
             start = openurl.xpath('sso:holdingData/sso:startDate',
-                namespaces={'sso': ns})
+                                  namespaces={'sso': ns})
             data['start'] = start[0].text if start else ''
             end = openurl.xpath('sso:holdingData/sso:endDate',
-                namespaces={'sso': ns})
+                                namespaces={'sso': ns})
             data['end'] = end[0].text if end else ''
             dbname = openurl.xpath('sso:holdingData/sso:databaseName',
-                namespaces={'sso': ns})
+                                   namespaces={'sso': ns})
             data['dbname'] = dbname[0].text if dbname else ''
             source = openurl.xpath('sso:url[@type="source"]',
-                namespaces={'sso': ns})
+                                   namespaces={'sso': ns})
             data['source'] = source[0].text if source else ''
             journal = openurl.xpath('sso:url[@type="journal"]',
-                namespaces={'sso': ns})
+                                    namespaces={'sso': ns})
             data['journal'] = journal[0].text if journal else ''
             output.append(data)
     return output
