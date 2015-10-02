@@ -26,7 +26,7 @@ only been tested on ubuntu 10.04 LTS.
 
         sudo apt-get install git
 
-3. Download Oracle Instant Client 11.2.0.3 for Linux
+3. Download Oracle Instant Client 12.1.0.2.0 for Linux
 x86-64 or the platform that matches your system from
 http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html
 (accept terms and login to download the files)
@@ -35,7 +35,7 @@ http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html
         * instant-client-devel
         * instant-client-sqlplus
 
-    Or find a copy of the 11.2.0.3.0-1.x86_64 rpms in:
+    Or find a copy of the 12.1.0.2.0-1.x86_64 rpms in:
 
         /vol/backup/dependencies
 
@@ -49,24 +49,29 @@ similar distribution.
 commands (for Debian and Ubuntu distros). For RedHat and similar Distros
 use rpm -ivh packagename command.
 
-        sudo alien --install oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm
-        sudo alien --install oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm
-        sudo alien --install oracle-instantclient11.2-sqlplus-11.2.0.3.0-1.x86_64.rpm
+        sudo alien --install oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.rpm
+        sudo alien --install oracle-instantclient12.1-devel-12.1.0.2.0-1.x86_64.rpm
+        sudo alien --install oracle-instantclient12.1-sqlplus-12.1.0.2.0-1.x86_64.rpm
 
 6. Setup ORACLE_HOME and LD_LIBRARY_PATH environment variables. Change
 the path according to your installation of oracle.
 
-        export ORACLE_HOME=/usr/lib/oracle/11.2/client64/
-        export LD_LIBRARY_PATH=/usr/lib/oracle/11.2/client64/lib
+        export ORACLE_HOME=/usr/lib/oracle/12.1/client64/
+        export LD_LIBRARY_PATH=/usr/lib/oracle/12.1/client64/lib
 
 7. Set environment variables in oracle.conf file (create the file if it does not exist)
 
-        sudo vim /etc/ld.so.conf.d/oracle-instantclient11.2-basic.conf
+        sudo vim /etc/ld.so.conf.d/oracle-instantclient12.1-basic.conf
 
     Add the following lines
 
         /lib
-        /usr/lib/oracle/11.2/client64/lib
+        /usr/lib/oracle/12.1/client64/lib
+
+    Remove any lines that refer to previous versions of the library.
+
+    Remove any files in /etc/ld.so.conf.d that refer to previous versions 
+    of the library
 
     Now run
 
