@@ -193,7 +193,7 @@
                     <i class="fa fa-angle-double-right"></i> {{ subject.name }} 
                     </li><br />
                     {% elif forloop.counter0 == max_subjects %}
-                    <li><span data-toggle="collapse" data-target="#moresubjects{{ doc.wrlc }}" class="a">more subjects</span></li><br />
+                    <li><a class="toggle" data-toggle="collapse" href="#moresubjects{{ doc.wrlc }}">more subjects</a></li><br />
                     </ul>
                     <div id="moresubjects{{ doc.wrlc }}" class="collapse">
                     <ul class="subjects" itemprop="about"> 
