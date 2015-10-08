@@ -578,6 +578,7 @@ def search(request):
             "online": online,
             "json_url": request.get_full_path() + "&format=json",
             "raw_url": request.get_full_path() + "&raw=true",
+            "max_subjects": settings.MAX_SUBJECTS,
         })
 
 
