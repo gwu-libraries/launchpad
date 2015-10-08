@@ -91,7 +91,7 @@
 
     </p>
     {% endif %} 
-
+    
     {% for doc in search_results.results %}
     <article id="{{ doc.id }}" class="search-result clearfix" itemscope itemtype="{{ doc.type }}">
         {% if doc.thumbnailUrl %}
@@ -176,15 +176,40 @@
         <!-- These are actually a combination of subjectterms (subjects), and  -->
         <!-- temporalsubjectterms (time period), geographiclocations (region), -->
         <!-- and genre. Ok to display, but do not hyperlink.                   -->
-         <ul class="subjects" itemprop="about">
-            {% for subject in doc.about %}
-            <li itemprop="about">
-            <i class="fa fa-angle-double-right"></i> {{ subject.name }} 
-            </li>
-            {% if not forloop.last %}<br /> {% endif %}
-            {% endfor %}
-         </ul>
-        <br>
+            {% if doc.about|length <= max_subjects %}
+                <ul class="subjects" itemprop="about"> 
+                {% for subject in doc.about %}
+                <li itemprop="about">
+                <i class="fa fa-angle-double-right"></i> {{ subject.name }}
+                </li>
+                    {% if not forloop.last %}<br /> {% endif %} 
+                {% endfor %}
+                </ul>
+            {% elif doc.about|length > max_subjects %}
+                {% for subject in doc.about %}
+                    {% if forloop.counter0 < max_subjects %}
+                        {% if forloop.first %} <ul class="subjects" itemprop="about"> {% endif %}
+                    <li itemprop="about">
+                    <i class="fa fa-angle-double-right"></i> {{ subject.name }} 
+                    </li><br />
+                    {% elif forloop.counter0 == max_subjects %}
+                    <li><span data-toggle="collapse" data-target="#moresubjects{{ doc.wrlc }}" class="a">more subjects</span></li><br />
+                    </ul>
+                    <div id="moresubjects{{ doc.wrlc }}" class="collapse">
+                    <ul class="subjects" itemprop="about"> 
+                    <li itemprop="about">
+                    <i class="fa fa-angle-double-right"></i> {{ subject.name }}
+                    </li><br />
+                        {% if forloop.last %} </ul> </div> {% endif %}
+                    {% elif forloop.counter0 > max_subjects %}
+                    <li itemprop="about">
+                    <i class="fa fa-angle-double-right"></i> {{ subject.name }}
+                    </li><br /> 
+                        {% if forloop.last %} </ul> </div> {% endif %} 
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        <br />
         {% endif %}
 
     </article>
