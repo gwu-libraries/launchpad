@@ -182,7 +182,7 @@
                 <li itemprop="about">
                 <i class="fa fa-angle-double-right"></i> {{ subject.name }}
                 </li>
-                    {% if not forloop.last %}<br /> {% endif %} 
+                    {% if not forloop.last %}<br />{% endif %} 
                 {% endfor %}
                 </ul>
             {% elif doc.about|length > max_subjects %}
@@ -193,19 +193,19 @@
                     <i class="fa fa-angle-double-right"></i> {{ subject.name }} 
                     </li><br />
                     {% elif forloop.counter0 == max_subjects %}
-                    <li><a class="toggle" data-toggle="collapse" href="#moresubjects{{ doc.wrlc }}">more subjects</a></li><br />
+                    <li><a class="toggle subjectsList" data-toggle="collapse" href="#moresubjects{{ doc.wrlc }}">[+] Show</a></li><br />
                     </ul>
                     <div id="moresubjects{{ doc.wrlc }}" class="collapse">
                     <ul class="subjects" itemprop="about"> 
                     <li itemprop="about">
                     <i class="fa fa-angle-double-right"></i> {{ subject.name }}
                     </li><br />
-                        {% if forloop.last %} </ul> </div> {% endif %}
+                        {% if forloop.last %}</ul></div>{% endif %}
                     {% elif forloop.counter0 > max_subjects %}
                     <li itemprop="about">
                     <i class="fa fa-angle-double-right"></i> {{ subject.name }}
                     </li><br /> 
-                        {% if forloop.last %} </ul> </div> {% endif %} 
+                        {% if forloop.last %}</ul></div>{% endif %} 
                     {% endif %}
                 {% endfor %}
             {% endif %}
