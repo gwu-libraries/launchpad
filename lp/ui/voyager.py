@@ -1642,7 +1642,7 @@ def get_refworks_link(bib_data):
     if bib_data.get('LANGUAGE_DISPLAY',''):
         query_args['language'] = unicode_encode(bib_data['LANGUAGE_DISPLAY'])
     if bib_data.get('SUBJECTS',''):
-        sub = unicode_encode(bib_data['SUBJECTS'])
+        sub = unicode_encode(bib_data['SUBJECTS'][0:6])
         query_args['subject'] = ",".join(sub)
     if bib_data.get('TITLE', ''):
         ind = bib_data['TITLE'].find('/')
