@@ -184,7 +184,7 @@ $(document).ready(function(){
 <!-- toggle Show/Hide for subjects -->
 $(document).ready(function(){
 
-  $('.subjectsList').click(function(){
+  $('.subjectsList, .periodicalsList').click(function(){
     $(this).text(function(i,currentcontent){
       return currentcontent == '[+] Show' ?  '[-] Hide' : '[+] Show';
     });
