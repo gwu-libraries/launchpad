@@ -232,23 +232,23 @@
                             {% if holding.MFHD_DATA.marc866list %}
                                 {% if holding.LIBRARY_HAS|length <= max_periodicals %}
                                     {% for line in holding.LIBRARY_HAS %}
-                                        <br />
                                         <span class="library-has">{{ line }}</span>
+                                        <br /> 
                                     {% endfor %}
                                 {% else %}
                                    {% for line in holding.LIBRARY_HAS %}
                                        {% if forloop.counter0 < max_periodicals %}
-                                       <br />
                                        <span class="library-has">{{ line }}</span>
-                                       {% elif forloop.counter0 == max_periodicals %}
                                        <br />
+                                       {% elif forloop.counter0 == max_periodicals %}
                                        <a class="toggle periodicalsList library-has" data-toggle="collapse" href="#morePeriodicals{{ holding.MFHD_ID }}">[+] Show</a>
                                        <div id="morePeriodicals{{ holding.MFHD_ID }}" class="collapse">
                                        <span class="library-has">{{ line }}</span>
+                                       <br />
                                            {% if forloop.last %}</div>{% endif %}
                                        {% elif forloop.counter0 > max_periodicals %}
-                                       <br />
                                        <span class="library-has">{{ line }}</span>
+                                       <br />
                                            {% if forloop.last %}</div>{% endif %}
                                        {% endif %}
                                    {% endfor %}
