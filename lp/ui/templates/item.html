@@ -230,10 +230,29 @@
                                 <br />
                             {% endif %}
                             {% if holding.MFHD_DATA.marc866list %}
-                                {% for line in holding.MFHD_DATA.marc866list %}
-                                    <span class="library-has">{{line}}</span>
-                                    <br />
-                                {% endfor %}
+                                {% if holding.LIBRARY_HAS|length <= max_periodicals %}
+                                        {% for line in holding.LIBRARY_HAS %}
+                                        <span class="library-has">{{ line }}</span>
+                                        <br /> 
+                                    {% endfor %}
+                                {% else %}
+                                   {% for line in holding.LIBRARY_HAS %}
+                                       {% if forloop.counter0 < max_periodicals %}
+                                       <span class="library-has">{{ line }}</span>
+                                       <br />
+                                       {% elif forloop.counter0 == max_periodicals %}
+                                       <a class="toggle periodicalsList library-has" data-toggle="collapse" href="#morePeriodicals{{ holding.MFHD_ID }}">[+] Show</a>
+                                       <div id="morePeriodicals{{ holding.MFHD_ID }}" class="collapse">
+                                       <span class="library-has">{{ line }}</span>
+                                       <br />
+                                           {% if forloop.last %}</div>{% endif %}
+                                       {% elif forloop.counter0 > max_periodicals %}
+                                       <span class="library-has">{{ line }}</span>
+                                       <br />
+                                           {% if forloop.last %}</div>{% endif %}
+                                       {% endif %}
+                                   {% endfor %}
+                                {% endif %} 
                             {% endif %}
                             {% if holding.MFHD_DATA.marc852 %}
                                 <span class="note-label" >{{holding.MFHD_DATA.marc852}}</span>
@@ -390,10 +409,31 @@
                             {{ holding.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                         {% endif %}
                         {% if holding.LIBRARY_HAS %}
-                            {% for line in holding.LIBRARY_HAS %}
+                            {% if holding.LIBRARY_HAS|length <= max_periodicals %}
                                 <br />
-                                <span class="library-has">{{ line }}</span>
-                            {% endfor %}
+                                {% for line in holding.LIBRARY_HAS %}
+                                    <span class="library-has">{{ line }}</span>
+                                    <br />
+                                {% endfor %}
+                            {% else %}
+                                <br />
+                                {% for line in holding.LIBRARY_HAS %} 
+                                   {% if forloop.counter0 < max_periodicals %}
+                                   <span class="library-has">{{ line }}</span>
+                                   <br />
+                                   {% elif forloop.counter0 == max_periodicals %}
+                                   <a class="toggle periodicalsList library-has" data-toggle="collapse" href="#morePeriodicals{{ holding.MFHD_ID }}">[+] Show</a>
+                                   <div id="morePeriodicals{{ holding.MFHD_ID }}" class="collapse">
+                                   <span class="library-has">{{ line }}</span>
+                                   <br />
+                                       {% if forloop.last %}</div>{% endif %}
+                                   {% elif forloop.counter0 > max_periodicals %}
+                                   <span class="library-has">{{ line }}</span>
+                                   <br />
+                                       {% if forloop.last %}</div>{% endif %}
+                                   {% endif %} 
+                               {% endfor %} 
+                            {% endif %}
                         {% endif %}
                         {% if holding.ELECTRONIC_DATA.LINK852Z%}
                             <br />
