@@ -143,6 +143,8 @@ MAX_ITEMS = 6
 
 MAX_SUBJECTS = 3
 
+MAX_PERIODICALS = 3
+
 INELIGIBLE_866_STATUS = ['Charged', 'Not Charged', 'Missing', 'LIB USE ONLY', 'SPC USE ONLY']
 
 # Similarity ratio for open library and voyager titles

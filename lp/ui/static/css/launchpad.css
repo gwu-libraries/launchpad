@@ -10,6 +10,11 @@ p, li {line-height: 1.3em;}
     overflow:hidden;
 }
 
+a.library-has {
+    color: #0088cc;
+    text-decoration: none;
+}
+
 .item_list {
 	margin: 0px auto;
 	padding: 0px;

@@ -96,6 +96,7 @@ def item(request, bibid):
             'show_ill_link': show_ill_link,
             'non_wrlc_item': False,
             'details': details,
+            'max_periodicals': settings.MAX_PERIODICALS,
         })
     except:
         logger.exception('unable to render bibid: %s' % bibid)
