@@ -619,7 +619,9 @@ ORDER BY library.library_name"""
                 hathitrusthold = apis.hathitrust(num, numformat)
                 if hathitrusthold:
                     holdings.append(hathitrusthold)
-                
+    
+    holdings['ONLINE'] = get_links(holdings)
+ 
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
@@ -1772,3 +1774,23 @@ def allign_gt_internet_link(items, internet):
     for item in items:
         internet['ITEMS'].append(item)
     return internet
+
+def get_links(holdings):
+    online = []
+    access = {}
+    for holding in holdings:
+        #check marc856list
+        links = holding.get('MFHD_DATA', {}).get('marc856list',[])
+        for link in links:
+            access['url'] = link['u']
+            access['label'] = link['3']
+            access['available'] = online_available(link)       
+            online.append(access)
+        #TODO: check ELECTRONIC_DATA
+    return online
+
+def online_available(linkdata):
+    #analyze links for online availability to GW
+    #TODO: all logic
+    return True
+
