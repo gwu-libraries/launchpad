@@ -1780,7 +1780,8 @@ def allign_gt_internet_link(items, internet):
 def get_links(holding, title, isbn):
     '''
     draws from marc856list and ELECTRONIC_DATA to create a list containing a 
-    dictionary for each link with url, label, available (to GW community)
+    dictionary for each link with url, label, available (online 
+    to GW community)
     '''  
     online = []
     #check MFHD_DATA marc856list
@@ -1797,6 +1798,9 @@ def get_links(holding, title, isbn):
                                     str(holding['BIB_ID']) + ' TITLE:' + title \
                                     + ' ISBN:' + isbn 
                     access['label'] = 'Request print copy'
+                    access['available'] = False
+		if settings.BOUND_WITH_ITEM_LINK in access['url']: 
+                    access['label'] = 'Bound with item'
                     access['available'] = False 
             else:
                 if 'endowment' in access['url']:
@@ -1814,7 +1818,7 @@ def online_available(link):
     analyze other campus's links for online availability to GW: 
     '''    
     if 'proxy' in link['u'] or 'serialssolutions' in link['u'] \
-                                              or 'eblib' in link['u']:
+       or 'eblib' in link['u']:
         return False
     else: 
         return True
