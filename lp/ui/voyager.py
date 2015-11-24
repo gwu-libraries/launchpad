@@ -620,7 +620,8 @@ ORDER BY library.library_name"""
                 if hathitrusthold:
                     holdings.append(hathitrusthold)
     
-    holdings['ONLINE'] = get_links(holdings)
+    for holding in holdings:
+        holding['ONLINE'] = get_links(holding, bib_data['TITLE'], bib_data['ISBN'])
  
     return [h for h in holdings if not h.get('REMOVE', False)]
 
@@ -1775,22 +1776,45 @@ def allign_gt_internet_link(items, internet):
         internet['ITEMS'].append(item)
     return internet
 
-def get_links(holdings):
+
+def get_links(holding, title, isbn):
+    '''
+    draws from marc856list and ELECTRONIC_DATA to create a list containing a 
+    dictionary for each link with url, label, available (to GW community)
+    '''  
     online = []
-    access = {}
-    for holding in holdings:
-        #check marc856list
-        links = holding.get('MFHD_DATA', {}).get('marc856list',[])
-        for link in links:
+    #check MFHD_DATA marc856list
+    links = holding.get('MFHD_DATA', {}).get('marc856list',[])
+    for link in links:
+        if link.get('u', None):
+            access = {} 
             access['url'] = link['u']
-            access['label'] = link['3']
-            access['available'] = online_available(link)       
+            access['label'] = link.get('3', "")
+            if holding['LIBRARY_NAME'] in ['GW','HI','IA','HT','WRLC']: 
+                access['available'] = True
+                if 'RushPrintRequest' in access['url']:
+                    access['url'] = settings.DDA_URL + '&entry_994442820=ID:' + \
+                                    str(holding['BIB_ID']) + ' TITLE:' + title \
+                                    + ' ISBN:' + isbn 
+                    access['label'] = 'Request print copy'
+                    access['available'] = False 
+            else:
+                if 'endowment' in access['url']:
+                    continue 
+                if 'mrqe' in access['url']:
+                    access['label'] = 'Movie Review' 
+                access['available'] = online_available(link) 
             online.append(access)
-        #TODO: check ELECTRONIC_DATA
-    return online
+    #TODO: check ELECTRONIC_DATA
+    return online 
 
-def online_available(linkdata):
-    #analyze links for online availability to GW
-    #TODO: all logic
-    return True
 
+def online_available(link):
+    '''    
+    analyze other campus's links for online availability to GW: 
+    '''    
+    if 'proxy' in link['u'] or 'serialssolutions' in link['u'] \
+                                              or 'eblib' in link['u']:
+        return False
+    else: 
+        return True
