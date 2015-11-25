@@ -762,12 +762,6 @@ WHERE mfhd_master.mfhd_id=%s"""
     cursor.execute(query, [mfhd_id] * 8)
     results = _make_dict(cursor, first=True)
     string = results.get('LINK856U')
-    if string:
-        results['bound_item'] = is_bound_item(string)
-        results['govt_doc'] = is_govt_doc(string)
-    else:
-        results['bound_item'] = False
-        results['govt_doc'] = False
     return results
 
 
@@ -852,8 +846,6 @@ def get_marc856(marc856_field):
         for subfield in item.split('$')[1:]:
             if subfield[0] in temp:
                 temp[subfield[0]] = subfield[1:]
-                if subfield[0] == 'u':
-                    temp['bound_item'] = is_bound_item(temp[subfield[0]])
         marc856.append(temp)
     return marc856
 
@@ -1304,9 +1296,6 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'LINK856U': link,
                   'LINK866': None,
                   'MFHD_ID': None}
-    if link:
-        electronic['bound_item'] = is_bound_item(link)
-        electronic['govt_doc'] = is_govt_doc(link)
     return electronic
 
 
@@ -1392,8 +1381,6 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
             link['STATUS'] = 'Missing'
         if link['LINK']:
             val = {'3': '', 'z': link['MESSAGE'], 'u': link['LINK']}
-            val['bound_item'] = is_bound_item(val['u'])
-            val['govt_doc'] = is_govt_doc(val['u'])
             m856list.append(val)
             continue
         if (link['STATUS'] not in settings.INELIGIBLE_866_STATUS and
@@ -1421,20 +1408,6 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
     res.append(items)
     res.append(m852)
     return res
-
-
-def is_bound_item(link):
-    if settings.BOUND_WITH_ITEM_LINK not in link:
-        return False
-    else:
-        return True
-
-
-def is_govt_doc(link):
-    if settings.GOVT_DOC_LINK not in link:
-        return False
-    else:
-        return True
 
 
 def get_gt_link(lines):
