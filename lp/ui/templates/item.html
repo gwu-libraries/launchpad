@@ -314,7 +314,6 @@
                     </td>
                        <td {% if holding.ONLINE %} colspan="2" {% endif %}>
                            {% if holding.ONLINE %}
-                             <div class="marc856list">
                                {% for link in holding.ONLINE %}
                                  <div class="marc856resource">
                                        {% if link.available %}
@@ -338,7 +337,6 @@
                                        {% endif %}
                                  </div>
                                {% endfor %}
-                             </div>
                            {% else %}
                                {% if item.ITEM_STATUS_DESC == 'Not Charged' and not bib.FINDING_AID %}
                                    <span style='color: green'>Available</span>
