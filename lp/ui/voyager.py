@@ -1786,6 +1786,8 @@ def get_links(holding, title, isbn):
     online = []
     #check MFHD_DATA marc856list
     links = holding.get('MFHD_DATA', {}).get('marc856list',[])
+    if not links and holding.get('ELECTRONIC_DATA', {}).get('LINK856U', None):
+        links = [{'u': holding['ELECTRONIC_DATA']['LINK856U']}] 
     for link in links:
         if link.get('u', None):
             access = {} 
@@ -1793,6 +1795,8 @@ def get_links(holding, title, isbn):
             access['label'] = link.get('3', '')
             if holding['LIBRARY_NAME'] in ['GW','HI','IA','HT','WRLC','E-Resources']: 
                 access['available'] = True
+                if holding['LinkResolverData']:
+                    continue 
                 if 'RushPrintRequest' in access['url']:
                     access['url'] = settings.DDA_URL + '&entry_994442820=ID:' + \
                                     str(holding['BIB_ID']) + ' TITLE:' + title \
@@ -1811,7 +1815,6 @@ def get_links(holding, title, isbn):
                 if not access['available'] and not access['label']:
                     access['label'] = 'Full text online' 
             online.append(access)
-    #TODO: check ELECTRONIC_DATA
     return online 
 
 
