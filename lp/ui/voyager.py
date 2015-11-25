@@ -1790,14 +1790,14 @@ def get_links(holding, title, isbn):
         if link.get('u', None):
             access = {} 
             access['url'] = link['u']
-            access['label'] = link.get('3', "")
-            if holding['LIBRARY_NAME'] in ['GW','HI','IA','HT','WRLC']: 
+            access['label'] = link.get('3', '')
+            if holding['LIBRARY_NAME'] in ['GW','HI','IA','HT','WRLC','E-Resources']: 
                 access['available'] = True
                 if 'RushPrintRequest' in access['url']:
                     access['url'] = settings.DDA_URL + '&entry_994442820=ID:' + \
                                     str(holding['BIB_ID']) + ' TITLE:' + title \
                                     + ' ISBN:' + isbn 
-                    access['label'] = 'Request print copy'
+                    access['label'] = 'Request print edition'
                     access['available'] = False
 		if settings.BOUND_WITH_ITEM_LINK in access['url']: 
                     access['label'] = 'Bound with item'
@@ -1806,8 +1806,10 @@ def get_links(holding, title, isbn):
                 if 'endowment' in access['url']:
                     continue 
                 if 'mrqe' in access['url']:
-                    access['label'] = 'Movie Review' 
-                access['available'] = online_available(link) 
+                    access['label'] = 'Movie Review'
+                access['available'] = online_available(link)
+                if not access['available'] and not access['label']:
+                    access['label'] = 'Full text online' 
             online.append(access)
     #TODO: check ELECTRONIC_DATA
     return online 

@@ -38,7 +38,6 @@
 {% assign_settings_value "STREAMING_AUDIO_TAGS" as audio_tags %}
 {% assign_settings_value "STREAMING_VIDEO_TAGS" as video_tags %}
 {% assign_settings_value "MAX_ITEMS" as max_items %}
-{% assign_settings_value "BOUND_WITH_ITEM_LINK" as bound_item_link %}
 
   <section class="search item-search">
     <form class="" action="{% url "search" %}" method="get">
@@ -313,45 +312,30 @@
                                 <br /><a href="http://catalog.hathitrust.org/Record/{{ item.DISPLAY_CALL_NO }}" target="hathiwindow">View the Catalog record</a>
                            {% endif %}
                     </td>
-                       <td {% if holding.MFHD_DATA.marc856list|remove_empty_links|length > 0 and not item.eligible %} colspan="2" {% endif %}>
-                           {% if holding.MFHD_DATA and holding.MFHD_DATA.marc856list and not bib.FINDING_AID %}
+                       <td {% if holding.ONLINE %} colspan="2" {% endif %}>
+                           {% if holding.ONLINE %}
                              <div class="marc856list">
-                               {% for link in holding.MFHD_DATA.marc856list|remove_empty_links %}
+                               {% for link in holding.ONLINE %}
                                  <div class="marc856resource">
-                                     {% if holding.LIBRARY_NAME != 'HI' and holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and holding.LIBRARY_NAME != 'IA' and not link.govt_doc%}
-                                       {% if 'mrqe' in link.u %}
-                                            <a href="{{link.u}}" target="eresourcewindow">Movie Review</a><i class="fa fa-external-link"></i>
-                                            <br />
-                                       {% elif 'endowment' in link.u %}
-                                            <br />
+                                       {% if link.available %}
+                                           {% if item.DISPLAY_CALL_NO in audio_tags %}
+                                               <button onclick="window.open('{{link.url}}')" >Online <i class="fa fa-headphones"></i></button>
+                                           {% elif item.DISPLAY_CALL_NO in video_tags %}
+                                               <button onclick="window.open('{{link.url}}')" >Online <i class="fa fa-film"></i></button>
+                                           {% else %} 
+                                               <button onclick="window.open('{{link.url|escapejs}}')" title={{link.url}}>Online <i class="fa fa-book"></i></button>
+                                           {% endif %}
+                                           {% if link.label %}
+                                                <span class="link-volumes">{{ link.label }}</span>
+                                           {% endif %}
                                        {% else %}
-                                            <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
-                                            <br />
+                                           <a href="{{link.url}}" target="eresourcewindow">{{link.label}}</a><i class="fa fa-external-link"></i>
+                                           <br />
+                                           {% if holding.LIBRARY_NAME != 'GW' %}
+                                               <i class="fa fa-lock"></i>
+                                               {{holding.LIBRARY_NAME}} only
+                                           {% endif %}
                                        {% endif %}
-                                       {% if not 'proxy' in link.u and not 'serialssolutions' in link.u and 'eblib' not in link.u %}
-                                            Available to all
-                                       {% else %}
-                                            <i class="fa fa-lock"></i>
-                                            {{holding.LIBRARY_NAME}} only
-                                       {% endif %}
-                                   {% else %}
-                                       {% if item.DISPLAY_CALL_NO in audio_tags %}
-                                           <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-headphones"></i></button>
-                                       {% elif item.DISPLAY_CALL_NO in video_tags %}
-                                           <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-film"></i></button>
-                                       {% elif 'RushPrintRequest' in link.u %}
-                                           <!-- DDA request form link (entry = form element id)-->
-                                           {% assign_settings_value "DDA_URL" as DDA %}
-                                           <a href="{{DDA}}&entry_994442820=ID:{{bib.BIB_ID}} TITLE:{{bib.TITLE}} ISBN:{{bib.ISBN}}" target="DDArequestwindow">Request print edition</a><i class="fa fa-external-link"></i>
-                                       {% elif not link.bound_item%}
-                                            <button onclick="window.open('{{link.u|escapejs}}')" title={{link.u}}>Online <i class="fa fa-book"></i></button>
-                                       {% else %}
-                                            <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><i class="fa fa-external-link"></i>
-                                       {% endif %}
-                                   {% endif %}
-                                   {% if link.3 %}
-                                       <span class="link-volumes">[{{ link.3 }}]</span>
-                                   {% endif %}
                                  </div>
                                {% endfor %}
                              </div>
@@ -447,59 +431,31 @@
                             {{ holding.DISPLAY_CALL_NO|noscream }}
                         {% endif %}
                     </td>
-                    <td>
-                        {% if holding.ELECTRONIC_DATA and holding.ELECTRONIC_DATA.LINK856U %}
-                            {% if holding.ELECTRONIC_DATA.LINK8563 %}
-                                <span class="link-volumes">[{{ holding.ELECTRONIC_DATA.LINK8563 }}]</span>
-                            {% endif %}
-                            {% if holding.LIBRARY_NAME != 'HI' and holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not holding.ELECTRONIC_DATA.govt_doc and not 'FOUND' in holding.ELECTRONIC_DATA_LINK856U %}
-                            {% if 'FOUND' not in holding.ELECTRONIC_DATA.LINK856U and 'endowment' not in holding.ELECTRONIC_DATA.LINK856U %}   
-                                <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
-                                <br />
-                                {% if not 'proxy' in holding.ELECTRONIC_DATA.LINK856U and not 'serialssolutions' in holding.ELECTRONIC_DATA.LINK856U and not 'eblib' in holding.ELECTRONIC_DATA.LINK856U %}
-                                    Available to all 
-                                {% else %}
-                                    <i class="fa fa-lock"></i>
-                                    {{holding.LIBRARY_NAME}} only
-                                {% endif %}
-                            {% endif %}
-                            {% else %}
-                                {% if holding.DISPLAY_CALL_NO in audio_tags %}
-                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" >Online <i class="fa fa-headphones"></i></button>
-                                {% elif holding.DISPLAY_CALL_NO in video_tags %}
-                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" >Online <i class="fa fa-film"></i></button>
-                                {% elif not holding.ELECTRONIC_DATA.bound_item%}
-                                    <button onclick="window.open('{{holding.ELECTRONIC_DATA.LINK856U}}')" title={{holding.ELECTRONIC_DATA.LINK856U}}>Online <i class="fa fa-book"></i></button>
-                                {% else %}
-                                    <a href="{{holding.ELECTRONIC_DATA.LINK856U}}" target="eresourcewindow">Bound with item</a><i class="fa fa-external-link"></i>
-                                {% endif %}
-                            {% endif %}
-                        {% elif holding.MFHD_DATA and holding.MFHD_DATA.marc856list and holding.MFHD_DATA.marc856list.strip %}
-                {% for link in holding.MFHD_DATA.marc856list %}
-                {% if link.3 %}
-                        <span class="link-volumes">[{{ link.3 }}]</span>
-                {% endif %}
-                {% if holding.LIBRARY_NAME != 'HI' and holding.LIBRARY_NAME != 'GW' and holding.LIBRARY_FULL_NAME != 'WRLC' and not link.govt_doc%}
-                        <a href="{{link.u}}" target="eresourcewindow">Full text online</a><i class="fa fa-external-link"></i>
-                        <br />
-                        {% if not 'proxy' in link.u and not 'serialssolutions' in link.u and not 'eblib' in link.u %}
-                            Available to all 
-                        {% else %}
-                            <i class="fa fa-lock"></i>
-                            {{holding.LIBRARY_NAME}} only
-                        {% endif %}
-                                {% else %}
-                                    {% if holding.DISPLAY_CALL_NO in audio_tags %}
-                                        <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-headphones"></i></button>
-                                    {% elif holding.DISPLAY_CALL_NO in video_tags %}
-                                        <button onclick="window.open('{{link.u}}')" >Online <i class="fa fa-film"></i></button>
-                                    {% elif not link.bound_item%}
-                                        <button onclick="window.open('{{link.u}}')" title={{link.u}}>Online <i class="fa fa-book"></i></button>
-                                    {% else %}
-                                        <a href="{{link.u}}" target="eresourcewindow">Bound with item</a><i class="fa fa-external-link"></i>
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
+                    <td {% if holding.ONLINE %} colspan="2" {% endif %} >
+                        {% if holding.ONLINE %}
+                            {% for link in holding.ONLINE %}
+                                 <div class="marc856resource">
+                                       {% if link.available %}
+                                           {% if item.DISPLAY_CALL_NO in audio_tags %}
+                                               <button onclick="window.open('{{link.url}}')" >Online <i class="fa fa-headphones"></i></button>
+                                           {% elif item.DISPLAY_CALL_NO in video_tags %}
+                                               <button onclick="window.open('{{link.url}}')" >Online <i class="fa fa-film"></i></button>
+                                           {% else %}
+                                               <button onclick="window.open('{{link.url|escapejs}}')" title={{link.url}}>Online <i class="fa fa-book"></i></button>
+                                           {% endif %}
+                                           {% if link.label %}
+                                                <span class="link-volumes">{{ link.label }}</span>
+                                           {% endif %}
+                                       {% else %}
+                                           <a href="{{link.url}}" target="eresourcewindow">{{link.label}}</a><i class="fa fa-external-link"></i>
+                                           <br />
+                                           {% if holding.LIBRARY_NAME != 'GW' %}
+                                               <i class="fa fa-lock"></i>
+                                               {{holding.LIBRARY_NAME}} only
+                                           {% endif %}
+                                       {% endif %}
+                                 </div>
+                           {% endfor %}
                         {% elif not holding.ITEMS and holding.LOCATION_DISPLAY_NAME in 'WRLC' %}
                             <span class='off-site'>Off-site </span>
                         {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
