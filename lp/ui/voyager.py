@@ -1795,7 +1795,7 @@ def get_links(holding, title, isbn):
             access['label'] = link.get('3', '')
             if holding['LIBRARY_NAME'] in ['GW','HI','IA','HT','WRLC','E-Resources']: 
                 access['available'] = True
-                if holding['LinkResolverData']:
+                if holding.get('LinkResolverData', None):
                     continue 
                 if 'RushPrintRequest' in access['url']:
                     access['url'] = settings.DDA_URL + '&entry_994442820=ID:' + \
