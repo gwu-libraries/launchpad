@@ -91,11 +91,6 @@ def noscream(value):
     return value
 
 
-@register.filter
-def remove_empty_links(marc856list):
-    return [link_dict for link_dict in marc856list if link_dict.get('u', None)]
-
-
 @register.simple_tag
 def settings_value(name):
     return getattr(settings, name, '')
