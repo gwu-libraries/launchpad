@@ -1765,6 +1765,8 @@ def get_links(holding, title, isbn):
         if link.get('u', None):
             access = {} 
             access['url'] = link['u']
+            if 'http://' not in access['url']:
+                continue
             access['label'] = link.get('3', '')
             if holding['LIBRARY_NAME'] in ['GW','HI','IA','HT','WRLC','E-Resources']: 
                 access['available'] = True
