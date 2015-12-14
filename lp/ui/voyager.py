@@ -1765,7 +1765,7 @@ def get_links(holding, title, isbn):
         if link.get('u', None):
             access = {} 
             access['url'] = link['u']
-            if 'http://' not in access['url']:
+            if 'http' not in access['url']:
                 continue
             access['label'] = link.get('3', '')
             if holding['LIBRARY_NAME'] in ['GW','HI','IA','HT','WRLC','E-Resources']: 
@@ -1790,6 +1790,14 @@ def get_links(holding, title, isbn):
                 if not access['available'] and not access['label']:
                     access['label'] = 'Full text online' 
             online.append(access)
+    # check for duplicate URLs in online holdings 
+    urls = []
+    for x in online:
+        if x['url'] in urls:
+            online.remove(x)
+        else:
+            urls.append(x['url'])
+    
     return online 
 
 
