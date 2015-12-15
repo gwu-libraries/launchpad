@@ -265,11 +265,10 @@
                 {% endif %}
                     <tr>
                     <td>
-                        {% if bib.FINDING_AID or item.TRIMMED_LOCATION_DISPLAY_NAME == 'GELMAN Special Collections'%}
-                           Gelman Special Collections 
-                        {% else %}
                         <div class='itemrow'>
-                            {% if item.TEMPLOCATION %}
+                            {% if bib.FINDING_AID or item.TRIMMED_LOCATION_DISPLAY_NAME == 'GELMAN Special Collections' %}
+                                Gelman Special Collections
+                            {% elif item.TEMPLOCATION %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
                                 {% if holding.ITEMS|length > max_items and forloop.counter == max_items %}
@@ -283,7 +282,6 @@
                                 {% endif %}
                             {% endif %}
                         </div>
-                        {% endif %}
                     </td>
                       {% if holding.LinkResolverData %}
                       <td colspan=3">
