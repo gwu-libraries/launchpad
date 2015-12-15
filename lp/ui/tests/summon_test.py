@@ -22,42 +22,33 @@ class SummonTests(unittest.TestCase):
         self.summoner = summoner.Summon(id, key)
 
     def test_search(self):
-        search = self.summon.search("isbn:1573870994")
+        search = self.summon.search("isbn:9780387312965")
 
-        self.assertEqual(search['totalResults'], 1)
         self.assertEqual(search['startIndex'], 0)
         self.assertTrue(search['itemsPerPage'], 10)
 
         self.assertTrue(len(search['results']) > 0)
         i = search['results'][0]
-        self.assertEqual(i['@id'], '/item/m2402189')
+        self.assertEqual(i['@id'], '/item/11658285')
         self.assertEqual(i['@type'], 'Book')
-        self.assertEqual(i['wrlc'], 'm2402189')
-        self.assertEqual(i['name'], 'The web of knowledge : a festschrift in honor of Eugene Garfield')
-        self.assertEqual(i['isbn'], ["1573870994", "9781573870993"])
+        self.assertEqual(i['wrlc'], '11658285')
+        self.assertEqual(i['name'], 'Nanotechnology for biology and medicine : at the building block level')
+        self.assertEqual(i['isbn'], ["9780387312965", "9780387312828", "038731296X", "038731282X"])
 
-        self.assertEqual(len(i['author']), 3)
-        self.assertEqual(i['author'][0]['name'], 'Garfield, Eugene')
-        self.assertEqual(i['author'][0]['url'], '/search?q=Author%3A%22Garfield%2C+Eugene%22')
-        self.assertEqual(i['author'][1]['name'], 'Cronin, Blaise')
-        self.assertEqual(i['author'][1]['url'], '/search?q=Author%3A%22Cronin%2C+Blaise%22')
-        self.assertEqual(i['author'][2]['name'], 'Atkins, Helen Barsky')
-        self.assertEqual(i['author'][2]['url'], '/search?q=Author%3A%22Atkins%2C+Helen+Barsky%22')
+        self.assertEqual(len(i['author']), 2)
+        self.assertEqual(i['author'][0]['name'], 'Silva, Gabriel A')
+        self.assertEqual(i['author'][0]['url'], '/search?q=Author%3A%22Silva%2C+Gabriel+A%22')
+        self.assertEqual(i['author'][1]['name'], 'Parpura, Vladimir, 1964')
+        self.assertEqual(i['author'][1]['url'], '/search?q=Author%3A%22Parpura%2C+Vladimir%2C+1964%22')
 
-        self.assertEqual(len(i['about']), 3)
-        self.assertEqual(i['about'][2]['name'], 'Science -- Abstracting and indexing')
-        self.assertEqual(i['about'][2]['url'], '/search?q=SubjectTerms%3A%22Science+--+Abstracting+and+indexing%22')
-        self.assertEqual(i['about'][1]['name'], 'Indexing')
-        self.assertEqual(i['about'][1]['url'], '/search?q=SubjectTerms%3A%22Indexing%22')
-        self.assertEqual(i['about'][0]['name'], 'Garfield, Eugene')
-        self.assertEqual(i['about'][0]['url'], '/search?q=SubjectTerms%3A%22Garfield%2C+Eugene%22')
+        self.assertEqual(len(i['about']), 4)
+        self.assertEqual(i['about'][0]['name'], 'Nanomedicine')
+        self.assertEqual(i['about'][0]['url'], '/search?q=SubjectTerms%3A%22Nanomedicine%22')
 
-        self.assertEqual(i['publisher']['name'], 'Information Today')
-        self.assertEqual(i['publisher']['address'], 'Medford, N.J')
-        self.assertEqual(i['datePublished'], '2000')
-        self.assertEqual(i['thumbnailUrl'], 'http://covers-cdn.summon.serialssolutions.com/index.aspx?isbn=9781573870993/mc.gif&client=summon&freeimage=true')
-        self.assertEqual(i['bookEdition'], '1. print')
-        self.assertEqual(i['offers'][0]['seller'], 'George Mason University')
+        self.assertEqual(i['publisher']['name'], 'Springer')
+        self.assertEqual(i['publisher']['address'], 'New York')
+        self.assertEqual(i['datePublished'], '2012')
+        self.assertEqual(i['offers'][0]['seller'], 'George Washington University')
        
 
     def test_newspaper(self):
