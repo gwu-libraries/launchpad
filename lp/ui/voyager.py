@@ -619,7 +619,10 @@ ORDER BY library.library_name"""
                 hathitrusthold = apis.hathitrust(num, numformat)
                 if hathitrusthold:
                     holdings.append(hathitrusthold)
-                
+    
+    for holding in holdings:
+        holding['ONLINE'] = get_links(holding, bib_data['TITLE'], bib_data['ISBN'])
+ 
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
@@ -759,12 +762,6 @@ WHERE mfhd_master.mfhd_id=%s"""
     cursor.execute(query, [mfhd_id] * 8)
     results = _make_dict(cursor, first=True)
     string = results.get('LINK856U')
-    if string:
-        results['bound_item'] = is_bound_item(string)
-        results['govt_doc'] = is_govt_doc(string)
-    else:
-        results['bound_item'] = False
-        results['govt_doc'] = False
     return results
 
 
@@ -849,8 +846,6 @@ def get_marc856(marc856_field):
         for subfield in item.split('$')[1:]:
             if subfield[0] in temp:
                 temp[subfield[0]] = subfield[1:]
-                if subfield[0] == 'u':
-                    temp['bound_item'] = is_bound_item(temp[subfield[0]])
         marc856.append(temp)
     return marc856
 
@@ -1301,9 +1296,6 @@ def get_z3950_electronic_data(school, link, message, note, Found=True):
                   'LINK856U': link,
                   'LINK866': None,
                   'MFHD_ID': None}
-    if link:
-        electronic['bound_item'] = is_bound_item(link)
-        electronic['govt_doc'] = is_govt_doc(link)
     return electronic
 
 
@@ -1389,8 +1381,6 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
             link['STATUS'] = 'Missing'
         if link['LINK']:
             val = {'3': '', 'z': link['MESSAGE'], 'u': link['LINK']}
-            val['bound_item'] = is_bound_item(val['u'])
-            val['govt_doc'] = is_govt_doc(val['u'])
             m856list.append(val)
             continue
         if (link['STATUS'] not in settings.INELIGIBLE_866_STATUS and
@@ -1418,20 +1408,6 @@ def get_z3950_mfhd_data(id, school, links, internet_items, bib_data):
     res.append(items)
     res.append(m852)
     return res
-
-
-def is_bound_item(link):
-    if settings.BOUND_WITH_ITEM_LINK not in link:
-        return False
-    else:
-        return True
-
-
-def is_govt_doc(link):
-    if settings.GOVT_DOC_LINK not in link:
-        return False
-    else:
-        return True
 
 
 def get_gt_link(lines):
@@ -1772,3 +1748,65 @@ def allign_gt_internet_link(items, internet):
     for item in items:
         internet['ITEMS'].append(item)
     return internet
+
+
+def get_links(holding, title, isbn):
+    '''
+    draws from marc856list and ELECTRONIC_DATA to create a list containing a 
+    dictionary for each link with url, label, available (online 
+    to GW community)
+    '''  
+    online = []
+    #check MFHD_DATA marc856list
+    links = holding.get('MFHD_DATA', {}).get('marc856list',[])
+    if not links and holding.get('ELECTRONIC_DATA', {}).get('LINK856U', None):
+        links = [{'u': holding['ELECTRONIC_DATA']['LINK856U']}] 
+    for link in links:
+        if link.get('u', None):
+            access = {} 
+            access['url'] = link['u']
+            if 'http' not in access['url']:
+                continue
+            access['label'] = link.get('3', '')
+            if holding['LIBRARY_NAME'] in ['GW','HI','IA','HT','WRLC','E-Resources']: 
+                access['available'] = True
+                if holding.get('LinkResolverData', None):
+                    continue 
+                if 'RushPrintRequest' in access['url']:
+                    access['url'] = settings.DDA_URL + '&entry_994442820=ID:' + \
+                                    str(holding['BIB_ID']) + ' TITLE:' + title \
+                                    + ' ISBN:' + isbn 
+                    access['label'] = 'Request print edition'
+                    access['available'] = False
+		if settings.BOUND_WITH_ITEM_LINK in access['url']: 
+                    access['label'] = 'Bound with item'
+                    access['available'] = False 
+            else:
+                if 'endowment' in access['url']:
+                    continue 
+                if 'mrqe' in access['url']:
+                    access['label'] = 'Movie Review'
+                access['available'] = online_available(link)
+                if not access['available'] and not access['label']:
+                    access['label'] = 'Full text online' 
+            online.append(access)
+    # check for duplicate URLs in online holdings 
+    urls = []
+    for x in online:
+        if x['url'] in urls:
+            online.remove(x)
+        else:
+            urls.append(x['url'])
+    
+    return online 
+
+
+def online_available(link):
+    '''    
+    analyze other campus's links for online availability to GW: 
+    '''    
+    if 'proxy' in link['u'] or 'serialssolutions' in link['u'] \
+       or 'eblib' in link['u']:
+        return False
+    else: 
+        return True
