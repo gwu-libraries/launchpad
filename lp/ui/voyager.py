@@ -1752,7 +1752,7 @@ def allign_gt_internet_link(items, internet):
     return internet
 
 
-def get_links(holding, title=None, isbn=None):
+def get_links(holding, title, isbn):
     '''
     draws from marc856list and ELECTRONIC_DATA to create a list containing a 
     dictionary for each link with url, label, available (online 
