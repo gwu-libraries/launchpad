@@ -621,7 +621,9 @@ ORDER BY library.library_name"""
                     holdings.append(hathitrusthold)
     
     for holding in holdings:
-        holding['ONLINE'] = get_links(holding, bib_data['TITLE'], bib_data['ISBN'])
+        dda_isbn = bib_data.get('ISBN', '')
+        dda_title = bib_data.get('TITLE','')
+        holding['ONLINE'] = get_links(holding, dda_isbn, dda_title)
  
     return [h for h in holdings if not h.get('REMOVE', False)]
 
@@ -1750,7 +1752,7 @@ def allign_gt_internet_link(items, internet):
     return internet
 
 
-def get_links(holding, title, isbn):
+def get_links(holding, title=None, isbn=None):
     '''
     draws from marc856list and ELECTRONIC_DATA to create a list containing a 
     dictionary for each link with url, label, available (online 
