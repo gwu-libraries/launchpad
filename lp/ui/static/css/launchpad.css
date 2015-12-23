@@ -258,6 +258,7 @@ ul.subjects {
 .subjects li {
   display: inline;
   font-size: inherit;
+  padding-left: 1em;
 }
 
 #active-facets {
