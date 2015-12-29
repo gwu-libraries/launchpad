@@ -32,7 +32,7 @@ def gacs(field):
 
 mapping = (
     ('STANDARD_TITLE', 'Standard Title', ['240']),
-    ('OTHER_TITLE', 'Other Title', ['130', '242', '246', '730', '740', '247']),
+    ('OTHER_TITLE', 'Other Title', [('130', None, None, 'a'), '242', '246', '730', '740', '247']),
     ('OTHER_AUTHORS', 'Other Authors', [('700', None, None, 'a,d'), ('710', None, None, 'a,b,c,d,g'), '711']),
     ('EARLIER_TITLE', 'Earlier Title', ['247', '780']),
     ('TITLE_CHANGED_TO', 'Title Changed To', ['785']),
