@@ -499,6 +499,8 @@
 <div id="details" class="tab-pane">
   <table>
         {% for name, values in details %}
+        {% if not "Linked" in name %}
+        <!-- Linked data fields are dictionaries and are listed after other detail -->
         <tr>
             <td class="field-label">{{ name }}</td>
             <td>
@@ -518,11 +520,75 @@
                 {% endfor %}
             </td>
         </tr>
+        {% endif %}
         {% endfor %}
+
+        <!-- Linked data fields begin -->
+        {% if bib.URI_AUTHOR %}
+            {% for item in bib.URI_AUTHOR %}
+            <tr>
+                <td class="field-label">Authors: linked data</td>
+                <td >{{item.linktext}} 
+                    <br><a href="{{item.uri}}">{{item.uri}}</a></td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+
+        {% if bib.URI_7XX %}
+            {% for item in bib.URI_7XX %}
+            <tr>
+                <td class="field-label">Other Authors: linked data</td>
+                <td >{{item.linktext}} 
+                    <br><a href="{{item.uri}}">{{item.uri}}</a></td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+
+        {% if bib.URI_SUBJECTS %}
+            {% for item in bib.URI_SUBJECTS %}
+            <tr>
+                <td class="field-label">Subjects: linked data</td>
+                <td >{{item.linktext}} 
+                    <br><a href="{{item.uri}}">{{item.uri}}</a></td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+        
+        {% if bib.URI_GENRE %}
+            {% for item in bib.URI_GENRE %}
+            <tr>
+                <td class="field-label">Genres: linked data</td>
+                <td >{{item.linktext}} 
+                    <br><a href="{{item.uri}}">{{item.uri}}</a></td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+
+        {% if bib.URI_AUTHORID %}
+            {% for item in bib.URI_AUTHORID %}
+            <tr>
+                <td class="field-label">WorldCat Identities</td>
+                <td >Publication timeline, list of works, related names and subjects for {{item.linktext}} 
+                    <br><a href="{{item.uri}}">{{item.uri}}</a></td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+
+        {% if bib.URI_WORKID %}
+            {% for item in bib.URI_WORKID %}
+            <tr>
+                <td class="field-label">{{item.linktext}} 
+                    </td>
+                <td><a href="{{item.uri}}">{{item.uri}}</a></td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Linked data fields end -->
         {% if bib.OCLC %}
         <tr>
-            <td class="field-label">OCLC Number</td>
-            <td>{{ bib.OCLC }}</td>
+            <td class="field-label">WorldCat Search</td>
+            <td><a href='http://www.worldcat.org/search?q={{ bib.TITLE }}'>{{ bib.OCLC }}</a></td>
         </tr>
         {% endif %}
     </table>
