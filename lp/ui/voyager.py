@@ -1808,7 +1808,7 @@ def online_available(link):
     analyze other campus's links for online availability to GW: 
     '''    
     if 'proxy' in link['u'] or 'serialssolutions' in link['u'] \
-       or 'eblib' in link['u']:
+       or 'eblib' in link['u'] or 'mutex' in link['u']:
         return False
     else: 
         return True
