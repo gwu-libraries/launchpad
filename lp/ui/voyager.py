@@ -27,10 +27,17 @@ GW_LIBRARY_IDS = [7, 11, 18, 21]
 
 def _make_dict(cursor, first=False):
     desc = cursor.description
-    mapped = [
-        dict(zip([col[0] for col in desc], row))
-        for row in cursor.fetchall()
-    ]
+    try:
+        mapped = [
+            dict(zip([col[0] for col in desc], row))
+            for row in cursor.fetchall()
+        ]
+    except DjangoUnicodeDecodeError:
+        mapped = [
+            dict(zip([col[0] for col in desc], row.decode('iso-8859-1').encode('utf8')))
+            for row in cursor.fetchall()
+        ] 
+ 
     # strip string values of trailing whitespace
     for d in mapped:
         for k, v in d.items():
@@ -136,6 +143,7 @@ AND bib_master.suppress_in_opac='N'"""
             for title in title_fields:
                 bib['TITLE_ALL'] += title.format_field().decode('iso-8859-1')\
                     .encode('utf-8')
+            #bib['ISBN'] = rec.isbn()
         else:
             bib = _make_dict(cursor, first=True)
     except DjangoUnicodeDecodeError:
