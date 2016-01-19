@@ -267,6 +267,9 @@
                         <div class='itemrow'>
                             {% if bib.FINDING_AID or item.TRIMMED_LOCATION_DISPLAY_NAME == 'GELMAN Special Collections' %}
                                 Gelman Special Collections
+                                {% if item.TEMPLOCATION %}
+                                    <br /> {{ item.TEMPLOCATION }}
+                                {% endif %}
                             {% elif item.TEMPLOCATION %}
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
