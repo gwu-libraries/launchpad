@@ -62,16 +62,11 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
     while True:
         try:
             row = cursor.fetchone()
-            print "row from try block is" + smart_str(row)
             if row:
                 authors.append(smart_str(row[0]))
-                print "try block authors list is now:" + str(authors) 
-                #row = cursor.fetchone()
-                print "ALL DONE WITH TRY BLOCK"
             else:
                 break
         except DjangoUnicodeDecodeError:
-            print "LOOK !!!!!!! error raised"
             continue 
  
     # trim whitespace
