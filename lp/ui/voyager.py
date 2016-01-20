@@ -27,7 +27,6 @@ GW_LIBRARY_IDS = [7, 11, 18, 21]
 
 def _make_dict(cursor, first=False):
     desc = cursor.description
-    #try:
     mapped = [
         dict(zip([col[0] for col in desc], row))
         for row in cursor.fetchall()
@@ -58,18 +57,22 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
     authors = []
     if bib['AUTHOR']:
         authors.append(bib['AUTHOR'])
-    try:
-        row = cursor.fetchone()
-        while row:
-            authors.append(smart_str(row[0]))
+    print "inital authors list, from bib['AUTHOR'] is" + str(authors)
+    
+    while True:
+        try:
             row = cursor.fetchone()
-    except DjangoUnicodeDecodeError:
-        row = cursor.fetchone()
-        while row:
-            authors.append(smart_str(row[0]))
-            row = cursor.fetchone()
-    except:
-        pass
+            print "row from try block is" + smart_str(row)
+            if row:
+                authors.append(smart_str(row[0]))
+                print "try block authors list is now:" + str(authors) 
+                #row = cursor.fetchone()
+                print "ALL DONE WITH TRY BLOCK"
+            else:
+                break
+        except DjangoUnicodeDecodeError:
+            print "LOOK !!!!!!! error raised"
+            continue 
  
     # trim whitespace
     if not authors:
