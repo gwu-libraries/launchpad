@@ -68,8 +68,6 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
         while row:
             authors.append(smart_str(row[0]))
             row = cursor.fetchone()
-#    except:
-#        pass
  
     # trim whitespace
     if not authors:
