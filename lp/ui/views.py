@@ -314,11 +314,15 @@ def gmitem(request, gmbibid):
                 holdings = elecsort(availsort(ours)) \
                     + elecsort(availsort(shared)) \
                     + libsort(elecsort(availsort(theirs), rev=True))
+                try:
+                    linkval = bib.get('LINK', [])[9:]
+                except:
+                    linkval = ''
             return render(request, 'item.html', {
                 'bibid': bibid,
                 'bib': bib,
                 'holdings': holdings,
-                'link': bib.get('LINK', [])[9:],
+                'link': linkval,
                 'show_wrlc_link': show_wrlc_link,
                 'non_wrlc_item': True
             })
