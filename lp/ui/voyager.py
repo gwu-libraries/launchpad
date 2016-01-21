@@ -57,10 +57,18 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
     authors = []
     if bib['AUTHOR']:
         authors.append(bib['AUTHOR'])
-    row = cursor.fetchone()
-    while row:
-        authors.append(row[0])
-        row = cursor.fetchone()
+    print "inital authors list, from bib['AUTHOR'] is" + str(authors)
+    
+    while True:
+        try:
+            row = cursor.fetchone()
+            if row:
+                authors.append(smart_str(row[0]))
+            else:
+                break
+        except DjangoUnicodeDecodeError:
+            continue 
+ 
     # trim whitespace
     if not authors:
         return []
