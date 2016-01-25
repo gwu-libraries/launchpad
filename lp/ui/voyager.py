@@ -235,7 +235,8 @@ WHERE bib_index.index_code IN (%s)
 AND bib_index.normal_heading = '%s'
 AND bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
-AND bib_master.suppress_in_opac = 'N'"""
+AND bib_master.suppress_in_opac = 'N'
+AND ROWNUM < 7"""
     cursor = connection.cursor()
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
     cursor.execute(query, [])
@@ -305,7 +306,8 @@ AND bib_index.normal_heading IN (
     AND bib_index.normal_heading != bib_index.display_heading"""
     query[3] = """
     AND UPPER(bib_index.display_heading) NOT LIKE %s
-    AND UPPER(bib_index.display_heading) NOT LIKE %s"""
+    AND UPPER(bib_index.display_heading) NOT LIKE %s
+    AND ROWNUM < 7"""
     query[4] = """
     AND bib_id IN (
         SELECT DISTINCT bib_index.bib_id
@@ -355,10 +357,11 @@ ORDER BY bib_index.bib_id"""
 
 def get_related_isbns(bibs):
     query = """
-SELECT DISTINCT bib_index.display_heading
+SELECT bib_index.display_heading
     FROM bib_index
     WHERE bib_index.bib_id IN (%s)
     AND bib_index.index_code IN (%s)
+    AND ROWNUM < 7
     ORDER BY bib_index.display_heading"""
     indexclause = _in_clause(settings.INDEX_CODES['isbn'])
     numclause = _in_clause(bibs)
@@ -393,6 +396,7 @@ AND bib_master.suppress_in_opac='N'"""
         query = query + """
 AND bib_index.normal_heading != bib_index.display_heading"""
     query = query + """
+AND ROWNUM < 7
 ORDER BY bib_index.normal_heading"""
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), bibid)
     cursor = connection.cursor()
