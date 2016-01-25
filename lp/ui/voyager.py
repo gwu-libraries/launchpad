@@ -1792,7 +1792,7 @@ def get_links(holding, title, isbn):
                     access['label'] = 'Bound with item'
                     access['available'] = False 
             else:
-                if 'endowment' in access['url']:
+                if 'endowment' in access['url'] or 'catdir' in access['url']:
                     continue 
                 if 'mrqe' in access['url']:
                     access['label'] = 'Movie Review'
