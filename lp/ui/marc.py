@@ -29,6 +29,7 @@ def gacs(field):
 # a machine readable version of
 # https://github.com/gwu-libraries/launchpad/wiki/MARC-Extraction
 # note: the order of each rule controls the display order
+# note: the ones with 'json data only' are not displayed by item.html
 
 mapping = (
     ('STANDARD_TITLE', 'Standard Title', ['240']),
@@ -69,14 +70,14 @@ mapping = (
     ('PUBLISHER_NUMBER', 'Publisher Numbers', ['028']),
     ('GEOGRAPHIC_AREA', 'Geographic Area', [('043', gacs)]),
     ('NETWORK_NUMBER', 'Network Numbers', [('035', None, None, 'a')]),
-    ('URI_AUTHOR', 'Linked data', [('100', None, None, 'a,0')]),
-    ('URI_7XX', 'Linked data', [('700', None, None, 'a,0'), ('710', None, None, 'a,0')]),
-    ('URI_SUBJECTS','Linked data', [('650', None, None, 'a,0'), ('651', None, None, 'a,0'), \
+    ('URI_AUTHOR', 'json data only', [('100', None, None, 'a,0')]),
+    ('URI_7XX', 'json data only', [('700', None, None, 'a,0'), ('710', None, None, 'a,0')]),
+    ('URI_SUBJECTS','json data only', [('650', None, None, 'a,0'), ('651', None, None, 'a,0'), \
                                   ('600', None, None, 'a,0'), ('610', None, None, 'a,0'), \
                                   ('630', None, None, 'a,0')]),
-    ('URI_GENRE', 'Linked data', [('655', None, None, 'a,0')]),
-    ('URI_WORKID','Linked data',  [('787', None, None, 'n,o')]),
-    ('URI_AUTHORID', 'Linked data', [('100', None, None, 'a,0')]),
+    ('URI_GENRE', 'json data only', [('655', None, None, 'a,0')]),
+    ('URI_WORKID','json data only',  [('787', None, None, 'n,o')]),
+    ('URI_AUTHORID', 'json data only', [('100', None, None, 'a,0')]),
 )
 
 
@@ -129,7 +130,10 @@ def extract(record, d={}):
                 raise Exception("invalid mapping for %s" % name)
 
     # The URI set must be checked for http, converted to a dictionary
-    # 
+    # The first time a tag was retrieved we got the text (e.g., author), when we then 
+    # retrieve the same tag for URI, we get the $0, if any (e.g., http://loc.gov.authorities.names/...) 
+    # get_http_link_set makes sure there is an http in $0. In non-GW records, there will not be any.
+
     d['URI_SUBJECTS'] = get_http_link_set(d['URI_SUBJECTS'])
     d['URI_GENRE']    = get_http_link_set(d['URI_GENRE'])
     d['URI_AUTHOR']   = get_http_link_set(d['URI_AUTHOR'])
@@ -142,14 +146,12 @@ def extract(record, d={}):
 def get_http_link_set(values):
     # Given a list of values, return only the ones that have the string http in them.
     # Convert list to dictionary for easier parsing in item.html
-    count   = 0
     httpset = []
     parts   = {}
     for item in values:
-        if 'http://' in values[count]:
-           parts = get_uri_parts(values[count])
+        if 'http' in item:
+           parts = get_uri_parts(item)
            httpset.append(parts)
-        count = count +1
     return httpset
 
 def make_identity_link(a):
