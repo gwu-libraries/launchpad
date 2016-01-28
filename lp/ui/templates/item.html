@@ -499,7 +499,7 @@
 <div id="details" class="tab-pane">
   <table>
         {% for name, values in details %}
-        {% if not "Linked" in name %}
+        {% if not "json data only" in name %}
         <!-- Linked data fields are dictionaries and are listed after other detail -->
         <tr>
             <td class="field-label">{{ name }}</td>
@@ -535,8 +535,7 @@
             {% for item in bib.URI_AUTHORID %}
             <tr>
                 <td class="field-label">WorldCat Identities</td>
-                <td >{{item.linktext}} 
-                    <br /><a href="{{item.uri}}" target='WorldCatIdentity'>WorldCat Identities</a>
+                <td ><a href="{{item.uri}}" target='WorldCatIdentity'>{{item.linktext}}</a>
                     <i class="fa fa-external-link"></i>
                     <br />Publication timeline, list of works, related names and subjects and other information</td>
             </tr>
