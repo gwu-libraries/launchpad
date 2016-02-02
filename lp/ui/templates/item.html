@@ -274,13 +274,13 @@
                                 {{ item.TEMPLOCATION|noscream }}
                                 <br/>
                                 {% if holding.ITEMS|length > max_items and forloop.counter == max_items %}
-                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] Show " style="border:none;background:none;color:blue;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');">
+                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] Show " style="border:none;background:none;color:#0088cc;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');">
                                 {% endif %}
                             {% else %}
                                 {{ item.TRIMMED_LOCATION_DISPLAY_NAME|noscream }}
                                 <br />
                                 {% if holding.ITEMS|length > max_items and forloop.counter == max_items %}
-                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] Show " style="border:none;background:none;color:blue;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
+                                    <input id="{{holding.BIB_ID}}1" type="button" value="[+] Show " style="border:none;background:none;color:#0088cc;" onclick="toggle_visibility('{{holding.BIB_ID}}','{{holding.BIB_ID}}1');"> 
                                 {% endif %}
                             {% endif %}
                         </div>
