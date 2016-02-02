@@ -343,7 +343,7 @@
                                    <span style='color: green'>Available</span>
                                     <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")' onClick='ga("send","event","title-info","link","sms-link");' ><i class="fa fa-mobile fa-lg"></i></a>
                                {% else %}
-                                   {% if item.TEMPLOCATION == 'WRLC Shared Collections Facility (Restricted Use)' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID %}
+                                   {% if item.TEMPLOCATION == 'WRLC Shared Collections Facility (Restricted Use)' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID or item.ITEM_STATUS_DESC == 'DUE 02-20-2022'%}
                                        <span class='off-site'>Off-site </span>
                                        <br />
                                    {% else %}
