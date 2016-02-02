@@ -502,6 +502,8 @@
 <div id="details" class="tab-pane">
   <table>
         {% for name, values in details %}
+        {% if not "json data only" in name %}
+        <!-- Linked data fields are dictionaries and are listed after other detail -->
         <tr>
             <td class="field-label">{{ name }}</td>
             <td>
@@ -521,13 +523,28 @@
                 {% endfor %}
             </td>
         </tr>
+        {% endif %}
         {% endfor %}
+
         {% if bib.OCLC %}
         <tr>
-            <td class="field-label">OCLC Number</td>
-            <td>{{ bib.OCLC }}</td>
+            <td class="field-label">WorldCat</td>
+            <td><a href='http://www.worldcat.org/search?q={{ bib.TITLE }}' target='WorldCatSearch'>Search OCLC WorldCat</a>
+                <i class="fa fa-external-link"></i></td>
         </tr>
         {% endif %}
+        <!-- Linked data fields begin -->
+        {% if bib.URI_AUTHORID %}
+            {% for item in bib.URI_AUTHORID %}
+            <tr>
+                <td class="field-label">WorldCat Identities</td>
+                <td ><a href="{{item.uri}}" target='WorldCatIdentity'>{{item.linktext}}</a>
+                    <i class="fa fa-external-link"></i>
+                    <br />Publication timeline, list of works, related names and subjects and other information</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
+        <!-- Linked data fields end -->
     </table>
 </div>
 
