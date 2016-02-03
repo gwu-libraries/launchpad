@@ -862,10 +862,11 @@ def get_marc856(marc856_field):
             else:
                # Possibly not subfield 3, u, or z because a '$' character was 
                # part of the URL string. Append whatever found onto the $u
-               # including the $ symbol.
-                url_plus_segment= temp['u'],'$',subfield[0],subfield[1:]
-                fullurl = ''.join(url_plus_segment)
-                temp['u'] = fullurl
+               # including the $ symbol except x which might be present.
+                if subfield[0] != 'x':
+                    url_plus_segment= temp['u'],'$',subfield[0],subfield[1:]
+                    fullurl = ''.join(url_plus_segment)
+                    temp['u'] = fullurl
         marc856.append(temp)
     return marc856
 
