@@ -265,7 +265,7 @@
                     <tr>
                     <td>
                         <div class='itemrow'>
-                            {% if bib.FINDING_AID or item.TRIMMED_LOCATION_DISPLAY_NAME == 'GELMAN Special Collections' %}
+                            {% if bib.FINDING_AID and item.TRIMMED_LOCATION_DISPLAY_NAME == 'GELMAN Special Collections' %}
                                 Gelman Special Collections
                                 {% if item.TEMPLOCATION %}
                                     <br /> {{ item.TEMPLOCATION }}
@@ -306,7 +306,7 @@
                     <td>
                            {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
                            {% if item.ITEM_ENUM %} {{ item.ITEM_ENUM }} {% endif %}
-                           {% if bib.FINDING_AID %}
+                           {% if bib.FINDING_AID and 'GELMAN Special' in item.TRIMMED_LOCATION_DISPLAY_NAME %}
                                <br /><a href="{{bib.FINDING_AID}}" target="eresourcewindow">View the Finding Aid</a>
                            {% endif %}
                            {% if item.LIBRARY_FULL_NAME == 'Hathi Trust' %}
@@ -360,11 +360,13 @@
                        {% endif %}
                        </td>
                        {% endif %}
-                       <td>
+                       {% if not holding.ONLINE %}
+                           <td>
                            {% if item.ELIGIBLE %}
-                           <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="ga('send','event','Document Delivery','CLS','{{bib.BIB_FORMAT}}');" target='clswindow'>Request</a><i class="fa fa-external-link"></i>
+                               <a href='https://www.aladin.wrlc.org/Z-WEB/CLSReqForm?srcid=voyager:WRLC&bibid={{ holding.BIB_ID }}' onClick="ga('send','event','Document Delivery','CLS','{{bib.BIB_FORMAT}}');" target='clswindow'>Request</a><i class="fa fa-external-link"></i>
                            {% endif %}
                        </td>
+                       {% endif %}
                   </tr>
                            {% if holding.ITEMS|length > max_items and forloop.counter == max_items %}
                                <td colspan="4" width="100%">
