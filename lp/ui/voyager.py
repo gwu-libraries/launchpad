@@ -57,7 +57,6 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
     authors = []
     if bib['AUTHOR']:
         authors.append(bib['AUTHOR'])
-    print "inital authors list, from bib['AUTHOR'] is" + str(authors)
     
     while True:
         try:
@@ -860,6 +859,14 @@ def get_marc856(marc856_field):
         for subfield in item.split('$')[1:]:
             if subfield[0] in temp:
                 temp[subfield[0]] = subfield[1:]
+            else:
+               # Possibly not subfield 3, u, or z because a '$' character was 
+               # part of the URL string. Append whatever found onto the $u
+               # including the $ symbol except x which might be present.
+                if subfield[0] != 'x':
+                    url_plus_segment= temp['u'],'$',subfield[0],subfield[1:]
+                    fullurl = ''.join(url_plus_segment)
+                    temp['u'] = fullurl
         marc856.append(temp)
     return marc856
 
