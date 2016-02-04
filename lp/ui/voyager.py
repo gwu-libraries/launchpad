@@ -598,38 +598,45 @@ ORDER BY library.library_name"""
                     for ld in linkdata:
                         holding['LinkResolverData'].append(ld)
     # get free electronic book link from open library and/or hathi trust
-    for numformat in ('LCCN', 'ISBN', 'OCLC'):
-        if bib_data.get(numformat):
-            if numformat == 'OCLC':
-                num = filter(lambda x: x.isdigit(), bib_data[numformat])
-            # check if key exists before using it
-            elif numformat == 'ISBN' and \
-                    'NORMAL_ISBN_LIST' in bib_data and \
-                    len(bib_data['NORMAL_ISBN_LIST']) > 0:
-                num = bib_data['NORMAL_ISBN_LIST'][0]
-            else:
-                num = bib_data[numformat]
-
+    # First, iterate through the holdings so far, look for an e-resource eg 14732552.
+    # If none, then check for free  hathi trust or internet archive eg 2225666.
+    check_for_free_online = True
+    for h in holdings:
+        if 'E-Resources' == h['LIBRARY_NAME']:
+            check_for_free_online = False
+    if check_for_free_online:
+        for numformat in ('LCCN', 'ISBN', 'OCLC'):
+            if bib_data.get(numformat):
+                if numformat == 'OCLC':
+                    num = filter(lambda x: x.isdigit(), bib_data[numformat])
+                # check if key exists before using it
+                elif numformat == 'ISBN' and \
+                        'NORMAL_ISBN_LIST' in bib_data and \
+                        len(bib_data['NORMAL_ISBN_LIST']) > 0:
+                    num = bib_data['NORMAL_ISBN_LIST'][0]
+                else:
+                    num = bib_data[numformat]
+            
             # Internet Archive / Open Library
-            openlibhold = apis.openlibrary(num, numformat)
-            title = ''
-            if openlibhold.get('MFHD_DATA', None):
-                title = get_open_library_item_title(openlibhold['MFHD_DATA']
-                                                    ['marc856list'][0]['u'])
-            if openlibhold:
+                openlibhold = apis.openlibrary(num, numformat)
+                title = ''
+                if openlibhold.get('MFHD_DATA', None):
+                    title = get_open_library_item_title(openlibhold['MFHD_DATA']
+                                                        ['marc856list'][0]['u'])
+                if openlibhold:
                 # Compare the title. Can't trust Open Library match.
-                bib_title = bib_data['TITLE'][0:10].lower()
-                open_title = title[0:10].lower()
-                ratio = difflib.SequenceMatcher(None, bib_title,
-                                                open_title).ratio()
-                if ratio >= settings.TITLE_SIMILARITY_RATIO:
-                    holdings.append(openlibhold)
+                    bib_title = bib_data['TITLE'][0:10].lower()
+                    open_title = title[0:10].lower()
+                    ratio = difflib.SequenceMatcher(None, bib_title,
+                                                    open_title).ratio()
+                    if ratio >= settings.TITLE_SIMILARITY_RATIO:
+                        holdings.append(openlibhold)
                     
             # HathiTrust. No need to check title, and OCLC match is sufficient. 
-            if numformat == 'OCLC': 
-                hathitrusthold = apis.hathitrust(num, numformat)
-                if hathitrusthold:
-                    holdings.append(hathitrusthold)
+                if numformat == 'OCLC': 
+                    hathitrusthold = apis.hathitrust(num, numformat)
+                    if hathitrusthold:
+                        holdings.append(hathitrusthold)
     
     for holding in holdings:
         dda_isbn = bib_data.get('ISBN', '')
