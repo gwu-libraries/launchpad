@@ -1,49 +1,31 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en-us">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset="UTF-8">
     <title>Launchpad by gwu-libraries</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/main.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
+    <section class="page-header">
+      <h1 class="project-name">Launchpad</h1>
+      <h2 class="project-tagline">A stable URL for every item in the library&#39;s catalog</h2>
+      <a href="https://github.com/gwu-libraries/launchpad" class="btn">View on GitHub</a>
+      <a href="https://github.com/gwu-libraries/launchpad/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/gwu-libraries/launchpad/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-      <header>
-        <h1>Launchpad</h1>
-        <p>A stable URL for every item in the library's catalog</p>
-      </header>
-
-      <div id="banner">
-        <span id="logo"></span>
-
-        <a href="https://github.com/gwu-libraries/launchpad" class="button fork"><strong>View On GitHub</strong></a>
-        <div class="downloads">
-          <span>Downloads:</span>
-          <ul>
-            <li><a href="https://github.com/gwu-libraries/launchpad/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/gwu-libraries/launchpad/tarball/master" class="button">TAR</a></li>
-          </ul>
-        </div>
-      </div><!-- end banner -->
-
-    <div class="wrapper">
-      <nav>
-        <ul></ul>
-      </nav>
-      <section>
-        <h3>About launchpad and the GW Findit Project</h3>
+    <section class="main-content">
+      <h3>
+<a id="about-launchpad-and-the-gw-findit-project" class="anchor" href="#about-launchpad-and-the-gw-findit-project" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About launchpad and the GW Findit Project</h3>
 
 <p>Launchpad uses our catalog, journals, and databases to make it easier to get to what you're looking for and to give you a way to get what you need, even if it's not readily available at GW or our consortium peer libraries. </p>
 
-<h3>Features</h3>
+<h3>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h3>
 
 <ul>
 <li>Standard URL patterns provide access from Worldcat, Google, and local catalogs based upon standard numbers for Item ID, ISBN, ISSN, and OCLC Number. [See Findit API, below]</li>
@@ -63,7 +45,10 @@
 <li>Links to online full text, streaming video, or streaming audio content are displayed with the appropriate labels (Full Text Online, Watch Online, or Listen Online).</li>
 <li>The software is available is free software under an MIT-style license (see below).</li>
 <li>The fonts, colors, and other style elements as well as certain behaviors -- such as the sorting rules -- are configurable.</li>
-</ul><h3>GW Findit environment</h3>
+</ul>
+
+<h3>
+<a id="gw-findit-environment" class="anchor" href="#gw-findit-environment" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GW Findit environment</h3>
 
 <p>We build launchpad at GW Libraries to bring together information from three separate integrated library systems:</p>
 
@@ -71,7 +56,9 @@
 <li>Washington Research Library Consortium (WRLC): ExLibris Voyager ILS</li>
 <li>Georgetown University: Innovative Interfaces Millenium ILS</li>
 <li>George Mason University: ExLibris Voyager ILS</li>
-</ul><p>The WRLC Voyager ILS is a <em>union</em> catalog. It is used to maintain bibliographic, holding, and item information by most members of the library consortium. These institutions are listed here with the approximate number of titles held by each:</p>
+</ul>
+
+<p>The WRLC Voyager ILS is a <em>union</em> catalog. It is used to maintain bibliographic, holding, and item information by most members of the library consortium. These institutions are listed here with the approximate number of titles held by each:</p>
 
 <ul>
 <li>American University (1,300,000)</li>
@@ -81,14 +68,19 @@
 <li>Howard University (760,000)</li>
 <li>Marymount University (185,000)</li>
 <li>University of the District of Columbia (575,000)</li>
-</ul><p>In addition, the WRLC Voyager ILS stores a copy of bibliographic information provided by two other local institutions that maintain their own ILS:</p>
+</ul>
+
+<p>In addition, the WRLC Voyager ILS stores a copy of bibliographic information provided by two other local institutions that maintain their own ILS:</p>
 
 <ul>
 <li>George Mason University (1,750,000)</li>
 <li>Georgetown University (2,740,000)</li>
-</ul><p>The Voyager ILS hosted by WRLC does not have the holdings and items from the other two sytems. In order to obtain detailed holding and circulation status for George Mason and Georgetown it is necessary to query those systems directly. </p>
+</ul>
 
-<h3>The Findit programming environment</h3>
+<p>The Voyager ILS hosted by WRLC does not have the holdings and items from the other two sytems. In order to obtain detailed holding and circulation status for George Mason and Georgetown it is necessary to query those systems directly. </p>
+
+<h3>
+<a id="the-findit-programming-environment" class="anchor" href="#the-findit-programming-environment" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The Findit programming environment</h3>
 
 <p>The Findit project is <strong>Python</strong> and <strong>Django</strong> based application.  It assumes the presence of a primary Voyager/Oracle database, with direct read-only access using Oracle's SQL Plus client.  At present, it has no separate application database of its own, and it does not write data to Oracle.</p>
 
@@ -96,13 +88,16 @@
 
 <p>Launchpad optimizes the interactions with the integrated library systems by minimizing the number of database roundtrips with direct SQL queries.  We run it in production at GW Libraries with memcached page caching (as provided by django) enabled. </p>
 
-<h4>How Findit obtains real time availability</h4>
+<h4>
+<a id="how-findit-obtains-real-time-availability" class="anchor" href="#how-findit-obtains-real-time-availability" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How Findit obtains real time availability</h4>
 
 <p>The Findit program runs in a Linux environment hosted at the WRLC facilities. Findit uses Oracle <strong>SQLPlus InstantClient</strong> software on this server to execute SQL queries against the WRLC Voyager Oracle database using a read-only user account. When a title is held by Georgetown or George Mason, Findit executes <strong>Z39.50</strong> queries against the appropriate remote database. The application collates the responses and generates a web page or JSON data structure.</p>
 
-<h3>Findit API</h3>
+<h3>
+<a id="findit-api" class="anchor" href="#findit-api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Findit API</h3>
 
-<h4>Link patterns in Findit</h4>
+<h4>
+<a id="link-patterns-in-findit" class="anchor" href="#link-patterns-in-findit" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Link patterns in Findit</h4>
 
 <p>The standard URL for any item in findit is its WRLC Voyager database bibliographic identifier, or "bib id". Every request to Findit should result in a URL like this: </p>
 
@@ -117,7 +112,8 @@ In this example, 3992408 is the bib id. </p>
 
 <p><a href="http://findit.library.gwu.edu/oclc/00162792">http://findit.library.gwu.edu/oclc/00162792</a></p>
 
-<h4>Data Raw data from findit in JSON</h4>
+<h4>
+<a id="data-raw-data-from-findit-in-json" class="anchor" href="#data-raw-data-from-findit-in-json" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Data Raw data from findit in JSON</h4>
 
 <p>Just add ".json" to the end of any /item/[bib id] URL: </p>
 
@@ -127,35 +123,42 @@ In this example, 3992408 is the bib id. </p>
 
 <p><em>We are actively refactoring / improving the source. The JSON structure is subject to change.</em></p>
 
-<h3>Indexing</h3>
+<h3>
+<a id="indexing" class="anchor" href="#indexing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Indexing</h3>
 
-<h4>Schema.org</h4>
+<h4>
+<a id="schemaorg" class="anchor" href="#schemaorg" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Schema.org</h4>
 
 <p>The Findit pages contain semantic markup compatible with standards established by <a href="http://schema.org/CreativeWork">schema.org</a>.</p>
 
-<h4>Google site index</h4>
+<h4>
+<a id="google-site-index" class="anchor" href="#google-site-index" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Google site index</h4>
 
 <p>Content from the Findit project is gradually being index with the Google site index tool. This indexing is progressing at the rate of a few thousand titles per day. There are somewhere in the neighborhood of 10 million titles in the WLRC collection. Searching a title and the phrase "gwu libraries" will yield search results that link to Findit by the item identifier.</p>
 
 <p>For example search
-<code>data mining gwu libraries</code></p>
+<code>edward tufte gwu libraries</code></p>
 
 <p>Enabling the configuration setting <code>ENABLE_SITEMAPS</code> will expose all the non-suppressed item URLs in the catalog to crawlers using the sitemaps specification.</p>
 
-<h3>License</h3>
+<h3>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h3>
 
 <p>Launchpad is free software under an MIT-style license.  You are free to use, copy, modify, and redistribute it according to the terms specified in <a href="https://github.com/gwu-libraries/launchpad/blob/master/LICENSE.txt">LICENSE.txt</a>.</p>
 
-<h3>Contact Information</h3>
+<h3>
+<a id="contact-information" class="anchor" href="#contact-information" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contact Information</h3>
 
 <p>Visit <a href="http://github.com/gwu-libraries/launchpad">http://github.com/gwu-libraries/launchpad</a>.</p>
-      </section>
-      <footer>
-        <p>Project maintained by <a href="https://github.com/gwu-libraries">gwu-libraries</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/gwu-libraries/launchpad">Launchpad</a> is maintained by <a href="https://github.com/gwu-libraries">gwu-libraries</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+
+    </section>
+
+  
   </body>
 </html>
