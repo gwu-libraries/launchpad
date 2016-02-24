@@ -225,50 +225,6 @@ def make_hathi_holding(url, fromRecord):
     }
     return holding
 
-def make_google_holding(bib):
-    # use library name IA
-    # add dummy elements to conform with holding model
-    holding = {
-        'LIBRARY_NAME': 'IA',
-        'LOCATION_NAME': 'HT',
-        'LOCATION_DISPLAY_NAME': 'HT: Hathi Trust',
-        'MFHD_DATA': {
-            "marc866list": [],
-            "marc856list": [
-                {"3": "",
-                 "z": "",
-                 "u": url}],
-            "marc852": ""
-        },
-        'MFHD_ID': None,
-        'ITEMS': [
-            {'ITEM_ENUM': None,
-             'ITEM_STATUS': None,
-             'TEMPLOCATION': None,
-             "ITEM_STATUS_DESC": None,
-             "ITEM_ID": 0,
-             "PERMLOCATION": None,
-             "LIBRARY_FULL_NAME": "Google Books",
-             "ELIGIBLE": False,
-             "TRIMMED_LOCATION_DISPLAY_NAME": "Google Books",
-             "CHRON": None,
-             "DISPLAY_CALL_NO": None,
-             "BIB_ID": None},
-        ],
-        'ELIGIBLE': False,
-        'LIBRARY_FULL_NAME': 'Google Books',
-        'TRIMMED_LOCATION_DISPLAY_NAME': 'Google Books',
-        'ELECTRONIC_DATA': {},
-        'LIBRARY_HAS': [],
-        'LOCATION_ID': None,
-        'AVAILABILITY': {},
-        'DISPLAY_CALL_NO': None,
-        'BIB_ID': None,
-    }
-    return holding
-
-
-
 def sersol360link(num, num_type, count=0):
     try:
         count += 1
