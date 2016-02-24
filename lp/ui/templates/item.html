@@ -182,6 +182,31 @@
 </div>
 </div>
 </div>
+{% if bib.GOOGLE_REVIEW %}
+    <div class="row-fluid">
+	<div class="span12">
+            <p>
+	    {% if bib.DISPLAY_ISBN_LIST %}
+                <span class="isbn"> ISBN:
+                {% for isbn in bib.DISPLAY_ISBN_LIST %}
+                        <span itemprop="isbn">{{ isbn }}
+                            {% if not forloop.last %}
+				, 
+                            {% endif %}
+                        </span>
+                {% endfor %}
+                </span>
+                </p>
+	    {% endif %}
+	    <h1> About this page</h1>
+	    <i class="fa fa-life-ring"></i> {{ bib.GOOGLE_MESSAGE }} 
+	    </p>
+            <p>
+            {{ bib.GOOGLE_REVIEW }} 
+            </p>
+	</div>
+     </div>
+{% endif %}
 
 {% if holdings %}
 <div class="row-fluid">
@@ -561,6 +586,12 @@
 Export citation to: <a href="{{ bib.REFWORKS_LINK }}" id="refworks" target="_blank" onClick="ga('send','event','title-info','link','refworks-export');">RefWorks</a><a style="padding-left:.5em;" href="http://libguides.gwu.edu/content.php?pid=23115" target="_blank"><i class="fa fa-info-circle"></i></a>
 {% endif %}
 </p>
+
+{% if bib.GOOGLE_REVIEW %}
+    <p>
+    View this title at: <a href="{{ bib.GOOGLE_LINK }}">Google Books</a><i class="fa fa-external-link"></i>
+    </p>
+{% endif %}
 
 {% assign_settings_value "DEBUG" as debug %}
 {% if debug %}
