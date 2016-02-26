@@ -53,6 +53,7 @@ def googlebooks(num, num_type, url, key):
 
 
 def worldcat(num, num_type, url, key):
+# e.g., /oclc/34473395  /oclc/34474496
     url = url % (num, key)
     try:
         records = marcxml.parse_xml_to_array(urlopen(url))
@@ -72,9 +73,33 @@ def worldcat(num, num_type, url, key):
     if bib['AUTHOR']:
         bib['AUTHORS'].insert(0, bib['AUTHOR'])
     bib['PUBLISHER'] = record.publisher() if record.publisher() else ''
-    bib['PUBLISHER_DATE'] = record.pubyear() if record.pubyear() else ''
-    bib['IMPRINT'] = '%s %s' % (bib['PUBLISHER'], bib['PUBLISHER_DATE'])
+    try:
+    	bib['PUBLISH_DATE'] = record.pubyear() 
+    except:
+	bib['PUBLISH_DATE'] = ''
+    bib['IMPRINT'] = '%s %s' % (bib['PUBLISHER'], bib['PUBLISH_DATE'])
     bib['BIB_FORMAT'] = 'as' if num_type == 'issn' else 'am'
+    bib['ISBN'] = record.isbn()
+    try:
+	physical = [entry.format_field() for entry in record.physicaldescription()]
+    	bib['DESC'] = physical[0]
+    except:
+	bib['DESC'] = ''
+    try:
+	notes = [entry.format_field() for entry in record.notes()]
+    	bib['NOTES'] = notes[0]
+    except:
+	bib['NOTES'] = ''
+    try:
+	subjects = [entry.format_field() for entry in record.subjects()]
+    	bib['SUBJECTS'] = subjects[0]
+    except:
+	bib['SUBJECTS'] = ''
+    # identify worldcat response for the item.html block
+    bib['WORLDCAT_RESPONSE'] = num
+    bib['WORLDCAT_MESSAGE'] = 'This page contains information from the OCLC WorldCat catalog.'
+    bib['WORLDCAT_SEARCH'] = '<a href=http://www.worldcat.org/search?q={{ bib.TITLE }}\
+				>Search OCLC Worldcat</a>'
     return bib
 
 
