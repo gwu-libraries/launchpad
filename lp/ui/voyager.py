@@ -639,10 +639,11 @@ ORDER BY library.library_name"""
                         holdings.append(hathitrusthold)
     
     for holding in holdings:
+        # consider putting DDA info in a dictionary
         dda_isbn = bib_data.get('ISBN', '')
-        dda_title = bib_data.get('TITLE','')
+        dda_title = bib_data.get('TITLE', '')
         holding['ONLINE'] = get_links(holding, dda_isbn, dda_title)
- 
+
     return [h for h in holdings if not h.get('REMOVE', False)]
 
 
@@ -1778,20 +1779,20 @@ def allign_gt_internet_link(items, internet):
     return internet
 
 
-def get_links(holding, title, isbn):
+def get_links(holding, isbn, title):
     '''
-    draws from marc856list and ELECTRONIC_DATA to create a list containing a 
-    dictionary for each link with url, label, available (online 
+    draws from marc856list and ELECTRONIC_DATA to create a list containing a
+    dictionary for each link with url, label, available (online
     to GW community)
-    '''  
+    '''
     online = []
-    #check MFHD_DATA marc856list
+    # check MFHD_DATA marc856list
     links = holding.get('MFHD_DATA', {}).get('marc856list',[])
     if not links and holding.get('ELECTRONIC_DATA', {}).get('LINK856U', None):
-        links = [{'u': holding['ELECTRONIC_DATA']['LINK856U']}] 
+        links = [{'u': holding['ELECTRONIC_DATA']['LINK856U']}]
     for link in links:
         if link.get('u', None):
-            access = {} 
+            access = {}
             access['url'] = link['u']
             if 'http' not in access['url']:
                 continue
@@ -1801,12 +1802,12 @@ def get_links(holding, title, isbn):
                 if holding.get('LinkResolverData', None):
                     continue 
                 if 'RushPrintRequest' in access['url']:
-                    access['url'] = settings.DDA_URL + '&entry_994442820=ID:' + \
-                                    str(holding['BIB_ID']) + ' TITLE:' + title \
-                                    + ' ISBN:' + isbn 
+                    # this is janky, create GET params in django-supported way 
+                    access['url'] = '/item/request/' + str(holding['BIB_ID']) + \
+                                    '/?title=' + title + '&isbn=' + isbn    
                     access['label'] = 'Request print edition'
                     access['available'] = False
-		if settings.BOUND_WITH_ITEM_LINK in access['url']: 
+                if settings.BOUND_WITH_ITEM_LINK in access['url']: 
                     access['label'] = 'Bound with item'
                     access['available'] = False 
             else:
@@ -1825,16 +1826,16 @@ def get_links(holding, title, isbn):
             online.remove(x)
         else:
             urls.append(x['url'])
-    
+
     return online 
 
 
 def online_available(link):
     '''    
     analyze other campus's links for online availability to GW: 
-    '''    
+    '''   
     if 'proxy' in link['u'] or 'serialssolutions' in link['u'] \
        or 'eblib' in link['u'] or 'mutex' in link['u']:
         return False
-    else: 
+    else:
         return True

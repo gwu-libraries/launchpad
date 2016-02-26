@@ -19,6 +19,7 @@ urlpatterns = patterns(
     url(r'^item/m(?P<gmbibid>\d{2,8})$', 'gmitem', name='gmitem'),
     url(r'^item/m(?P<gmbibid>\d{2,8}).json$', 'gmitem_json',
         name='gmitem_json'),
+    url(r'^item/request/(?P<bibid>\d+)', 'request_print', name='request_print'),
     url(r'^issn/(?P<issn>\d{4}-?\d{3}[0-9Xx])$', 'issn', name='issn'),
     url(r'^isbn/(?P<isbn>[0-9-xX]+)$', 'isbn', name='isbn'),
     url(r'^isbn/(?P<isbn>[0-9-xX]+) .*$', 'isbn'),

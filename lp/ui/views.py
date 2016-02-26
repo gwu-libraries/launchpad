@@ -10,11 +10,13 @@ import bibjsontools
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.utils import DatabaseError
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_page
 
 from requests import HTTPError
+
+from forms import PrintRequestForm
 
 from ui import voyager, apis, marc, summon, db
 from ui.sort import libsort, availsort, elecsort, templocsort, \
@@ -44,7 +46,7 @@ def _openurl_dict(request):
         p[k] = ','.join(v)
     d = {'params':  p}
     d['query_string'] = '&'.join(['%s=%s' % (k, v) for k, v
-                        in params.items()])
+                                 in params.items()])
     d['query_string_encoded'] = request.META.get('QUERY_STRING', '')
     return d
 
@@ -155,6 +157,26 @@ def item_marc(request, bibid):
         return HttpResponse('{}', content_type='application/json',
                             status=404)
     return HttpResponse(rec.as_json(indent=2), content_type='application/json')
+
+
+def request_print(request, bibid):
+    if request.method == 'POST':  # If the form has been submitted...
+        form = PrintRequestForm(request.POST)
+        if form.is_valid():  # All validation rules pass
+            # Process the data in form.cleaned_data
+            # TODO: set up appropriate redirect
+            return HttpResponseRedirect('/api/')
+    else:
+        isbn = request.GET.get('isbn', '').split(' ', 1)[0]
+        title = request.GET.get('title', '')
+        title_info = request.GET.get('title', '') + ' BIBID: ' + str(bibid)
+        form = PrintRequestForm(initial={'entry_994442820': title_info,
+                                         'entry_1457763040': isbn,
+                                         'entry_1537829419': bibid})
+        citation = {'isbn': isbn, 'title': title}
+    return render(request, 'request-print.html', {'form': form,
+                                                  'bibid': bibid,
+                                                  'citation': citation})
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
