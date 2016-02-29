@@ -37,6 +37,12 @@ class Z3950Catalog():
             zoom_record = self.zoom_record(bibid)
         if hasattr(zoom_record, 'data') and hasattr(zoom_record.data,
                                                     'holdingsData'):
+	    if school == 'GM':
+            	marctags = pymarc.record.Record(zoom_record.data.bibliographicRecord.encoding[1])
+		try: 
+		    bibtag541a = marctags['541']['a']
+		except:
+		    bibtag541a = ''
             for rec in zoom_record.data.holdingsData:
                 holdmeta = {}
                 holdmeta['item_status'] = 0
@@ -49,11 +55,16 @@ class Z3950Catalog():
                 if hasattr(rec[1], 'callNumber'):
                     holdmeta['callnum'] = rec[1].callNumber.rstrip('\x00')
                 if school == 'GM':
-                    # use temporaryLocation when present 
                     try:
+			# try to get the temporary location e.g., item/13140480
                         holdmeta['location'] = 'Temp Location:' + rec[1].circulationData[0].temporaryLocation
                     except:
-                        holdmeta['location'] = rec[1].localLocation.rstrip('\x00')
+			# holding location does not indicate 2 Hour Reserve, but bib tag says it is (issue 1106)
+			if 'TextSelect Reserve Books' in bibtag541a:
+			    holdmeta['location'] = 'Gateway Library in the JC - 2 Hour TextSelect'
+			else:
+			    # Use the normal location for this holding, e.g, item/1580984
+                            holdmeta['location'] = rec[1].localLocation.rstrip('\x00')
                     if hasattr(rec[1], 'publicNote'):
                         holdmeta['note'] = rec[1].publicNote.rstrip('\x00')
                 elif school == 'GT':
