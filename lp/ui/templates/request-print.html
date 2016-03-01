@@ -1,21 +1,24 @@
 {% extends "base.html" %}
 {% load launchpad_extras humanize %}
+{% load crispy_forms_tags %}
 
 {% block title %}Request Print Edition{% endblock %}
 
 {% block content %}
 
 <div class="row-fluid">
+    <div class="span12">
     <h1>Request a print edition of a book</h1>
     <h3>{{ citation.title }}</h3>
         <span class="isbn">ISBN: {{ citation.isbn }} </span>
         <form action="/item/request/{{ bibid }}/" method="post" class="requestform">
             {% csrf_token %}
-            {{ form }}
+            {{ form|crispy}}
             </br>
             <p class="instruct">We will email you when the book is available.</p>        
             <p><button class="button-lg" type="submit" value="Submit">Submit</button></p>
         </form>
+    </div>
 </div>
 
 {% endblock %}

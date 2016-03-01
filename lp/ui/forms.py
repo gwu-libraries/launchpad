@@ -20,14 +20,14 @@ class PrintRequestForm(forms.Form):
                                         required=True,
                                         choices=STATUS_CHOICES)
     entry_571937374 = forms.CharField(label="Course, Department, or Program",
+                                      widget=forms.TextInput(attrs={'size':'40'}),
                                       required=True,
                                       help_text='Be as specific as possible.')
     entry_700519383 = forms.EmailField(label="Email Address",
                                        required=True)
     entry_1537829419 = forms.CharField(label="BIBID", widget=forms.HiddenInput)
-    entry_628191412 = forms.BooleanField(label="Request book be held",
-                                         help_text="Hold for me at the Gelman \
-                                                    Library Check Out desk.",
-                                         initial=True)
+    entry_628191412 = forms.BooleanField(label="Request book be held at Gelman Library Check Out Desk",
+                                         initial=True,
+                                         required=False)
     title = forms.CharField(widget=forms.HiddenInput, required=False)
     isbn = forms.CharField(widget=forms.HiddenInput, required=False)

@@ -308,8 +308,8 @@ ul.offers {
 .itemType .fa-headphones {padding:.4em .4em .3em 0;}
 
 /* print request form */
-.helptext {
-  padding-top: .8em;
+.help-block {
+  /* padding-top: .5em; */
   font-size: smaller;
 }
 
@@ -325,10 +325,12 @@ ul.offers {
   font-size: small;
 }
 
-.errorlist ul li {
-  font-size: medium;
-  font-color: red;
-  list-style-type: none;
+.requestform input {
+   width: 50%;
+}
+
+.requestform .checkboxinput {
+  width: 30px;
 }
 /* end print request form */
 

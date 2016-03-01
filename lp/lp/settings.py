@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'django_nose',
     'ui',
+    'crispy_forms',
 )
 
 # A sample logging configuration. The only tangible logging
