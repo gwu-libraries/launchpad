@@ -28,3 +28,5 @@ class PrintRequestForm(forms.Form):
                                          help_text="Hold for me at the Gelman \
                                                     Library Check Out desk.",
                                          initial=True)
+    title = forms.CharField(widget=forms.HiddenInput, required=False)
+    isbn = forms.CharField(widget=forms.HiddenInput, required=False)

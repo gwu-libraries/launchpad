@@ -9,7 +9,8 @@
     <h1>Request a print edition of a book</h1>
     <h3>{{ citation.title }}</h3>
         <p>ISBN: {{ citation.isbn }} </p>
-        <form action="https://docs.google.com/a/email.gwu.edu/forms/d/1uNlorJm4j5A6cn6BT2cofaanCQcIAvtKGqz0bHlWmQ8/formResponse" method="POST" class="requestform">
+        <form action="/item/request/{{ bibid }}/" method="post" class="requestform">
+            {% csrf_token %}
             {{ form }}
             </br>
             <p>We will email you when the book is available.</p>        
