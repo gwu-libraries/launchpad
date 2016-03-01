@@ -10,7 +10,7 @@ import bibjsontools
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.utils import DatabaseError
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_page
 
@@ -164,8 +164,8 @@ def request_print(request, bibid):
         form = PrintRequestForm(request.POST)
         if form.is_valid():
             requests.post('https://docs.google.com/a/email.gwu.edu/forms/d/1uNlorJm4j5A6cn6BT2cofaanCQcIAvtKGqz0bHlWmQ8/formResponse', data=request.POST)
-            # TODO: redirect to a confirmation page instead
-            return HttpResponseRedirect('/api/')
+            bibid = bibid
+            return redirect('confirmation', bibid=bibid)
         else:
             citation = {'isbn': request.POST.get('isbn'),
                         'title': request.POST.get('title')}
@@ -185,6 +185,10 @@ def request_print(request, bibid):
         return render(request, 'request-print.html', {'form': form,
                                                       'bibid': bibid,
                                                       'citation': citation})
+
+
+def confirmation(request, bibid):
+    return render(request, 'confirmation.html', {'bibid': bibid})
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)

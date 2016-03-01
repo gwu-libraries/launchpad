@@ -40,7 +40,8 @@ urlpatterns = patterns(
     url(r'^advanced/$', 'advanced_search', name='advanced_search'),
     url(r'^availability$', 'availability', name='availability'),
     url(r'^related$', 'related', name='related'),
-    url(r'^tips/$', 'tips', name='tips')
+    url(r'^tips/$', 'tips', name='tips'),
+    url(r'^confirmation/(?P<bibid>\d+)$', 'confirmation', name='confirmation')
 )
 
 if settings.ENABLE_HUMANS:

@@ -313,6 +313,10 @@ ul.offers {
   font-size: smaller;
 }
 
+.instruct {
+  padding-top: 1em;
+}
+
 .requestform label {
   padding-top: 2em;
 } 
@@ -320,6 +324,13 @@ ul.offers {
 .requestform select {
   font-size: small;
 }
+
+.errorlist ul li {
+  font-size: medium;
+  font-color: red;
+  list-style-type: none;
+}
+/* end print request form */
 
 #search-results {
   font-size: .9em;

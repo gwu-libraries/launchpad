@@ -14,7 +14,8 @@ class PrintRequestForm(forms.Form):
 
     entry_994442820 = forms.CharField(label="Title", widget=forms.HiddenInput)
     entry_1457763040 = forms.CharField(label="ISBN", widget=forms.HiddenInput)
-    entry_1696606454 = forms.CharField(label="Requestor Name", required=True)
+    entry_1696606454 = forms.CharField(label="Requestor Name",
+                                       required=True)
     entry_699468619 = forms.ChoiceField(label="GW Affiliation",
                                         required=True,
                                         choices=STATUS_CHOICES)
