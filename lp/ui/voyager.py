@@ -643,6 +643,11 @@ ORDER BY library.library_name"""
         dda_isbn = bib_data.get('ISBN', '')
         dda_title = bib_data.get('TITLE', '')
         holding['ONLINE'] = get_links(holding, dda_isbn, dda_title)
+    
+        urls = holding['ONLINE']
+        for url in urls:
+            if url['label'] == 'Request print edition' and eligibility is True: 
+                holding['ONLINE'].remove(url)
 
     return [h for h in holdings if not h.get('REMOVE', False)]
 
@@ -1802,7 +1807,6 @@ def get_links(holding, isbn, title):
                 if holding.get('LinkResolverData', None):
                     continue 
                 if 'RushPrintRequest' in access['url']:
-                    # this is janky, create GET params in django-supported way 
                     access['url'] = '/item/request/' + str(holding['BIB_ID']) + \
                                     '/?title=' + title + '&isbn=' + isbn    
                     access['label'] = 'Request print edition'
@@ -1826,7 +1830,7 @@ def get_links(holding, isbn, title):
             online.remove(x)
         else:
             urls.append(x['url'])
-
+    
     return online 
 
 
