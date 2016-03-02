@@ -37,6 +37,9 @@ def googlebooks(num, num_type, url, key):
     bib[num_type.upper()] = num
     bib['TITLE'] = volinfo.get('title', '')
     bib['TITLE_ALL'] = bib['TITLE']
+    bib['SUBTITLE'] = volinfo.get('subtitle', '')
+    if bib['SUBTITLE']:
+    	bib['TITLE_ALL'] = '%s %s %s' % (bib['TITLE'], ' / ', bib['SUBTITLE'])
     bib['AUTHORS'] = volinfo.get('authors', '')
     bib['PUBLISHER'] = volinfo.get('publisher', '')
     if 'industryIdentifiers' in volinfo:
@@ -47,8 +50,13 @@ def googlebooks(num, num_type, url, key):
                 std_nums.update([std_num['identifier']])
         bib['DISPLAY_%s_LIST' % num_type.upper()] = list(std_nums)
     bib['PUBLISHER_DATE'] = volinfo.get('publishedDate', '')
-    bib['IMPRINT'] = '%s %s' % (bib['PUBLISHER'], bib['PUBLISHER_DATE'])
-    bib['BIB_FORMAT'] = 'as' if num_type == 'issn' else 'am'
+    bib['EDITION'] = '%s %s' % (bib['PUBLISHER'], bib['PUBLISHER_DATE'])
+    bib['PAGES'] = volinfo.get('pageCount', '')
+    if bib['PAGES']:
+	bib['EDITION'] += '%s %s' % (" Pages: ", bib['PAGES'])
+    bib['GOOGLE_MESSAGE'] = 'Information provided below was retrieved from Google Books.'
+    bib['GOOGLE_REVIEW'] = volinfo.get('description', '')
+    bib['GOOGLE_LINK'] = volinfo.get('infoLink', '')
     return bib
 
 
@@ -241,7 +249,6 @@ def make_hathi_holding(url, fromRecord):
         'BIB_ID': None,
     }
     return holding
-
 
 def sersol360link(num, num_type, count=0):
     try:
