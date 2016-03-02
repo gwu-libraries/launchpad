@@ -329,8 +329,12 @@ ul.offers {
    width: 50%;
 }
 
-.requestform .checkboxinput {
+.requestform .checkbox input {
   width: 30px;
+}
+
+.requestform .controls label {
+  padding-top: .5em;
 }
 /* end print request form */
 

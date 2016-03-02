@@ -14,7 +14,6 @@
         <form action="/item/request/{{ bibid }}/" method="post" class="requestform">
             {% csrf_token %}
             {{ form|crispy}}
-            </br>
             <p class="instruct">We will email you when the book is available.</p>        
             <p><button class="button-lg" type="submit" value="Submit">Submit</button></p>
         </form>
