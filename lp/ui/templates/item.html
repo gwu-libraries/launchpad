@@ -208,7 +208,29 @@
      </div>
 {% endif %}
 
-{% if holdings %}
+{% if bib.WORLDCAT_RESPONSE %}
+  <div class="row-fluid">
+     <div class="span12">
+         <h1> About this page</h1>
+         <i class="fa fa-life-ring"></i> {{ bib.WORLDCAT_MESSAGE }} 
+         <p><br /> {{ bib.DESC }} </p>
+         {% if bib.ISBN %} 
+              <p> ISBN: {{ bib.ISBN }} </p>
+         {% endif %}
+         {% if bib.OCLC %}
+              <p> OCLC Number: {{ bib.OCLC }} </p>
+         {% endif %}
+         {% if bib.NOTES %}
+	      <p> Notes: {{ bib.NOTES }} </p>
+        {% endif %}
+        {% if bib.SUBJECTS %}
+    	      <p> Subjects: {{ bib.SUBJECTS }} </p>
+        {% endif %}
+       </div>
+  </div>
+{% endif %}
+
+{% if holdings and not bib.WORLDCAT_RESPONSE %}
 <div class="row-fluid">
 <div class="span12">
 <ul class="nav nav-tabs">
@@ -587,6 +609,10 @@ Export citation to: <a href="{{ bib.REFWORKS_LINK }}" id="refworks" target="_bla
 {% endif %}
 </p>
 
+{% if bib.WORLDCAT_RESPONSE %}
+  <p>
+  <a href="http://www.worldcat.org/search?q={{ bib.TITLE }}">Search OCLC Worldcat</a><i class="fa fa-external-link"></i>
+  </p>
 {% if bib.GOOGLE_REVIEW %}
     <p>
     View this title at: <a href="{{ bib.GOOGLE_LINK }}">Google Books</a><i class="fa fa-external-link"></i>
