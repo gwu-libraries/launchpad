@@ -139,8 +139,9 @@ def extract(record, d={}):
     d['URI_AUTHOR']   = get_http_link_set(d['URI_AUTHOR'])
     d['URI_7XX']      = get_http_link_set(d['URI_7XX'])
     d['URI_WORKID']   = get_http_link_set(d['URI_WORKID'])
-    # Calcuate the OCLC Identity URL
-    d['URI_AUTHORID'] = make_identity_link(d['URI_AUTHORID'])
+    # Calcuate the OCLC Identity URL, send the entire URI, and author name
+    if d['URI_AUTHOR']:
+    	d['URI_AUTHORID'] = make_identity_link(d['URI_AUTHORID'],d['URI_AUTHOR'][0]['linktext'])
     return d
 
 def get_http_link_set(values):
@@ -154,20 +155,19 @@ def get_http_link_set(values):
            httpset.append(parts)
     return httpset
 
-def make_identity_link(a):
+def make_identity_link(urilist, author):
     # Convert an authorzed name link to an OCLC WorldCat Identities link. Use the 'n' value
     # and the Identities url prefix. convert to dictionary for easier parsing in item.html
     parts = {}
     identities = []
-    atostring  = ''.join(a) 
-    if 'http' in atostring:
-        startpos   = atostring.index('http')
-        namepart   = atostring[0:startpos] 
-        authurl    = atostring[startpos:len(atostring)]
-        prefix     = 'http://www.worldcat.org/wcidentities/lccn-'
-        newurl     = prefix + authurl.split('/')[-1]
-        parts      = {'linktext':namepart,'uri':newurl}
-        identities.append(parts)
+    uriparts = ''.join(urilist).split()
+    for segment in uriparts:
+	# only use library of congress ids
+        if 'http' in segment and 'loc' in segment:
+        	prefix     = 'http://www.worldcat.org/wcidentities/lccn-'
+        	newurl     = prefix + segment.split('/')[-1]
+        	parts      = {'linktext':author,'uri':newurl}
+        	identities.append(parts)
     return identities
 
 
