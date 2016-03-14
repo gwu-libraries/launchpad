@@ -338,6 +338,7 @@
                         {% for link in holding.LinkResolverData %}
                             <div class="linkresolverresource">
                                 <button class="smallbuttons" onclick="window.open('{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}')" title="{% if link.journal %}{{link.journal}}{% else %}{{link.source}}{% endif %}">Online  <i class="fa fa-book"></i></button>
+                                <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")' onClick='ga("send","event","title-info","link","sms-link");' ><i class="fa fa-mobile fa-lg"></i></a>
                                     <div class="linkresolverdata">
                                         {% if link.start %}
                                         from <span class="linkresolverdates">{{link.start}}</span>
@@ -371,6 +372,7 @@
                                                <button onclick="window.open('{{link.url}}')" >Online <i class="fa fa-film"></i></button>
                                            {% else %} 
                                                <button onclick="window.open('{{link.url|escapejs}}')" title={{link.url}}>Online <i class="fa fa-book"></i></button>
+					       <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")' onClick='ga("send","event","title-info","link","sms-link");' ><i class="fa fa-mobile fa-lg"></i></a>
                                            {% endif %}
                                            {% if link.label %}
                                                 <span class="link-volumes">{{ link.label }}</span>
@@ -490,6 +492,7 @@
                                                <button onclick="window.open('{{link.url}}')" >Online <i class="fa fa-film"></i></button>
                                            {% else %}
                                                <button onclick="window.open('{{link.url|escapejs}}')" title={{link.url}}>Online <i class="fa fa-book"></i></button>
+					       <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")' onClick='ga("send","event","title-info","link","sms-link");' ><i class="fa fa-mobile fa-lg"></i></a>
                                            {% endif %}
                                            {% if link.label %}
                                                 <span class="link-volumes">{{ link.label }}</span>
