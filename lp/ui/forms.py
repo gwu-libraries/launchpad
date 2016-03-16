@@ -13,12 +13,12 @@ class PrintRequestForm(forms.Form):
         )
 
     HOLD_CHOICES = (
-        ("Hold for me at the Gelman Library Check Out desk", "Request book be held at Gelman Library Check Out Desk."),
-        # ("Shelve", "Don't hold book for me. Shelve book in library stacks."),
+        ("Request book be held at Gelman Library Check Out Desk.",
+            "Request book be held at Gelman Library Check Out Desk."),
         )
 
     entry_994442820 = forms.CharField(label="Title", widget=forms.HiddenInput)
-    entry_1457763040 = forms.CharField(label="ISBN", widget=forms.HiddenInput)
+    entry_621323238 = forms.CharField(label="ISBN", widget=forms.HiddenInput)
     entry_1696606454 = forms.CharField(label="Requestor Name",
                                        required=True)
     entry_699468619 = forms.ChoiceField(label="GW Affiliation",
@@ -31,11 +31,11 @@ class PrintRequestForm(forms.Form):
                                       help_text='Be as specific as possible.')
     entry_700519383 = forms.EmailField(label="Email Address",
                                        required=True)
-    entry_1537829419 = forms.CharField(label="BIBID", widget=forms.HiddenInput)
-    entry_628191412 = forms.MultipleChoiceField(
+    entry_1104324905 = forms.CharField(label="BIBID", widget=forms.HiddenInput)
+    entry_637122130 = forms.MultipleChoiceField(
                           widget=forms.CheckboxSelectMultiple(),
                           required=False,
-                          initial="Hold for me at the Gelman Library Check Out desk",
+                          initial="Request book be held at Gelman Library Check Out Desk.",
                           choices=HOLD_CHOICES,
                           label="")
     title = forms.CharField(widget=forms.HiddenInput, required=False)

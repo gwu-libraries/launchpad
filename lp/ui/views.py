@@ -163,7 +163,7 @@ def request_print(request, bibid):
     if request.method == 'POST':  # If the form has been submitted...
         form = PrintRequestForm(request.POST)
         if form.is_valid():
-            requests.post('https://docs.google.com/a/email.gwu.edu/forms/d/1uNlorJm4j5A6cn6BT2cofaanCQcIAvtKGqz0bHlWmQ8/formResponse', data=request.POST)
+            requests.post('https://docs.google.com/a/email.gwu.edu/forms/d/1pbd5Ge2zCDMtbGW5SgL-TwsE7wzNuCDNpQUlpa2NvcE/formResponse', data=request.POST)
             bibid = bibid
             return redirect('confirmation', bibid=bibid)
         else:
@@ -177,8 +177,8 @@ def request_print(request, bibid):
         title = request.GET.get('title', '')
         title_info = request.GET.get('title', '') + ' BIBID: ' + str(bibid)
         form = PrintRequestForm(initial={'entry_994442820': title_info,
-                                         'entry_1457763040': isbn,
-                                         'entry_1537829419': bibid,
+                                         'entry_621323238': isbn,
+                                         'entry_1104324905': bibid,
                                          'title': title,
                                          'isbn': isbn})
         citation = {'isbn': isbn, 'title': title}
