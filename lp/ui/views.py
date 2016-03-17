@@ -14,7 +14,9 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_page
 
-from requests import HTTPError
+import requests
+
+from forms import PrintRequestForm
 
 from ui import voyager, apis, marc, summon, db
 from ui.sort import libsort, availsort, elecsort, templocsort, \
@@ -44,7 +46,7 @@ def _openurl_dict(request):
         p[k] = ','.join(v)
     d = {'params':  p}
     d['query_string'] = '&'.join(['%s=%s' % (k, v) for k, v
-                        in params.items()])
+                                 in params.items()])
     d['query_string_encoded'] = request.META.get('QUERY_STRING', '')
     return d
 
@@ -155,6 +157,38 @@ def item_marc(request, bibid):
         return HttpResponse('{}', content_type='application/json',
                             status=404)
     return HttpResponse(rec.as_json(indent=2), content_type='application/json')
+
+
+def request_print(request, bibid):
+    if request.method == 'POST':  # If the form has been submitted...
+        form = PrintRequestForm(request.POST)
+        if form.is_valid():
+            requests.post(settings.DDA_URL, data=request.POST)
+            bibid = bibid
+            return redirect('confirmation', bibid=bibid)
+        else:
+            citation = {'isbn': request.POST.get('isbn'),
+                        'title': request.POST.get('title')}
+            return render(request, 'request-print.html', {'form': form,
+                                                          'bibid': bibid,
+                                                          'citation': citation})
+    else:
+        isbn = request.GET.get('isbn', '').split(' ', 1)[0]
+        title = request.GET.get('title', '')
+        title_info = request.GET.get('title', '') + ' BIBID: ' + str(bibid)
+        form = PrintRequestForm(initial={'entry_994442820': title_info,
+                                         'entry_621323238': isbn,
+                                         'entry_1104324905': bibid,
+                                         'title': title,
+                                         'isbn': isbn})
+        citation = {'isbn': isbn, 'title': title}
+        return render(request, 'request-print.html', {'form': form,
+                                                      'bibid': bibid,
+                                                      'citation': citation})
+
+
+def confirmation(request, bibid):
+    return render(request, 'confirmation.html', {'bibid': bibid})
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)

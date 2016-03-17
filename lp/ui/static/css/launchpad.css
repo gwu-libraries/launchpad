@@ -307,6 +307,37 @@ ul.offers {
 
 .itemType .fa-headphones {padding:.4em .4em .3em 0;}
 
+/* print request form */
+.help-block {
+  /* padding-top: .5em; */
+  font-size: smaller;
+}
+
+.instruct {
+  padding-top: 1em;
+}
+
+.requestform label {
+  padding-top: 2em;
+} 
+
+.requestform select {
+  font-size: small;
+}
+
+.requestform input {
+   width: 50%;
+}
+
+.requestform .checkbox input {
+  width: 30px;
+}
+
+.requestform .controls label {
+  padding-top: .5em;
+}
+/* end print request form */
+
 #search-results {
   font-size: .9em;
 }

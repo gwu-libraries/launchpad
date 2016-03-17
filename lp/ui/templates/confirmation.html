@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmation{% endblock title %}
+
+{% block content %}
+
+<div id="content" style="margin: 0 .5em;">
+<h1>We've received your request</h1>
+
+<p>We will email you at the address you provided when the book you 
+requested is available.</p>
+<p>If you have any further questions, please email
+<a href="mailto:gelman@gwu.edu">gelman@gwu.edu</a></p>
+
+<p><a href="{% url 'item' bibid %}">Return to item</a></p>
+
+</div>
+
+{% endblock content %}
