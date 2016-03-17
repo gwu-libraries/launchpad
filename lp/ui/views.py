@@ -163,7 +163,7 @@ def request_print(request, bibid):
     if request.method == 'POST':  # If the form has been submitted...
         form = PrintRequestForm(request.POST)
         if form.is_valid():
-            requests.post('https://docs.google.com/a/email.gwu.edu/forms/d/1pbd5Ge2zCDMtbGW5SgL-TwsE7wzNuCDNpQUlpa2NvcE/formResponse', data=request.POST)
+            requests.post(settings.DDA_URL, data=request.POST)
             bibid = bibid
             return redirect('confirmation', bibid=bibid)
         else:
