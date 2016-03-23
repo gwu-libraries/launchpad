@@ -150,8 +150,10 @@ def get_http_link_set(values):
     httpset = []
     parts   = {}
     for item in values:
+    	print 'item:', item
         if 'http' in item:
            parts = get_uri_parts(item)
+	   print 'parts:', parts
            httpset.append(parts)
     return httpset
 
@@ -164,10 +166,11 @@ def make_identity_link(urilist, author):
     for segment in uriparts:
 	# only use library of congress ids
         if 'http' in segment and 'loc' in segment:
-        	prefix     = 'http://www.worldcat.org/wcidentities/lccn-'
-        	newurl     = prefix + segment.split('/')[-1]
-        	parts      = {'linktext':author,'uri':newurl}
+        	prefix = 'http://www.worldcat.org/wcidentities/lccn-'
+        	newurl = prefix + segment.split('/')[-1]
+        	parts = {'linktext':author,'uri':newurl}
         	identities.append(parts)
+    print identities
     return identities
 
 
@@ -179,7 +182,7 @@ def get_uri_parts(uri):
         startpos = uristring.index('http')
         namepart = uristring[0:startpos]
         linkpart = uristring[startpos:len(uristring)]
-        parts    = {'linktext':namepart,'uri':linkpart}
+        parts = {'linktext':namepart,'uri':linkpart}
         return parts
 
 def ind(expected, found):
