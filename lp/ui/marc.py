@@ -72,11 +72,11 @@ mapping = (
     ('NETWORK_NUMBER', 'Network Numbers', [('035', None, None, 'a')]),
     ('URI_AUTHOR', 'json data only', [('100', None, None, 'a,0')]),
     ('URI_7XX', 'json data only', [('700', None, None, 'a,0'), ('710', None, None, 'a,0')]),
-    ('URI_SUBJECTS','json data only', [('650', None, None, 'a,0'), ('651', None, None, 'a,0'), \
-                                  ('600', None, None, 'a,0'), ('610', None, None, 'a,0'), \
+    ('URI_SUBJECTS', 'json data only', [('650', None, None, 'a,0'), ('651', None, None, 'a,0'),
+                                  ('600', None, None, 'a,0'), ('610', None, None, 'a,0'),
                                   ('630', None, None, 'a,0')]),
     ('URI_GENRE', 'json data only', [('655', None, None, 'a,0')]),
-    ('URI_WORKID','json data only',  [('787', None, None, 'n,o')]),
+    ('URI_WORKID', 'json data only',  [('787', None, None, 'n,o')]),
     ('URI_AUTHORID', 'json data only', [('100', None, None, 'a,0')]),
 )
 
@@ -130,44 +130,50 @@ def extract(record, d={}):
                 raise Exception("invalid mapping for %s" % name)
 
     # The URI set must be checked for http, converted to a dictionary
-    # The first time a tag was retrieved we got the text (e.g., author), when we then 
-    # retrieve the same tag for URI, we get the $0, if any (e.g., http://loc.gov.authorities.names/...) 
-    # get_http_link_set makes sure there is an http in $0. In non-GW records, there will not be any.
+    # The first time a tag was retrieved we got the text (e.g., author),
+    # when we then retrieve the same tag for URI, we get the $0, if any 
+    # (e.g., http://loc.gov.authorities.names/...)
+    # get_http_link_set makes sure there is an http in $0.
+    # In non-GW records, there will not be any.
 
     d['URI_SUBJECTS'] = get_http_link_set(d['URI_SUBJECTS'])
-    d['URI_GENRE']    = get_http_link_set(d['URI_GENRE'])
-    d['URI_AUTHOR']   = get_http_link_set(d['URI_AUTHOR'])
-    d['URI_7XX']      = get_http_link_set(d['URI_7XX'])
-    d['URI_WORKID']   = get_http_link_set(d['URI_WORKID'])
-    # Calcuate the OCLC Identity URL
-    d['URI_AUTHORID'] = make_identity_link(d['URI_AUTHORID'])
+    d['URI_GENRE'] = get_http_link_set(d['URI_GENRE'])
+    d['URI_AUTHOR'] = get_http_link_set(d['URI_AUTHOR'])
+    d['URI_7XX'] = get_http_link_set(d['URI_7XX'])
+    d['URI_WORKID'] = get_http_link_set(d['URI_WORKID'])
+    # Calcuate the OCLC Identity URL, send the entire URI, and author name
+    if d['URI_AUTHOR']:
+        d['URI_AUTHORID'] = make_identity_link(d['URI_AUTHORID'],
+                                               d['URI_AUTHOR'][0]['linktext'])
     return d
+
 
 def get_http_link_set(values):
     # Given a list of values, return only the ones that have the string http in them.
     # Convert list to dictionary for easier parsing in item.html
     httpset = []
-    parts   = {}
+    parts = {}
     for item in values:
         if 'http' in item:
-           parts = get_uri_parts(item)
-           httpset.append(parts)
+            parts = get_uri_parts(item)
+            httpset.append(parts)
     return httpset
 
-def make_identity_link(a):
+
+def make_identity_link(urilist, author):
     # Convert an authorzed name link to an OCLC WorldCat Identities link. Use the 'n' value
     # and the Identities url prefix. convert to dictionary for easier parsing in item.html
     parts = {}
     identities = []
-    atostring  = ''.join(a) 
-    if 'http' in atostring:
-        startpos   = atostring.index('http')
-        namepart   = atostring[0:startpos] 
-        authurl    = atostring[startpos:len(atostring)]
-        prefix     = 'http://www.worldcat.org/wcidentities/lccn-'
-        newurl     = prefix + authurl.split('/')[-1]
-        parts      = {'linktext':namepart,'uri':newurl}
-        identities.append(parts)
+    uriparts = ''.join(urilist).split()
+    for segment in uriparts:
+        # only use library of congress ids
+        if 'http' in segment and 'loc' in segment:
+            prefix = 'http://www.worldcat.org/wcidentities/lccn-'
+            newurl = prefix + segment.split('/')[-1]
+            parts = {'linktext': author, 'uri': newurl}
+            identities.append(parts)
+    print identities
     return identities
 
 
@@ -179,8 +185,9 @@ def get_uri_parts(uri):
         startpos = uristring.index('http')
         namepart = uristring[0:startpos]
         linkpart = uristring[startpos:len(uristring)]
-        parts    = {'linktext':namepart,'uri':linkpart}
+        parts = {'linktext': namepart, 'uri': linkpart}
         return parts
+
 
 def ind(expected, found):
     "Tests an indicator rule"
