@@ -173,7 +173,7 @@ def request_print(request, bibid):
                                                           'bibid': bibid,
                                                           'citation': citation})
     else:
-        isbn = request.GET.get('isbn', '').split(' ', 1)[0]
+        isbn = 'ISBN: ' + request.GET.get('isbn', '').split(' ', 1)[0]
         title = request.GET.get('title', '')
         title_info = request.GET.get('title', '') + ' BIBID: ' + str(bibid)
         form = PrintRequestForm(initial={'entry_994442820': title_info,
