@@ -70,7 +70,7 @@ mapping = (
     ('PUBLISHER_NUMBER', 'Publisher Numbers', ['028']),
     ('GEOGRAPHIC_AREA', 'Geographic Area', [('043', gacs)]),
     ('NETWORK_NUMBER', 'Network Numbers', [('035', None, None, 'a')]),
-    ('URI_AUTHOR', 'json data only', [('100', None, None, 'a,0')]),
+    ('URI_AUTHOR', 'json data only', [('100', None, None, 'a,b,c,d,0')]),
     ('URI_7XX', 'json data only', [('700', None, None, 'a,0'), ('710', None, None, 'a,0')]),
     ('URI_SUBJECTS', 'json data only', [('650', None, None, 'a,0'), ('651', None, None, 'a,0'),
                                   ('600', None, None, 'a,0'), ('610', None, None, 'a,0'),
