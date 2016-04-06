@@ -585,12 +585,14 @@
         <!-- Linked data fields begin -->
         {% if bib.URI_AUTHORID %}
             {% for item in bib.URI_AUTHORID %}
-            <tr>
+	    {% if 'http' in item.uri %}
+                <tr>
                 <td class="field-label">WorldCat Identities</td>
                 <td ><a href="{{item.uri}}" target='WorldCatIdentity'>{{item.linktext}}</a>
                     <i class="fa fa-external-link"></i>
                     <br />Publication timeline, list of works, related names and subjects and other information</td>
-            </tr>
+                </tr>
+	    {% endif %}
             {% endfor %}
         {% endif %}
         <!-- Linked data fields end -->
