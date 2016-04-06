@@ -173,7 +173,6 @@ def make_identity_link(urilist, author):
             newurl = prefix + segment.split('/')[-1]
             parts = {'linktext': author, 'uri': newurl}
             identities.append(parts)
-    print identities
     return identities
 
 
