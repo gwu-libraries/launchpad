@@ -5,6 +5,7 @@ import re
 import time
 import urlparse
 
+import requests
 import bibjsontools
 
 from django.conf import settings
@@ -14,10 +15,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_page
 
-import requests
-
 from forms import PrintRequestForm
-
 from ui import voyager, apis, marc, summon, db
 from ui.sort import libsort, availsort, elecsort, templocsort, \
     splitsort, enumsort, callnumsort, strip_bad_holdings, holdsort
@@ -44,7 +42,7 @@ def _openurl_dict(request):
     p = {}
     for k, v in dict(params).items():
         p[k] = ','.join(v)
-    d = {'params':  p}
+    d = {'params': p}
     d['query_string'] = '&'.join(['%s=%s' % (k, v) for k, v
                                  in params.items()])
     d['query_string_encoded'] = request.META.get('QUERY_STRING', '')
@@ -535,7 +533,7 @@ def search(request):
         try:
             search_results = api.search(q, **kwargs)
             break
-        except HTTPError as error:
+        except requests.HTTPError as error:
             retries += 1
             if retries <= settings.SER_SOL_API_MAX_ATTEMPTS:
                 time.sleep(1)
