@@ -90,7 +90,6 @@ def extract(record, d={}):
     for name, display_name, specs in mapping:
         d[name] = []
         for spec in specs:
-
             # simple field specification
             if type(spec) == str:
                 for field in record.get_fields(spec):
@@ -136,6 +135,11 @@ def extract(record, d={}):
     # get_http_link_set makes sure there is an http in $0.
     # In non-GW records, there will not be any.
 
+    # Deduplicate, then sort the subjects list
+    d['SUBJECTSUNIQ'] = set(d['SUBJECTS']) 
+    d['SUBJECTS'] = sorted(d['SUBJECTSUNIQ'])
+   
+    
     d['URI_SUBJECTS'] = get_http_link_set(d['URI_SUBJECTS'])
     d['URI_GENRE'] = get_http_link_set(d['URI_GENRE'])
     d['URI_AUTHOR'] = get_http_link_set(d['URI_AUTHOR'])
@@ -146,7 +150,7 @@ def extract(record, d={}):
         d['URI_AUTHORID'] = make_identity_link(d['URI_AUTHORID'],
                                                d['URI_AUTHOR'][0]['linktext'])
     return d
-
+	
 
 def get_http_link_set(values):
     # Given a list of values, return only the ones that have the string http in them.
