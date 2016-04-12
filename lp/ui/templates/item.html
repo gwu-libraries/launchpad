@@ -578,7 +578,7 @@
         {% if bib.OCLC %}
         <tr>
             <td class="field-label">WorldCat</td>
-            <td><a href='http://www.worldcat.org/search?q={{ bib.TITLE }}' target='WorldCatSearch'>Search OCLC WorldCat</a>
+            <td><a href='http://www.worldcat.org/search?q={{ bib.TITLE }}' onclick="ga('send','event','OCLC','Search Worldcat');" target='WorldCatSearch'>Search OCLC WorldCat</a>
                 <i class="fa fa-external-link"></i></td>
         </tr>
         {% endif %}
@@ -588,7 +588,7 @@
 	    {% if 'http' in item.uri %}
                 <tr>
                 <td class="field-label">WorldCat Identities</td>
-                <td ><a href="{{item.uri}}" target='WorldCatIdentity'>{{item.linktext}}</a>
+                <td ><a href="{{item.uri}}" onclick="ga('send','event','OCLC','Identities');" target='WorldCatIdentity'>{{item.linktext}}</a>
                     <i class="fa fa-external-link"></i>
                     <br />Publication timeline, list of works, related names and subjects and other information</td>
                 </tr>
