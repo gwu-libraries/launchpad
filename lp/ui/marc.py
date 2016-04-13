@@ -73,10 +73,10 @@ mapping = (
     ('URI_AUTHOR', 'json data only', [('100', None, None, 'a,b,c,d,0')]),
     ('URI_7XX', 'json data only', [('700', None, None, 'a,0'), ('710', None, None, 'a,0')]),
     ('URI_SUBJECTS', 'json data only', [('650', None, None, 'a,0'), ('651', None, None, 'a,0'),
-                                  ('600', None, None, 'a,0'), ('610', None, None, 'a,0'),
-                                  ('630', None, None, 'a,0')]),
+                                        ('600', None, None, 'a,0'), ('610', None, None, 'a,0'),
+                                        ('630', None, None, 'a,0')]),
     ('URI_GENRE', 'json data only', [('655', None, None, 'a,0')]),
-    ('URI_WORKID', 'json data only',  [('787', None, None, 'n,o')]),
+    ('URI_WORKID', 'json data only', [('787', None, None, 'n,o')]),
     ('URI_AUTHORID', 'json data only', [('100', None, None, 'a,0')]),
 )
 
@@ -90,7 +90,6 @@ def extract(record, d={}):
     for name, display_name, specs in mapping:
         d[name] = []
         for spec in specs:
-
             # simple field specification
             if type(spec) == str:
                 for field in record.get_fields(spec):
@@ -107,12 +106,12 @@ def extract(record, d={}):
                        field.indicator2):
                         parts = []
                         for code, value in field:
-                            # TODO: we purposefully ignore $6 for now since 
-                            # it is used for linking alternate script 
-                            # representations. Ideally some day we could 
+                            # TODO: we purposefully ignore $6 for now since
+                            # it is used for linking alternate script
+                            # representations. Ideally some day we could
                             # have a way to layer them into our data
                             # representation, or simply using the original
-                            # character set as the default since our 
+                            # character set as the default since our
                             # web browsers can easily display them now.
                             if code != '6' and code in subfields:
                                 parts.append(value)
@@ -129,9 +128,12 @@ def extract(record, d={}):
             else:
                 raise Exception("invalid mapping for %s" % name)
 
+    # Deduplicate, then sort the subjects list
+    d['SUBJECTS'] = sorted(set(d['SUBJECTS']))
+
     # The URI set must be checked for http, converted to a dictionary
     # The first time a tag was retrieved we got the text (e.g., author),
-    # when we then retrieve the same tag for URI, we get the $0, if any 
+    # when we then retrieve the same tag for URI, we get the $0, if any
     # (e.g., http://loc.gov.authorities.names/...)
     # get_http_link_set makes sure there is an http in $0.
     # In non-GW records, there will not be any.
