@@ -29,7 +29,7 @@ class MarcExtractTests(unittest.TestCase):
         r = self.get_record("351.mrc")
         bib_data = extract(r)
         self.assertEqual(bib_data["DESCRIPTION"][1], 'Organized into 3 series: I. Prison Materials, 1970-1972. II. CCNV. III. Personal/Family Materials.')
-    
+
     def test_description_516(self):
         r = self.get_record("516.mrc")
         bib_data = extract(r)
@@ -226,7 +226,7 @@ class MarcExtractTests(unittest.TestCase):
     def test_notes_521(self):
         r = self.get_record("521.mrc")
         bib_data = extract(r)
-        self.assertIn( 'MPAA rating: Not rated.', bib_data['NOTES'])
+        self.assertIn('MPAA rating: Not rated.', bib_data['NOTES'])
 
     def test_notes_530(self):
         r = self.get_record("530.mrc")
@@ -287,27 +287,28 @@ class MarcExtractTests(unittest.TestCase):
     def test_subjects_650(self):
         r = self.get_record("650.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["SUBJECTS"], ['Internet in public administration -- United States -- Periodicals.', 'Information policy -- United States -- Data processing -- Periodicals.', 'Electronic government information -- United States -- Periodicals.', 'United States. E-Government Act of 2002 -- Periodicals.'])
+        self.assertEqual(bib_data["SUBJECTS"], ['Electronic government information -- United States -- Periodicals.', 'Information policy -- United States -- Data processing -- Periodicals.', 'Internet in public administration -- United States -- Periodicals.', 'United States. E-Government Act of 2002 -- Periodicals.'])
 
     def test_subjects_600(self):
         r = self.get_record("600.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["SUBJECTS"], ['Mann, Thomas C. (Thomas Clifton), 1912-', 'United States. Dept. of State -- Officials and employees.', 'United States -- Foreign relations -- 1963-1969.'])
+        self.assertEqual(bib_data["SUBJECTS"], ['Mann, Thomas C. (Thomas Clifton), 1912-', 'United States -- Foreign relations -- 1963-1969.', 'United States. Dept. of State -- Officials and employees.'])
 
     def test_subjects_610(self):
         r = self.get_record("610.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["SUBJECTS"], ['Mann, Thomas C. (Thomas Clifton), 1912-', 'United States. Dept. of State -- Officials and employees.', 'United States -- Foreign relations -- 1963-1969.'])
+        self.assertEqual(bib_data["SUBJECTS"], ['Mann, Thomas C. (Thomas Clifton), 1912-', 'United States -- Foreign relations -- 1963-1969.', 'United States. Dept. of State -- Officials and employees.'])
 
     def test_subjects_630(self):
         r = self.get_record("630.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["SUBJECTS"], ['Franco-Russian Alliance.', 'France -- Foreign relations -- Soviet Union -- 1870-1940.', 'Russia -- Foreign relations -- France -- 1894-1917.'])
+        self.assertEqual(bib_data["SUBJECTS"], ['France -- Foreign relations -- Soviet Union -- 1870-1940.', 'Franco-Russian Alliance.', 'Russia -- Foreign relations -- France -- 1894-1917.'])
 
     def test_subjects_651(self):
         r = self.get_record("651.mrc")
         bib_data = extract(r)
-        self.assertEqual(bib_data["SUBJECTS"], ['Mud lumps.', 'Sediments (Geology) -- Louisiana.', 'Mississippi River -- Delta.'] )
+        # self.assertEqual(bib_data["SUBJECTS"], ['Mud lumps.', 'Sediments (Geology) -- Louisiana.', 'Mississippi River -- Delta.'])
+        self.assertEqual(bib_data["SUBJECTS"], ['Mississippi River -- Delta.', 'Mud lumps.', 'Sediments (Geology) -- Louisiana.'])
 
     def test_subjects_655(self):
         r = self.get_record("655.mrc")
