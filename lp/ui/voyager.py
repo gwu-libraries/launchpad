@@ -859,7 +859,8 @@ def get_himmelfarb_linkonbib(bibid):
         cursor = connection.cursor()
         cursor.execute(query, [bibid]*2)
         bib856result = _make_dict(cursor, first=True)
-        if bib856result:
+        # Updated to ignore new services/borrowing links
+        if bib856result and not 'borrow' in bib856result['LINK856U']:
             link = bib856result.values()
             return link[0][9:]
         else:
