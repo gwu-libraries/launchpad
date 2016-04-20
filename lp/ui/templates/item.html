@@ -404,8 +404,8 @@
                                         {% if item.ITEM_STATUS > 11 %}
                                             Missing
                                         {% else %}
-                                            <!-- override null value {{ item.ITEM_STATUS_DESC }} -->
-				            Off-site
+                                            {{ item.ITEM_STATUS_DESC }}
+                                            <!-- Off-site -->
                                         {% endif %}
                                    {% endif %}
                                {% endif %}
