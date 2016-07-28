@@ -85,6 +85,7 @@ the path according to your installation of oracle.
 8. Install postgres and set up USER and PASSWORD to a new Database DB.
 
         sudo apt-get install postgresql postgresql-contrib
+        sudo apt-get install python-psycopg2
         sudo apt-get install libpq-dev
         sudo postgres createuser --createdb --no-superuser --no-createrole --pwprompt USER
         
