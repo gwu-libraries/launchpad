@@ -1,6 +1,6 @@
 git+https://github.com/lawlesst/bibjsontools.git
 cx_Oracle
-django>=1.6,<1.7
+django<1.9
 django-nose
 lxml
 ply
@@ -11,3 +11,4 @@ pytz
 git+https://github.com/asl2/PyZ3950.git
 summoner>=0.0.4
 django-crispy-forms
+psycopg2>=2.6.1,<2.7
