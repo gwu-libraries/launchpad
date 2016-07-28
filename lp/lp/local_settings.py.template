@@ -19,6 +19,14 @@ if 'test' in sys.argv:
     }
 else:
     DATABASES = {
+	'default': {
+            'ENGINE': '',
+            'NAME': '',
+            'USER': '',
+            'PASSWORD': '',
+            'HOST': '',
+            'PORT': '',
+        },
         'default': {
             'ENGINE': '',
             'NAME': '',
