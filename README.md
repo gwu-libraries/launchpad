@@ -19,7 +19,8 @@ only been tested on ubuntu 10.04 LTS.
 
 1. Install Apache and other dependencies:
 
-        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev libxml2-dev libxslt-dev
+        sudo apt-get install -y libxml2-dev libxslt1-dev zlib1g-dev
+        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev  libxslt-dev
 
 
 2. Install git 
@@ -79,7 +80,18 @@ the path according to your installation of oracle.
 
     Now run
 
-        sudo ldconfig        
+        sudo ldconfig  
+
+8. Install postgres and set up USER and PASSWORD to a new Database DB.
+
+        sudo apt-get install postgresql postgresql-contrib
+        sudo apt-get install libpq-dev
+        sudo postgres createuser --createdb --no-superuser --no-createrole --pwprompt USER
+        
+        Enter a password for the USER. You will enter this password in a setting file later in the procedures.
+  
+        sudo -u postgres createdb -O USER DB
+
 
 
 - - -
@@ -130,6 +142,8 @@ the path according to your installation of oracle.
    See https://code.djangoproject.com/ticket/15313#comment:4 for more
    details and a helpful response by a core Django developer advocating
    this approach over our previous Django-patching madness.
+   
+   If Oracle throws a access denied or Apache displays permissions error set directory permissions for launchpad/ and subdirectories as required.
 
 
 - - -
@@ -152,6 +166,7 @@ Configure database and other settings in a local_settings file:
     Also, set GOOGLE_ANALYTICS_UA to your UA to enable google 
     analytics in production.
 - Comment out CACHES if you are not using memcached
+- Add 'default' database values as entered while creating POSTGRES Database
 
 Edit wsgi file:
 
@@ -165,6 +180,10 @@ If you want to use memcached, configure and ensure it has started:
 
         sudo vim /etc/memcached.conf
         sudo /etc/init.d/memcached start
+        
+Run the database migrations command.
+
+        ./manage.py migrate
 
 At this point, you should be able to run the app and view it working,
 even without apache configured.  This might be sufficient for dev/test.
@@ -180,8 +199,8 @@ system user apache uses.  It's easy just to do this by hand first. :)
 
 If you want to use apache, add apache config file to sites-enabled and edit it
 
-        sudo cp ../apache/lp /etc/apache2/sites-available/lp
-        vim /etc/apache2/sites-available/lp
+        sudo cp ../apache/lp /etc/apache2/sites-available/lp.conf
+        vim /etc/apache2/sites-available/lp.conf
 
 - Change the values of LPHOME, server, user, and python version
 in the document as appropriate.
