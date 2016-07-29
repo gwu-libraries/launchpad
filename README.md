@@ -200,8 +200,8 @@ system user apache uses.  It's easy just to do this by hand first. :)
 
 If you want to use apache, add apache config file to sites-enabled and edit it
 
-        sudo cp ../apache/lp /etc/apache2/sites-available/lp.conf
-        vim /etc/apache2/sites-available/lp.conf
+        sudo cp ../apache/lp.conf /etc/apache2/sites-available/lp.conf
+        sudo vim /etc/apache2/sites-available/lp.conf
 
 - Change the values of LPHOME, server, user, and python version
 in the document as appropriate.
