@@ -15,6 +15,10 @@ if 'test' in sys.argv:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'test',
+        },
+        'voyager': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'test',
         }
     }
 else:
