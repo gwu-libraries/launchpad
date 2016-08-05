@@ -50,9 +50,9 @@ similar distribution.
 commands (for Debian and Ubuntu distros). For RedHat and similar Distros
 use rpm -ivh packagename command.
 
-**Note**: if you have previous versions of these packages installed, you will likely
-have to remove them first; updates to the sqlplus client (at least) conflict with
-previous installations.
+    **Note**: if you have previous versions of these packages installed, you will likely
+    have to remove them first; updates to the sqlplus client (at least) conflict with
+    previous installations.
 
         sudo alien --install oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm
         sudo alien --install oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm
