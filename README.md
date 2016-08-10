@@ -82,19 +82,6 @@ the path according to your installation of oracle.
 
         sudo ldconfig  
 
-8. Install postgres and set up USER and PASSWORD to a new Database DB.
-
-        sudo apt-get install postgresql postgresql-contrib
-        sudo apt-get install python-psycopg2
-        sudo apt-get install libpq-dev
-        sudo postgres createuser --createdb --no-superuser --no-createrole --pwprompt USER
-        
-        Enter a password for the USER. You will enter this password in a setting file later in the procedures.
-  
-        sudo -u postgres createdb -O USER DB
-
-
-
 - - -
 
 **Part II - Setting up the project environment**
@@ -145,6 +132,16 @@ the path according to your installation of oracle.
    this approach over our previous Django-patching madness.
    
    If Oracle throws a access denied or Apache displays permissions error set directory permissions for launchpad/ and subdirectories as required.
+   
+8. Configure a database using sqlite in the appropriate directory.
+
+        cd LPHOME/launchpad/lp/lp
+        sqlite3 lp.db
+        
+   Check if database created successfully in the sqlite3 command console.
+  
+        sqlite3
+        .databases
 
 
 - - -
