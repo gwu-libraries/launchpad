@@ -13,7 +13,7 @@ Installation Instructions
 
 This software should be runnable on any kind of operating system. However,
 these installation instructions are tailored to a Linux server, and have
-only been tested on ubuntu 10.04 LTS.
+only been tested on ubuntu 14.04 LTS.
 
 **Part I - Basic server requirements**
 
@@ -138,12 +138,6 @@ the path according to your installation of oracle.
         cd LPHOME/launchpad/lp/lp
         sqlite3 lp.db
         
-   Check if database created successfully in the sqlite3 command console.
-  
-        sqlite3
-        .databases
-
-
 - - -
 
 **Part III - Configuring your installation**
@@ -164,7 +158,6 @@ Configure database and other settings in a local_settings file:
     Also, set GOOGLE_ANALYTICS_UA to your UA to enable google 
     analytics in production.
 - Comment out CACHES if you are not using memcached
-- Add 'default' database values as entered while creating POSTGRES Database
 
 Edit wsgi file:
 
