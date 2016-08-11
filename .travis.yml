@@ -14,6 +14,7 @@ before_install:
 - mv test.txt requirements.txt
 script: 
 - cp lp/lp/local_settings.py.template lp/lp/local_settings.py
+- python lp/manage.py migrate
 - python lp/manage.py test lp
 env: 
   matrix: 
