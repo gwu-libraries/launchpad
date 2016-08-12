@@ -15,7 +15,7 @@ before_install:
 script: 
 - cp lp/lp/local_settings.py.template lp/lp/local_settings.py
 - python lp/manage.py migrate
-- python lp/manage.py test
+- python lp/manage.py test lp
 dist: trusty
 os: linux
 env: 
