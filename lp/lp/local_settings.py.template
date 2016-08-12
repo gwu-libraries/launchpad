@@ -25,7 +25,7 @@ else:
     DATABASES = {
 	'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': '/launchpad/lp/lp/lp.db',
+            'NAME': 'lp/lp/lp.db',
         },
         'voyager': {
             'ENGINE': '',
