@@ -13,7 +13,8 @@ before_install:
 - sed "s/cx_Oracle/#cx_Oracle/g" requirements.txt > test.txt
 - mv test.txt requirements.txt
 before_script:
-- cd lp/lp/lp.db
+- cd lp/lp/
+- sqlite3 lp.db
 - .quit
 script: 
 - cp lp/lp/local_settings.py.template lp/lp/local_settings.py
