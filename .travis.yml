@@ -16,6 +16,8 @@ script:
 - cp lp/lp/local_settings.py.template lp/lp/local_settings.py
 - python lp/manage.py migrate
 - python lp/manage.py test
+dist: precise
+os: linux
 env: 
   matrix: 
   - DJANGO_VERSION=1.8
