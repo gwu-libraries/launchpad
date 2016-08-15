@@ -22,5 +22,5 @@ env:
   matrix: 
   - DJANGO_VERSION=1.8
   global: 
-  - secure: djQkeiicpW/ePRy/5Nc5z1FoI0wuFIUDMKVBp0vonWgQsCmYFP6i1K+on5sqlAYGF/6qIpx31Wq2xUMkVJwTXQOECwkw6iG3GB+dypqmNB58zXEsrdRAA38iig0rKHxL7mMsQJz7kzOMjk6Gl8Mgjp7YkQyAjm9c2Af6VDlTiXQ=
-  - secure: e3WZSu5QVcL3Hb1Z1SdF34L3F9gZgtxuFVNMZ3bSlAFJ07/3ick1wJ7vLmVDet4Dnu+tDY3XmZok3tM++ELxskn+rbQb5LhNCE5tEOAqJ9au8JiUNjXs/T+0bUcf2rXIMO9WIHsYA8FdB4Hq+WP0XwZgtFd+LMAxbGVVoiifAyM=
+  - secure: "ANeW9zzcyxIMGf2Kx5YVgDlhw24xerjhu3/v/talKPLnknECvw9dcot5FiVt8Za5OIayfpoCknkvNJTH0DStdHshVwDV4+xcZgIUOgRHVuOWOVbxIE5p8mBwyPeZNJisLxGBsjFH6MD270V5Z92uvo/vo7Y4Ro1SbY5CjuoTf7s="
+  - secure: "czatX2MZFq5hdsdOEITsfYj+UbnoZmai7Kc2jyVxVRhspRKg/ta77rKS5uESkkyr+RRNqvnQHmlbo4GpaD9sAUSTo8tOBHxJtAUxG52oUtfJMIvWXbkyK5PUwoSgDvYPbrd8aqThtKj/BijvxAakfnaKwUQPpCDDU4+xLUKmTdY="
