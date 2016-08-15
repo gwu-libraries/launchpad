@@ -21,6 +21,7 @@ os: linux
 env: 
   matrix: 
   - DJANGO_VERSION=1.8
-  global: 
-  - secure: ANeW9zzcyxIMGf2Kx5YVgDlhw24xerjhu3/v/talKPLnknECvw9dcot5FiVt8Za5OIayfpoCknkvNJTH0DStdHshVwDV4+xcZgIUOgRHVuOWOVbxIE5p8mBwyPeZNJisLxGBsjFH6MD270V5Z92uvo/vo7Y4Ro1SbY5CjuoTf7s=
+  global:
   - secure: czatX2MZFq5hdsdOEITsfYj+UbnoZmai7Kc2jyVxVRhspRKg/ta77rKS5uESkkyr+RRNqvnQHmlbo4GpaD9sAUSTo8tOBHxJtAUxG52oUtfJMIvWXbkyK5PUwoSgDvYPbrd8aqThtKj/BijvxAakfnaKwUQPpCDDU4+xLUKmTdY=
+  - secure: ANeW9zzcyxIMGf2Kx5YVgDlhw24xerjhu3/v/talKPLnknECvw9dcot5FiVt8Za5OIayfpoCknkvNJTH0DStdHshVwDV4+xcZgIUOgRHVuOWOVbxIE5p8mBwyPeZNJisLxGBsjFH6MD270V5Z92uvo/vo7Y4Ro1SbY5CjuoTf7s=
+  
