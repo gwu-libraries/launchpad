@@ -2,9 +2,6 @@ notifications:
   email: 
   - michaelc@email.gwu.edu
   - lwrubel@email.gwu.edu
-branches: 
-  only: 
-  - master
 install: pip install -r requirements.txt
 language: python
 python: 
