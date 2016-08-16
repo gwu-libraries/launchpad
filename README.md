@@ -13,13 +13,14 @@ Installation Instructions
 
 This software should be runnable on any kind of operating system. However,
 these installation instructions are tailored to a Linux server, and have
-only been tested on ubuntu 10.04 LTS.
+only been tested on ubuntu 14.04 LTS.
 
 **Part I - Basic server requirements**
 
 1. Install Apache and other dependencies:
 
-        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev libxml2-dev libxslt-dev
+        sudo apt-get install -y libxml2-dev libxslt1-dev zlib1g-dev
+        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev  libxslt-dev
 
 
 2. Install git 
@@ -49,9 +50,9 @@ similar distribution.
 commands (for Debian and Ubuntu distros). For RedHat and similar Distros
 use rpm -ivh packagename command.
 
-**Note**: if you have previous versions of these packages installed, you will likely
-have to remove them first; updates to the sqlplus client (at least) conflict with
-previous installations.
+    **Note**: if you have previous versions of these packages installed, you will likely
+    have to remove them first; updates to the sqlplus client (at least) conflict with
+    previous installations.
 
         sudo alien --install oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm
         sudo alien --install oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm
@@ -79,8 +80,7 @@ the path according to your installation of oracle.
 
     Now run
 
-        sudo ldconfig        
-
+        sudo ldconfig  
 
 - - -
 
@@ -130,8 +130,14 @@ the path according to your installation of oracle.
    See https://code.djangoproject.com/ticket/15313#comment:4 for more
    details and a helpful response by a core Django developer advocating
    this approach over our previous Django-patching madness.
+   
+   If Oracle throws a access denied or Apache displays permissions error set directory permissions for launchpad/ and subdirectories as required.
+   
+8. Configure a database using sqlite in the appropriate directory.
 
-
+        cd LPHOME/launchpad/lp/lp
+        sqlite3 lp.db
+        
 - - -
 
 **Part III - Configuring your installation**
@@ -165,6 +171,10 @@ If you want to use memcached, configure and ensure it has started:
 
         sudo vim /etc/memcached.conf
         sudo /etc/init.d/memcached start
+        
+Run the database migrations command.
+
+        ./manage.py migrate
 
 At this point, you should be able to run the app and view it working,
 even without apache configured.  This might be sufficient for dev/test.
@@ -180,8 +190,8 @@ system user apache uses.  It's easy just to do this by hand first. :)
 
 If you want to use apache, add apache config file to sites-enabled and edit it
 
-        sudo cp ../apache/lp /etc/apache2/sites-available/lp
-        vim /etc/apache2/sites-available/lp
+        sudo cp ../apache/lp.conf /etc/apache2/sites-available/lp.conf
+        sudo vim /etc/apache2/sites-available/lp.conf
 
 - Change the values of LPHOME, server, user, and python version
 in the document as appropriate.

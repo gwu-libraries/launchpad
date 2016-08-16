@@ -9,12 +9,12 @@ import pymarc
 import logging
 
 from PyZ3950 import zoom
-from django.db import connection
+from django.db import connections
 from django.conf import settings
 
 # oracle specific configuration since Voyager's Oracle requires ASCII
 
-if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.oracle':
+if settings.DATABASES['voyager']['ENGINE'] == 'django.db.backends.oracle':
     import django.utils.encoding
     import django.db.backends.oracle.base
     # connections are in ascii
@@ -79,7 +79,7 @@ def get_marc(bibid):
     Get pymarc.Record for a given bibid.
     """
     query = "SELECT wrlcdb.getBibBlob(%s) AS marcblob from bib_master"
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [bibid])
     row = cursor.fetchone()
     raw_marc = str(row[0])
@@ -152,7 +152,7 @@ def get_bibid_from_gtid(id):
         AND bib_index.bib_id = bib_master.bib_id
         AND bib_master.library_id IN ('14', '15')
         """
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [id.upper()])
     results = cursor.fetchone()
     return str(results[0]) if results else None
@@ -170,7 +170,7 @@ def get_bibid_from_gmid(id):
         AND bib_master.library_id = '6'
         AND bib_index.normal_heading = %s
         """
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [id.upper()])
     results = cursor.fetchone()
     return str(results[0]) if results else None
@@ -396,7 +396,7 @@ def _get_offers(bibid):
         ORDER BY PermLocation, TempLocation, item_status_date desc
         """
 
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [bibid])
     # this will get set to true for libraries that require a z39.50 lookup
     need_z3950_lookup = False
@@ -579,13 +579,13 @@ def _normalize_status(status_id):
 
 
 def _fetch_one(query, params=[]):
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, params)
     return cursor.fetchone()
 
 
 def _fetch_all(query, params=None):
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     if params:
         cursor.execute(query, params)
     else:

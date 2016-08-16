@@ -9,7 +9,7 @@ import pymarc
 from PyZ3950 import zoom
 
 from django.conf import settings
-from django.db import connection
+from django.db import connections
 from django.utils.encoding import smart_str, DjangoUnicodeDecodeError
 
 from ui import apis
@@ -23,6 +23,7 @@ from django.utils.encoding import iri_to_uri
 from django.utils.http import urlquote
 
 GW_LIBRARY_IDS = [7, 11, 18, 21]
+
 
 
 def _make_dict(cursor, first=False):
@@ -52,7 +53,7 @@ SELECT bib_index.display_heading AS author
 FROM bib_index
 WHERE bib_index.bib_id = %s
 AND bib_index.index_code IN ('700H', '710H', '711H')"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [bib['BIB_ID']])
     authors = []
     if bib['AUTHOR']:
@@ -94,7 +95,7 @@ def get_marc_blob(bibid):
     query = """
 SELECT wrlcdb.getBibBlob(%s) AS marcblob
 from bib_master"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [bibid])
     row = cursor.fetchone()
     raw_marc = str(row[0])
@@ -125,7 +126,7 @@ WHERE bib_text.bib_id=%s
 AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     paramcount = 8 if not exclude_names else 7
     cursor.execute(query, [bibid] * paramcount)
     rec = get_marc_blob(bibid)
@@ -236,7 +237,7 @@ AND bib_index.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac = 'N'
 AND ROWNUM < 12"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), num)
     cursor.execute(query, [])
     bibs = _make_dict(cursor)
@@ -254,7 +255,7 @@ SELECT library_name
 FROM bib_master, library
 WHERE bib_master.bib_id = %s
 AND bib_master.library_id=library.library_id"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [bibid])
     result = _make_dict(cursor)
     return result[0]['LIBRARY_NAME']
@@ -265,7 +266,7 @@ SELECT Count(hold_recall_items.item_id) AS recalls
 FROM hold_recall_items
 GROUP BY hold_recall_items.item_id
 HAVING hold_recall_items.item_id = %s """
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [itemid])
     result = _make_dict(cursor)
     return result[0]['RECALLS'] if result else 0
@@ -333,7 +334,7 @@ ORDER BY bib_index.bib_id"""
     query[4] = query[4] % (indexclause, numclause)
     query = ''.join(query)
     args = [likeclause1, likeclause2] * 3
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, args)
     results = _make_dict(cursor)
     for row in results[:]:
@@ -364,7 +365,7 @@ SELECT bib_index.display_heading
     ORDER BY bib_index.display_heading"""
     indexclause = _in_clause(settings.INDEX_CODES['isbn'])
     numclause = _in_clause(bibs)
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     #args = [numclause, indexclause]
     query = query % (numclause, indexclause)
     cursor.execute(query, [])
@@ -376,7 +377,7 @@ def get_title(bibid):
     query = """
     SELECT TITLE FROM bib_text
     WHERE bib_text.bib_id = %s"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [bibid])
     result = _make_dict(cursor, first=True)
     return result
@@ -398,7 +399,7 @@ AND bib_index.normal_heading != bib_index.display_heading"""
 AND ROWNUM < 12
 ORDER BY bib_index.normal_heading"""
     query = query % (_in_clause(settings.INDEX_CODES[num_type]), bibid)
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [])
     results = cursor.fetchall()
     # cull out ISBNs for sets of books
@@ -438,7 +439,7 @@ ORDER BY library.library_name"""
     else:
         idclause = "'%s'" % bib_data['BIB_ID']
     query = query % idclause
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     if not lib:
         cursor.execute(query, [])
         holdings = _make_dict(cursor)
@@ -784,7 +785,7 @@ SELECT mfhd_master.mfhd_id,
        RTRIM(wrlcdb.GetMfHDsubfield(%s,'856','3')) as LINK8563
 FROM mfhd_master
 WHERE mfhd_master.mfhd_id=%s"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [mfhd_id] * 8)
     results = _make_dict(cursor, first=True)
     string = results.get('LINK856U')
@@ -798,7 +799,7 @@ SELECT RTRIM(wrlcdb.GetAllTags(%s,'M','852',2)) as MARC852,
        RTRIM(wrlcdb.GetAllTags(%s,'M','866',2)) as MARC866
 FROM mfhd_master
 WHERE mfhd_master.mfhd_id=%s"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [mfhd_id] * 4)
     results = _make_dict(cursor, first=True)
     # parse notes from 852
@@ -836,7 +837,7 @@ def get_himmelfarb_bib_and_link(mfhdid):
         BIB_MFHD INNER JOIN BIB_MASTER ON BIB_MFHD.BIB_ID = BIB_MASTER.BIB_ID
         WHERE 
         BIB_MFHD.MFHD_ID= %s"""
-        cursor = connection.cursor()
+        cursor = connections['voyager'].cursor()
         cursor.execute(query, [mfhdid])
         result = _make_dict(cursor, first=True)
         himmelfarb_bib = result['BIB_ID']
@@ -856,7 +857,7 @@ def get_himmelfarb_linkonbib(bibid):
         FROM BIB_MASTER
         WHERE 
         BIB_MASTER.BIB_ID= %s"""
-        cursor = connection.cursor()
+        cursor = connections['voyager'].cursor()
         cursor.execute(query, [bibid]*2)
         bib856result = _make_dict(cursor, first=True)
         # Updated to ignore new services/borrowing links
@@ -892,7 +893,7 @@ SELECT RTRIM(wrlcdb.GetAllTags(%s,'M','852',2)) as MARC852,
        RTRIM(wrlcdb.GetAllTags(%s,'M','866',2)) as MARC866
 FROM mfhd_master
 WHERE mfhd_master.mfhd_id=%s"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [mfhd_id] * 4)
     return _make_dict(cursor, first=True)
 
@@ -921,7 +922,7 @@ LEFT OUTER JOIN circ_transactions on item.item_id = circ_transactions.item_id
 WHERE bib_mfhd.mfhd_id = %s
 AND mfhd_master.suppress_in_opac = 'N'
 ORDER BY PermLocation, TempLocation, item_status_date desc"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [mfhd_id])
     if first:
         return _make_dict(cursor, first=True)
@@ -1164,7 +1165,7 @@ FROM bib_index
 WHERE bib_index.bib_id = %s
 AND bib_index.index_code ='907A'"""
     try:
-        cursor = connection.cursor()
+        cursor = connections['voyager'].cursor()
         cursor.execute(query, [bibid])
         results = _make_dict(cursor)
     except:
@@ -1180,7 +1181,7 @@ FROM bib_index
 WHERE bib_index.bib_id = %s
 AND bib_index.index_code ='907A'"""
     try:
-        cursor = connection.cursor()
+        cursor = connections['voyager'].cursor()
         cursor.execute(query, [bibid])
         results = _make_dict(cursor)
     except:
@@ -1196,7 +1197,7 @@ WHERE bib_index.normal_heading = %s
 AND bib_index.index_code = '907A'
 AND bib_index.bib_id = bib_master.bib_id
 AND bib_master.library_id IN ('14', '15')"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [gtbibid.upper()])
     results = _make_dict(cursor)
     return results[0]['BIB_ID'] if results else None
@@ -1211,7 +1212,7 @@ AND bib_index.bib_id=bib_master.bib_id
 AND bib_index.normal_heading=bib_index.display_heading
 AND bib_master.library_id = '6'
 AND bib_index.normal_heading = %s"""
-    cursor = connection.cursor()
+    cursor = connections['voyager'].cursor()
     cursor.execute(query, [gmbibid])
     results = _make_dict(cursor)
     return results[0]['BIB_ID'] if results else None

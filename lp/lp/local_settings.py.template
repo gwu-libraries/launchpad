@@ -15,11 +15,19 @@ if 'test' in sys.argv:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'test',
+        },
+        'voyager': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'test',
         }
     }
 else:
     DATABASES = {
-        'default': {
+	'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'lp/lp/lp.db',
+        },
+        'voyager': {
             'ENGINE': '',
             'NAME': '',
             'USER': '',
