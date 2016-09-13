@@ -293,9 +293,8 @@ ul.subjects {
 
 ul.offers {
   list-style-type: none;
-  display: inline;
   margin: 0;
-  padding: 0;
+  padding-top: 10px;
   font-size: .9em;
 }
 
