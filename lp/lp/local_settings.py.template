@@ -10,6 +10,9 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+EMAIL_SUBJECT_PREFIX = 'Add Email Prefix here, e.g. [launchpad-server-name] '
+SERVER_EMAIL = 'root@mylaunchpadserver.com'
+
 if 'test' in sys.argv:
     DATABASES = {
         'default': {
