@@ -1,126 +1,126 @@
 body {
-    font-family: Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 p, li {line-height: 1.3em;}
 
 .library-has {
-    color: gray;
-    font-size: small;
-    overflow:hidden;
+  color: gray;
+  font-size: small;
+  overflow:hidden;
 }
 
 a.library-has {
-    color: #0088cc;
-    text-decoration: none;
+  color: #0088cc;
+  text-decoration: none;
 }
 
 .item_list {
-	margin: 0px auto;
-	padding: 0px;
-	width: 383px;
-	height:311px;
+  margin: 0px auto;
+  padding: 0px;
+  width: 383px;
+  height:311px;
 }
 .item_head {
-	padding: 5px 10px;
-	cursor: pointer;
-	position: relative;
-	background-color:#FFCCCC;
-	margin:1px;
+  padding: 5px 10px;
+  cursor: pointer;
+  position: relative;
+  background-color:#FFCCCC;
+  margin:1px;
 }
 .item_body {
-	padding: 5px 10px 15px;
-	background-color:#F4F4F8;
+  padding: 5px 10px 15px;
+  background-color:#F4F4F8;
 }
 
 table {
-    border: None;
+  border: None;
 }
 
 tr, td, th {
-    text-align: left;
-    vertical-align: top;
+  text-align: left;
+  vertical-align: top;
 }
 
 th {
-    font-weight: normal;
-    color: gray;
+  font-weight: normal;
+  color: gray;
 }
 
 td {
-    border-bottom: 1px solid #e6e6e6;
-    padding-top: .4em;
-    padding-bottom: .4em;
-    margin: 0px;
-    /*color: #000000;*/
+  border-bottom: 1px solid #e6e6e6;
+  padding-top: .4em;
+  padding-bottom: .4em;
+  margin: 0px;
+  /*color: #000000;*/
 }
 
 td.field-label {
-    font-size: smaller;
-    padding-right: 15px;
+  font-size: smaller;
+  padding-right: 15px;
 }
 
 .library-group-header{
-    padding-top: 1em;
-    font-size: large;
-    /*font-family: Georgia, serif;*/
-    font-weight: normal;
-    color: #444;
-    line-height: 1.3em;
-    border-bottom: none;
+  padding-top: 1em;
+  font-size: large;
+  /*font-family: Georgia, serif;*/
+  font-weight: normal;
+  color: #444;
+  line-height: 1.3em;
+  border-bottom: none;
 }
 
 .temp-loc-label{
-    color: rgb(96,96,96);
-    font-size: small;
+  color: rgb(96,96,96);
+  font-size: small;
 }
 
 .off-site{
-    color: black;
+  color: black;
 }
 
 .off-site-explanation{
-    color: green;
-    font-size: small;
+  color: green;
+  font-size: small;
 }
 
 .link-volumes{
-    font-size: small;
-    color: gray;
+  font-size: small;
+  color: gray;
 }
 
 .note-label{
-    font-size: small;
-    color: black;
+  font-size: small;
+  color: black;
 }
 
 .note{
-    font-size: small;
-    color: gray;
+  font-size: small;
+  color: gray;
 }
 
 .itemrow{
-    padding-left: 1em;
+  padding-left: 1em;
 }
 
 .linkresolverlist{
-    /*font-size: small;*/
-    color: gray;
+  /*font-size: small;*/
+  color: gray;
 }
 
 .linkresolverdata{
-    /*float: right;*/
+  /*float: right;*/
 }
 
 .linkresolverdates{
-    color: black;
-    font-size: medium;
+  color: black;
+  font-size: medium;
 }
 
 .linkresolverresource{
-    padding-bottom: 0.5em;
-    clear:left;
-    min-height: 2em;
+  padding-bottom: 0.5em;
+  clear:left;
+  min-height: 2em;
 }
 
 .linkresolverdbname{
@@ -142,20 +142,19 @@ td.field-label {
 }
 
 .marc856resource{
-    padding-bottom: 0.5em;
-    clear:left;
-    min-height: 2em;
+  padding-bottom: 0.5em;
+  clear:left;
+  min-height: 2em;
 }
 
 .marc856dbname{
-    font-size: small;
+  font-size: small;
 }
 
-
 .smallbuttons{
-    /*font-size: medium;*/
-    float: left;
-    margin-right: 0.5em;*
+  /*font-size: medium;*/
+  float: left;
+  margin-right: 0.5em;*
 }
 
 .home-search-button {
@@ -166,36 +165,36 @@ td.field-label {
 }
 
 #cover {
-    float: left;
-    padding: 1.2em 1em .5em 0;
+  float: left;
+  padding: 1.2em 1em .5em 0;
 }
 
 #cover-image {
-    border-left: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
 
 #desc-table td {border:0;}
 
 footer {
-    margin-top: 3em;
+  margin-top: 3em;
 }
 
 #citation_data {
-    font-size: small;
+  font-size: small;
 }
 
 #citation_data dt {
-    color: gray;
-    font-weight: normal;
+  color: gray;
+  font-weight: normal;
 }
 
 .navbar-search {
-    padding-right: 10px;
+  padding-right: 10px;
 }
 
 .search form {
-    height: 1.5em;
+  height: 1.5em;
 }
 
 #q {
@@ -284,7 +283,7 @@ ul.subjects {
 }
 
 #facets hr {
-    border-top: 1px solid gray;
+  border-top: 1px solid gray;
 }
 
 .trailing-period {
@@ -325,7 +324,7 @@ ul.offers {
 }
 
 .requestform input {
-   width: 50%;
+  width: 50%;
 }
 
 .requestform .checkbox input {
@@ -352,7 +351,7 @@ ul.offers {
 
 /* visited link */
 #search-results a:visited {
-    color: #663366;
+  color: #663366;
 }
 
 /* mouse over link */
