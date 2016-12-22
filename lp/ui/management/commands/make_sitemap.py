@@ -3,7 +3,7 @@ import os
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.db import connection
+from django.db import connections
 
 
 def _newfile(counter):
@@ -30,7 +30,7 @@ class Command(BaseCommand):
         for old_file in os.listdir(settings.SITEMAPS_DIR):
             os.remove('%s/%s' % (settings.SITEMAPS_DIR, old_file))
         print 'Generating maps'
-        cursor = connection.cursor()
+        cursor = connections['voyager'].cursor()
         query = """SELECT BIB_ID FROM bib_master
             WHERE SUPPRESS_IN_OPAC = 'N'
             """
