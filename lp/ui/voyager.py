@@ -57,8 +57,8 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
     cursor.execute(query, [bib['BIB_ID']])
     authors = []
     if bib['AUTHOR']:
-        authors.append(bib['AUTHOR'])
-    
+	authors.append(bib['AUTHOR']) 
+
     while True:
         try:
             row = cursor.fetchone()
@@ -76,6 +76,13 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
         author = authors[i].strip()
         if author.endswith('.'):
             author = author[:-1]
+        authors[i] = author
+    # removed http link from the end
+    for i in range(len(authors)):
+	author = authors[i]
+	if author.find('http') > -1:
+	    linkstart = author.index('http')
+	    author = author[:linkstart]
         authors[i] = author
     # remove duplicates
     #for author in authors:
