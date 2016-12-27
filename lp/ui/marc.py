@@ -38,7 +38,7 @@ mapping = (
     ('EARLIER_TITLE', 'Earlier Title', ['247', '780']),
     ('TITLE_CHANGED_TO', 'Title Changed To', ['785']),
     ('SUBJECTS', 'Subjects', ['650', '600', '610', '630', '651', ('880', '0', '7', 'a')]),
-    ('SERIES', 'Series', ['440', '800', '810', '811', ('830', None, None, 'a')]),
+    ('SERIES', 'Series', ['440', '800', '810', '811', ('830', None, None, 'a,v')]),
     ('DESCRIPTION', 'Description', ['300', '351', '516', '344', '345', '346', '347']),
     ('COPYRIGHT_DATE', 'Copyright Date', [('264', None, None, 'c')]),
     ('NOTES', 'Notes', ['500', '501', '504', '507', '521', '530', '546', '547',
