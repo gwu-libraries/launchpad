@@ -70,9 +70,9 @@
   }
 
   function getPublicationDate(query) {
-    var year = $("#publication-year").val();
+    var year = $("#publication-year").val() + '*';
     var start = $("#publication-year-start").val();
-    var end = $("#publication-year-end").val();
+    var end = $("#publication-year-end").val() + '*';
     if (start && end) {
       query.push('publicationdate:[' + start + '-' + end + ']')
     } else if (start) {
