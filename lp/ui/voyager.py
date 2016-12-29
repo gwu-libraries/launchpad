@@ -57,8 +57,8 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
     cursor.execute(query, [bib['BIB_ID']])
     authors = []
     if bib['AUTHOR']:
-        authors.append(bib['AUTHOR'])
-    
+	authors.append(bib['AUTHOR']) 
+
     while True:
         try:
             row = cursor.fetchone()
@@ -69,19 +69,17 @@ AND bib_index.index_code IN ('700H', '710H', '711H')"""
         except DjangoUnicodeDecodeError:
             continue 
  
-    # trim whitespace
     if not authors:
         return []
-    for i in range(len(authors)):
-        author = authors[i].strip()
-        if author.endswith('.'):
-            author = author[:-1]
-        authors[i] = author
-    # remove duplicates
-    #for author in authors:
-    #    while authors.count(author) > 1:
-    #        authors.remove(author)
-    return authors
+    
+    cleaned_authors = []  
+    for author in authors:
+        if 'http' in author:
+            author = author.split('http',1)[0]
+        author = author.rstrip('. ')
+        cleaned_authors.append(author)
+    
+    return cleaned_authors
 
 
 def get_all_bibs(bibids):
