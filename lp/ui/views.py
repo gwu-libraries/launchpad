@@ -502,7 +502,7 @@ def search(request):
             q += " AND"
         q += " lccallnum:('gw electronic' OR 'shared+electronic'" + \
             " OR 'e-resources' OR 'e-govpub' OR 'streaming'" + \
-	    " OR 'hathitrust)"
+	    " OR 'hathitrust')"
 
     # add selected facets to the query
     for facet in params.getlist('facet'):
