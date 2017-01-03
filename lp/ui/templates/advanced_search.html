@@ -74,13 +74,14 @@
     var start = $("#publication-year-start").val();
     var end = $("#publication-year-end").val();
     if (start && end) {
-      query.push('publicationdate:[' + start + '-' + end + ']')
+      <!-- Do not insert wildcard when both start and end are present -->
+      query.push('publicationdate:[' + start + '-' + end +']')
     } else if (start) {
-      query.push('publicationdate:[' + start + '-]')
+      query.push('publicationdate:[' + start + '*]')
     } else if (end) {
-      query.push('publicationdate:[-' + end + ']')
+      query.push('publicationdate:[-' + end + '*]')
     } else if (year) {
-      query.push('publicationdate:' + year)
+      query.push('publicationdate:[' + year + '*]') 
     }
   }
 
