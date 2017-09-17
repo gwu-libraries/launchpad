@@ -1837,9 +1837,9 @@ def get_links(holding, isbn, title):
 def online_available(link):
     '''    
     analyze other campus's links for online availability to GW: 
-    '''   
-    if 'proxy' in link['u'] or 'serialssolutions' in link['u'] \
-       or 'eblib' in link['u'] or 'mutex' in link['u']:
+    '''
+    restricted = ['proxy', 'serialssolutions', 'eblib', 'mutex', 'ebookcentral']
+    if any(s in link['u'] for s in restricted):
         return False
-    else:
+    else: 
         return True
