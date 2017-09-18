@@ -36,10 +36,10 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['isbn'], ["9780387312965", "9780387312828", "038731296X", "038731282X"])
 
         self.assertEqual(len(i['author']), 2)
-        self.assertEqual(i['author'][0]['name'], 'Silva, Gabriel A')
-        self.assertEqual(i['author'][0]['url'], '/search?q=Author%3A%22Silva%2C+Gabriel+A%22')
-        self.assertEqual(i['author'][1]['name'], 'Parpura, Vladimir, 1964')
-        self.assertEqual(i['author'][1]['url'], '/search?q=Author%3A%22Parpura%2C+Vladimir%2C+1964%22')
+        self.assertEqual(i['author'][0]['name'], 'Parpura, Vladimir, 1964')
+        self.assertEqual(i['author'][0]['url'], '/search?q=Author%3A%22Parpura%2C+Vladimir%2C+1964%22')
+        self.assertEqual(i['author'][1]['name'], 'Silva, Gabriel A')
+        self.assertEqual(i['author'][1]['url'], '/search?q=Author%3A%22Silva%2C+Gabriel+A%22')
 
         self.assertEqual(len(i['about']), 4)
         self.assertEqual(i['about'][0]['name'], 'Nanomedicine')
