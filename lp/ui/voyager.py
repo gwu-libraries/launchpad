@@ -112,7 +112,8 @@ SELECT bib_text.bib_id, lccn,
        wrlcdb.GetAllBibTag(%s, '880', 1) AS CJK_INFO,
        wrlcdb.GetBibTag(%s, '006') AS MARC006,
        wrlcdb.GetBibTag(%s, '007') AS MARC007,
-       wrlcdb.GetBibTag(%s, '008') AS MARC008"""
+       wrlcdb.GetBibTag(%s, '008') AS MARC008,
+       wrlcdb.GetMarcField(%s,0,0,'776','','z',1) AS MARC776Z""" 
     if not exclude_names:
         query += """
 ,title, author, publisher,
@@ -125,7 +126,7 @@ AND bib_text.bib_id=bib_master.bib_id
 AND bib_master.library_id=library.library_id
 AND bib_master.suppress_in_opac='N'"""
     cursor = connections['voyager'].cursor()
-    paramcount = 8 if not exclude_names else 7
+    paramcount = 9 if not exclude_names else 8 
     cursor.execute(query, [bibid] * paramcount)
     rec = get_marc_blob(bibid)
     bib = {}
@@ -187,8 +188,14 @@ AND bib_master.suppress_in_opac='N'"""
                     disp_set.update([num.strip() for num in disp])
                     bib['NORMAL_%s_LIST' % num_type.upper()] = list(norm_set)
                     bib['DISPLAY_%s_LIST' % num_type.upper()] = list(disp_set)
+                    if num_type.upper() == 'ISBN':
+                        if bib.get('MARC776Z', ''):
+                            original_isbns = get_original_isbns(bib['MARC776Z'])
+                            norm_set.update(original_isbns)
+                            bib['NORMAL_ISBN_LIST'].extend(original_isbns)
+                            bib['DISPLAY_ISBN_LIST'].extend(original_isbns)
                     # use std nums to get related bibs
-                    new_bibids = get_related_bibids(norm, num_type,
+                    new_bibids = get_related_bibids(norm_set, num_type,
                                                     bib.get('TITLE', ''))
                     for nb in new_bibids:
                         if nb['BIB_ID'] not in [x['BIB_ID'] for x in bibids]:
@@ -370,6 +377,16 @@ SELECT bib_index.display_heading
     results = cursor.fetchall()
     return [(clean_isbn(p[0])) for p in results]
 
+def get_original_isbns(field):
+    '''
+    parses MARC 776 and returns cleaned ISBNs as a list
+    '''
+    isbns_original = []
+    subfields = field.split('$')
+    for subfield in subfields:
+        if subfield[0] == 'z':
+            isbns_original.append(clean_isbn(subfield[1:]))
+    return isbns_original
 
 def get_title(bibid):
     query = """
