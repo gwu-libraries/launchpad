@@ -20,7 +20,7 @@ only been tested on ubuntu 14.04 LTS.
 1. Install Apache and other dependencies:
 
         sudo apt-get install -y libxml2-dev libxslt1-dev zlib1g-dev
-        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev  libxslt-dev
+        sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev  libxslt-dev sqlite3
 
 
 2. Install git 
