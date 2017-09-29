@@ -1,5 +1,5 @@
 git+https://github.com/lawlesst/bibjsontools.git
-cx_Oracle
+cx_Oracle==5.2.1
 django==1.8.13
 django-nose
 lxml
