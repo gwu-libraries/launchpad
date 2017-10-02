@@ -62,7 +62,7 @@
             {% assign_settings_value "ENABLE_OPENLIBRARY_COVERS" as enable_covers %}
             {% if enable_covers and bib.ISBN|clean_isbn %}
             <div id='cover'>
-                <img itemprop="image" id='cover-image' src='http://covers.openlibrary.org/b/isbn/{{ bib.ISBN|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
+                <img itemprop="image" id='cover-image' src='https://covers.openlibrary.org/b/isbn/{{ bib.ISBN|clean_isbn }}-M.jpg' title='cover image from Open Library' alt='cover image'/>
             </div>
             {% endif %}
             <div id='description'>
@@ -395,7 +395,7 @@
                            {% else %}
                                {% if item.ITEM_STATUS_DESC == 'Not Charged' and not bib.FINDING_AID %}
                                    <span style='color: green'>Available</span>
-                                    <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")' onClick='ga("send","event","title-info","link","sms-link");' ><i class="fa fa-mobile fa-lg"></i></a>
+                                    <a href='javascript:sms("https://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")' onClick='ga("send","event","title-info","link","sms-link");' ><i class="fa fa-mobile fa-lg"></i></a>
                                {% else %}
                                    {% if item.TEMPLOCATION == 'WRLC Shared Collections Facility (Restricted Use)' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or bib.FINDING_AID or item.ITEM_STATUS_DESC == 'DUE 02-20-2022' or item.ITEM_STATUS_DESC == 'DUE 12-31-2382' %}
                                        <span class='off-site'>Off-site </span>
@@ -516,7 +516,7 @@
                             <span class='off-site'>Off-site </span>
                         {% elif holding.AVAILABILITY.ITEM_STATUS_DESC == 'Not Charged' %}
                             <span style='color: green'>Available</span>
-                            <a href='javascript:sms("http://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")' onClick='ga("send","event","title-info","link","sms-link");'><i class="fa fa-mobile fa-lg"></i></a>
+                            <a href='javascript:sms("https://catalog.wrlc.org/scrape.php?BBID={{ holding.BIB_ID }}")' onClick='ga("send","event","title-info","link","sms-link");'><i class="fa fa-mobile fa-lg"></i></a>
 
                         {% elif holding.AVAILABILITY.TEMPLOCATION == 'WRLC Shared Collections Facility (Restricted Use)' or item.TEMPLOCATION == 'WRLC Shared Collections Facility' or holding.LOCATION_DISPLAY_NAME == 'WRLC Shared Collections Facility' %}
                             <span class='off-site'>Off-site </span>
