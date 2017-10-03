@@ -132,7 +132,8 @@ class Summon():
                 i['publisher']['address'] = doc['PublicationPlace'][0]
 
         if doc.get('thumbnail_m', []):
-            i['thumbnailUrl'] = doc['thumbnail_m'][0]
+            cover = doc['thumbnail_m'][0].split('m/')[1]
+            i['thumbnailUrl'] = '/covers/' + cover
 
         if doc.get('ISBN'):
             i['isbn'] = doc['ISBN']
