@@ -193,6 +193,9 @@ If you want to use apache, add apache config file to sites-enabled and edit it
         sudo cp ../apache/lp.conf /etc/apache2/sites-available/lp.conf
         sudo vim /etc/apache2/sites-available/lp.conf
 
+The apache config assumes you are using SSL and have set up certs as usual for GW
+Libraries applications. This includes renaming the file appropriately.
+
 - Change the values of LPHOME, server, user, and python version
 in the document as appropriate.
 
