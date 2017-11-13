@@ -234,3 +234,8 @@ then restart supervisor:
 
         sudo cp /launchpad/launchpad/scripts/logsitter.py /etc/supervisor/conf.d/
         sudo service supervisor restart
+
+NOTE: If the /launchpad/launchpad/scripts directory is not owned by root, you
+must change its ownership to root:
+
+        sudo chown -R root:root /launchpad/launchpad/scripts/
