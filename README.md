@@ -21,6 +21,7 @@ only been tested on ubuntu 14.04 LTS.
 
         sudo apt-get install -y libxml2-dev libxslt1-dev zlib1g-dev
         sudo apt-get install apache2 libapache2-mod-wsgi libaio-dev python-dev python-profiler memcached libmemcached-dev  libxslt-dev sqlite3
+        sudo apt-get install supervisor
 
 
 2. Install git 
@@ -219,3 +220,17 @@ Make sure SITEMAPS_DIR exists, then run the management command:
 
 If you are in production mode, be sure to set ```DEBUG = False``` and 
 the appropriate ```ALLOWED_HOSTS``` in ```lp/local_settings.py```.
+
+- Set up `logsitter`.
+
+Logsitter is a script intended to be a workaround
+for #1004.  Logsitter monitors the apache log and as soon as it sees the
+error message referenced in #1004, it automatically restarts apache.
+To ensure that it stays running, logsitter is deployed with and managed by
+[supervisor](http://supervisord.org/).
+
+To set up logsitter, copy the logsitter supervisor configuration file,
+then restart supervisor:
+
+        sudo cp /launchpad/launchpad/scripts/logsitter.py /etc/supervisor/conf.d/
+        sudo service supervisor restart
