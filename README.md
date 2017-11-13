@@ -229,8 +229,8 @@ error message referenced in #1004, it automatically restarts apache.
 To ensure that it stays running, logsitter is deployed with and managed by
 [supervisor](http://supervisord.org/).
 
-If the /launchpad/launchpad/scripts directory is not owned by root, you
-must change its ownership to root:
+If the `/launchpad/launchpad/scripts` directory is not owned by `root`,
+change its ownership to `root`:
 
         sudo chown -R root:root /launchpad/launchpad/scripts/
 
