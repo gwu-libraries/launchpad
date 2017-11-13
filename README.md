@@ -229,13 +229,13 @@ error message referenced in #1004, it automatically restarts apache.
 To ensure that it stays running, logsitter is deployed with and managed by
 [supervisor](http://supervisord.org/).
 
+If the /launchpad/launchpad/scripts directory is not owned by root, you
+must change its ownership to root:
+
+        sudo chown -R root:root /launchpad/launchpad/scripts/
+
 To set up logsitter, copy the logsitter supervisor configuration file,
 then restart supervisor:
 
         sudo cp /launchpad/launchpad/scripts/logsitter.py /etc/supervisor/conf.d/
         sudo service supervisor restart
-
-NOTE: If the /launchpad/launchpad/scripts directory is not owned by root, you
-must change its ownership to root:
-
-        sudo chown -R root:root /launchpad/launchpad/scripts/
