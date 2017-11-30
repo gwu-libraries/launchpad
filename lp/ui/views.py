@@ -20,7 +20,6 @@ from ui import voyager, apis, marc, summon, db
 from ui.sort import libsort, availsort, elecsort, templocsort, \
     splitsort, enumsort, callnumsort, strip_bad_holdings, holdsort
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -44,7 +43,7 @@ def _openurl_dict(request):
         p[k] = ','.join(v)
     d = {'params': p}
     d['query_string'] = '&'.join(['%s=%s' % (k, v) for k, v
-                                 in params.items()])
+                                  in params.items()])
     d['query_string_encoded'] = request.META.get('QUERY_STRING', '')
     return d
 
@@ -61,7 +60,7 @@ def item(request, bibid):
         bib = voyager.get_bib_data(bibid)
         if not bib:
             return render(request, '404.html', {'num': bibid,
-                          'num_type': 'BIB ID'}, status=404)
+                                                'num_type': 'BIB ID'}, status=404)
         bib['openurl'] = _openurl_dict(request)
         bib['citation_json'] = citation_json(request)
         # Ensure bib data is ours if possible
@@ -72,12 +71,13 @@ def item(request, bibid):
         holdings = voyager.get_holdings(bib)
         if holdings:
             holdings = strip_bad_holdings(holdings)
+            holdings = add_floormap_link(holdings)
             show_ill_link = display_ill_link(holdings)
             ours, theirs, shared = splitsort(callnumsort(enumsort(holdings)))
             holdings = elecsort(holdsort(templocsort(availsort(ours)))) \
-                + elecsort(holdsort(templocsort(availsort(shared)))) \
-                + libsort(elecsort(holdsort(templocsort(availsort(theirs))),
-                                   rev=True))
+                       + elecsort(holdsort(templocsort(availsort(shared)))) \
+                       + libsort(elecsort(holdsort(templocsort(availsort(theirs))),
+                                          rev=True))
         else:
             show_ill_link = False
 
@@ -107,7 +107,7 @@ def display_ill_link(holdings):
     y = 0
     for holding in holdings:
         for loc in settings.INELIGIBLE_ILL_LOCS:
-            if loc.lower() in\
+            if loc.lower() in \
                     holding.get('LOCATION_DISPLAY_NAME', '').lower():
                 y = y + 1
     if y == len(holdings):
@@ -123,6 +123,17 @@ def display_ill_link(holdings):
         return False
     else:
         return True
+
+
+def add_floormap_link(holdings):
+    for holding in holdings:
+        for item in holding.get('ITEMS', []):
+            if item.get('PERMLOCATION') == 'GW: GELMAN Stacks' and 'DISPLAY_CALL_NO' in item:
+                item['FLOORMAP_LINK'] = '{}#stack-{}'.format(settings.FLOORMAP_URL,
+                                                             item['DISPLAY_CALL_NO'].replace(' ', ''))
+            else:
+                item['FLOORMAP_LINK'] = False
+    return holdings
 
 
 def _date_handler(obj):
@@ -142,7 +153,7 @@ def item_json(request, bibid, z3950='False', school=None):
         bib_data['citation_json'] = citation_json(request)
         bib_encoded = unicode_data(bib_data)
         return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
-                            indent=2), content_type='application/json')
+                                       indent=2), content_type='application/json')
     except DatabaseError:
         logger.exception('unable to render bibid json: %s' % bibid)
         return error500(request)
@@ -194,7 +205,7 @@ def non_wrlc_item(request, num, num_type):
     bib = apis.get_bib_data(num=num, num_type=num_type)
     if not bib:
         return render(request, '404.html', {'num': num,
-                      'num_type': num_type.upper()}, status=404)
+                                            'num_type': num_type.upper()}, status=404)
     bib['openurl'] = _openurl_dict(request)
     bib['citation_json'] = citation_json(request)
     bib['ILLIAD_LINK'] = voyager.get_illiad_link(bib)
@@ -216,13 +227,13 @@ def non_wrlc_item(request, num, num_type):
                 holdings.append(openlibhold)
                 break
     return render(request, 'item.html', {
-                  'bibid': '',
-                  'bib': bib,
-                  'non_gw': True,
-                  'holdings': holdings,
-                  'link': '',
-                  'show_ill_link': True
-                  })
+        'bibid': '',
+        'bib': bib,
+        'non_gw': True,
+        'holdings': holdings,
+        'link': '',
+        'show_ill_link': True
+    })
 
 
 @cache_page(settings.ITEM_PAGE_CACHE_SECONDS)
@@ -235,7 +246,7 @@ def gtitem(request, gtbibid):
             bib = voyager.get_z3950_bib_data(gtbibid[1:], 'GT')
             if bib is None:
                 return render(request, '404.html', {'num': gtbibid,
-                              'num_type': 'BIB ID'}, status=404)
+                                                    'num_type': 'BIB ID'}, status=404)
             bib['openurl'] = _openurl_dict(request)
             bib['citation_json'] = citation_json(request)
             # Ensure bib data is ours if possible
@@ -250,8 +261,8 @@ def gtitem(request, gtbibid):
                 ours, theirs, shared = splitsort(callnumsort(enumsort(
                     holdings)))
                 holdings = elecsort(availsort(ours)) \
-                    + elecsort(availsort(shared)) \
-                    + libsort(elecsort(availsort(theirs), rev=True))
+                           + elecsort(availsort(shared)) \
+                           + libsort(elecsort(availsort(theirs), rev=True))
             return render(request, 'item.html', {
                 'bibid': bibid,
                 'bib': bib,
@@ -261,7 +272,7 @@ def gtitem(request, gtbibid):
                 'non_wrlc_item': True
             })
         return render(request, '404.html', {'num': gtbibid,
-                      'num_type': 'Georgetown BIB ID'}, status=404)
+                                            'num_type': 'Georgetown BIB ID'}, status=404)
     except DatabaseError:
         logger.exception('unable to render gtbibid: %s' % gtbibid)
         return error500(request)
@@ -329,7 +340,7 @@ def gmitem(request, gmbibid):
             bib = voyager.get_z3950_bib_data(gmbibid, 'GM')
             if not bib:
                 return render(request, '404.html', {'num': gmbibid,
-                              'num_type': 'BIB ID'}, status=404)
+                                                    'num_type': 'BIB ID'}, status=404)
             bib['openurl'] = _openurl_dict(request)
             bib['citation_json'] = citation_json(request)
             # Ensure bib data is ours if possible
@@ -344,8 +355,8 @@ def gmitem(request, gmbibid):
                 ours, theirs, shared = splitsort(callnumsort(enumsort(
                     holdings)))
                 holdings = elecsort(availsort(ours)) \
-                    + elecsort(availsort(shared)) \
-                    + libsort(elecsort(availsort(theirs), rev=True))
+                           + elecsort(availsort(shared)) \
+                           + libsort(elecsort(availsort(theirs), rev=True))
                 try:
                     linkval = bib.get('LINK', [])[9:]
                 except:
@@ -359,7 +370,7 @@ def gmitem(request, gmbibid):
                 'non_wrlc_item': True
             })
         return render(request, '404.html', {'num': gmbibid,
-                      'num_type': 'George Mason BIB ID'}, status=404)
+                                            'num_type': 'George Mason BIB ID'}, status=404)
     except DatabaseError:
         logger.exception('unable to render gmbibid: %s' % gmbibid)
         return error500(request)
@@ -381,7 +392,7 @@ def gmitem_json(request, gmbibid):
             bib_data['citation_json'] = citation_json(request)
             bib_encoded = unicode_data(bib_data)
             return HttpResponse(json.dumps(bib_encoded, default=_date_handler,
-                                indent=2), content_type='application/json')
+                                           indent=2), content_type='application/json')
         raise Http404
     except DatabaseError:
         logger.exception('unable to render gmbibid json: %s' % gmbibid)
@@ -501,8 +512,8 @@ def search(request):
         if q:
             q += " AND"
         q += " lccallnum:('gw electronic' OR 'shared+electronic'" + \
-            " OR 'e-resources' OR 'e-govpub' OR 'streaming'" + \
-	    " OR 'hathitrust')"
+             " OR 'e-resources' OR 'e-govpub' OR 'streaming'" + \
+             " OR 'hathitrust')"
 
     # add selected facets to the query
     for facet in params.getlist('facet'):
@@ -516,6 +527,7 @@ def search(request):
         # TODO: maybe summoner should do these escapes somehow?
         def escape(m):
             return '\\' + m.group(1)
+
         facet_value = re.sub('([,:\()${}])', escape, facet_value)
 
         kwargs['fvf'].append('%s,%s,false' % (facet_field, facet_value))
@@ -726,7 +738,6 @@ def _format_facets(request, search_results):
     # to make them easier to process there
     for f in search_results['facets']:
         for fc in f['counts']:
-
             # add a url property to each facet to activate facet
             fq = request.GET.copy()
             fq.update({'facet': "%s:%s" % (f['name'], fc['name'])})

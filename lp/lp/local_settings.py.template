@@ -242,3 +242,4 @@ SUMMON_SECRET_KEY = "you-will-need-this-to-do-searches"
 #DDA Rush Print Request form URL
 DDA_URL = 'https://docs.google.com/a/email.gwu.edu/forms/d/1pbd5Ge2zCDMtbGW5SgL-TwsE7wzNuCDNpQUlpa2NvcE/formResponse'
 
+FLOORMAP_URL = 'http://library.gwu.edu/about/maps/floorplans'
