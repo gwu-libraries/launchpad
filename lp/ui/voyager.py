@@ -1824,8 +1824,15 @@ def get_links(holding, isbn, title):
                 if holding.get('LinkResolverData', None):
                     continue 
                 if 'RushPrintRequest' in access['url']:
-                    access['url'] = '/item/request/' + str(holding['BIB_ID']) + \
-                                    '/?title=' + title + '&isbn=' + isbn    
+                    url = '/item/request/' + str(holding['BIB_ID']) + '/'
+                    params = []
+                    if title:
+                        params.append('title=' + title)
+                    if isbn:
+                        params.append('isbn=' + isbn)
+                    if params:
+                        url += '?' + '&'.join(params)
+                    access['url'] = url
                     access['label'] = 'Request print edition'
                     access['available'] = False
                 if settings.BOUND_WITH_ITEM_LINK in access['url']: 
