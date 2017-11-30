@@ -65,6 +65,7 @@
     #ProxyPassMatch /availability/?.* !   
     #ProxyPassMatch /related/?.* !
     #ProxyPassMatch /catalog/?.* !
+    #ProxyPassMatch /confirmation/?.* !
 
 
 
