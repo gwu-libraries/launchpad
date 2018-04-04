@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import os
 import summoner
 import unittest
@@ -33,7 +32,7 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['@type'], 'Book')
         self.assertEqual(i['wrlc'], '11658285')
         self.assertEqual(i['name'], 'Nanotechnology for biology and medicine : at the building block level')
-        self.assertEqual(i['isbn'], ["9780387312965", "9780387312828", "038731296X", "038731282X"])
+        self.assertEqual(i['isbn'], ["038731296X", "9780387312828", "038731282X", "9780387312965"])
 
         self.assertEqual(len(i['author']), 2)
         self.assertEqual(i['author'][0]['name'], 'Parpura, Vladimir, 1964')
@@ -42,8 +41,8 @@ class SummonTests(unittest.TestCase):
         self.assertEqual(i['author'][1]['url'], '/search?q=Author%3A%22Silva%2C+Gabriel+A%22')
 
         self.assertEqual(len(i['about']), 4)
-        self.assertEqual(i['about'][0]['name'], 'Nanomedicine')
-        self.assertEqual(i['about'][0]['url'], '/search?q=SubjectTerms%3A%22Nanomedicine%22')
+        self.assertEqual(i['about'][0]['name'], 'Biotechnology')
+        self.assertEqual(i['about'][0]['url'], '/search?q=SubjectTerms%3A%22Biotechnology%22')
 
         self.assertEqual(i['publisher']['name'], 'Springer')
         self.assertEqual(i['publisher']['address'], 'New York')
