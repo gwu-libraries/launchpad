@@ -358,7 +358,7 @@
                       </td>
                       {% else %}
                     <td>
-                           {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }} {% endif %}
+                           {% if item.DISPLAY_CALL_NO %} {{ item.DISPLAY_CALL_NO }}{% if item.FLOORMAP_LINK %} <a href="{{item.FLOORMAP_LINK}}">(show me on map)</a>{% endif %}{% endif %}
                            {% if item.ITEM_ENUM %} {{ item.ITEM_ENUM }} {% endif %}
                            {% if bib.FINDING_AID and 'GELMAN Special' in item.TRIMMED_LOCATION_DISPLAY_NAME %}
                                <br /><a href="{{bib.FINDING_AID}}" target="eresourcewindow">View the Finding Aid</a>
