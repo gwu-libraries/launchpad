@@ -14,7 +14,7 @@
         <form action="/item/request/{{ bibid }}/" method="post" class="requestform">
             {% csrf_token %}
             {{ form|crispy}}
-            <p class="instruct">We will email you when the book is available.</p>        
+            <p class="instruct">Clicking on the Submit button below will send your request to the Acquisitions department of GW Libraries.  Please check our catalog for the book's status in 1-2 weeks.</p>
             <p><button class="button-lg" type="submit" value="Submit">Submit</button></p>
         </form>
     </div>
