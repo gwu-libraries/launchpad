@@ -509,11 +509,9 @@ def search(request):
 
     # add to the query if they want online resources only
     if online:
-        if q:
-            q += " AND"
-        q += " lccallnum:('gw electronic' OR 'shared+electronic'" + \
-             " OR 'e-resources' OR 'e-govpub' OR 'streaming'" + \
-             " OR 'hathitrust')"
+        if "fvf" not in kwargs:
+            kwargs["fvf"] = []
+        kwargs["fvf"].append("IsFullText,true,f")
 
     # add selected facets to the query
     for facet in params.getlist('facet'):
